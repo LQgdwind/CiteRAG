@@ -1,0 +1,375 @@
+{
+  "paper_id": "2003.05586v5",
+  "title": "Encoder-Decoder Based Convolutional Neural Networks with Multi-Scale-Aware Modules for Crowd Counting",
+  "sections": {
+    "i introduction": "Crowd counting is an important task due to its wide range of applications such as public safety, surveillance monitoring, traffic control and intelligent transportation. However, it is a challenging computer vision task and not so trivial to efficiently solve the problem at first glance due to heavy occlusion, perspective distortion, scale variation and diverse crowd distribution throughout real-world images. These problems are emphasized especially when the target objects are in a crowded space. Some of the early methods  treat crowd counting as a detection problem. The handcrafted features from multiple sources are also investigated in . These approaches are not suitable when the targeted objects are overlapping each other and the handcrafted features can not handle the diversity of crowd distribution in input images properly. In order to take characteristics of the crowd distribution into account, one should not consider developing models predicting only the number of people in the target image because the characteristics are neglected. Thus, more recent methods rely more on the density map automatically generated from the head annotation ground truth instead. On the other hand, the authors of  consider the density map as a likelihood describing “how the spatial pixels would be” given the annotation ground truth and propose the novel Bayesian loss. However, in our experiments, we consider the density map ground truth as the learning target (except our experiment on UCF-QNRF ) in order to investigate the improved accuracy caused by the proposed architecture modifications comparing with most of the state-of-the-art methods. Convolutional Neural Networks (CNNs) have been utilized to estimate accurate density maps. By considering convolutional filters as sliding windows, CNNs are capable of feature extraction throughout various regions of an input image. Consequently, the diversity of crowd distribution in the image is handled more properly. In order to cope with head scale variation problems caused by camera diverse perspectives, previous works mostly make use of multi-column/multi-resolution based architectures   [ref]7 . However, the study in [ref]9 shows that the features learned at each column structure of MCNN  are nearly identical and it is not efficient to train such architecture when networks go deeper. As opposed to the multi-column network architecture, a deep single column network based on a truncated VGG16 0 feature extractor and a decoder with dilated convolutional layers is proposed in [ref]9 and carries out the breakthrough counting performance on ShanghaiTech  dataset. The proposed architecture demonstrates the strength of VGG16 encoder, which is pretrained on ImageNet 1 for higher semantics information extraction and the ability to transfer knowledge across vision tasks. Moreover, the study demonstrates how to attach atrous convolutional layers to the network instead of adding more pooling layers which could cause loss of spatial information. Nevertheless, 2 has raised the issue of using the same filters and pooling operations over the whole image. The authors of 2 have pointed out that the receptive field size should be changed across the image due to perspective distortion. To deal with this problem, the scale-aware contextual module, named CAN, capable of feature extraction over multiple receptive field sizes, has been proposed in 2. By the module design, the importance of each such extracted feature at every image location is learnable. However, CAN contains no mechanism to reduce the background noise, which possibly causes false predictions, especially when facing sparse and complex scenes. Aside from crowd counting, objects overlapping is also a crucial problem for image segmentation. As a result, scale-aware modules such as spatial pyramid pooling (SPP) 3 and atrous spatial pyramid pooling (ASPP) 4 are devised to capture the contextual information at multiple scales. By employing values of the atrous rate from small to large, the model’s field-of-view is enlarged and hence enables object encoding at multiple scales 4. Encoder-decoder based CNNs 5 6 7 have prior success in image segmentation ascribed to the ability to reconstruct precise object boundaries. Encoder-decoder based networks have also been proposed for crowd counting such as [ref]7  [ref]9 8 9 0. Bridging the gap between image segmentation and crowd counting, 1 introduces dual path multi-scale fusion networks (SFANet) which integrate UNet5-like decoder with the dual path structure to predict the head regions among complicated background then regress for the headcounts. Unfortunately, unlike CAN 2, SFANet has no explicit module to cope with the scale variation problem. To redress the weaknesses of the state-of-the-art methods, we propose two modified networks for crowd counting. The first proposed model is called “M-SFANet” (Modified-SFANet) in which the multi-scale-aware modules, CAN and ASPP, are additionally connected to the VGG16-bn 0 encoder of SFANet at different encoding stages to resolve the mentioned SFANet’s problem and handle occlusion by capturing the contexts around the targeted objects at multiple scales. As a result of SFANet’s dual path decoder for suppressing noisy background, the CAN’s problem is seamlessly cured as well. M-SFANet learns the contextual scales adaptively (following the perspective) and statically; therefore, the model becomes effective for both dense and sparse scenes. Second, we integrate the dual path structure into ModSegNet2-like encoder-decoder network instead of Unet and call this model “M-SegNet” (Modified-SegNet). Designed for medical image segmentation, ModSegNet is similar to UNet but leverage max-unpooling 6 instead of transpose convolution which is not parameter-free. To the best of our knowledge, the max unpooling is not yet employed in the literature about crowd counting. M-SegNet is designed to be computationally faster (See Table IX.) than SFANet, while providing the similar performance. Furthermore, we also test the performance of the ensemble model between M-SegNet and M-SFANet by average prediction. For some surveillance applications which speed are not the constraint, the ensemble model should be considered because of its lower variance prediction."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Pedestrian detection: An evaluation of the state of the art",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "P. Dollar, C. Wojek, B. Schiele, and P. Perona"
+    },
+    {
+      "index": 1,
+      "title": "Multi-source multi-scale counting in extremely dense crowd images",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "H. Idrees, I. Saleemi, C. Seibert, and M. Shah"
+    },
+    {
+      "index": 2,
+      "title": "Bayesian loss for crowd count estimation with point supervision",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Z. Ma, X. Wei, X. Hong, and Y. Gong"
+    },
+    {
+      "index": 3,
+      "title": "Composition Loss for Counting, Density Map Estimation and Localization in Dense Crowds",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "H. Idrees, M. Tayyab, K. Athrey, D. Zhang, S. Al-Maadeed, N. Rajpoot, and M. Shah",
+      "orig_title": "Composition loss for counting, density map estimation and localization in dense crowds",
+      "paper_id": "1808.01050v1"
+    },
+    {
+      "index": 4,
+      "title": "Single-image crowd counting via multi-column convolutional neural network",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Y. Zhang, D. Zhou, S. Chen, S. Gao, and Y. Ma"
+    },
+    {
+      "index": 5,
+      "title": "Towards perspective-free object counting with deep learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European Conference on Computer Vision",
+      "authors": "D. Onoro-Rubio and R. J. López-Sastre"
+    },
+    {
+      "index": 6,
+      "title": "Scale aggregation network for accurate and efficient crowd counting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "X. Cao, Z. Wang, Y. Zhao, and F. Su"
+    },
+    {
+      "index": 7,
+      "title": "Adaptive Scenario Discovery for Crowd Counting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICASSP 2019-2019 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "X. Wu, Y. Zheng, H. Ye, W. Hu, J. Yang, and L. He",
+      "orig_title": "Adaptive scenario discovery for crowd counting",
+      "paper_id": "1812.02393v2"
+    },
+    {
+      "index": 8,
+      "title": "CSRNet: Dilated Convolutional Neural Networks for Understanding the Highly Congested Scenes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Y. Li, X. Zhang, and D. Chen",
+      "orig_title": "Csrnet: Dilated convolutional neural networks for understanding the highly congested scenes",
+      "paper_id": "1802.10062v4"
+    },
+    {
+      "index": 9,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1556",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 10,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "2009 IEEE conference on computer vision and pattern recognition",
+      "authors": "J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei"
+    },
+    {
+      "index": 11,
+      "title": "Context-Aware Crowd Counting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "W. Liu, M. Salzmann, and P. Fua",
+      "orig_title": "Context-aware crowd counting",
+      "paper_id": "1811.10452v2"
+    },
+    {
+      "index": 12,
+      "title": "Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Spatial pyramid pooling in deep convolutional networks for visual recognition",
+      "paper_id": "1406.4729v4"
+    },
+    {
+      "index": 13,
+      "title": "Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "L.-C. Chen, G. Papandreou, I. Kokkinos, K. Murphy, and A. L. Yuille"
+    },
+    {
+      "index": 14,
+      "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Medical image computing and computer-assisted intervention",
+      "authors": "O. Ronneberger, P. Fischer, and T. Brox",
+      "orig_title": "U-net: Convolutional networks for biomedical image segmentation",
+      "paper_id": "1505.04597v1"
+    },
+    {
+      "index": 15,
+      "title": "SegNet: A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "V. Badrinarayanan, A. Kendall, and R. Cipolla",
+      "orig_title": "Segnet: A deep convolutional encoder-decoder architecture for image segmentation",
+      "paper_id": "1511.00561v3"
+    },
+    {
+      "index": 16,
+      "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European conference on computer vision (ECCV)",
+      "authors": "L.-C. Chen, Y. Zhu, G. Papandreou, F. Schroff, and H. Adam",
+      "orig_title": "Encoder-decoder with atrous separable convolution for semantic image segmentation",
+      "paper_id": "1802.02611v3"
+    },
+    {
+      "index": 17,
+      "title": "Learning from synthetic data for crowd counting in the wild",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Q. Wang, J. Gao, W. Lin, and Y. Yuan"
+    },
+    {
+      "index": 18,
+      "title": "ADCrowdNet: An Attention-Injective Deformable Convolutional Network for Crowd Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "N. Liu, Y. Long, C. Zou, Q. Niu, L. Pan, and H. Wu",
+      "orig_title": "Adcrowdnet: An attention-injective deformable convolutional network for crowd understanding",
+      "paper_id": "1811.11968v5"
+    },
+    {
+      "index": 19,
+      "title": "From open set to closed set: Counting objects by spatial divide-and-conquer",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "H. Xiong, H. Lu, C. Liu, L. Liu, Z. Cao, and C. Shen"
+    },
+    {
+      "index": 20,
+      "title": "Dual path multi-scale fusion networks with attention for crowd counting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1902.01115",
+      "authors": "L. Zhu, Z. Zhao, C. Lu, Y. Lin, Y. Peng, and T. Yao"
+    },
+    {
+      "index": 21,
+      "title": "Semi-supervised learning for segmentation under semantic constraint",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Medical Image Computing and Computer-Assisted Intervention",
+      "authors": "P.-A. Ganaye, M. Sdika, and H. Benoit-Cattin"
+    },
+    {
+      "index": 22,
+      "title": "Histograms of oriented gradients for human detection",
+      "abstract": "",
+      "year": "2005",
+      "venue": "2005 IEEE computer society conference on computer vision and pattern recognition (CVPR’05)",
+      "authors": "N. Dalal and B. Triggs"
+    },
+    {
+      "index": 23,
+      "title": "Bayesian poisson regression for crowd counting",
+      "abstract": "",
+      "year": "2009",
+      "venue": "2009 IEEE 12th international conference on computer vision",
+      "authors": "A. B. Chan and N. Vasconcelos"
+    },
+    {
+      "index": 24,
+      "title": "Learning to count objects in images",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Advances in neural information processing systems",
+      "authors": "V. Lempitsky and A. Zisserman"
+    },
+    {
+      "index": 25,
+      "title": "Cross-scene crowd counting via deep convolutional neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "C. Zhang, H. Li, X. Wang, and X. Yang"
+    },
+    {
+      "index": 26,
+      "title": "Crowd Counting and Density Estimation by Trellis Encoder-Decoder Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "X. Jiang, Z. Xiao, B. Zhang, X. Zhen, X. Cao, D. Doermann, and L. Shao",
+      "orig_title": "Crowd counting and density estimation by trellis encoder-decoder networks",
+      "paper_id": "1903.00853v2"
+    },
+    {
+      "index": 27,
+      "title": "Revisiting Perspective Information for Efficient Crowd Counting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "M. Shi, Z. Yang, C. Xu, and Q. Chen",
+      "orig_title": "Revisiting perspective information for efficient crowd counting",
+      "paper_id": "1807.01989v3"
+    },
+    {
+      "index": 28,
+      "title": "HA-CCN: Hierarchical Attention-based Crowd Counting Network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "V. A. Sindagi and V. M. Patel",
+      "orig_title": "Ha-ccn: Hierarchical attention-based crowd counting network",
+      "paper_id": "1907.10255v1"
+    },
+    {
+      "index": 29,
+      "title": "Top-down feedback for crowd counting convolutional neural network",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Thirty-second AAAI conference on artificial intelligence",
+      "authors": "D. B. Sam and R. V. Babu"
+    },
+    {
+      "index": 30,
+      "title": "Multi-Level Bottom-Top and Top-Bottom Feature Fusion for Crowd Counting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "V. A. Sindagi and V. M. Patel",
+      "orig_title": "Multi-level bottom-top and top-bottom feature fusion for crowd counting",
+      "paper_id": "1908.10937v1"
+    },
+    {
+      "index": 31,
+      "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1502.03167",
+      "authors": "S. Ioffe and C. Szegedy"
+    },
+    {
+      "index": 32,
+      "title": "People Counting in High Density Crowds from Still Images",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1507.08445",
+      "authors": "A. Bansal and K. Venkatesh",
+      "orig_title": "People counting in high density crowds from still images",
+      "paper_id": "1507.08445v1"
+    },
+    {
+      "index": 33,
+      "title": "Extremely overlapping vehicle counting",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Iberian Conference on Pattern Recognition and Image Analysis",
+      "authors": "R. Guerrero-Gómez-Olmedo, B. Torre-Jiménez, R. López-Sastre, S. Maldonado-Bascón, and D. Onoro-Rubio"
+    },
+    {
+      "index": 34,
+      "title": "A DEEPLY-RECURSIVE CONVOLUTIONAL NETWORK FOR CROWD COUNTING",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "X. Ding, Z. Lin, F. He, Y. Wang, and Y. Huang",
+      "orig_title": "A deeply-recursive convolutional network for crowd counting",
+      "paper_id": "1805.05633v1"
+    },
+    {
+      "index": 35,
+      "title": "C3 Framework: An Open-source PyTorch Code for Crowd Counting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.02724",
+      "authors": "J. Gao, W. Lin, B. Zhao, D. Wang, C. Gao, and J. Wen",
+      "orig_title": "C3 framework: An open-source pytorch code for crowd counting",
+      "paper_id": "1907.02724v1"
+    },
+    {
+      "index": 36,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 37,
+      "title": "Lookahead Optimizer: 𝑘 steps forward, 1 step back",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "M. Zhang, J. Lucas, J. Ba, and G. E. Hinton",
+      "orig_title": "Lookahead optimizer: k steps forward, 1 step back",
+      "paper_id": "1907.08610v2"
+    },
+    {
+      "index": 38,
+      "title": "Learning spatial awareness to improve crowd counting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Z.-Q. Cheng, J.-X. Li, Q. Dai, X. Wu, and A. G. Hauptmann"
+    },
+    {
+      "index": 39,
+      "title": "Perspective-guided convolution networks for crowd counting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Z. Yan, Y. Yuan, W. Zuo, X. Tan, Y. Wang, S. Wen, and E. Ding"
+    },
+    {
+      "index": 40,
+      "title": "Crowd Counting with Deep Structured Scale Integration Network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "L. Liu, Z. Qiu, G. Li, S. Liu, W. Ouyang, and L. Lin",
+      "orig_title": "Crowd counting with deep structured scale integration network",
+      "paper_id": "1908.08692v1"
+    }
+  ]
+}

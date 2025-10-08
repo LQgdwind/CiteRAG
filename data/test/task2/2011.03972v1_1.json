@@ -1,0 +1,437 @@
+{
+  "paper_id": "2011.03972v1",
+  "title": "Adaptive Linear Span Network for Object Skeleton Detection",
+  "sections": {
+    "v-b ablation study": "Ablation studies are performed on SK-LARGE , which is the most used benchmark for object skeleton detection. In the search phase, by default, we set the index of side-outputs as {1,2,3,4,5}12345\\{1,2,3,4,5\\}, the channel number of the nodes (Channel Number) as 323232, the intermediate node number (Intermediate Node) as 444. The kernel size and dilation rate of the convolution layers in the alternative operator set (Operator) vary in {1,3,5}135\\{1,3,5\\} and {1,2,4,8}1248\\{1,2,4,8\\}, respectively. Architecture Search.\nIn Table II, one can see that the searched AdaLSNs significantly outperform the randomly sampled architectures by ∼3%similar-toabsentpercent3\\sim 3\\% F-score. AdaLSNs also demonstrate robustness to search initializations. In Table III, we re-train the most excellent individual selected in each population iteration, and report the performance every ten generations. It can be seen that the top-1 individuals evolve quickly and the F-score increases significantly from 0.727 to 0.751, and slightly improves to 0.7530.7530.753 after 30 more generations. We search fifty generations by default. These results verify the effectiveness of the proposed approach. In Table IV, we validate the effectiveness of the encoding areas including multiple side-outputs (A1subscript𝐴1A_{1}), short connection (A2subscript𝐴2A_{2}), feature transform (A3subscript𝐴3A_{3}), and intermediate supervision (A4subscript𝐴4A_{4}). Specifically, we compare the performance of partial search by screening an encoding area (w/o) and randomly sampling the corresponding area after complete search (Rand.). Experiments show that the encoding areas can boost the performance significantly, validating that the search space is more complete. [b]\n\n\n\n\nSearch Space\nSearch Phase\nRetraining Phase\n\n\n\n\nMemory(G)\nSearch time(h)\nParam(M)\nRuntime(ms)\nF-score\n\nUnit-level\nChannel Number\n2\n≤8.1absent8.1\\leq 8.1\n43.4\n14.7\n12.52\n0.726\n\n8\n≤9.9absent9.9\\leq 9.9\n46.0\n14.8\n12.80\n0.728\n\n16\n≤12.7absent12.7\\leq 12.7\n46.3\n14.9\n12.56\n0.749\n\n32\n≤19.8absent19.8\\leq 19.8\n47.5\n15.2\n13.87\n0.753\n\n64\n≈24.0absent24.0\\approx 24.0\n49.2\n16.1\n14.21\n0.759\n\n128\n≥24.0absent24.0\\geq 24.0\n–\n–\n–\n–\n\nIntermediate Node\n\n\n\n\n\n\n\n0\n≤\\leq 12.8\n43.1\n14.7\n9.13\n0.704\n\n1\n≤\\leq 13.8\n44.0\n14.9\n9.46\n0.740\n\n2\n≤\\leq 15.6\n45.3\n14.9\n10.97\n0.746\n\n3\n≤\\leq 17.3\n46.7\n15.1\n12.03\n0.746\n\n4\n≤\\leq 19.8\n47.5\n15.2\n13.87\n0.753\n\n\n5\n≤\\leq 20.7\n49.5\n15.2\n12.67\n0.749\n\n\n\n\nOperator\n\n{kernel size}-\n\n{dilation rate}\n\n{1} - {1}\n≤18.8absent18.8\\leq 18.8\n45.1\n14.8\n12.18\n0.713\n\n{1,3,5} - {1}\n≤19.8absent19.8\\leq 19.8\n49.0\n15.0\n13.32\n0.750\n\n{1,3,5} - {1,2,4,8}\n≤19.8absent19.8\\leq 19.8\n47.5\n15.2\n13.87\n0.753\n\n{1,3,5} - {1,8,16,24}\n≤19.8absent19.8\\leq 19.8\n48.1\n15.1\n12.24\n0.748\n\n\n{1,3,5} - {1,2,4,8,16,24}\n≤19.8absent19.8\\leq 19.8\n46.5\n15.0\n13.38\n0.749\n\nPyramid-level\nSide-output\n{1,2,3,4,5}\n≤19.8absent19.8\\leq 19.8\n47.5\n15.2\n13.87\n0.753\n\n{2,3,4,5}\n≤13.2absent13.2\\leq 13.2\n42.2\n15.2\n14.42\n0.751\n\n{3,4,5}\n≤11.3absent11.3\\leq 11.3\n39.5\n15.1\n12.34\n0.750\n\n{4,5}\n≤10.3absent10.3\\leq 10.3\n38.4\n15.0\n12.13\n0.746\n\n{5}\n≤9.8absent9.8\\leq 9.8\n37.5\n14.9\n10.12\n0.723\n\n [b]\n\n\n\n\n\n\nSearch Space\nSearch Phase\nRetraining Phase\n\n\nBackbone\nSide-output\nChannel Number\nIntermediate Node\nMemory(G)\nSearch time(h)\nParam(M)\nRuntime(ms)\nF-score\n\n\n\n(S)\nVGG16\n{2,3,4,5}\n2\n1\n≤7.2absent7.2\\leq 7.2\n43.1\n14.7\n12.22\n0.724\n\n(M)\nVGG16\n{2,3,4,5}\n64\n4\n≤16.0absent16.0\\leq 16.0\n45.3\n16.6\n14.67\n0.760\n\n(L)\nVGG16\n{3,4,5}\n128\n4\n≤19.2absent19.2\\leq 19.2\n47.2\n19.7\n15.53\n0.763\n\n(L)\nResNet50\n{3,4,5}\n128\n4\n≈24.0absent24.0\\approx 24.0\n138.7\n30.9\n43.12\n0.764\n\n(L)\nRes2Net\n{3,4,5}\n128\n4\n≈24.0absent24.0\\approx 24.0\n117.3\n26.1\n34.23\n0.768\n\n(L)\nInceptionV3\n{3,4,5}\n128\n4\n≈24.0absent24.0\\approx 24.0\n193.2\n32.4\n69.37\n0.786\n\n\n Architecture Adaptability.\nIn Fig. 3, we validate the adaptability of the four encoding areas using statistics figures. In A1subscript𝐴1A_{1}, Fig. 3a shows that the side-output numbers in deep stages are significantly larger than those in shallow stages. This is because the features from deep stages have small resolutions yet coarse-scale granularity and strong representation capability. More deep stage features imply higher accuracy. The adaptive configuration of multi-stage features greatly eases the scale variation problem. In A2subscript𝐴2A_{2}, we divide the short connections adjacent ones and cross-stage ones, Fig. 3b. Considering the degradation caused by feature upsampling, the adjacent connections are preferred. In A3subscript𝐴3A_{3}, we compare LSU operator distributions, including skips and convolutions with different kernel sizes, Fig. 3c. For the moderate performance gain (0.750 v​s𝑣𝑠vs 0.753) with dilated convolutions, we calculate the average number of different convolutions in an LSU according to their kernel size only. It can be seen that the C​o​n​v3𝐶𝑜𝑛subscript𝑣3Conv_{3} and C​o​n​v5𝐶𝑜𝑛subscript𝑣5Conv_{5} are more preferred than C​o​n​v1𝐶𝑜𝑛subscript𝑣1Conv_{1}. This is because they correspond to stronger representation capability and larger receptive fields to ease the imbalance of semantic level and scale granularity. In the early search phrase, the number of C​o​n​v3𝐶𝑜𝑛subscript𝑣3Conv_{3} is noticeably larger than that of C​o​n​v5𝐶𝑜𝑛subscript𝑣5Conv_{5} while the gap reduces when search goes on. The reason lies in that with less parameters, C​o​n​v3𝐶𝑜𝑛subscript𝑣3Conv_{3} layers are easy to be optimized. When sufficient evolution takes place, C​o​n​v5𝐶𝑜𝑛subscript𝑣5Conv_{5} with large receptive field and representation capability show its advantages. This validates AdaLSN’s adaptability on network architecture configuration. In A4subscript𝐴4A_{4}, we calculate the ratio of intermediate supervision, Fig. 3d. It can be seen that in the early phase, the architecture is more dependent on intermediate supervision because intermediate supervision can force the feature subspaces to expand to fit the ground-truth. With sufficient training after tens of generations, architectures with less intermediate supervision can ease the error accumulation issue while fulfilling complementary learning for feature space expansion. AdaLSN Exemplars.\nThe computational cost and the prediction accuracy of AdaLSNs largely depend on the search space settings, Table V. Specifically, we explore the effect of “channel number”, “intermediate node”, and “operator” ({kernel size}-{dilation rate}) at the unit level; and the effect of “side-output” at the pyramid level. When the channel number increases from 2 to 64, the memory cost increases from 8.1​G8.1𝐺8.1G to 24.0​G24.0𝐺24.0G. The parameters and runtime of the searched network in the retraining phase increase moderately from (14.7​M14.7𝑀14.7M, 12.52​m​s12.52𝑚𝑠12.52ms) to (16.1​M16.1𝑀16.1M, 14.21​m​s14.21𝑚𝑠14.21ms), while the F-score increases significantly from 0.7260.7260.726 to 0.7590.7590.759, Table V. We conclude the channel number is an important factor in balancing the computational cost and accuracy for our approach. When adding intermediate nodes in each LSU from 00 to 444, one can see that the computational cost in both phases increases moderately, while the F-score greatly increases from 0.7040.7040.704 to 0.7530.7530.753. It is worth noting that comparing LSUs without any intermediate node, the F-score increases impressively from 0.7040.7040.704 to 0.7400.7400.740 with only 111 intermediate node used in each LSU. This validates the importance of operators and their combinations in the explicit feature transform for feature space expansion. However, when the intermediate node number increases to 555, the F-score of AdaLSN falls to 0.7490.7490.749. This is because the more intermediate nodes means higher search complexity, which significantly improves the difficult to search optimal architectures. We evaluate the convolution operators with different kernel sizes and dilation rates. Table V shows that convolutions with kernel sizes larger than 111 have superiority for feature space expansion, e.g.formulae-sequence𝑒𝑔e.g., the F-score increases from 0.7130.7130.713 to 0.7500.7500.750 with negligible computational cost. When the dilation rate enlarges properly as {1,2,4,8}1248\\{1,2,4,8\\}, which enriches the scale granularity, the performance improves up to 0.7530.7530.753. Nevertheless, the F-score falls upon larger dilation rates, because convolution operators with large dilation tend to missing feature details. Accordingly, the kernel sizes and dilation rates are set as {1,3,5}−{1,2,4,8}1351248\\{1,3,5\\}-\\{1,2,4,8\\}. As features from shallow stages are less representative but have high resolution, we gradually reduce the shallow side-outputs in the search phase to figure out the effect of each side-output. As shown in the bottom row of Table V, without S1subscript𝑆1S_{1} and S2subscript𝑆2S_{2}, the memory cost reduces significantly from 19.8​G19.8𝐺19.8G to 11.3​G11.3𝐺11.3G and the search time decreases from 47.5​h47.5ℎ47.5h to 39.5​h39.5ℎ39.5h, while the F-score reduces slightly.\nIn Fig. 4, we visualize the figures of ablation on channel number and side-output in Table V and Table VI using the VGG backbone. One can find that when reducing the shallow network stages {1,2}12\\{1,2\\} while increasing the channel number from 323232 to 128128128, the F-scores of the searched architectures increase significantly. When we reduce the deep stages with medium channel numbers, the F-score significantly drops. For instance, with the channel number 323232, the F-score drops from 0.7460.7460.746 to 0.7230.7230.723 when the side-outputs reduce from {4,5}45\\{4,5\\} to {5}5\\{5\\}. Empirically, we set the side-output as {2,3,4,5}2345\\{2,3,4,5\\} and change the channel number and intermediate node to (2, 1) for a small AdaLSN(S𝑆S) , while (64, 4) for a medium AdaLSN(M𝑀M). By increasing the channel number to 128128128 while reducing the side-output to {3,4,5}345\\{3,4,5\\}, we have a large AdaLSN(L𝐿L). The detailed structures of three versions of AdaLSN with VGG  are depicted in Fig. 5. Comparing to the state-of-the-art approaches, such as HED , SRN [ref]8, and LSN , AdaLSN(S𝑆S) has significant accuracy improvement (about 0.056∼0.227similar-to0.0560.2270.056\\sim 0.227 F-score gain) with negligible parameter cost. Comparing with DeepFlux , AdaLSN(M𝑀M) achieves better F-score (0.760 v​s𝑣𝑠vs 0.724) with less params (16.6 M v​s𝑣𝑠vs 18.3 M) . In Table VI, we can find that with the InceptionV3   backbone, AdaLSN(L𝐿L) achieves 0.786, improving the state-of-the-art with a large margin. [b]\n\n\n\n\nMethods\nDatasets\n\nSK-LARGE \nSK-SMALL \nWH-SYMMAX [ref]39\nSYM-PASCAL [ref]8\nSYMMAX300 \n\n\n\nMIL \n0.353\n0.392\n0.365\n0.174\n0.362\n\nHED \n0.497\n0.541\n0.732\n0.369\n0.427\n\nRCF [ref]14\n0.626\n0.613\n0.751\n0.392\n-\n\nFSDS \n0.633\n0.623\n0.769\n0.418\n0.467\n\nSRN [ref]8\n0.658\n0.632\n0.780\n0.443\n0.446\n\nLSN \n0.668\n0.633\n0.797\n0.425\n0.480\n\nHi-Fi \n0.724\n0.681\n0.805\n0.454\n-\n\nDeepFlux \n0.732\n0.695\n0.840\n0.502\n0.491\n\nAdaLSN (ours)\n0.786\n0.740\n0.851\n0.497\n0.495\n\n Linear Span.\nIn Fig. 6, we compare the skeleton predictions of the state-of-the-art approaches about a dog. It can be seen that with only parallel side-outputs for scale-aware feature utilization, the predictions of HED  suffer background noise in shallow network stages and mosaic effects in deep stages. With adding short connections among side-outputs for feature integration, SRN [ref]8 purses the residual between adjacent stages to progressively improve the predictions in a deep-to-shallow manner so that the predictions in shallow stages are greatly improved. To learn more complementary features and span a larger feature space, LSN  builds dense short connections among side-outputs for feature space expansion. However, without explicitly feature transform, LSN only moderately improves the result comparing with SRN. Deepflux  generates a slim skeleton with manually designed ASPP modules  and the context flux constrain. However, the prediction is also barely satisfactory. AdaLSN incorporates these advantages in the linear span view and updates them with the adaptive architecture search algorithm. As the searched architectures are adaptive to the skeleton characteristics, feature subspaces are adaptively expanded while forced to be complementary with each other. This explains why the prediction results at all stages are more precise, clear, and consecutive."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Convolutional Pose Machines",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE CVPR",
+      "authors": "S. Wei, V. Ramakrishna, T. Kanade, and Y. Sheikh",
+      "orig_title": "Convolutional pose machines",
+      "paper_id": "1602.00134v4"
+    },
+    {
+      "index": 1,
+      "title": "Detection and segmentation of 2d curved reflection symmetric structures",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE ICCV",
+      "authors": "C. L. Teo, C. Fermüller, and Y. Aloimonos"
+    },
+    {
+      "index": 2,
+      "title": "Symmetry-based text line detection in natural scenes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE CVPR",
+      "authors": "Z. Zhang, W. Shen, C. Yao, and X. Bai"
+    },
+    {
+      "index": 3,
+      "title": "Learning to combine mid-level cues for object proposal generation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE ICCV",
+      "authors": "T. S. H. Lee, S. Fidler, and S. J. Dickinson"
+    },
+    {
+      "index": 4,
+      "title": "RSRN: rich side-output residual network for medial axis detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE CVPRW",
+      "authors": "C. Liu, W. Ke, J. Jiao, and Q. Ye"
+    },
+    {
+      "index": 5,
+      "title": "Holistically-Nested Edge Detection",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE ICCV",
+      "authors": "S. Xie and Z. Tu",
+      "orig_title": "Holistically-nested edge detection",
+      "paper_id": "1504.06375v2"
+    },
+    {
+      "index": 6,
+      "title": "Object skeleton extraction in natural images by fusing scale-associated deep side outputs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE CVPR",
+      "authors": "W. Shen, K. Zhao, Y. Jiang, Y. Wang, Z. Zhang, and X. Bai"
+    },
+    {
+      "index": 7,
+      "title": "SRN: Side-output Residual Network for Object Symmetry Detection in the Wild",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE CVPR",
+      "authors": "W. Ke, J. Chen, J. Jiao, G. Zhao, and Q. Ye",
+      "orig_title": "SRN: side-output residual network for object symmetry detection in the wild",
+      "paper_id": "1703.02243v2"
+    },
+    {
+      "index": 8,
+      "title": "Hi-Fi: Hierarchical Feature Integration for Skeleton Detection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IJCAI",
+      "authors": "K. Zhao, W. Shen, S. Gao, D. Li, and M. Cheng",
+      "orig_title": "Hi-fi: Hierarchical feature integration for skeleton detection",
+      "paper_id": "1801.01849v4"
+    },
+    {
+      "index": 9,
+      "title": "Linear Span Network for Object Skeleton Detection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "C. Liu, W. Ke, F. Qin, and Q. Ye",
+      "orig_title": "Linear span network for object skeleton detection",
+      "paper_id": "1807.09601v1"
+    },
+    {
+      "index": 10,
+      "title": "Linear Algebra and Its Applications",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Wiley-Interscience",
+      "authors": "P. Lax"
+    },
+    {
+      "index": 11,
+      "title": "Detecting curved symmetric parts using a deformable disc model",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE ICCV",
+      "authors": "T. S. H. Lee, S. Fidler, and S. J. Dickinson"
+    },
+    {
+      "index": 12,
+      "title": "Local symmetry detection in natural images using a particle filtering approach",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "N. Widynski, A. Moevus, and M. Mignotte"
+    },
+    {
+      "index": 13,
+      "title": "Richer Convolutional Features for Edge Detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "Y. Liu, M. Cheng, X. Hu, J. Bian, L. Zhang, X. Bai, and J. Tang",
+      "orig_title": "Richer convolutional features for edge detection",
+      "paper_id": "1612.02103v3"
+    },
+    {
+      "index": 14,
+      "title": "DeepFlux for Skeletons in the Wild",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE CVPR",
+      "authors": "Y. Wang, Y. Xu, S. Tsogkas, X. Bai, S. J. Dickinson, and K. Siddiqi",
+      "orig_title": "Deepflux for skeletons in the wild",
+      "paper_id": "1811.12608v1"
+    },
+    {
+      "index": 15,
+      "title": "Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "L. Chen, G. Papandreou, I. Kokkinos, K. Murphy, and A. L. Yuille"
+    },
+    {
+      "index": 16,
+      "title": "Geometry-aware end-to-end skeleton detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "BMVC",
+      "authors": "W. Xu, G. Parmar, and Z. Tu"
+    },
+    {
+      "index": 17,
+      "title": "Neural Architecture Search with Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "B. Zoph and Q. V. Le",
+      "orig_title": "Neural architecture search with reinforcement learning",
+      "paper_id": "1611.01578v2"
+    },
+    {
+      "index": 18,
+      "title": "Learning Transferable Architectures for Scalable Image Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE CVPR",
+      "authors": "B. Zoph, V. Vasudevan, J. Shlens, and Q. V. Le",
+      "orig_title": "Learning transferable architectures for scalable image recognition",
+      "paper_id": "1707.07012v4"
+    },
+    {
+      "index": 19,
+      "title": "Progressive neural architecture search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "C. Liu, B. Zoph, M. Neumann, J. Shlens, W. Hua, L.-J. Li, L. Fei-Fei, A. Yuille, J. Huang, and K. Murphy"
+    },
+    {
+      "index": 20,
+      "title": "Large-Scale Evolution of Image Classifiers",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "E. Real, S. Moore, A. Selle, S. Saxena, and Suematsu",
+      "orig_title": "Large-scale evolution of image classifiers",
+      "paper_id": "1703.01041v2"
+    },
+    {
+      "index": 21,
+      "title": "Genetic cnn",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE ICCV",
+      "authors": "L. Xie and A. Yuille"
+    },
+    {
+      "index": 22,
+      "title": "Regularized Evolution for Image Classifier Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "E. Real, A. Aggarwal, Y. Huang, and Q. V. Le",
+      "orig_title": "Regularized evolution for image classifier architecture search",
+      "paper_id": "1802.01548v7"
+    },
+    {
+      "index": 23,
+      "title": "Efficient Architecture Search by Network Transformation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "H. Cai, T. Chen, W. Zhang, Y. Yu, and J. Wang",
+      "orig_title": "Efficient architecture search by network transformation",
+      "paper_id": "1707.04873v2"
+    },
+    {
+      "index": 24,
+      "title": "Efficient Neural Architecture Search via Parameter Sharing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "H. Pham, M. Y. Guan, B. Zoph, Q. V. Le, and J. Dean",
+      "orig_title": "Efficient neural architecture search via parameter sharing",
+      "paper_id": "1802.03268v2"
+    },
+    {
+      "index": 25,
+      "title": "Multinomial Distribution Learning for Effective Neural Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE ICCV",
+      "authors": "X. Zheng, R. Ji, L. Tang, B. Zhang, J. Liu, and Q. Tian",
+      "orig_title": "Multinomial distribution learning for effective neural architecture search",
+      "paper_id": "1905.07529v3"
+    },
+    {
+      "index": 26,
+      "title": "Neural Architecture Optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "R. Luo, F. Tian, T. Qin, E. Chen, and T.-Y. Liu",
+      "orig_title": "Neural architecture optimization",
+      "paper_id": "1808.07233v5"
+    },
+    {
+      "index": 27,
+      "title": "DARTS: Differentiable architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "H. Liu, K. Simonyan, and Y. Yang"
+    },
+    {
+      "index": 28,
+      "title": "Progressive differentiable architecture search: Bridging the depth gap between search and evaluation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF International Conference on Computer Vision, ICCV 2019",
+      "authors": "X. Chen, L. Xie, J. Wu, and Q. Tian"
+    },
+    {
+      "index": 29,
+      "title": "PC-DARTS: partial channel connections for memory-efficient differentiable architecture search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:1907.05737",
+      "authors": "Y. Xu, L. Xie, X. Zhang, X. Chen, G. J. Qi, Q. Tian, and H. Xiong"
+    },
+    {
+      "index": 30,
+      "title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "T. Mingxing and Q. V. Le",
+      "orig_title": "Efficientnet: Rethinking model scaling for convolutional neural networks",
+      "paper_id": "1905.11946v5"
+    },
+    {
+      "index": 31,
+      "title": "NAS-FPN: Learning Scalable Feature Pyramid Architecture for Object Detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE CVPR",
+      "authors": "G. Ghiasi, T. Lin, and Q. V. Le",
+      "orig_title": "NAS-FPN: learning scalable feature pyramid architecture for object detection",
+      "paper_id": "1904.07392v1"
+    },
+    {
+      "index": 32,
+      "title": "Nas-unet: Neural architecture search for medical image segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "Y. Weng, T. Zhou, Y. Li, and X. Qiu"
+    },
+    {
+      "index": 33,
+      "title": "Auto-DeepLab: Hierarchical Neural Architecture Search for Semantic Image Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE CVPR",
+      "authors": "C. Liu, L. Chen, F. Schroff, H. Adam, W. Hua, A. L. Yuille, and F. Li",
+      "orig_title": "Auto-deeplab: Hierarchical neural architecture search for semantic image segmentation",
+      "paper_id": "1901.02985v2"
+    },
+    {
+      "index": 34,
+      "title": "D-linknet: Linknet with pretrained encoder and dilated convolution for high resolution satellite imagery road extraction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE CVPRW",
+      "authors": "L. Zhou, C. Zhang, and M. Wu"
+    },
+    {
+      "index": 35,
+      "title": "DeepSkeleton: Learning Multi-task Scale-associated Deep Side Outputs for Object Skeleton Extraction in Natural Images",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans. Image Process.",
+      "authors": "W. Shen, K. Zhao, Y. Jiang, Y. Wang, X. Bai, and A. L. Yuille",
+      "orig_title": "Deepskeleton: Learning multi-task scale-associated deep side outputs for object skeleton extraction in natural images",
+      "paper_id": "1609.03659v3"
+    },
+    {
+      "index": 36,
+      "title": "Object skeleton extraction in natural images by fusing scale-associated deep side outputs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE CVPR",
+      "authors": "W. Shen, K. Zhao, Y. Jiang, Y. Wang, Z. Zhang, and X. Bai"
+    },
+    {
+      "index": 37,
+      "title": "Learning-based symmetry detection in natural images",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ECCV",
+      "authors": "S. Tsogkas and I. Kokkinos"
+    },
+    {
+      "index": 38,
+      "title": "Multiple instance subspace learning via partial random projection tree for local reflection symmetry in natural images",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Pattern Recognit.",
+      "authors": "W. Shen, X. Bai, Z. Hu, and Z. Zhang"
+    },
+    {
+      "index": 39,
+      "title": "Deep Visual-Semantic Alignments for Generating Image Descriptions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "A. Karpathy and L. Fei-Fei",
+      "orig_title": "Deep visual-semantic alignments for generating image descriptions",
+      "paper_id": "1412.2306v2"
+    },
+    {
+      "index": 40,
+      "title": "The pascal visual object classes (VOC) challenge",
+      "abstract": "",
+      "year": "2010",
+      "venue": "International Journal of Computer Vision",
+      "authors": "M. Everingham, L. J. V. Gool, C. K. I. Williams, J. M. Winn, and A. Zisserman"
+    },
+    {
+      "index": 41,
+      "title": "A database of human segmented natural images and its application to evaluating segmentation algorithms and measuring ecological statistics",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Eighth International Conference On Computer Vision (ICCV-01)",
+      "authors": "D. R. Martin, C. C. Fowlkes, D. Tal, and J. Malik"
+    },
+    {
+      "index": 42,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "3rd International Conference on Learning Representations, ICLR 2015",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 43,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE ICCV",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 44,
+      "title": "Rethinking the inception architecture for computer vision",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2016",
+      "authors": "C. Szegedy, V. Vanhoucke, S. Ioffe, J. Shlens, and Z. Wojna"
+    },
+    {
+      "index": 45,
+      "title": "Learning-based symmetry detection in natural images",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ECCV",
+      "authors": "S. Tsogkas and I. Kokkinos"
+    },
+    {
+      "index": 46,
+      "title": "Contour detection and hierarchical image segmentation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "P. Arbelaez, M. Maire, C. C. Fowlkes, and J. Malik"
+    },
+    {
+      "index": 47,
+      "title": "DeepGlobe 2018: A Challenge to Parse the Earth through Satellite Images",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE CVPRW",
+      "authors": "I. Demir, K. Koperski, D. Lindenbaum, G. Pang, J. Huang, S. Basu, F. Hughes, D. Tuia, and R. Raskar",
+      "orig_title": "Deepglobe 2018: A challenge to parse the earth through satellite images",
+      "paper_id": "1805.06561v1"
+    }
+  ]
+}

@@ -1,0 +1,421 @@
+{
+  "paper_id": "2004.06165v5",
+  "title": "Oscar: Object-Semantics Aligned Pre-training for Vision-Language Tasks",
+  "sections": {
+    "introduction": "Learning cross-modal representations is fundamental to a wide range of vision-language (V+L) tasks, such as visual question answering, image-text retrieval, image captioning. Recent studies 2 8 [ref]5     on vision-language pre-training (VLP) have shown that it can effectively learn generic representations from massive image-text pairs, and that fine-tuning VLP models on task-specific data achieves state-of-the-art (SoTA) results on well-established V+L tasks. These VLP models are based on multi-layer Transformers .\nTo pre-train such models, existing methods simply concatenate image region features and text features as input and resort to the self-attention mechanism to learn semantic alignments between image regions and text in a brute force manner.\nHowever, the lack of explicit alignment information between the image regions and text poses alignment modeling a weakly-supervised learning task. In addition, visual regions are often over-sampled , noisy and ambiguous, which makes the task even more challenging. In this study, we show that the learning of cross-modal representations can be significantly improved by introducing object tags detected in images as anchor points to ease the learning of semantic alignments between images and texts.\nWe propose a new VLP method Oscar, where we define the training samples as triples, each consisting of a word sequence, a set of object tags, and a set of image region features. Our method is motivated by the observation that the salient objects in an image can be accurately detected by modern object detectors 8, and that these objects are often mentioned in the paired text.\nFor example, on the MS COCO dataset 1, the percentages that an image and its paired text share at least 111, 222, 333 objects are 49.7%percent49.749.7\\%, 22.2%percent22.222.2\\%, 12.9%percent12.912.9\\%, respectively. Our Oscar model is pre-trained on a large-scale V+L dataset composed of 6.56.56.5 million pairs, and is fine-tuned and evaluated on seven V+L understanding and generation tasks. The overall setting is illustrated in Fig 1. Although the use of anchor points for alignment modeling has been explored in natural language processing e.g.,  , to the best of our knowledge, this work is the first that explores the idea for VLP. There have been previous works that use object or image tags in V+L tasks for the sake of enhancing the feature representation of image regions, rather than for learning image-text alignments. For example, Zhou et al.   uses the object prediction probability as a soft label and concatenate it with its corresponding region features. Wu et al.   and You et al.   introduce image-level labels or attributes to improve image-level visual representations. The main contributions of this work can be summarized as follows:\n(i)i(\\textup{\\it i}) We introduce Oscar, a powerful VLP method to learn generic image-text representations for V+L understanding and generation tasks.\n(ii)ii(\\textup{\\it ii}) We have developed an Oscar model that achieves new SoTA on multiple V+L benchmarks, outperforming existing approaches by a significant margin;\n(iii)iii(\\textup{\\it iii}) We present extensive experiments and analysis to provide insights on the effectiveness of using object tags as anchor points for cross-modal representation learning and downstream tasks."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "nocaps: novel object captioning at scale",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Agrawal, H., Desai, K., Wang, Y., Chen, X., Jain, R., Johnson, M., Batra, D., Parikh, D., Lee, S., Anderson, P."
+    },
+    {
+      "index": 1,
+      "title": "Bottom-Up and Top-Down Attention for Image Captioning and Visual Question Answering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Anderson, P., He, X., Buehler, C., Teney, D., Johnson, M., Gould, S., Zhang, L.",
+      "orig_title": "Bottom-up and top-down attention for image captioning and visual question answering",
+      "paper_id": "1707.07998v3"
+    },
+    {
+      "index": 2,
+      "title": "Aligning sentences in parallel corpora",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Association for Computational Linguistics",
+      "authors": "Brown, P.F., Lai, J.C., Mercer, R.L."
+    },
+    {
+      "index": 3,
+      "title": "Meta Module Network for Compositional Visual Reasoning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.03230",
+      "authors": "Chen, W., Gan, Z., Li, L., Cheng, Y., Wang, W., Liu, J.",
+      "orig_title": "Meta module network for compositional visual reasoning",
+      "paper_id": "1910.03230v5"
+    },
+    {
+      "index": 4,
+      "title": "Uniter: Learning universal image-text representations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1909.11740",
+      "authors": "Chen, Y.C., Li, L., Yu, L., Kholy, A.E., Ahmed, F., Gan, Z., Cheng, Y., Liu, J."
+    },
+    {
+      "index": 5,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NAACL",
+      "authors": "Devlin, J., Chang, M.W., Lee, K., Toutanova, K.",
+      "orig_title": "BERT: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 6,
+      "title": "Vse++: Improved visual-semantic embeddings",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1707.05612",
+      "authors": "Faghri, F., Fleet, D.J., Kiros, J.R., Fidler, S."
+    },
+    {
+      "index": 7,
+      "title": "DeViSE: A deep visual-semantic embedding model",
+      "abstract": "",
+      "year": "2013",
+      "venue": "NeurIPS",
+      "authors": "Frome, A., Corrado, G.S., Shlens, J., Bengio, S., Dean, J., Ranzato, M., Mikolov, T."
+    },
+    {
+      "index": 8,
+      "title": "Making the V in VQA Matter: Elevating the Role of Image Understanding in Visual Question Answering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Goyal, Y., Khot, T., Summers-Stay, D., Batra, D., Parikh, D.",
+      "orig_title": "Making the V in VQA matter: Elevating the role of image understanding in visual question answering",
+      "paper_id": "1612.00837v3"
+    },
+    {
+      "index": 9,
+      "title": "Towards learning a generic agent for vision-and-language navigation via pre-training",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Hao, W., Li, C., Li, X., Carin, L., Gao, J."
+    },
+    {
+      "index": 10,
+      "title": "Attention on attention for image captioning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Huang, L., Wang, W., Chen, J., Wei, X.Y."
+    },
+    {
+      "index": 11,
+      "title": "Learning by Abstraction: The Neural State Machine",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Hudson, D., Manning, C.D.",
+      "orig_title": "Learning by abstraction: The neural state machine",
+      "paper_id": "1907.03950v4"
+    },
+    {
+      "index": 12,
+      "title": "GQA: A new dataset for real-world visual reasoning and compositional question answering",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1902.09506",
+      "authors": "Hudson, D.A., Manning, C.D."
+    },
+    {
+      "index": 13,
+      "title": "Deep Visual-Semantic Alignments for Generating Image Descriptions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Karpathy, A., Fei-Fei, L.",
+      "orig_title": "Deep visual-semantic alignments for generating image descriptions",
+      "paper_id": "1412.2306v2"
+    },
+    {
+      "index": 14,
+      "title": "Unifying visual-semantic embeddings with multimodal neural language models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1411.2539",
+      "authors": "Kiros, R., Salakhutdinov, R., Zemel, R.S."
+    },
+    {
+      "index": 15,
+      "title": "Visual genome: Connecting language and vision using crowdsourced dense image annotations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Journal of Computer Vision",
+      "authors": "Krishna, R., Zhu, Y., Groth, O., Johnson, J., Hata, K., Kravitz, J., Chen, S., Kalantidis, Y., Li, L.J., Shamma, D.A., et al."
+    },
+    {
+      "index": 16,
+      "title": "The open images dataset v4: Unified image classification, object detection, and visual relationship detection at scale",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1811.00982",
+      "authors": "Kuznetsova, A., Rom, H., Alldrin, N., Uijlings, J., Krasin, I., Pont-Tuset, J., Kamali, S., Popov, S., Malloci, M., Duerig, T., et al."
+    },
+    {
+      "index": 17,
+      "title": "Stacked Cross Attention for Image-Text Matching",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Lee, K.H., Chen, X., Hua, G., Hu, H., He, X.",
+      "orig_title": "Stacked cross attention for image-text matching",
+      "paper_id": "1803.08024v2"
+    },
+    {
+      "index": 18,
+      "title": "Unicoder-VL: A Universal Encoder for Vision and Language by Cross-modal Pre-training",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.06066",
+      "authors": "Li, G., Duan, N., Fang, Y., Jiang, D., Zhou, M.",
+      "orig_title": "Unicoder-VL: A universal encoder for vision and language by cross-modal pre-training",
+      "paper_id": "1908.06066v3"
+    },
+    {
+      "index": 19,
+      "title": "VisualBERT: A Simple and Performant Baseline for Vision and Language",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.03557",
+      "authors": "Li, L.H., Yatskar, M., Yin, D., Hsieh, C.J., Chang, K.W.",
+      "orig_title": "Visualbert: A simple and performant baseline for vision and language",
+      "paper_id": "1908.03557v1"
+    },
+    {
+      "index": 20,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "Lin, T.Y., Maire, M., Belongie, S., Hays, J., Perona, P., Ramanan, D., Dollár, P., Zitnick, C.L.",
+      "orig_title": "Microsoft COCO: Common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 21,
+      "title": "VilBERT: Pretraining task-agnostic visiolinguistic representations for vision-and-language tasks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Lu, J., Batra, D., Parikh, D., Lee, S."
+    },
+    {
+      "index": 22,
+      "title": "12-in-1: Multi-Task Vision and Language Representation Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1912.02315",
+      "authors": "Lu, J., Goswami, V., Rohrbach, M., Parikh, D., Lee, S.",
+      "orig_title": "12-in-1: Multi-Task vision and language representation learning",
+      "paper_id": "1912.02315v2"
+    },
+    {
+      "index": 23,
+      "title": "Visualizing Data using GTSNE",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of machine learning research",
+      "authors": "Maaten, L.v.d., Hinton, G.",
+      "orig_title": "Visualizing data using t-SNE",
+      "paper_id": "2108.01301v1"
+    },
+    {
+      "index": 24,
+      "title": "Zero-shot learning by convex combination of semantic embeddings",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.5650",
+      "authors": "Norouzi, M., Mikolov, T., Bengio, S., Singer, Y., Shlens, J., Frome, A., Corrado, G.S., Dean, J."
+    },
+    {
+      "index": 25,
+      "title": "Im2text: Describing images using 1 million captioned photographs",
+      "abstract": "",
+      "year": "2011",
+      "venue": "NeurIPS",
+      "authors": "Ordonez, V., Kulkarni, G., Berg, T.L."
+    },
+    {
+      "index": 26,
+      "title": "ImageBERT: Cross-modal Pre-training with Large-scale Weak-supervised Image-Text Data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2001.07966",
+      "authors": "Qi, D., Su, L., Song, J., Cui, E., Bharti, T., Sacheti, A.",
+      "orig_title": "Imagebert: Cross-modal pre-training with large-scale weak-supervised image-text data",
+      "paper_id": "2001.07966v2"
+    },
+    {
+      "index": 27,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Ren, S., He, K., Girshick, R., Sun, J.",
+      "orig_title": "Faster r-cnn: Towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 28,
+      "title": "Joint image-text representation by gaussian visual-semantic embedding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Multimedia",
+      "authors": "Ren, Z., Jin, H., Lin, Z., Fang, C., Yuille, A."
+    },
+    {
+      "index": 29,
+      "title": "Self-critical Sequence Training for Image Captioning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Rennie, S.J., Marcheret, E., Mroueh, Y., Ross, J., Goel, V.",
+      "orig_title": "Self-critical sequence training for image captioning",
+      "paper_id": "1612.00563v2"
+    },
+    {
+      "index": 30,
+      "title": "Conceptual captions: A cleaned, hypernymed, image alt-text dataset for automatic image captioning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Annual Meeting of the Association for Computational Linguistics",
+      "authors": "Sharma, P., Ding, N., Goodman, S., Soricut, R."
+    },
+    {
+      "index": 31,
+      "title": "Knowledge aware semantic concept expansion for image-text matching",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IJCAI",
+      "authors": "Shi, B., Ji, L., Lu, P., Niu, Z., Duan, N."
+    },
+    {
+      "index": 32,
+      "title": "Connecting modalities: Semi-supervised segmentation and annotation of images using unaligned text corpora",
+      "abstract": "",
+      "year": "2010",
+      "venue": "CVPR",
+      "authors": "Socher, R., Fei-Fei, L."
+    },
+    {
+      "index": 33,
+      "title": "Zero-shot learning through cross-modal transfer",
+      "abstract": "",
+      "year": "2013",
+      "venue": "NeurIPS",
+      "authors": "Socher, R., Ganjoo, M., Manning, C.D., Ng, A."
+    },
+    {
+      "index": 34,
+      "title": "VL-BERT: Pre-training of generic visual-linguistic representations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.08530",
+      "authors": "Su, W., Zhu, X., Cao, Y., Li, B., Lu, L., Wei, F., Dai, J."
+    },
+    {
+      "index": 35,
+      "title": "A Corpus for Reasoning About Natural Language Grounded in Photographs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1811.00491",
+      "authors": "Suhr, A., Zhou, S., Zhang, A., Zhang, I., Bai, H., Artzi, Y.",
+      "orig_title": "A corpus for reasoning about natural language grounded in photographs",
+      "paper_id": "1811.00491v3"
+    },
+    {
+      "index": 36,
+      "title": "VideoBERT: A Joint Model for Video and Language Representation Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Sun, C., Myers, A., Vondrick, C., Murphy, K., Schmid, C.",
+      "orig_title": "VideoBERT: A joint model for video and language representation learning",
+      "paper_id": "1904.01766v2"
+    },
+    {
+      "index": 37,
+      "title": "LXMERT: Learning Cross-Modality Encoder Representations from Transformers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "EMNLP",
+      "authors": "Tan, H., Bansal, M.",
+      "orig_title": "LXMERT: Learning cross-modality encoder representations from transformers",
+      "paper_id": "1908.07490v3"
+    },
+    {
+      "index": 38,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, Ł., Polosukhin, I.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 39,
+      "title": "Position focused attention network for image-text matching",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.09748",
+      "authors": "Wang, Y., Yang, H., Qian, X., Ma, L., Lu, J., Li, B., Fan, X."
+    },
+    {
+      "index": 40,
+      "title": "CAMP: Cross-Modal Adaptive Message Passing for Text-Image Retrieval",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Wang, Z., Liu, X., Li, H., Sheng, L., Yan, J., Wang, X., Shao, J.",
+      "orig_title": "CAMP: Cross-Modal adaptive message passing for text-image retrieval",
+      "paper_id": "1909.05506v1"
+    },
+    {
+      "index": 41,
+      "title": "What value do explicit high level concepts have in vision to language problems?",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Wu, Q., Shen, C., Liu, L., Dick, A., Van Den Hengel, A."
+    },
+    {
+      "index": 42,
+      "title": "Image Captioning with Semantic Attention",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "You, Q., Jin, H., Wang, Z., Fang, C., Luo, J.",
+      "orig_title": "Image captioning with semantic attention",
+      "paper_id": "1603.03925v1"
+    },
+    {
+      "index": 43,
+      "title": "From image descriptions to visual denotations: New similarity metrics for semantic inference over event descriptions",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "authors": "Young, P., Lai, A., Hodosh, M., Hockenmaier, J."
+    },
+    {
+      "index": 44,
+      "title": "Dual-path convolutional image-text embedding with instance loss",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.05535",
+      "authors": "Zheng, Z., Zheng, L., Garrett, M., Yang, Y., Shen, Y.D."
+    },
+    {
+      "index": 45,
+      "title": "Unified Vision-Language Pre-Training for Image Captioning and VQA",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "Zhou, L., Palangi, H., Zhang, L., Hu, H., Corso, J.J., Gao, J.",
+      "orig_title": "Unified vision-language pre-training for image captioning and VQA",
+      "paper_id": "1909.11059v3"
+    }
+  ]
+}

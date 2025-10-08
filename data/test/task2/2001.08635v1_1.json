@@ -1,0 +1,539 @@
+{
+  "paper_id": "2001.08635v1",
+  "title": "A Study of the Tasks and Models in Machine Reading Comprehension",
+  "sections": {
+    "simple-reasoning mrc models": "As shown in the figure, a conceptual architecture of simple-reasoning MRC models consists of five layers, which are separately: \nInput Layer. This layer maps the words in each given context-question pair to the lexical embeddings, which are usually assigned the corresponding word vectors provided by a pre-trained Word2Vec  or GloVe [ref]19. For out-of-vocabulary (OOV) words with low frequency, their lexical embeddings are usually assigned the same random or zero vector. To better deal with OOV words, it is a common practice to append a character-level embedding to the lexical embedding of each word, which is usually obtained by processing the corresponding character vectors with a Convolutional Neural Network (CNN) or Recurrent Neural Network (RNN). Besides, some MRC models, such as DrQA [ref]20, R.M-Reader , and SAN , also append binary features to the lexical embedding of each context word indicating whether this word and its variants appear in the question. \nFeature Extraction Layer. This layer maps the lexical embeddings to the contextual embeddings, which is aimed at extracting contextual features from the context and the question separately. A common practice for implementing this layer is to process the lexical embeddings of the context and those of the question separately with a shared bidirectional LSTM (BiLSTM)  or bidirectional GRU (BiGRU) , and thereby concatenate the outputs from both directions. To improve the training and inference efficiency, some MRC models, such as QANet [ref]25, replace all recurrent structures with feed-forward structures. \nMutual-matching Layer. This layer matches the contextual embeddings of the context with those of the question to generate the coarse memories of the context, which is also known as question-aware context representations. Mutual-matching attention is the substantial component of this layer, which fuses the contextual embeddings of the question into those of the context according to their mutual similarities. The fusion results are usually passed through a BiLSTM or BiGRU to form the coarse memories of the context. Some MRC models, such as SLQA+ , also generate the coarse memories of the question in a symmetrical manner, which can be seen as context-aware question representations. \nSelf-matching Layer. This layer matches the coarse memories of the context with themselves to generate the refined memories of the context, which is the self-aware context representations. Self-matching attention is the substantial component of this layer, which fuses the coarse memories of the context into themselves according to their self similarities. The fusion results are usually passed through a BiLSTM or BiGRU to form the refined memories of the context. \nOutput Layer. This layer predicts certain distributions, such as the distributions over the candidate answers, the context words, and so on, as outputs, the format of which depends on the specific MRC task to address. \nThe above architecture is just a general framework for constructing simple-reasoning MRC models, which is more or less different from those applied in practice. For example, Match-LSTM , RaSoR , DCN , BiDAF , MEMEN , DrQA [ref]20, FastQA , and QANet [ref]25 have no self-matching layer, while DrQA and FastQA even have no mutual-matching layer."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.0473",
+      "authors": "Bahdanau, D., K. Cho, Y. Bengio",
+      "orig_title": "Neural machine translation by jointly learning to align and translate",
+      "paper_id": "1409.0473v7"
+    },
+    {
+      "index": 1,
+      "title": "Freebase: a collaboratively created graph database for structuring human knowledge",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ACM SIGMOD international conference on Management of data",
+      "authors": "Bollacker, K., C. Evans, P. Paritosh, et al."
+    },
+    {
+      "index": 2,
+      "title": "Mctest: A challenge dataset for the open-domain machine comprehension of text",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Conference on Empirical Methods in Natural Language Processing",
+      "authors": "Richardson, M., C. J. Burges, E. Renshaw"
+    },
+    {
+      "index": 3,
+      "title": "Wikiqa: A challenge dataset for open-domain question answering",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Conference on Empirical Methods in Natural Language Processing",
+      "authors": "Yang, Y., W.-t. Yih, C. Meek"
+    },
+    {
+      "index": 4,
+      "title": "Teaching machines to read and comprehend",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Hermann, K. M., T. Kocisky, E. Grefenstette, et al."
+    },
+    {
+      "index": 5,
+      "title": "A thorough examination of the cnn/daily mail reading comprehension task",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.02858",
+      "authors": "Chen, D., J. Bolton, C. D. Manning"
+    },
+    {
+      "index": 6,
+      "title": "The Goldilocks Principle: Reading Children’s Books with Explicit Memory Representations",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1511.02301",
+      "authors": "Hill, F., A. Bordes, S. Chopra, et al.",
+      "orig_title": "The goldilocks principle: Reading children’s books with explicit memory representations",
+      "paper_id": "1511.02301v4"
+    },
+    {
+      "index": 7,
+      "title": "Squad: 100,000+ questions for machine comprehension of text",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.05250",
+      "authors": "Rajpurkar, P., J. Zhang, K. Lopyrev, et al."
+    },
+    {
+      "index": 8,
+      "title": "Adversarial Examples for Evaluating Reading Comprehension Systems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1707.07328",
+      "authors": "Jia, R., P. Liang",
+      "orig_title": "Adversarial examples for evaluating reading comprehension systems",
+      "paper_id": "1707.07328v1"
+    },
+    {
+      "index": 9,
+      "title": "Know What You Don’t Know: Unanswerable Questions for SQuAD",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1806.03822",
+      "authors": "Rajpurkar, P., R. Jia, P. Liang",
+      "orig_title": "Know what you don’t know: Unanswerable questions for squad",
+      "paper_id": "1806.03822v1"
+    },
+    {
+      "index": 10,
+      "title": "NewsQA: A Machine Comprehension Dataset",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.09830",
+      "authors": "Trischler, A., T. Wang, X. Yuan, et al.",
+      "orig_title": "Newsqa: A machine comprehension dataset",
+      "paper_id": "1611.09830v3"
+    },
+    {
+      "index": 11,
+      "title": "Ms marco: A human generated machine reading comprehension dataset",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.09268",
+      "authors": "Bajaj, P., D. Campos, N. Craswell, et al."
+    },
+    {
+      "index": 12,
+      "title": "Dureader: a chinese machine reading comprehension dataset from real-world applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.05073",
+      "authors": "He, W., K. Liu, J. Liu, et al."
+    },
+    {
+      "index": 13,
+      "title": "The NarrativeQA Reading Comprehension Challenge",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "authors": "Kočiskỳ, T., J. Schwarz, P. Blunsom, et al.",
+      "orig_title": "The narrativeqa reading comprehension challenge",
+      "paper_id": "1712.07040v1"
+    },
+    {
+      "index": 14,
+      "title": "SearchQA: A New Q&A Dataset Augmented with Context from a Search Engine",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1704.05179",
+      "authors": "Dunn, M., L. Sagun, M. Higgins, et al.",
+      "orig_title": "Searchqa: A new q&a dataset augmented with context from a search engine",
+      "paper_id": "1704.05179v3"
+    },
+    {
+      "index": 15,
+      "title": "TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1705.03551",
+      "authors": "Joshi, M., E. Choi, D. S. Weld, et al.",
+      "orig_title": "Triviaqa: A large scale distantly supervised challenge dataset for reading comprehension",
+      "paper_id": "1705.03551v2"
+    },
+    {
+      "index": 16,
+      "title": "HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1809.09600",
+      "authors": "Yang, Z., P. Qi, S. Zhang, et al.",
+      "orig_title": "Hotpotqa: A dataset for diverse, explainable multi-hop question answering",
+      "paper_id": "1809.09600v1"
+    },
+    {
+      "index": 17,
+      "title": "Distributed representations of words and phrases and their compositionality",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Mikolov, T., I. Sutskever, K. Chen, et al."
+    },
+    {
+      "index": 18,
+      "title": "Glove: Global vectors for word representation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "conference on empirical methods in natural language processing (EMNLP)",
+      "authors": "Pennington, J., R. Socher, C. Manning"
+    },
+    {
+      "index": 19,
+      "title": "Reading Wikipedia to Answer Open-Domain Questions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1704.00051",
+      "authors": "Chen, D., A. Fisch, J. Weston, et al.",
+      "orig_title": "Reading wikipedia to answer open-domain questions",
+      "paper_id": "1704.00051v2"
+    },
+    {
+      "index": 20,
+      "title": "Reinforced Mnemonic Reader for Machine Reading Comprehension",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1705.02798",
+      "authors": "Hu, M., Y. Peng, Z. Huang, et al.",
+      "orig_title": "Reinforced mnemonic reader for machine reading comprehension",
+      "paper_id": "1705.02798v6"
+    },
+    {
+      "index": 21,
+      "title": "Stochastic answer networks for machine reading comprehension",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1712.03556",
+      "authors": "Liu, X., Y. Shen, K. Duh, et al."
+    },
+    {
+      "index": 22,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural computation",
+      "authors": "Hochreiter, S., J. Schmidhuber"
+    },
+    {
+      "index": 23,
+      "title": "On the properties of neural machine translation: Encoder-decoder approaches",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1259",
+      "authors": "Cho, K., B. Van Merriënboer, D. Bahdanau, et al."
+    },
+    {
+      "index": 24,
+      "title": "QANet: Combining Local Convolution with Global Self-Attention for Reading Comprehension",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1804.09541",
+      "authors": "Yu, A. W., D. Dohan, M.-T. Luong, et al.",
+      "orig_title": "Qanet: Combining local convolution with global self-attention for reading comprehension",
+      "paper_id": "1804.09541v1"
+    },
+    {
+      "index": 25,
+      "title": "Multi-Granularity Hierarchical Attention Fusion Networks for Reading Comprehension and Question Answering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1811.11934",
+      "authors": "Wang, W., M. Yan, C. Wu",
+      "orig_title": "Multi-granularity hierarchical attention fusion networks for reading comprehension and question answering",
+      "paper_id": "1811.11934v1"
+    },
+    {
+      "index": 26,
+      "title": "Machine Comprehension Using Match-LSTM and Answer Pointer",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1608.07905",
+      "authors": "Wang, S., J. Jiang",
+      "orig_title": "Machine comprehension using match-lstm and answer pointer",
+      "paper_id": "1608.07905v2"
+    },
+    {
+      "index": 27,
+      "title": "Learning Recurrent Span Representations for Extractive Question Answering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.01436",
+      "authors": "Lee, K., S. Salant, T. Kwiatkowski, et al.",
+      "orig_title": "Learning recurrent span representations for extractive question answering",
+      "paper_id": "1611.01436v2"
+    },
+    {
+      "index": 28,
+      "title": "Dynamic Coattention Networks for Question Answering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.01604",
+      "authors": "Xiong, C., V. Zhong, R. Socher",
+      "orig_title": "Dynamic coattention networks for question answering",
+      "paper_id": "1611.01604v4"
+    },
+    {
+      "index": 29,
+      "title": "Bi-Directional Attention Flow for Machine Comprehension",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.01603",
+      "authors": "Seo, M., A. Kembhavi, A. Farhadi, et al.",
+      "orig_title": "Bidirectional attention flow for machine comprehension",
+      "paper_id": "1611.01603v6"
+    },
+    {
+      "index": 30,
+      "title": "MEMEN: Multi-layer Embedding with Memory Networks for Machine Comprehension",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1707.09098",
+      "authors": "Pan, B., H. Li, Z. Zhao, et al.",
+      "orig_title": "Memen: Multi-layer embedding with memory networks for machine comprehension",
+      "paper_id": "1707.09098v1"
+    },
+    {
+      "index": 31,
+      "title": "Making Neural QA as Simple as Possible but not Simpler",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1703.04816",
+      "authors": "Weissenborn, D., G. Wiese, L. Seiffe",
+      "orig_title": "Making neural qa as simple as possible but not simpler",
+      "paper_id": "1703.04816v3"
+    },
+    {
+      "index": 32,
+      "title": "Simple and Effective Multi-Paragraph Reading Comprehension",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1710.10723",
+      "authors": "Clark, C., M. Gardner",
+      "orig_title": "Simple and effective multi-paragraph reading comprehension",
+      "paper_id": "1710.10723v2"
+    },
+    {
+      "index": 33,
+      "title": "A Deep Cascade Model for Multi-Document Reading Comprehension",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Yan, M., J. Xia, C. Wu, et al.",
+      "orig_title": "A deep cascade model for multi-document reading comprehension",
+      "paper_id": "1811.11374v1"
+    },
+    {
+      "index": 34,
+      "title": "S-Net: From Answer Extraction to Answer Generation for Machine Reading Comprehension",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1706.04815",
+      "authors": "Tan, C., F. Wei, N. Yang, et al.",
+      "orig_title": "S-net: From answer extraction to answer generation for machine reading comprehension",
+      "paper_id": "1706.04815v6"
+    },
+    {
+      "index": 35,
+      "title": "Multi-passage machine reading comprehension with cross-passage answer verification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1805.02220",
+      "authors": "Wang, Y., K. Liu, J. Liu, et al."
+    },
+    {
+      "index": 36,
+      "title": "Attention-Guided Answer Distillation for Machine Reading Comprehension",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1808.07644",
+      "authors": "Hu, M., Y. Peng, F. Wei, et al.",
+      "orig_title": "Attention-guided answer distillation for machine reading comprehension",
+      "paper_id": "1808.07644v4"
+    },
+    {
+      "index": 37,
+      "title": "Multi-Style Generative Reading Comprehension",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1901.02262",
+      "authors": "Nishida, K., I. Saito, K. Nishida, et al.",
+      "orig_title": "Multi-style generative reading comprehension",
+      "paper_id": "1901.02262v2"
+    },
+    {
+      "index": 38,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Vaswani, A., N. Shazeer, N. Parmar, et al.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 39,
+      "title": "Get To The Point: Summarization with Pointer-Generator Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1704.04368",
+      "authors": "See, A., P. J. Liu, C. D. Manning",
+      "orig_title": "Get to the point: Summarization with pointer-generator networks",
+      "paper_id": "1704.04368v2"
+    },
+    {
+      "index": 40,
+      "title": "Evidence Aggregation for Answer Re-Ranking in Open-Domain Question Answering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.05116",
+      "authors": "Wang, S., M. Yu, J. Jiang, et al.",
+      "orig_title": "Evidence aggregation for answer re-ranking in open-domain question answering",
+      "paper_id": "1711.05116v2"
+    },
+    {
+      "index": 41,
+      "title": "Answering while Summarizing: Multi-task Learning for Multi-hop QA with Evidence Extraction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1905.08511",
+      "authors": "Nishida, K., K. Nishida, M. Nagata, et al.",
+      "orig_title": "Answering while summarizing: Multi-task learning for multi-hop qa with evidence extraction",
+      "paper_id": "1905.08511v2"
+    },
+    {
+      "index": 42,
+      "title": "Gated self-matching networks for reading comprehension and question answering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "authors": "Wang, W., N. Yang, F. Wei, et al."
+    },
+    {
+      "index": 43,
+      "title": "FusionNet: Fusing via Fully-Aware Attention with Application to Machine Comprehension",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.07341",
+      "authors": "Huang, H.-Y., C. Zhu, Y. Shen, et al.",
+      "orig_title": "Fusionnet: Fusing via fully-aware attention with application to machine comprehension",
+      "paper_id": "1711.07341v2"
+    },
+    {
+      "index": 44,
+      "title": "DCN+: Mixed objective and deep residual coattention for question answering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.00106",
+      "authors": "Xiong, C., V. Zhong, R. Socher",
+      "orig_title": "Dcn+: Mixed objective and deep residual coattention for question answering",
+      "paper_id": "1711.00106v2"
+    },
+    {
+      "index": 45,
+      "title": "Structural embedding of syntactic trees for machine comprehension",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1703.00572",
+      "authors": "Liu, R., J. Hu, W. Wei, et al."
+    },
+    {
+      "index": 46,
+      "title": "ReasoNet: Learning to Stop Reading in Machine Comprehension",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+      "authors": "Shen, Y., P.-S. Huang, J. Gao, et al.",
+      "orig_title": "Reasonet: Learning to stop reading in machine comprehension",
+      "paper_id": "1609.05284v3"
+    },
+    {
+      "index": 47,
+      "title": "Semi-Supervised QA with Generative Domain-Adaptive Nets",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1702.02206",
+      "authors": "Yang, Z., J. Hu, R. Salakhutdinov, et al.",
+      "orig_title": "Semi-supervised qa with generative domain-adaptive nets",
+      "paper_id": "1702.02206v2"
+    },
+    {
+      "index": 48,
+      "title": "Learned in Translation: Contextualized Word Vectors",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "McCann, B., J. Bradbury, C. Xiong, et al.",
+      "orig_title": "Learned in translation: Contextualized word vectors",
+      "paper_id": "1708.00107v2"
+    },
+    {
+      "index": 49,
+      "title": "Deep contextualized word representations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.05365",
+      "authors": "Peters, M. E., M. Neumann, M. Iyyer, et al.",
+      "orig_title": "Deep contextualized word representations",
+      "paper_id": "1802.05365v2"
+    },
+    {
+      "index": 50,
+      "title": "Improving language understanding by generative pre-training",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Radford, A., K. Narasimhan, T. Salimans, et al."
+    },
+    {
+      "index": 51,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.04805",
+      "authors": "Devlin, J., M.-W. Chang, K. Lee, et al.",
+      "orig_title": "Bert: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 52,
+      "title": "Wordnet: a lexical database for english",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Communications of the ACM",
+      "authors": "Miller, G. A."
+    },
+    {
+      "index": 53,
+      "title": "Conceptnet 5.5: An open multilingual graph of general knowledge",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Thirty-First AAAI Conference on Artificial Intelligence",
+      "authors": "Speer, R., J. Chin, C. Havasi"
+    },
+    {
+      "index": 54,
+      "title": "Dynamic Integration of Background Knowledge in Neural NLU Systems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1706.02596",
+      "authors": "Weissenborn, D., T. Kočiskỳ, C. Dyer",
+      "orig_title": "Dynamic integration of background knowledge in neural nlu systems",
+      "paper_id": "1706.02596v3"
+    },
+    {
+      "index": 55,
+      "title": "Knowledgeable Reader: Enhancing Cloze-Style Reading Comprehension with External Commonsense Knowledge",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1805.07858",
+      "authors": "Mihaylov, T., A. Frank",
+      "orig_title": "Knowledgeable reader: Enhancing cloze-style reading comprehension with external commonsense knowledge",
+      "paper_id": "1805.07858v1"
+    },
+    {
+      "index": 56,
+      "title": "World knowledge for reading comprehension: Rare entity prediction with hierarchical lstms using external descriptions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Conference on Empirical Methods in Natural Language Processing",
+      "authors": "Long, T., E. Bengio, R. Lowe, et al."
+    }
+  ]
+}

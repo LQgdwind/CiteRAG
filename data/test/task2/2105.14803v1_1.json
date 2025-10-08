@@ -1,0 +1,401 @@
+{
+  "paper_id": "2105.14803v1",
+  "title": "Gradient-based Data Subversion Attack Against Binary Classifiers",
+  "sections": {
+    "introduction": "In last decade machine learning techniques have been extensively used in variety of domains, for example, malware detection, object detection, natural language processing and recommender system. However, in-spite of its success, it is still vulnerable to different kind of adversarial attacks. Input data poisoning is one such adversarial attack, wherein an adversary who is capable of accessing the training data could easily contaminate it. A model which is trained using this poisoned data is corrupted and, thus produces unexpected results after deployment. Data poisoning attack is a serious threat as it can result in security and privacy issues, economic losses, and has ethical and legal implications. Biggio et al [ref]6 defined data poisoning attack as a causative attack in which training data is injected with specially crafted attack points. The attacker can have direct access to the training database (insider threat)  or no access but may provide new training data [ref]6. Anti-virus vendors have been previously blamed for injecting poisoned samples into VirusTotal111 https://www.virustotal.com/ for degrading the performance of the competing products [ref]7. The machine learning models are more susceptible to data poisoning attacks when the training data is coming from an unconstrained and unmonitored source, for example crowd. For example, the twitter bot, Microsoft Tay, was designed to engage with users of age 18 to 24, however, within 16 hours the bot started posting inflammatory and offensive tweets by analyzing and updating its model based on the interactions with people on Twitter [ref]32. Similarly, Lam et al  studied the shilling attack in recommender systems wherein the untrustworthy participants could influence the system in recommending low-quality items to an unsuspecting user. Previous work in adversarial machine learning has shown that a malicious adversary could stealthily manipulate the input data to compromise the security of the machine learning system . Some well-studied attack strategies in the existing literature includes minimum-distance evasion of linear classifiers, gradient-based adversarial perturbations [ref]7, projected gradient descent attack  and maximum-confidence evasion . Further, Lowd and Meek  have shown that the spam classifiers can be easily fooled by carefully crafting the content of the spam emails without affecting their readability. Similarly, researchers have shown that it is easy to bypass anti-malware solutions by either modifying the API call sequence of the malware  or the structure . Two of the major attacking strategies are evasion and poisoning attacks. In an evasion attack, the test data is manipulated to evade the classifier’s decision boundary. In a recent work, Labaca et al  demonstrated the evasion attack on malware classifiers, wherein they generated valid adversarial malware samples against convolutional neural networks using gradient descent technique. In contrast to this, in a data poisoning attack, the training data is manipulated to achieve the attacker’s objective. For example, Nelson et al  have shown a targeted attack on a spam filter, which makes the system useless even when the adversary modifies only 1% of training data. In this work we primarily focus on the data poisoning attack. Label contamination attack is an example of input data poisoning attack, in which the adversary introduces label noise in the training data. Previous work on label contamination have demonstrated attack on the Support Vector Machines (SVM) with an assumption that the attacker has full knowledge of the target model   [ref]6. Zhao et al  extended the attack strategies to other linear classifiers (Logistic Regression and Least-Square SVM). Moreover, they have demonstrated the transferability of attacks in a black-box setting where the victim’s learning model is unknown to the attacker. In this work, a gradient-based data subversion attack is presented with primary focus on label contamination against binary classifiers. Also, we propose an algorithm to find an optimal set of data samples from the training data to poison. Additionally, our proposed method assumes that the attacker only knows about the input feature representation (black-box setup). Our proposed attack strategy is generic and is applicable to multiple application types, for example, spam filters, intrusion detection, object classification, and stock prediction. Following are the major contributions of our paper: Search Space Reduction. We propose an efficient label contamination strategy which is warm-started with the gradients of a differentiable convex loss function (residual error) which helps in search space reduction for finding optimal data poisoning instances. Efficient Attack Strategy. he cost of finding the set of near-optimal label flips is directly proportional to the number of training instances. Hence, the attacker has to perform expensive operations with enormous training data. OGDS solves one linear-programming problem and retrains the classifier in each iteration. This reduces the search space of the data instances to poison, which makes it efficient compared to the existing label contamination approaches. Please refer to Section 7.2 (Complexity Analysis) for more details. Varied Cost Analysis. The motivation behind considering varied cost in data input poisoning is that not all data-points affect the model equally. Some data-instances, if poisoned, have more detrimental effect on the performance of the model. Refer to Section 7.1.1 (Analysis of Cost Function) for more details. Relaxed Assumptions About the Attacker. We have assumed a black-box setting; hence the attacker has limited information. Further, we have demonstrated the effectiveness of our attack on multiple datasets from different domains. The rest of the paper is structured as follows. We discuss our threat model in Section 2 and related work in Section 3. We define the data poisoning framework in Section 4 and describe the background information on the gradient-based decision tree in Section 5. We introduce the gradient-based data subversion framework in Section 6. The experimental setup and further analysis are reported in Section 7. The susceptibility of models is defined and discussed in Section 8. We discuss insights on possible defense mechanisms and attack scenarios in Section 9 and conclude with discussion in Sections 10 and 11."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Explicit defense actions against test-set attacks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Thirty-First AAAI Conference on Artificial Intelligence",
+      "authors": "Alfeld, S., Zhu, X., Barford, P."
+    },
+    {
+      "index": 1,
+      "title": "Stackelberg security games (ssg) basics and application overview",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Improving Homeland Security Decisions. Cambridge Univ. Press",
+      "authors": "An, B., Tambe, M., Sinha, A."
+    },
+    {
+      "index": 2,
+      "title": "EMBER: An Open Dataset for Training Static PE Malware Machine Learning Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1804.04637",
+      "authors": "Anderson, H.S., Roth, P.",
+      "orig_title": "Ember: An open dataset for training static pe malware machine learning models",
+      "paper_id": "1804.04637v2"
+    },
+    {
+      "index": 3,
+      "title": "Bagging classifiers for fighting poisoning attacks in adversarial classification tasks",
+      "abstract": "",
+      "year": "2011",
+      "venue": "International workshop on multiple classifier systems",
+      "authors": "Biggio, B., Corona, I., Fumera, G., Giacinto, G., Roli, F."
+    },
+    {
+      "index": 4,
+      "title": "Support vector machines under adversarial label noise",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Asian Conference on Machine Learning",
+      "authors": "Biggio, B., Nelson, B., Laskov, P."
+    },
+    {
+      "index": 5,
+      "title": "Poisoning attacks against support vector machines",
+      "abstract": "",
+      "year": "2012",
+      "venue": "29th International Coference on International Conference on Machine Learning. Omnipress",
+      "authors": "Biggio, B., Nelson, B., Laskov, P."
+    },
+    {
+      "index": 6,
+      "title": "Wild Patterns: Ten Years After the Rise of Adversarial Machine Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Pattern Recognition",
+      "authors": "Biggio, B., Roli, F.",
+      "orig_title": "Wild patterns: Ten years after the rise of adversarial machine learning",
+      "paper_id": "1712.03141v2"
+    },
+    {
+      "index": 7,
+      "title": "XGBoost: A Scalable Tree Boosting System",
+      "abstract": "",
+      "year": "2016",
+      "venue": "22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining. ACM",
+      "authors": "Chen, T., Guestrin, C.",
+      "orig_title": "Xgboost: A scalable tree boosting system",
+      "paper_id": "1603.02754v3"
+    },
+    {
+      "index": 8,
+      "title": "Casting out demons: Sanitizing training data for anomaly sensors",
+      "abstract": "",
+      "year": "2008",
+      "venue": "2008 IEEE Symposium on Security and Privacy (sp 2008). IEEE",
+      "authors": "Cretu, G.F., Stavrou, A., Locasto, M.E., Stolfo, S.J., Keromytis, A.D."
+    },
+    {
+      "index": 9,
+      "title": "Adversarial classification",
+      "abstract": "",
+      "year": "2004",
+      "venue": "tenth ACM SIGKDD international conference on Knowledge discovery and data mining. ACM",
+      "authors": "Dalvi, N., Domingos, P., Sanghai, S., Verma, D., et al."
+    },
+    {
+      "index": 10,
+      "title": "Securing Machine Learning against Adversarial Attacks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Ph.D. thesis, University of Cagliari",
+      "authors": "Demontis, A."
+    },
+    {
+      "index": 11,
+      "title": "Why Do Adversarial Attacks Transfer? Explaining Transferability of Evasion and Poisoning Attacks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "28th USENIX Security Symposium (USENIX Security 19). USENIX Association, Santa Clara, CA",
+      "authors": "Demontis, A., Melis, M., Pintor, M., Jagielski, M., Biggio, B., Oprea, A., Nita-Rotaru, C., Roli, F.",
+      "orig_title": "Why do adversarial attacks transfer? explaining transferability of evasion and poisoning attacks",
+      "paper_id": "1809.02861v4"
+    },
+    {
+      "index": 12,
+      "title": "UCI machine learning repository",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Dua, D., Graff, C."
+    },
+    {
+      "index": 13,
+      "title": "Greedy function approximation: a gradient boosting machine",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Annals of statistics",
+      "authors": "Friedman, J.H."
+    },
+    {
+      "index": 14,
+      "title": "Making machine learning robust against adversarial inputs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Communications of the ACM",
+      "authors": "Goodfellow, I., McDaniel, P., Papernot, N."
+    },
+    {
+      "index": 15,
+      "title": "Insight into Insiders and IT: A Survey of Insider Threat Taxonomies, Analysis, Modeling, and Countermeasures",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Computing Surveys (CSUR)",
+      "authors": "Homoliak, I., Toffalini, F., Guarnizo, J., Elovici, Y., Ochoa, M.",
+      "orig_title": "Insight into insiders and it: A survey of insider threat taxonomies, analysis, modeling, and countermeasures",
+      "paper_id": "1805.01612v2"
+    },
+    {
+      "index": 16,
+      "title": "Lightgbm: A highly efficient gradient boosting decision tree",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., Ye, Q., Liu, T.Y."
+    },
+    {
+      "index": 17,
+      "title": "Understanding Black-box Predictions via Influence Functions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "34th International Conference on Machine Learning-Volume 70. JMLR. org",
+      "authors": "Koh, P.W., Liang, P.",
+      "orig_title": "Understanding black-box predictions via influence functions",
+      "paper_id": "1703.04730v3"
+    },
+    {
+      "index": 18,
+      "title": "Stronger Data Poisoning Attacks Break Data Sanitization Defenses",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1811.00741",
+      "authors": "Koh, P.W., Steinhardt, J., Liang, P.",
+      "orig_title": "Stronger data poisoning attacks break data sanitization defenses",
+      "paper_id": "1811.00741v2"
+    },
+    {
+      "index": 19,
+      "title": "Poster: Attacking malware classifiers by crafting gradient-attacks that preserve functionality",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 ACM SIGSAC Conference on Computer and Communications Security. ACM",
+      "authors": "Labaca-Castro, R., Biggio, B., Dreo Rodosek, G."
+    },
+    {
+      "index": 20,
+      "title": "Shilling recommender systems for fun and profit",
+      "abstract": "",
+      "year": "2004",
+      "venue": "13th international conference on World Wide Web. ACM",
+      "authors": "Lam, S.K., Riedl, J."
+    },
+    {
+      "index": 21,
+      "title": "Powers of Tensors and Fast Matrix Multiplication",
+      "abstract": "",
+      "year": "2014",
+      "venue": "39th international symposium on symbolic and algebraic computation. ACM",
+      "authors": "Le Gall, F.",
+      "orig_title": "Powers of tensors and fast matrix multiplication",
+      "paper_id": "1401.7714v1"
+    },
+    {
+      "index": 22,
+      "title": "Trust region newton methods for large-scale logistic regression",
+      "abstract": "",
+      "year": "2007",
+      "venue": "24th international conference on Machine learning. ACM",
+      "authors": "Lin, C.J., Weng, R.C., Keerthi, S.S."
+    },
+    {
+      "index": 23,
+      "title": "Good word attacks on statistical spam filters",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Second Conference on Email and Anti-Spam (CEAS)",
+      "authors": "Lowd, D."
+    },
+    {
+      "index": 24,
+      "title": "Looking at the bag is not enough to find the bomb: an evasion of structural methods for malicious pdf files detection",
+      "abstract": "",
+      "year": "2013",
+      "venue": "8th ACM SIGSAC symposium on Information, computer and communications security. ACM",
+      "authors": "Maiorca, D., Corona, I., Giacinto, G."
+    },
+    {
+      "index": 25,
+      "title": "On the complexity of linear programming",
+      "abstract": "",
+      "year": "1986",
+      "venue": "IBM Thomas J. Watson Research Division",
+      "authors": "Megiddo, N., et al."
+    },
+    {
+      "index": 26,
+      "title": "Using machine teaching to identify optimal training-set attacks on machine learners",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Twenty-Ninth AAAI Conference on Artificial Intelligence",
+      "authors": "Mei, S., Zhu, X."
+    },
+    {
+      "index": 27,
+      "title": "Towards Poisoning of Deep Learning Algorithms with Back-gradient Optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "10th ACM Workshop on Artificial Intelligence and Security. ACM",
+      "authors": "Muñoz-González, L., Biggio, B., Demontis, A., Paudice, A., Wongrassamee, V., Lupu, E.C., Roli, F.",
+      "orig_title": "Towards poisoning of deep learning algorithms with back-gradient optimization",
+      "paper_id": "1708.08689v1"
+    },
+    {
+      "index": 28,
+      "title": "Exploiting machine learning to subvert your spam filter",
+      "abstract": "",
+      "year": "2008",
+      "venue": "LEET",
+      "authors": "Nelson, B., Barreno, M., Chi, F.J., Joseph, A.D., Rubinstein, B.I., Saini, U., Sutton, C.A., Tygar, J.D., Xia, K."
+    },
+    {
+      "index": 29,
+      "title": "Distillation as a defense to adversarial perturbations against deep neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 IEEE Symposium on Security and Privacy (SP). IEEE",
+      "authors": "Papernot, N., McDaniel, P., Wu, X., Jha, S., Swami, A."
+    },
+    {
+      "index": 30,
+      "title": "Label Sanitization against Label Flipping Poisoning Attacks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Joint European Conference on Machine Learning and Knowledge Discovery in Databases. Springer",
+      "authors": "Paudice, A., Muñoz-González, L., Lupu, E.C.",
+      "orig_title": "Label sanitization against label flipping poisoning attacks",
+      "paper_id": "1803.00992v2"
+    },
+    {
+      "index": 31,
+      "title": "Microsoft is deleting its ai chatbot’s incredibly racist tweets",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Business Insider",
+      "authors": "Price, R."
+    },
+    {
+      "index": 32,
+      "title": "Generic Black-Box End-to-End Attack Against State of the Art API Call Based Malware Classifiers",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Symposium on Research in Attacks, Intrusions, and Defenses. Springer",
+      "authors": "Rosenberg, I., Shabtai, A., Rokach, L., Elovici, Y.",
+      "orig_title": "Generic black-box end-to-end attack against state of the art api call based malware classifiers",
+      "paper_id": "1707.05970v5"
+    },
+    {
+      "index": 33,
+      "title": "Sitatapatra: Blocking the Transfer of Adversarial Samples",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1901.08121",
+      "authors": "Shumailov, I., Gao, X., Zhao, Y., Mullins, R., Anderson, R., Xu, C.Z.",
+      "orig_title": "Sitatapatra: Blocking the transfer of adversarial samples",
+      "paper_id": "1901.08121v2"
+    },
+    {
+      "index": 34,
+      "title": "Certified defenses for data poisoning attacks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Steinhardt, J., Koh, P.W.W., Liang, P.S."
+    },
+    {
+      "index": 35,
+      "title": "When does machine learning {{\\{FAIL\\}}}? generalized transferability for evasion and poisoning attacks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "27th USENIX Security Symposium (USENIX Security 18)",
+      "authors": "Suciu, O., Marginean, R., Kaya, Y., Daume III, H., Dumitras, T."
+    },
+    {
+      "index": 36,
+      "title": "Data Poisoning Attacks against Online Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1808.08994",
+      "authors": "Wang, Y., Chaudhuri, K.",
+      "orig_title": "Data poisoning attacks against online learning",
+      "paper_id": "1808.08994v1"
+    },
+    {
+      "index": 37,
+      "title": "An Investigation of Data Poisoning Defenses for Online Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1905.12121",
+      "authors": "Wang, Y., Chaudhuri, K.",
+      "orig_title": "An investigation of data poisoning defenses for online learning",
+      "paper_id": "1905.12121v3"
+    },
+    {
+      "index": 38,
+      "title": "Adversarial label flips attack on support vector machines",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ECAI",
+      "authors": "Xiao, H., Xiao, H., Eckert, C."
+    },
+    {
+      "index": 39,
+      "title": "Is Feature Selection Secure against Training Data Poisoning?",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Xiao, H., Biggio, B., Brown, G., Fumera, G., Eckert, C., Roli, F.",
+      "orig_title": "Is feature selection secure against training data poisoning?",
+      "paper_id": "1804.07933v1"
+    },
+    {
+      "index": 40,
+      "title": "Dual coordinate descent methods for logistic regression and maximum entropy models",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Machine Learning",
+      "authors": "Yu, H.F., Huang, F.L., Lin, C.J."
+    },
+    {
+      "index": 41,
+      "title": "Online Data Poisoning Attacks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1903.01666",
+      "authors": "Zhang, X., Zhu, X.",
+      "orig_title": "Online data poisoning attack",
+      "paper_id": "1903.01666v2"
+    },
+    {
+      "index": 42,
+      "title": "Efficient label contamination attacks against black-box learning models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCAI",
+      "authors": "Zhao, M., An, B., Gao, W., Zhang, T."
+    },
+    {
+      "index": 43,
+      "title": "Generalized resilience and robust statistics",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Zhu, B., Jiao, J., Steinhardt, J."
+    },
+    {
+      "index": 44,
+      "title": "Decentralizing privacy: Using blockchain to protect personal data",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 IEEE Security and Privacy Workshops. IEEE",
+      "authors": "Zyskind, G., Nathan, O., et al."
+    }
+  ]
+}

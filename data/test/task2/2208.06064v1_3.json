@@ -1,0 +1,1663 @@
+{
+  "paper_id": "2208.06064v1",
+  "title": "Mixed-Precision Neural Networks: A Survey",
+  "sections": {
+    "bayesian bits: unifying quantization and pruning (bayesian bits)": " propose Bayesian Bits, a framework that co-optimizes - via gradient descend - per-tensor mixed-precision quantization and pruning (for weights and activations). After finding the effectively power-of-two bitwidths (through a novel quantization decomposition), the quantization technique employed is deterministic rounding. Since the framework starts from pre-trained models, the quantization is categorized as retraining. Bayesian Bits first introduces a novel quantization decomposition to guarantee that the bitwidths are powers-of-two, which in turn facilitates the hardware implementation. The quantization decomposition is summarized as follows. The residual error between a current quantized value qc​u​r​r​e​n​tsubscript𝑞𝑐𝑢𝑟𝑟𝑒𝑛𝑡q_{current} whose bitwidth is bc​u​r​r​e​n​tsubscript𝑏𝑐𝑢𝑟𝑟𝑒𝑛𝑡b_{current} and the next quantized value,qn​e​x​tsubscript𝑞𝑛𝑒𝑥𝑡q_{next}, whose bitwidth is the next power-of-two value bn​e​x​t=bc​u​r​r​e​n​t∗2subscript𝑏𝑛𝑒𝑥𝑡subscript𝑏𝑐𝑢𝑟𝑟𝑒𝑛𝑡2b_{next}=b_{current}*2 is denoted as ϵn​e​x​t=qn​e​x​t−qc​u​r​r​e​n​tsubscriptitalic-ϵ𝑛𝑒𝑥𝑡subscript𝑞𝑛𝑒𝑥𝑡subscript𝑞𝑐𝑢𝑟𝑟𝑒𝑛𝑡\\epsilon_{next}=q_{next}-q_{current}. The scheme recursively quantizes the residual error of lower bitwidth quantization as follows. where RNI is a function that round to the nearest integer, x𝑥x is the input floating point value in the range [t​1,t​2]𝑡1𝑡2[t1,t2], sc​u​r​r​e​n​tsubscript𝑠𝑐𝑢𝑟𝑟𝑒𝑛𝑡s_{current} is the step-size of the quantizer that is related to the bitwidth b𝑏b as: sc​u​r​r​e​n​t=t​2−t​12bc​u​r​r​e​n​t−1subscript𝑠𝑐𝑢𝑟𝑟𝑒𝑛𝑡𝑡2𝑡1superscript2subscript𝑏𝑐𝑢𝑟𝑟𝑒𝑛𝑡1s_{current}=\\frac{t2-t1}{2^{b_{current}}-1}, sn​e​x​t=sc​u​r​r​e​n​t2bc​u​r​r​e​n​t+1subscript𝑠𝑛𝑒𝑥𝑡subscript𝑠𝑐𝑢𝑟𝑟𝑒𝑛𝑡superscript2subscript𝑏𝑐𝑢𝑟𝑟𝑒𝑛𝑡1s_{next}=\\frac{s_{current}}{2^{b_{current}}+1}. For this decomposition scheme, the inputs should belong to the quantization grid [t​1,t​2]𝑡1𝑡2[t1,t2]. As such the inputs are clipped according to PACT  before applying the quantizer.\nThose quantized residual error tensors are added together to form the quantized approximation of the original tensor (hence quantizing to a specific bitwidth is seen as a gated addition of quantized residuals). After applying the aforementioned decomposition scheme, a learnable gate (i.e. a variable that ∈{0,1}absent01\\in\\{0,1\\}) is placed on each of the quantized residual error tensors. As such, the effective bitwidth can be controlled, optimized in a data-dependant manner, and learned jointly with the quantization scales and the DNN parameters. The gate of the lowest bitwidth possible allows pruning as well, since deactivating this gate (i.e. setting it to 0) will yield a quantized value having 0-bits i.e. pruned. The learning algorithm should utilize efficient gradient-based optimization while favoring gate configurations that yield efficient DNN. To have such a learning algorithm, Bayesian Bits relies on variational inference. As such, a gate regularizing term is derived via a prior which favors lower bitwidth configurations, and this term is added to the objective function. This objective function needs the expensive computation of an expectation of the log-likelihood with respect to the stochastic gates. To mitigate this complexity, Bayesian Bits approximates the gradient by exploiting the hard-concrete relaxations proposed by , thus allowing the optimization through the reparametrization trick proposed by  [ref]113. Moreover, the Straight-Through Estimator (STE)  is used for the gradients of the network parameters (for fine-tuning). Bayesian Bits is evaluated by quantizing all the weights and activations (except the output logits) of LeNet-5 on MNIST, and VGG-7 on CIFAR-10. In addition ablation studies (some with combined pruning and mixed quantization, some with pruning with fixed precision quantization, and some with mixed-precision quantization without pruning) are done on ResNet-18 and MobileNet-V2 with ImageNet. The batch normalization layers are treated as in [ref]43. Even-though Bayesian Bits supports joint training of network parameters and mixed quantization with pruning, in the experiments on MNIST and CIFAR-10 only the quantization parameters are updated (includes pruning) on the pre-trained models, whereas the weights (pre-trained) are kept fixed. The Giga Bit Operations (GBOPs) (i.e. # of multiplication operations x bit widths of the operands) relative to the full precision floating point models is reported along with the test accuracy, learned sparsity, and bitwidths of the models in several settings. The baselines used for the experiments are the full precision models, TWN [ref]61, LR-Net , RQ , WAGE , PACT , LSQ , AdaRound , TQT , and/or DQ . The results reported on MNIST and CIFAR-10 reveal that Bayesian Bits offers the least relative GBOPs with a competitive accuracy compared to the other baselines. Different settings for Bayesian Bits are used and their results are reported, and these show that the regularization term can be used to balance the trade-off between accuracy and complexity. The ablation studies on ResNet-18 and MobileNet-V2 vary the regularization settings to highlight the trade-offs between accuracy and complexity and reveal that Bayesian Bits performs well compared to the baselines. In one ablation study, post-training mixed-precision is tested on a pre-trained ResNet-18 model (i.e. no finetuning is used, and only gates and/or quantization ranges are learned), and the Pareto fronts are provided.\nIts results show that Bayesian Bits can serve as a midway method between post-training methods that do not require any backpropagation and other methods that require full model fine-tuning. To sum up, Bayesian Bits is a framework that relies on a variational inference to jointly optimize mixed-precision quantization and pruning, by proposing a novel quantization decomposition scheme and incorporating a regularization term in the objective function."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Deep neural networks for object detection",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in neural information processing systems",
+      "authors": "C. Szegedy, A. Toshev, and D. Erhan"
+    },
+    {
+      "index": 1,
+      "title": "DeepTest: Automated Testing of Deep-Neural-Network-driven Autonomous Cars",
+      "abstract": "",
+      "year": "2018",
+      "venue": "40th international conference on software engineering",
+      "authors": "Y. Tian, K. Pei, S. Jana, and B. Ray",
+      "orig_title": "Deeptest: Automated testing of deep-neural-network-driven autonomous cars",
+      "paper_id": "1708.08559v2"
+    },
+    {
+      "index": 2,
+      "title": "Toward collaborative inferencing of deep neural networks on internet-of-things devices",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Internet of Things Journal",
+      "authors": "R. Hadidi, J. Cao, M. S. Ryoo, and H. Kim"
+    },
+    {
+      "index": 3,
+      "title": "Cadd-splice—improving genome-wide variant effect prediction using deep learning-derived splice scores",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Genome medicine",
+      "authors": "P. Rentzsch, M. Schubach, J. Shendure, and M. Kircher"
+    },
+    {
+      "index": 4,
+      "title": "Enabling Cognitive Smart Cities Using Big Data and Machine Learning: Approaches and Challenges",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Communications Magazine",
+      "authors": "M. Mohammadi and A. Al-Fuqaha",
+      "orig_title": "Enabling cognitive smart cities using big data and machine learning: Approaches and challenges",
+      "paper_id": "1810.04107v1"
+    },
+    {
+      "index": 5,
+      "title": "Importance Estimation for Neural Network Pruning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "P. Molchanov, A. Mallya, S. Tyree, I. Frosio, and J. Kautz",
+      "orig_title": "Importance estimation for neural network pruning",
+      "paper_id": "1906.10771v1"
+    },
+    {
+      "index": 6,
+      "title": "Pruning Filters for Efficient ConvNets",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1608.08710",
+      "authors": "H. Li, A. Kadav, I. Durdanovic, H. Samet, and H. P. Graf",
+      "orig_title": "Pruning filters for efficient convnets",
+      "paper_id": "1608.08710v3"
+    },
+    {
+      "index": 7,
+      "title": "Learning both Weights and Connections for Efficient Neural Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "S. Han, J. Pool, J. Tran, and W. Dally",
+      "orig_title": "Learning both weights and connections for efficient neural network",
+      "paper_id": "1506.02626v3"
+    },
+    {
+      "index": 8,
+      "title": "Optimal brain damage",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Y. LeCun, J. Denker, and S. Solla"
+    },
+    {
+      "index": 9,
+      "title": "Designing Energy-Efficient Convolutional Neural Networks using Energy-Aware Pruning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "T.-J. Yang, Y.-H. Chen, and V. Sze",
+      "orig_title": "Designing energy-efficient convolutional neural networks using energy-aware pruning",
+      "paper_id": "1611.05128v4"
+    },
+    {
+      "index": 10,
+      "title": "Exploring the Regularity of Sparse Structure in Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1705.08922",
+      "authors": "H. Mao, S. Han, J. Pool, W. Li, X. Liu, Y. Wang, and W. J. Dally",
+      "orig_title": "Exploring the regularity of sparse structure in convolutional neural networks",
+      "paper_id": "1705.08922v3"
+    },
+    {
+      "index": 11,
+      "title": "SqueezeNet: AlexNet-level accuracy with 50x fewer parameters and <0.5MB model size",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1602.07360",
+      "authors": "F. N. Iandola, S. Han, M. W. Moskewicz, K. Ashraf, W. J. Dally, and K. Keutzer",
+      "orig_title": "Squeezenet: Alexnet-level accuracy with 50x fewer parameters and< 0.5 mb model size",
+      "paper_id": "1602.07360v4"
+    },
+    {
+      "index": 12,
+      "title": "MobileNetV2: Inverted Residuals and Linear Bottlenecks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "M. Sandler, A. Howard, M. Zhu, A. Zhmoginov, and L.-C. Chen",
+      "orig_title": "Mobilenetv2: Inverted residuals and linear bottlenecks",
+      "paper_id": "1801.04381v4"
+    },
+    {
+      "index": 13,
+      "title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "M. Tan and Q. Le",
+      "orig_title": "Efficientnet: Rethinking model scaling for convolutional neural networks",
+      "paper_id": "1905.11946v5"
+    },
+    {
+      "index": 14,
+      "title": "Squeezenext: Hardware-aware neural network design",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition Workshops",
+      "authors": "A. Gholami, K. Kwon, B. Wu, Z. Tai, X. Yue, P. Jin, S. Zhao, and K. Keutzer"
+    },
+    {
+      "index": 15,
+      "title": "Efficient methods and hardware for deep learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Stanford University",
+      "authors": "S. Han"
+    },
+    {
+      "index": 16,
+      "title": "Searching for mobilenetv3",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "A. Howard, M. Sandler, G. Chu, L.-C. Chen, B. Chen, M. Tan, W. Wang, Y. Zhu, R. Pang, V. Vasudevan et al."
+    },
+    {
+      "index": 17,
+      "title": "Fbnet: Hardware-aware efficient convnet design via differentiable neural architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "B. Wu, X. Dai, P. Zhang, Y. Wang, F. Sun, Y. Wu, Y. Tian, P. Vajda, Y. Jia, and K. Keutzer"
+    },
+    {
+      "index": 18,
+      "title": "Distilling the Knowledge in a Neural Network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1503.02531",
+      "authors": "G. Hinton, O. Vinyals, J. Dean et al.",
+      "orig_title": "Distilling the knowledge in a neural network",
+      "paper_id": "1503.02531v1"
+    },
+    {
+      "index": 19,
+      "title": "Apprentice: Using Knowledge Distillation Techniques To Improve Low-Precision Network Accuracy",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.05852",
+      "authors": "A. Mishra and D. Marr",
+      "orig_title": "Apprentice: Using knowledge distillation techniques to improve low-precision network accuracy",
+      "paper_id": "1711.05852v1"
+    },
+    {
+      "index": 20,
+      "title": "Model Compression via Distillation and Quantization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.05668",
+      "authors": "A. Polino, R. Pascanu, and D. Alistarh",
+      "orig_title": "Model compression via distillation and quantization",
+      "paper_id": "1802.05668v1"
+    },
+    {
+      "index": 21,
+      "title": "Dreaming to Distill: Data-free Knowledge Transfer via DeepInversion",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "H. Yin, P. Molchanov, J. M. Alvarez, Z. Li, A. Mallya, D. Hoiem, N. K. Jha, and J. Kautz",
+      "orig_title": "Dreaming to distill: Data-free knowledge transfer via deepinversion",
+      "paper_id": "1912.08795v2"
+    },
+    {
+      "index": 22,
+      "title": "Experimental determination of precision requirements for back-propagation training of artificial neural networks",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Second Int’l. Conf. Microelectronics for Neural Networks",
+      "authors": "N. Morgan et al."
+    },
+    {
+      "index": 23,
+      "title": "LSQ+: Improving low-bit quantization through learnable offsets and better initialization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops",
+      "authors": "Y. Bhalgat, J. Lee, M. Nagel, T. Blankevoort, and N. Kwak",
+      "orig_title": "Lsq+: Improving low-bit quantization through learnable offsets and better initialization",
+      "paper_id": "2004.09576v1"
+    },
+    {
+      "index": 24,
+      "title": "One Weight Bitwidth to Rule Them All",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "T.-W. Chin, P. I.-J. Chuang, V. Chandra, and D. Marculescu",
+      "orig_title": "One weight bitwidth to rule them all",
+      "paper_id": "2008.09916v2"
+    },
+    {
+      "index": 25,
+      "title": "Binarized neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "30th International Conference on Neural Information Processing Systems",
+      "authors": "I. Hubara, M. Courbariaux, D. Soudry, R. El-Yaniv, and Y. Bengio"
+    },
+    {
+      "index": 26,
+      "title": "Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "B. Jacob, S. Kligys, B. Chen, M. Zhu, M. Tang, A. Howard, H. Adam, and D. Kalenichenko",
+      "orig_title": "Quantization and training of neural networks for efficient integer-arithmetic-only inference",
+      "paper_id": "1712.05877v1"
+    },
+    {
+      "index": 27,
+      "title": "XNOR-Net: ImageNet Classification Using Binary Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European conference on computer vision",
+      "authors": "M. Rastegari, V. Ordonez, J. Redmon, and A. Farhadi",
+      "orig_title": "Xnor-net: Imagenet classification using binary convolutional neural networks",
+      "paper_id": "1603.05279v4"
+    },
+    {
+      "index": 28,
+      "title": "Lq-nets: Learned quantization for highly accurate and compact deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European conference on computer vision (ECCV)",
+      "authors": "D. Zhang, J. Yang, D. Ye, and G. Hua"
+    },
+    {
+      "index": 29,
+      "title": "Incremental Network Quantization: Towards Lossless CNNs with Low-Precision Weights",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1702.03044",
+      "authors": "A. Zhou, A. Yao, Y. Guo, L. Xu, and Y. Chen",
+      "orig_title": "Incremental network quantization: Towards lossless cnns with low-precision weights",
+      "paper_id": "1702.03044v2"
+    },
+    {
+      "index": 30,
+      "title": "Bit Fusion: Bit-Level Dynamically Composable Architecture for Accelerating Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 ACM/IEEE 45th Annual International Symposium on Computer Architecture (ISCA)",
+      "authors": "H. Sharma, J. Park, N. Suda, L. Lai, B. Chau, V. Chandra, and H. Esmaeilzadeh",
+      "orig_title": "Bit fusion: Bit-level dynamically composable architecture for accelerating deep neural network",
+      "paper_id": "1712.01507v2"
+    },
+    {
+      "index": 31,
+      "title": "Hawq: Hessian aware quantization of neural networks with mixed-precision",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Z. Dong, Z. Yao, A. Gholami, M. W. Mahoney, and K. Keutzer"
+    },
+    {
+      "index": 32,
+      "title": "Bit-Mixer: Mixed-precision networks with runtime bit-width selection",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.17267",
+      "authors": "A. Bulat and G. Tzimiropoulos",
+      "orig_title": "Bit-mixer: Mixed-precision networks with runtime bit-width selection",
+      "paper_id": "2103.17267v1"
+    },
+    {
+      "index": 33,
+      "title": "Weight discretization paradigm for optical neural networks",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Optical interconnections and networks",
+      "authors": "E. Fiesler, A. Choudry, and H. J. Caulfield"
+    },
+    {
+      "index": 34,
+      "title": "ZeroQ: A Novel Zero Shot Quantization Framework",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Y. Cai, Z. Yao, Z. Dong, A. Gholami, M. W. Mahoney, and K. Keutzer",
+      "orig_title": "Zeroq: A novel zero shot quantization framework",
+      "paper_id": "2001.00281v1"
+    },
+    {
+      "index": 35,
+      "title": "1.1 computing’s energy problem (and what we can do about it)",
+      "abstract": "",
+      "year": "2014",
+      "venue": "2014 IEEE International Solid-State Circuits Conference Digest of Technical Papers (ISSCC)",
+      "authors": "M. Horowitz"
+    },
+    {
+      "index": 36,
+      "title": "Rethinking Differentiable Search for Mixed-Precision Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Z. Cai and N. Vasconcelos",
+      "orig_title": "Rethinking differentiable search for mixed-precision neural networks",
+      "paper_id": "2004.05795v1"
+    },
+    {
+      "index": 37,
+      "title": "Binary neural networks: A survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Pattern Recognition",
+      "authors": "H. Qin, R. Gong, X. Liu, X. Bai, J. Song, and N. Sebe"
+    },
+    {
+      "index": 38,
+      "title": "DoReFa-Net: Training Low Bitwidth Convolutional Neural Networks with Low Bitwidth Gradients",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.06160",
+      "authors": "S. Zhou, Y. Wu, Z. Ni, X. Zhou, H. Wen, and Y. Zou",
+      "orig_title": "Dorefa-net: Training low bitwidth convolutional neural networks with low bitwidth gradients",
+      "paper_id": "1606.06160v3"
+    },
+    {
+      "index": 39,
+      "title": "Pact: Parameterized clipping activation for quantized neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1805.06085",
+      "authors": "J. Choi, Z. Wang, S. Venkataramani, P. I.-J. Chuang, V. Srinivasan, and K. Gopalakrishnan"
+    },
+    {
+      "index": 40,
+      "title": "Low-bit quantization of neural networks for efficient inference",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF International Conference on Computer Vision Workshops",
+      "authors": "E. Kravchik, F. Yang, P. Kisilev, and Y. Choukroun"
+    },
+    {
+      "index": 41,
+      "title": "Post training 4-bit quantization of convolutional networks for rapid-deployment",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.05723",
+      "authors": "R. Banner, Y. Nahshan, E. Hoffer, and D. Soudry",
+      "orig_title": "Post-training 4-bit quantization of convolution networks for rapid-deployment",
+      "paper_id": "1810.05723v3"
+    },
+    {
+      "index": 42,
+      "title": "Quantizing deep convolutional networks for efficient inference: A whitepaper",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1806.08342",
+      "authors": "R. Krishnamoorthi",
+      "orig_title": "Quantizing deep convolutional networks for efficient inference: A whitepaper",
+      "paper_id": "1806.08342v1"
+    },
+    {
+      "index": 43,
+      "title": "Towards Efficient Training for Neural Network Quantization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1912.10207",
+      "authors": "Q. Jin, L. Yang, and Z. Liao",
+      "orig_title": "Towards efficient training for neural network quantization",
+      "paper_id": "1912.10207v1"
+    },
+    {
+      "index": 44,
+      "title": "Ternary Neural Networks with Fine-Grained Quantization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1705.01462",
+      "authors": "N. Mellempudi, A. Kundu, D. Mudigere, D. Das, B. Kaul, and P. Dubey",
+      "orig_title": "Ternary neural networks with fine-grained quantization",
+      "paper_id": "1705.01462v3"
+    },
+    {
+      "index": 45,
+      "title": "Deep compression: Compressing deep neural networks with pruning, trained quantization and huffman coding",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1510.00149",
+      "authors": "S. Han, H. Mao, and W. J. Dally"
+    },
+    {
+      "index": 46,
+      "title": "Value-aware Quantization for Training and Inference of Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "E. Park, S. Yoo, and P. Vajda",
+      "orig_title": "Value-aware quantization for training and inference of neural networks",
+      "paper_id": "1804.07802v1"
+    },
+    {
+      "index": 47,
+      "title": "Mxqn: mixed quantization for reducing bit-width of weights and activations in deep convolutional neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Applied Intelligence",
+      "authors": "C. Huang, P. Liu, and L. Fang"
+    },
+    {
+      "index": 48,
+      "title": "ReLeQ: A Reinforcement Learning Approach for Deep Quantization of Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1811.01704",
+      "authors": "A. T. Elthakeb, P. Pilligundla, F. Mireshghallah, A. Yazdanbakhsh, and H. Esmaeilzadeh",
+      "orig_title": "Releq: A reinforcement learning approach for deep quantization of neural networks",
+      "paper_id": "1811.01704v4"
+    },
+    {
+      "index": 49,
+      "title": "Learning and Generalization in Overparameterized Neural Networks, Going Beyond Two Layers",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1811.04918",
+      "authors": "Z. Allen-Zhu, Y. Li, and Y. Liang",
+      "orig_title": "Learning and generalization in overparameterized neural networks, going beyond two layers",
+      "paper_id": "1811.04918v6"
+    },
+    {
+      "index": 50,
+      "title": "M. Mahoney et al",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 51,
+      "title": "A Survey on Methods and Theories of Quantized Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“A survey on methods and theories of quantized neural networks",
+      "paper_id": "1808.04752v2"
+    },
+    {
+      "index": 52,
+      "title": "“A survey of quantization methods for efficient neural network inference",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 53,
+      "title": "BinaryConnect: Training Deep Neural Networks with binary weights during propagations",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Binaryconnect: Training deep neural networks with binary weights during propagations",
+      "paper_id": "1511.00363v3"
+    },
+    {
+      "index": 54,
+      "title": "K. Gopalakrishnan",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 55,
+      "title": "Training and Inference with Integers in Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Training and inference with integers in deep neural networks",
+      "paper_id": "1802.04680v1"
+    },
+    {
+      "index": 56,
+      "title": "Towards the Limit of Network Quantization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Towards the limit of network quantization",
+      "paper_id": "1612.01543v2"
+    },
+    {
+      "index": 57,
+      "title": "“Quantized convolutional neural networks for mobile devices",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 58,
+      "title": "“Weighted-entropy-based quantization for deep neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 59,
+      "title": "Compressing Deep Convolutional Networks using Vector Quantization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Compressing deep convolutional networks using vector quantization",
+      "paper_id": "1412.6115v1"
+    },
+    {
+      "index": 60,
+      "title": "Ternary Weight Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Ternary weight networks",
+      "paper_id": "1605.04711v3"
+    },
+    {
+      "index": 61,
+      "title": "Extremely Low Bit Neural Network: Squeeze the Last Bit Out with ADMM",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Extremely low bit neural network: Squeeze the last bit out with admm",
+      "paper_id": "1707.09870v2"
+    },
+    {
+      "index": 62,
+      "title": "“Adaptive quantization of neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 63,
+      "title": "Loss-aware Binarization of Deep Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Loss-aware binarization of deep networks",
+      "paper_id": "1611.01600v3"
+    },
+    {
+      "index": 64,
+      "title": "“Fixed-point feedforward deep neural network design using weights+ 1",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 65,
+      "title": "Trained Ternary Quantization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Trained ternary quantization",
+      "paper_id": "1612.01064v3"
+    },
+    {
+      "index": 66,
+      "title": "“Multilayer feedforward neural networks with single powers-of-two weights",
+      "abstract": "",
+      "year": "1993",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 67,
+      "title": "“Variational network quantization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 68,
+      "title": "“Rounding methods for neural networks with low resolution synaptic weights",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 69,
+      "title": "Neural Networks with Few Multiplications",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Neural networks with few multiplications",
+      "paper_id": "1510.03009v3"
+    },
+    {
+      "index": 70,
+      "title": "“Expectation backpropagation: Parameter-free training of multilayer neural networks with continuous or discrete weights.” in NIPS",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 71,
+      "title": "“Learning discrete weights using the local reparameterization trick",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 72,
+      "title": "“An introduction to variational methods for graphical models",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 73,
+      "title": "Mixed Precision Quantization of ConvNets via Differentiable Neural Architecture Search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Mixed precision quantization of convnets via differentiable neural architecture search",
+      "paper_id": "1812.00090v1"
+    },
+    {
+      "index": 74,
+      "title": "“Joint training of low-precision neural network with quantization interval parameters",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 75,
+      "title": "Training Compact Neural Networks with Binary Weights and Low Precision Activations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Training compact neural networks with binary weights and low precision activations",
+      "paper_id": "1808.02631v1"
+    },
+    {
+      "index": 76,
+      "title": "“1-bit stochastic gradient descent and its application to data-parallel distributed training of speech dnns",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 77,
+      "title": "“Scalable distributed dnn training using commodity gpu cloud computing",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 78,
+      "title": "QSGD: Communication-Efficient SGD via Gradient Quantization and Encoding",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Qsgd: Communication-efficient sgd via gradient quantization and encoding",
+      "paper_id": "1610.02132v4"
+    },
+    {
+      "index": 79,
+      "title": "“Communication quantization for data-parallel training of deep neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 80,
+      "title": "“Evoq: Mixed precision quantization of dnns via sensitivity guided evolutionary search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 81,
+      "title": "Deep Learning with Low Precision by Half-wave Gaussian Quantization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Deep learning with low precision by half-wave gaussian quantization",
+      "paper_id": "1702.00953v1"
+    },
+    {
+      "index": 82,
+      "title": "“Explicit loss-error-aware quantization for low-bit deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 83,
+      "title": "Discovering Low-Precision Networks Close to Full-Precision Networks for Efficient Embedded Inference",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Discovering low-precision networks close to full-precision networks for efficient embedded inference",
+      "paper_id": "1809.04191v2"
+    },
+    {
+      "index": 84,
+      "title": "“Nvidia 8-bit inference with tensorrt",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 85,
+      "title": "Integer Quantization for Deep Learning Inference: Principles and Empirical Evaluation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Integer quantization for deep learning inference: Principles and empirical evaluation",
+      "paper_id": "2004.09602v1"
+    },
+    {
+      "index": 86,
+      "title": "HMQ: Hardware Friendly Mixed Precision Quantization Block for CNNs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Hmq: Hardware friendly mixed precision quantization block for cnns",
+      "paper_id": "2007.09952v1"
+    },
+    {
+      "index": 87,
+      "title": "Search What You Want: Barrier Panelty NAS for Mixed Precision Quantization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Search what you want: Barrier panelty nas for mixed precision quantization",
+      "paper_id": "2007.10026v1"
+    },
+    {
+      "index": 88,
+      "title": "“Apq: Joint search for network architecture",
+      "abstract": "",
+      "year": "2087",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 89,
+      "title": "Joint Neural Architecture Search and Quantization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Joint neural architecture search and quantization",
+      "paper_id": "1811.09426v1"
+    },
+    {
+      "index": 90,
+      "title": "Differentiable Soft Quantization: Bridging Full-Precision and Low-Bit Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Differentiable soft quantization: Bridging full-precision and low-bit neural networks",
+      "paper_id": "1908.05033v1"
+    },
+    {
+      "index": 91,
+      "title": "Towards Mixed-Precision Quantization of Neural Networks via Constrained Optimization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Towards mixed-precision quantization of neural networks via constrained optimization",
+      "paper_id": "2110.06554v1"
+    },
+    {
+      "index": 92,
+      "title": "OPQ: Compressing Deep Neural Networks with One-shot Pruning-Quantization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Opq: Compressing deep neural networks with one-shot pruning-quantization",
+      "paper_id": "2205.11141v1"
+    },
+    {
+      "index": 93,
+      "title": "Constructing Energy-efficient Mixed-precision Neural Networks through Principal Component Analysis for Edge Intelligence",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Constructing energy-efficient mixed-precision neural networks through principal component analysis for edge intelligence",
+      "paper_id": "1906.01493v2"
+    },
+    {
+      "index": 94,
+      "title": "S.-M. Moosavi-Dezfooli",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 95,
+      "title": "Mixed-Precision Quantized Neural Networks with Progressively Decreasing Bitwidth for Image Classification and Object Detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Mixed-precision quantized neural network with progressively decreasing bitwidth for image classification and object detection",
+      "paper_id": "1912.12656v1"
+    },
+    {
+      "index": 96,
+      "title": "“Simple augmentation goes a long way: Adrl for dnn quantization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 97,
+      "title": "HAQ: Hardware-Aware Automated Quantization with Mixed Precision",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Haq: Hardware-aware automated quantization with mixed precision",
+      "paper_id": "1811.08886v3"
+    },
+    {
+      "index": 98,
+      "title": "Bayesian Bits: Unifying Quantization and Pruning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Bayesian bits: Unifying quantization and pruning",
+      "paper_id": "2005.07093v3"
+    },
+    {
+      "index": 99,
+      "title": "“Differentiable quantization of deep neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 100,
+      "title": "Stochastic Layer-Wise Precision in Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Stochastic layer-wise precision in deep neural networks",
+      "paper_id": "1807.00942v1"
+    },
+    {
+      "index": 101,
+      "title": "V. Chandrasekhar",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 102,
+      "title": "“Estimating or propagating gradients through stochastic neurons for conditional computation",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 103,
+      "title": "“Dropout: a simple way to prevent neural networks from overfitting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 104,
+      "title": "“Categorical reparameterization with gumbel-softmax",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 105,
+      "title": "“Gradient-based learning applied to document recognition",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 106,
+      "title": "“Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 107,
+      "title": "Constrained optimization and Lagrange multiplier methods. Academic press",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 108,
+      "title": "“Clip-q: Deep network compression learning by in-parallel pruning-quantization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 109,
+      "title": "“Syq: Learning symmetric quantization for efficient deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 110,
+      "title": "“Learning sparse neural networks through l​_​0𝑙_0l\\_0 regularization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 111,
+      "title": "“Auto-encoding variational bayes",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 112,
+      "title": "“Stochastic backpropagation and approximate inference in deep generative models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 113,
+      "title": "Relaxed Quantization for Discretized Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Relaxed quantization for discretized neural networks",
+      "paper_id": "1810.01875v1"
+    },
+    {
+      "index": 114,
+      "title": "Learned Step Size Quantization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Learned step size quantization",
+      "paper_id": "1902.08153v3"
+    },
+    {
+      "index": 115,
+      "title": "Up or Down? Adaptive Rounding for Post-Training Quantization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Up or down? adaptive rounding for post-training quantization",
+      "paper_id": "2004.10568v2"
+    },
+    {
+      "index": 116,
+      "title": "“Trained uniform quantization for accurate and efficient neural network inference on fixed-point hardware",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 117,
+      "title": "“Mixed precision dnns: All you need is a good parametrization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 118,
+      "title": "S.-M. Moosavi-Dezfooli",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 119,
+      "title": "Fixed Point Quantization of Deep Convolutional Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Fixed point quantization of deep convolutional networks",
+      "paper_id": "1511.06393v3"
+    },
+    {
+      "index": 120,
+      "title": "Bi-Real Net: Enhancing the Performance of 1-bit CNNs With Improved Representational Capability and Advanced Training Algorithm",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Bi-real net: Enhancing the performance of 1-bit cnns with improved representational capability and advanced training algorithm",
+      "paper_id": "1808.00278v5"
+    },
+    {
+      "index": 121,
+      "title": "“Binarized neural networks: Training deep neural networks with weights and activations constrained to+ 1 or-1",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 122,
+      "title": "HAWQ-V2: Hessian Aware trace-Weighted Quantization of Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Hawq-v2: Hessian aware trace-weighted quantization of neural networks",
+      "paper_id": "1911.03852v1"
+    },
+    {
+      "index": 123,
+      "title": "“Randomized algorithms for estimating the trace of an implicit symmetric positive semi-definite matrix",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 124,
+      "title": "“Fully quantized network for object detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 125,
+      "title": "Focal Loss for Dense Object Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Focal loss for dense object detection",
+      "paper_id": "1708.02002v2"
+    },
+    {
+      "index": 126,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Microsoft coco: Common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 127,
+      "title": "A Low Effort Approach to Structured CNN Design Using PCA",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“A low effort approach to structured cnn design using pca",
+      "paper_id": "1812.06224v4"
+    },
+    {
+      "index": 128,
+      "title": "“Hybrid binary networks: optimizing for accuracy",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 129,
+      "title": "“Low-bit quantization of neural networks for efficient inference.” in ICCV Workshops",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 130,
+      "title": "“Improving neural network quantization without retraining using outlier channel splitting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 131,
+      "title": "Data-Free Quantization Through Weight Equalization and Bias Correction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Data-free quantization through weight equalization and bias correction",
+      "paper_id": "1906.04721v3"
+    },
+    {
+      "index": 132,
+      "title": "The Knowledge Within: Methods for Data-Free Model Compression",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“The knowledge within: Methods for data-free model compression",
+      "paper_id": "1912.01274v2"
+    },
+    {
+      "index": 133,
+      "title": "“Tvm: end-to-end optimization stack for deep learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 134,
+      "title": "“Pulp: a linear programming toolkit for python",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 135,
+      "title": "” https://github.com/NVIDIA/cutlass",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 136,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 137,
+      "title": "Improving Post Training Neural Quantization: Layer-wise Calibration and Integer Programming",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Improving post training neural quantization: Layer-wise calibration and integer programming",
+      "paper_id": "2006.10518v2"
+    },
+    {
+      "index": 138,
+      "title": "“Learning compression from limited unlabeled data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 139,
+      "title": "“Deep neural network compression by in-parallel pruning-quantization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 140,
+      "title": "“Automatic neural network compression by sparsity-quantization joint learning: A constrained optimization-based approach",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 141,
+      "title": "Towards Accurate Binary Convolutional Neural Network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Towards accurate binary convolutional neural network",
+      "paper_id": "1711.11294v1"
+    },
+    {
+      "index": 142,
+      "title": "“Autoq: Automated kernel-wise neural network quantization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 143,
+      "title": "G. Hinton et al",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 144,
+      "title": "Identity Mappings in Deep Residual Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Identity mappings in deep residual networks",
+      "paper_id": "1603.05027v3"
+    },
+    {
+      "index": 145,
+      "title": "“Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 146,
+      "title": "Learning Transferable Architectures for Scalable Image Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Learning transferable architectures for scalable image recognition",
+      "paper_id": "1707.07012v4"
+    },
+    {
+      "index": 147,
+      "title": "“A comparative analysis of selection schemes used in genetic algorithms",
+      "abstract": "",
+      "year": "1991",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 148,
+      "title": "Efficient Neural Architecture Search via Parameter Sharing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Efficient neural architecture search via parameters sharing",
+      "paper_id": "1802.03268v2"
+    },
+    {
+      "index": 149,
+      "title": "L. Van Der Maaten",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 150,
+      "title": "“Progressive neural architecture search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 151,
+      "title": "Regularized Evolution for Image Classifier Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Regularized evolution for image classifier architecture search",
+      "paper_id": "1802.01548v7"
+    },
+    {
+      "index": 152,
+      "title": "“Darts: Differentiable architecture search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 153,
+      "title": "“Mixed precision neural architecture search for energy efficient deep learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 154,
+      "title": "“Simple statistical gradient-following algorithms for connectionist reinforcement learning",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 155,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 156,
+      "title": "mixup: Beyond Empirical Risk Minimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“mixup: Beyond empirical risk minimization",
+      "paper_id": "1710.09412v2"
+    },
+    {
+      "index": 157,
+      "title": "Neural Architecture Optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Neural architecture optimization",
+      "paper_id": "1808.07233v5"
+    },
+    {
+      "index": 158,
+      "title": "Design Automation for Efficient Deep Learning Computing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Design automation for efficient deep learning computing",
+      "paper_id": "1904.10616v1"
+    },
+    {
+      "index": 159,
+      "title": "AMC: AutoML for Model Compression and Acceleration on Mobile Devices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Amc: Automl for model compression and acceleration on mobile devices",
+      "paper_id": "1802.03494v4"
+    },
+    {
+      "index": 160,
+      "title": "“Once-for-all: Train one network and specialize it for efficient deployment",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 161,
+      "title": "Single Path One-Shot Neural Architecture Search with Uniform Sampling",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Single path one-shot neural architecture search with uniform sampling",
+      "paper_id": "1904.00420v4"
+    },
+    {
+      "index": 162,
+      "title": "“Proxylessnas: Direct neural architecture search on target task and hardware",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 163,
+      "title": "“Interior point methods in semidefinite programming with applications to combinatorial optimization",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 164,
+      "title": "E. Zheltonozhskii",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 165,
+      "title": "SSD: Single Shot MultiBox Detector",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Ssd: Single shot multibox detector",
+      "paper_id": "1512.02325v5"
+    },
+    {
+      "index": 166,
+      "title": "High-Capacity Expert Binary Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“High-capacity expert binary networks",
+      "paper_id": "2010.03558v2"
+    },
+    {
+      "index": 167,
+      "title": "Learning to Quantize Deep Networks by Optimizing Quantization Intervals with Task Loss",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Learning to quantize deep networks by optimizing quantization intervals with task loss",
+      "paper_id": "1808.05779v3"
+    },
+    {
+      "index": 168,
+      "title": "Additive Powers-of-Two Quantization: An Efficient Non-uniform Discretization for Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Additive powers-of-two quantization: An efficient non-uniform discretization for neural networks",
+      "paper_id": "1909.13144v2"
+    },
+    {
+      "index": 169,
+      "title": "WRPN: Wide Reduced-Precision Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Wrpn: Wide reduced-precision networks",
+      "paper_id": "1709.01134v1"
+    },
+    {
+      "index": 170,
+      "title": "“Proximal policy optimization algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 171,
+      "title": "“Stripes: Bit-serial deep neural network computing",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 172,
+      "title": "A Unified Framework of DNN Weight Pruning and Weight Clustering/Quantization Using ADMM",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“A unified framework of dnn weight pruning and weight clustering/quantization using admm",
+      "paper_id": "1811.01907v1"
+    },
+    {
+      "index": 173,
+      "title": "“Continuous control with deep reinforcement learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 174,
+      "title": "“Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 175,
+      "title": "“Bismo: A scalable bit-serial matrix multiplication overlay for reconfigurable computing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 176,
+      "title": "“Mobilenets: Efficient convolutional neural networks for mobile vision applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 177,
+      "title": "Data-Efficient Hierarchical Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Data-efficient hierarchical reinforcement learning",
+      "paper_id": "1805.08296v4"
+    },
+    {
+      "index": 178,
+      "title": "“On learning-based methods for design-space exploration with high-level synthesis",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 179,
+      "title": "“Primal: Power inference using machine learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 180,
+      "title": "“Two-step quantization for low-bit neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 181,
+      "title": "Circulant Binary Convolutional Networks: Enhancing the Performance of 1-bit DCNNs with Circulant Back Propagation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Circulant binary convolutional networks: Enhancing the performance of 1-bit dcnns with circulant back propagation",
+      "paper_id": "1910.10853v1"
+    },
+    {
+      "index": 182,
+      "title": "Balanced Binary Neural Networks with Gated Residual",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Balanced binary neural networks with gated residual",
+      "paper_id": "1909.12117v2"
+    },
+    {
+      "index": 183,
+      "title": "“Pruning algorithms-a survey",
+      "abstract": "",
+      "year": "1993",
+      "venue": "",
+      "authors": ""
+    }
+  ]
+}

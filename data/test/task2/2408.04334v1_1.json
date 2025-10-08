@@ -1,0 +1,321 @@
+{
+  "paper_id": "2408.04334v1",
+  "title": "A Node-Based Polar List Decoder with Frame Interleaving and Ensemble Decoding Support",
+  "sections": {
+    "i introduction": "Polar codes  have been ratified as the standard codes to protect control channels in 5G enhanced mobile broadband (eMBB) , thus raising significant attention in both academia and industry.\nSuccessive cancellation (SC)  and SC list (SCL) decoding  led the mainstream development of polar decoding algorithms and implementations.\nIn particular, SCL decoding can evaluate two hypotheses for each information bit, by estimating each information bit as either 00 or 111 and maintaining a list of up to L𝐿L candidate codewords in parallel during the decoding.\nThis yields superior error-correcting performance compared to SC decoding.\nUsing hardware-friendly log-likelihood ratio (LLR)-based SCL decoding , an SCL decoder with L=8𝐿8L=8 provides a good trade-off between error-correcting performance and hardware complexity and has been chosen as the algorithm baseline during the 5G standardization process . In terms of hardware implementation, to reduce long decoding latency in conventional SC-based decoders  , node-based techniques have been introduced to SC decoders   , in which special bit patterns of constituent codes can be identified in the decoding tree to allow direct decoding of multiple bits in parallel instead of repeatedly traversing the corresponding parts of the tree.\nThen, such techniques were also introduced to SCL decoders, using list extension strategies for special nodes 0 1 2, thereby significantly decreasing the decoding latency.\nNotably, the recently found generalized sequence repetition node (SR) 3 can support most existing node patterns in SC decoding.\nThe work in 4 first extends the SR node to SCL decoding and implements a corresponding SR-List decoder to meet the stringent low-latency and low-complexity requirements of 5G.\nHowever, the existing SCL decoders (including 4) still suffer from sequential processing in the special nodes, which leads to unavoidable stalls.\nTo mitigate the impact of these stalls, based on the architecture in 1, several latency-optimization techniques have been proposed in 5 to reduce idle cycles by modifying the architectures of computational units to allow for overlapped processing. In addition to low latency, high reliability is also essential, but the error-correcting capability of SCL decoding, with a limited list size, falls short in some resource-constrained scenarios and demands further enhancement.\nRecently, automorphism ensemble decoding (AED) gained a lot of attention due to its superior performance and universality 6 7 8 9.\nAED employs code automorphisms, represented as a block lower triangular affine (BLTA) group in polar codes 6, to decode various codeword permutations in parallel, demonstrating particular effectiveness for short-length polar codes 8.\nHowever, its hard-wired routing of permutations lacks flexibility for diverse automorphisms.\nIt is noteworthy that as a subset of a general affine (GA) group, factor graph permutations 0 1 (also known as permuted factor graphs, PFGs) efficiently widen the decoding space through graph ensemble decoding and can be implemented in hardware to generate these permuted graphs on-the-fly 2.\nHowever, this factor graph permutation alters the bit indices 3 and thus greatly affects the node structure of the polar decoding tree.\nThis alteration complicates the direct application of node techniques to graph ensemble decoding.\nTherefore, integrating graph ensembles with SCL decoding and node-based techniques for high performance and low latency remains challenging. Moreover, these node-based polar decoders rely on the identification of the type and the length of special codes, which necessitates complex control logic .\nTo bypass this issue, most decoders generate instructions offline and store the resulting instructions in dedicated memories.\nThe decoder then proceeds by reading these instructions to coordinate each component.\nHowever, this instruction storage incurs significant area overhead  4 1.\nGiven the wide range of message lengths from 121212 to 170617061706 in 5G NR polar codes, it is impractical to store all possibilities and a rapid succession of code changes leaves no time to generate instructions.\nTo overcome this issue, an online generator is proposed in 5 to identify the special patterns of basic nodes directly in hardware based on the channel relative reliability vector, thus supporting a rate-flexible decoder.\nHowever, to the best knowledge of the authors, there is currently no online generator compatible with more generalized nodes, such as SR nodes, that achieves both strict low decoding latency and rate flexibility in generalized node-based SCL decoders."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Channel polarization: A method for constructing capacity-achieving codes for symmetric binary-input memoryless channels",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "E. Arıkan"
+    },
+    {
+      "index": 1,
+      "title": "Chairman’s notes of agenda item 7.1.5 Channel coding and modulation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "3GPP TSG RAN WG1 meeting #87",
+      "authors": ""
+    },
+    {
+      "index": 2,
+      "title": "List decoding of polar codes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "I. Tal and A. Vardy"
+    },
+    {
+      "index": 3,
+      "title": "LLR-based successive cancellation list decoding of polar codes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Trans. Signal Process.",
+      "authors": "A. Balatsoukas-Stimming, M. Bastani Parizi, and A. Burg"
+    },
+    {
+      "index": 4,
+      "title": "Final Report of 3GPP TSG RAN WG1 #AH1_NR v1.0.0",
+      "abstract": "",
+      "year": "2017",
+      "venue": "3GPP TSG RAN WG1 meeting #88",
+      "authors": ""
+    },
+    {
+      "index": 5,
+      "title": "PolarBear: A 28-nm FD-SOI ASIC for decoding of polar codes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE J. Emer. Top. Circuits Syst.",
+      "authors": "P. Giard, A. Balatsoukas-Stimming, T. C. Müller, A. Bonetti, C. Thibeault, W. J. Gross, P. Flatresse, and A. Burg"
+    },
+    {
+      "index": 6,
+      "title": "Fast polar decoders: Algorithm and implementation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE J. Sel. Areas Commun.",
+      "authors": "G. Sarkis, P. Giard, A. Vardy, C. Thibeault, and W. J. Gross"
+    },
+    {
+      "index": 7,
+      "title": "Fast successive-cancellation decoding of polar codes: Identification and decoding of new nodes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Commun. Lett.",
+      "authors": "M. Hanif and M. Ardakani"
+    },
+    {
+      "index": 8,
+      "title": "Generalized fast decoding of polar codes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Glob. Commun. Conf. (GLOBECOM)",
+      "authors": "C. Condo, V. Bioglio, and I. Land"
+    },
+    {
+      "index": 9,
+      "title": "Fast list decoders for polar codes",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE J. Sel. Areas Commun.",
+      "authors": "G. Sarkis, P. Giard, A. Vardy, C. Thibeault, and W. J. Gross"
+    },
+    {
+      "index": 10,
+      "title": "Fast and flexible successive-cancellation list decoders for polar codes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans. Signal Process.",
+      "authors": "S. A. Hashemi, C. Condo, and W. J. Gross"
+    },
+    {
+      "index": 11,
+      "title": "Fast list decoding of polar codes: Decoders for additional nodes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Wireless Commun. Netw. Conf. Workshops (WCNC)",
+      "authors": "M. Hanif, M. H. Ardakani, and M. Ardakani"
+    },
+    {
+      "index": 12,
+      "title": "Threshold-Based Fast Successive-Cancellation Decoding of Polar Codes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Commun.",
+      "authors": "H. Zheng, S. A. Hashemi, A. Balatsoukas-Stimming, Z. Cao, T. Koonen, J. M. Cioffi, and A. Goldsmith",
+      "orig_title": "Threshold-based fast successive cancellation decoding of polar codes",
+      "paper_id": "2005.04394v2"
+    },
+    {
+      "index": 13,
+      "title": "A Sequence Repetition Node-Based Successive Cancellation List Decoder for 5G Polar Codes: Algorithm and Implementation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Trans. Signal Process.",
+      "authors": "Y. Ren, A. T. Kristensen, Y. Shen, A. Balatsoukas-Stimming, C. Zhang, and A. Burg",
+      "orig_title": "A sequence repetition node-based successive cancellation list decoder for 5G polar codes: Algorithm and implementation",
+      "paper_id": "2205.08857v2"
+    },
+    {
+      "index": 14,
+      "title": "Low-latency SCL polar decoder architecture using overlapped pruning operations",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Trans. Circuits Syst. I",
+      "authors": "D. Kam, B. Y. Kong, and Y. Lee"
+    },
+    {
+      "index": 15,
+      "title": "On the automorphism group of polar codes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Int. Symp. Inf. Theory (ISIT)",
+      "authors": "M. Geiselhart, A. Elkelesh, M. Ebada, S. Cammerer, and S. ten Brink"
+    },
+    {
+      "index": 16,
+      "title": "Automorphism ensemble decoding of Reed-Muller codes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Commun.",
+      "authors": "——"
+    },
+    {
+      "index": 17,
+      "title": "Automorphism ensemble polar code decoders for 6G URLLC",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Conf. System, Commum. Coding (SCC)",
+      "authors": "C. Kestel, M. Geiselhart, L. Johannsen, S. ten Brink, and N. Wehn"
+    },
+    {
+      "index": 18,
+      "title": "Successive cancellation automorphism list decoding of polar codes",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Int. Symp. Topics Coding (ISTC)",
+      "authors": "L. Johannsen, C. Kestel, M. Geiselhart, T. Vogt, S. Ten Brink, and N. Wehn"
+    },
+    {
+      "index": 19,
+      "title": "Belief propagation list decoding of polar codes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Commun. Lett.",
+      "authors": "A. Elkelesh, M. Ebada, S. Cammerer, and S. ten Brink"
+    },
+    {
+      "index": 20,
+      "title": "Efficient belief propagation polar decoder with loop simplification based factor graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Veh. Technol.",
+      "authors": "Y. Ren, Y. Shen, Z. Zhang, X. You, and C. Zhang"
+    },
+    {
+      "index": 21,
+      "title": "High-throughput and flexible belief propagation list decoder for polar codes",
+      "abstract": "",
+      "year": "2024",
+      "venue": "IEEE Trans. Signal Process.",
+      "authors": "Y. Ren, Y. Shen, L. Zhang, A. T. Kristensen, A. Balatsoukas-Stimming, E. Boutillon, A. Burg, and C. Zhang"
+    },
+    {
+      "index": 22,
+      "title": "On the decoding of polar codes on permuted factor graphs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Global Commun. Conf. (GLOBECOM)",
+      "authors": "N. Doan, S. A. Hashemi, M. Mondelli, and W. J. Gross"
+    },
+    {
+      "index": 23,
+      "title": "A fast polar code list decoder architecture based on sphere decoding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Trans. Circuits Syst. I",
+      "authors": "S. A. Hashemi, C. Condo, and W. J. Gross"
+    },
+    {
+      "index": 24,
+      "title": "Rate-flexible fast polar decoders",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Signal Process.",
+      "authors": "S. A. Hashemi, C. Condo, M. Mondelli, and W. J. Gross"
+    },
+    {
+      "index": 25,
+      "title": "A low-latency and high-performance SCL decoder with frame-interleaving",
+      "abstract": "",
+      "year": "2024",
+      "venue": "IEEE Int. Symp. Circuits Syst. (ISCAS)",
+      "authors": "L. Zhang, Y. Ren, Y. Shen, W. Zhou, A. Balatsoukas-Stimming, C. Zhang, and A. Burg"
+    },
+    {
+      "index": 26,
+      "title": "5G NR: Multiplexing and channel coding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "3GPP TS 38.212 version 15.2.0",
+      "authors": ""
+    },
+    {
+      "index": 27,
+      "title": "Decoding Reed-Muller and polar codes by successive factor graph permutations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Int. Symp. Topics Coding (ISTC)",
+      "authors": "S. A. Hashemi, N. Doan, M. Mondelli, and W. J. Gross"
+    },
+    {
+      "index": 28,
+      "title": "CRC-Aided Belief Propagation List Decoding of Polar Codes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Int. Symp. Inf. Theory (ISIT)",
+      "authors": "G. Marvin, A. Elkelesh, M. Ebada, S. Cammerer, and S. ten Brink",
+      "orig_title": "CRC-aided belief propagation list decoding of polar codes",
+      "paper_id": "2001.05303v2"
+    },
+    {
+      "index": 29,
+      "title": "Design and implementation of a polar codes blind detection scheme",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Circuits Syst. II",
+      "authors": "C. Condo, S. A. Hashemi, A. Ardakani, F. Ercan, and W. J. Gross"
+    },
+    {
+      "index": 30,
+      "title": "A 5.16Gbps decoder ASIC for Polar Code in 16nm FinFET",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Int. Symp. Wireless Commun. Syst. (ISWCS)",
+      "authors": "X. Liu, Q. Zhang, P. Qiu, J. Tong, H. Zhang, C. Zhao, and J. Wang",
+      "orig_title": "A 5.16Gbps decoder ASIC for polar code in 16nm FinFET",
+      "paper_id": "1807.01451v1"
+    },
+    {
+      "index": 31,
+      "title": "6G: A welcome chance to unify channel coding?",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE BITS Info. Theory Mag.",
+      "authors": "M. Geiselhart, F. Krieg, J. Clausius, D. Tandler, and S. ten Brink"
+    },
+    {
+      "index": 32,
+      "title": "A generalized adjusted min-sum decoder for 5G LDPC codes: Algorithm and implementation",
+      "abstract": "",
+      "year": "2024",
+      "venue": "IEEE Trans. Circuits Syst. I",
+      "authors": "Y. Ren, H. Harb, Y. Shen, A. Balatsoukas-Stimming, and A. Burg"
+    },
+    {
+      "index": 33,
+      "title": "A configurable successive-cancellation list polar decoder using split-tree architecture",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE J. Solid-State Circuits",
+      "authors": "Y. Tao, S.-G. Cho, and Z. Zhang"
+    },
+    {
+      "index": 34,
+      "title": "A 1.1​μ1.1𝜇1.1\\mus 1.561.561.56 Gb/s/mm2 cost-efficient large-list SCL polar decoder using fully-reusable LLR buffers in 28nm CMOS technology",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Symp. VLSI Technol. Circuits",
+      "authors": "D. Kam, B. Y. Kong, and Y. Lee"
+    },
+    {
+      "index": 35,
+      "title": "Scaling equations for the accurate prediction of CMOS device performance from 180 nm to 7 nm",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Integration",
+      "authors": "A. Stillmaker and B. Baas"
+    },
+    {
+      "index": 36,
+      "title": "A high energy efficient reconfigurable hybrid neural network processor for deep learning applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE J. Solid-State Circuits",
+      "authors": "S. Yin, P. Ouyang, S. Tang, F. Tu, X. Li, S. Zheng, T. Lu, J. Gu, L. Liu, and S. Wei"
+    },
+    {
+      "index": 37,
+      "title": "A 12.1 TOPS/W quantized network acceleration processor with effective-weight-based convolution and error-compensation-based prediction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE J. Solid-State Circuits",
+      "authors": "H. Mo, W. Zhu, W. Hu, Q. Li, A. Li, S. Yin, S. Wei, and L. Liu"
+    }
+  ]
+}

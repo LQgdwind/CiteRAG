@@ -1,0 +1,395 @@
+{
+  "paper_id": "2008.00177v1",
+  "title": "Multi-node Bert-pretraining: Cost-efficient Approach",
+  "sections": {
+    "system setup": "We utilized data parallelism [ref]28 for multi-node training. To characterize the hardware topology, we use the name \"<X>M<Y>G\" to encode X number of \"Machines\" and \"Y\" number of \"GPUs\" on each machine. Table 1 shows our 32M8G hardware setup to conduct training. This setup has a unit cost of $19.5K per node, which is much less expensive than the unit price of a single DGX system, which ranges from $150K to $400K [ref]13. The system also offers more flexibility because it is more cost effective for light-weight computing needs, which do not utilize the interconnects as heavily as is required in distributed training for some large models. For simplicity, let us consider a simple scenario of a 2-node, 4 GPUs each, setup as shown in Figure 1. Each node will have four NVIDIA T4 cards in our case and are connected through PCIe. Nodes will be connected through network card. For the software stack, we used NVIDIA’s PyTorch implementation of the BERT model . Table 2 shows the software stack of our training program. We also utilized NCCL v2.4.8-1  as our distributed training backend framework that implements data parallelism [ref]28. In addition, NCCL  also auto detects the network topology upon setting up connections among nodes in order to form a ring topology if possible . When doing training in the context of data parallelism [ref]28, mini-batches of data are split into individual devices. In the forward pass, the calculated gradients will be collected. Gradients will be exchanged through PCIe within a node and through network card across different nodes, after which the parametres are updated based on the aggregated results. In particular, the PCIe gradient pass is independent with the network card gradient pass. During the backward pass, the whole model’s gradients in any device will need to be passed to all other devices as each device contains a full replica of the model in data parallelism. As such, we can tell from the previous bandwidth comparison that the network gradient transmission will certainly lag behind the PCIe gradient transmission. And we will see later that this is indeed the case: the time needed for completing a backward pass is dominated by the gradient exchange time spent over the network."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova",
+      "orig_title": "BERT: pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 1,
+      "title": "Aligning books and movies: Towards story-like visual explanations by watching movies and reading books",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Yukun Zhu, Ryan Kiros, Richard Zemel, Ruslan Salakhutdinov, Raquel Urtasun, Antonio Torralba, and Sanja Fidler"
+    },
+    {
+      "index": 2,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv e-prints",
+      "authors": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin",
+      "orig_title": "Attention Is All You Need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 3,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural computation",
+      "authors": "Sepp Hochreiter and Jürgen Schmidhuber"
+    },
+    {
+      "index": 4,
+      "title": "Google’s Neural Machine Translation System: Bridging the Gap between Human and Machine Translation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv e-prints",
+      "authors": "Yonghui Wu, Mike Schuster, Zhifeng Chen, Quoc V. Le, Mohammad Norouzi, Wolfgang Macherey, Maxim Krikun, Yuan Cao, Qin Gao, Klaus Macherey, Jeff Klingner, Apurva Shah, Melvin Johnson, Xiaobing Liu, Łukasz Kaiser, Stephan Gouws, Yoshikiyo Kato, Taku Kudo, Hideto Kazawa, Keith Stevens, George Kurian, Nishant Patil, Wei Wang, Cliff Young, Jason Smith, Jason Riesa, Alex Rudnick, Oriol Vinyals, Greg Corrado, Macduff Hughes, and Jeffrey Dean",
+      "orig_title": "Google’s Neural Machine Translation System: Bridging the Gap between Human and Machine Translation",
+      "paper_id": "1609.08144v2"
+    },
+    {
+      "index": 5,
+      "title": "Sequence to Sequence Learning with Neural Networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv e-prints",
+      "authors": "Ilya Sutskever, Oriol Vinyals, and Quoc V. Le"
+    },
+    {
+      "index": 6,
+      "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv e-prints",
+      "authors": "Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio",
+      "orig_title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+      "paper_id": "1409.0473v7"
+    },
+    {
+      "index": 7,
+      "title": "Massive Exploration of Neural Machine Translation Architectures",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv e-prints",
+      "authors": "Denny Britz, Anna Goldie, Minh-Thang Luong, and Quoc Le"
+    },
+    {
+      "index": 8,
+      "title": "Echo: Compiler-based GPU Memory Footprint Reduction for LSTM RNN Training",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv e-prints",
+      "authors": "Bojian Zheng, Abhishek Tiwari, Nandita Vijaykumar, and Gennady Pekhimenko",
+      "orig_title": "Echo: Compiler-based GPU Memory Footprint Reduction for LSTM RNN Training",
+      "paper_id": "1805.08899v5"
+    },
+    {
+      "index": 9,
+      "title": "Energy and Policy Considerations for Deep Learning in NLP",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "Emma Strubell, Ananya Ganesh, and Andrew McCallum",
+      "orig_title": "Energy and policy considerations for deep learning in nlp",
+      "paper_id": "1906.02243v1"
+    },
+    {
+      "index": 10,
+      "title": "Deep learning example",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "NVIDIA"
+    },
+    {
+      "index": 11,
+      "title": "Nvidia dgx-1 with tesla v100 system architecture",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "NVIDIA"
+    },
+    {
+      "index": 12,
+      "title": "Nvidia’s dgx-2: Sixteen tesla v100s, 30 tb of nvme, only $400k",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Ian Cutress"
+    },
+    {
+      "index": 13,
+      "title": "NVIDIA Tensor Core Programmability, Performance & Precision",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Stefano Markidis, Steven Wei Der Chien, Erwin Laure, Ivy Bo Peng, and Jeffrey S. Vetter",
+      "orig_title": "NVIDIA tensor core programmability, performance & precision",
+      "paper_id": "1803.04014v1"
+    },
+    {
+      "index": 14,
+      "title": "Mixed Precision Training",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv e-prints",
+      "authors": "Paulius Micikevicius, Sharan Narang, Jonah Alben, Gregory Diamos, Erich Elsen, David Garcia, Boris Ginsburg, Michael Houston, Oleksii Kuchaiev, Ganesh Venkatesh, and Hao Wu",
+      "orig_title": "Mixed Precision Training",
+      "paper_id": "1710.03740v3"
+    },
+    {
+      "index": 15,
+      "title": "Mixed precision grappler optimizer",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Matt Conley, Minmin Sun, and Yan Jun"
+    },
+    {
+      "index": 16,
+      "title": "Nvidia t4",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "NVIDIA"
+    },
+    {
+      "index": 17,
+      "title": "Language models are unsupervised multitask learners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever"
+    },
+    {
+      "index": 18,
+      "title": "XLNet: Generalized Autoregressive Pretraining for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Zhilin Yang, Zihang Dai, Yiming Yang, Jaime G. Carbonell, Ruslan Salakhutdinov, and Quoc V. Le",
+      "orig_title": "Xlnet: Generalized autoregressive pretraining for language understanding",
+      "paper_id": "1906.08237v2"
+    },
+    {
+      "index": 19,
+      "title": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov",
+      "orig_title": "Roberta: A robustly optimized BERT pretraining approach",
+      "paper_id": "1907.11692v1"
+    },
+    {
+      "index": 20,
+      "title": "Language Models are Few-Shot Learners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, Clemens Winter, Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei",
+      "orig_title": "Language models are few-shot learners",
+      "paper_id": "2005.14165v4"
+    },
+    {
+      "index": 21,
+      "title": "MLPerf Training Benchmark",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv e-prints",
+      "authors": "Peter Mattson, Christine Cheng, Cody Coleman, Greg Diamos, Paulius Micikevicius, David Patterson, Hanlin Tang, Gu-Yeon Wei, Peter Bailis, Victor Bittorf, David Brooks, Dehao Chen, Debojyoti Dutta, Udit Gupta, Kim Hazelwood, Andrew Hock, Xinyuan Huang, Atsushi Ike, Bill Jia, Daniel Kang, David Kanter, Naveen Kumar, Jeffery Liao, Guokai Ma, Deepak Narayanan, Tayo Oguntebi, Gennady Pekhimenko, Lillian Pentecost, Vijay Janapa Reddi, Taylor Robie, Tom St. John, Tsuguchika Tabaru, Carole-Jean Wu, Lingjie Xu, Masafumi Yamazaki, Cliff Young, and Matei Zaharia"
+    },
+    {
+      "index": 22,
+      "title": "Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Priya Goyal, Piotr Dollár, Ross B. Girshick, Pieter Noordhuis, Lukasz Wesolowski, Aapo Kyrola, Andrew Tulloch, Yangqing Jia, and Kaiming He",
+      "orig_title": "Accurate, large minibatch SGD: training imagenet in 1 hour",
+      "paper_id": "1706.02677v2"
+    },
+    {
+      "index": 23,
+      "title": "Reducing BERT pre-training time from 3 days to 76 minutes",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Yang You, Jing Li, Jonathan Hseu, Xiaodan Song, James Demmel, and Cho-Jui Hsieh"
+    },
+    {
+      "index": 24,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 25,
+      "title": "Deep Speech 2: End-to-End Speech Recognition in English and Mandarin",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "Dario Amodei, Rishita Anubhai, Eric Battenberg, Carl Case, Jared Casper, Bryan Catanzaro, Jingdong Chen, Mike Chrzanowski, Adam Coates, Greg Diamos, Erich Elsen, Jesse H. Engel, Linxi Fan, Christopher Fougner, Tony Han, Awni Y. Hannun, Billy Jun, Patrick LeGresley, Libby Lin, Sharan Narang, Andrew Y. Ng, Sherjil Ozair, Ryan Prenger, Jonathan Raiman, Sanjeev Satheesh, David Seetapun, Shubho Sengupta, Yi Wang, Zhiqian Wang, Chong Wang, Bo Xiao, Dani Yogatama, Jun Zhan, and Zhenyao Zhu",
+      "orig_title": "Deep speech 2: End-to-end speech recognition in english and mandarin",
+      "paper_id": "1512.02595v1"
+    },
+    {
+      "index": 26,
+      "title": "Ai and compute",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Dario Amodei, Danny Hernandez, Girish Sastry, Jack Clark, Greg Brockman, and Ilya Sutskever"
+    },
+    {
+      "index": 27,
+      "title": "Measuring the Effects of Data Parallelism on Neural Network Training",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Christopher J. Shallue, Jaehoon Lee, Joseph M. Antognini, Jascha Sohl-Dickstein, Roy Frostig, and George E. Dahl",
+      "orig_title": "Measuring the effects of data parallelism on neural network training",
+      "paper_id": "1811.03600v3"
+    },
+    {
+      "index": 28,
+      "title": "One weird trick for parallelizing convolutional neural networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CoRR",
+      "authors": "Alex Krizhevsky",
+      "orig_title": "One weird trick for parallelizing convolutional neural networks",
+      "paper_id": "1404.5997v2"
+    },
+    {
+      "index": 29,
+      "title": "Gpipe: Efficient training of giant neural networks using pipeline parallelism",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Yanping Huang, Yonglong Cheng, Dehao Chen, HyoukJoong Lee, Jiquan Ngiam, Quoc V. Le, and Zhifeng Chen"
+    },
+    {
+      "index": 30,
+      "title": "Fast multi-gpu collectives with nccl",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Nathan Luehr"
+    },
+    {
+      "index": 31,
+      "title": "Nccl tests",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Nathan Luehr"
+    },
+    {
+      "index": 32,
+      "title": "Nvidia tesla v100 gpu architecture.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "NVIDIA"
+    },
+    {
+      "index": 33,
+      "title": "Wikiextractor",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Giuseppe Attardi"
+    },
+    {
+      "index": 34,
+      "title": "Google’s Neural Machine Translation System: Bridging the Gap between Human and Machine Translation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv e-prints",
+      "authors": "Yonghui Wu, Mike Schuster, Zhifeng Chen, Quoc V. Le, Mohammad Norouzi, Wolfgang Macherey, Maxim Krikun, Yuan Cao, Qin Gao, Klaus Macherey, Jeff Klingner, Apurva Shah, Melvin Johnson, Xiaobing Liu, Łukasz Kaiser, Stephan Gouws, Yoshikiyo Kato, Taku Kudo, Hideto Kazawa, Keith Stevens, George Kurian, Nishant Patil, Wei Wang, Cliff Young, Jason Smith, Jason Riesa, Alex Rudnick, Oriol Vinyals, Greg Corrado, Macduff Hughes, and Jeffrey Dean",
+      "orig_title": "Google’s Neural Machine Translation System: Bridging the Gap between Human and Machine Translation",
+      "paper_id": "1609.08144v2"
+    },
+    {
+      "index": 35,
+      "title": "SQuAD: 100,000+ Questions for Machine Comprehension of Text",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv e-prints",
+      "authors": "Pranav Rajpurkar, Jian Zhang, Konstantin Lopyrev, and Percy Liang"
+    },
+    {
+      "index": 36,
+      "title": "High level introduction to hdf5",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "The HDF Group"
+    },
+    {
+      "index": 37,
+      "title": "Bridging nonlinearities and stochastic regularizers with gaussian error linear units",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "Dan Hendrycks and Kevin Gimpel"
+    },
+    {
+      "index": 38,
+      "title": "Layer Normalization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv e-prints",
+      "authors": "Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E. Hinton"
+    },
+    {
+      "index": 39,
+      "title": "Apex (A PyTorch Extension)",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "NVIDIA"
+    },
+    {
+      "index": 40,
+      "title": "Nvidia p100",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "NVIDIA"
+    },
+    {
+      "index": 41,
+      "title": "Nvidia rtx2080ti",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "NVIDIA"
+    },
+    {
+      "index": 42,
+      "title": "Gradient sparsification for communication-efficient distributed optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Jianqiao Wangni, Jialei Wang, Ji Liu, and Tong Zhang"
+    },
+    {
+      "index": 43,
+      "title": "Gpus pricing",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Google"
+    }
+  ]
+}

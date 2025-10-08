@@ -1,0 +1,505 @@
+{
+  "paper_id": "2110.14096v1",
+  "title": "Towards Robust Bisimulation Metric Learning",
+  "sections": {
+    "preliminaries": "In this work, we consider a discounted Markov Decision Process (MDP) given by a tuple, ⟨𝒮,𝒜,𝒫,R,ρ0⟩𝒮𝒜𝒫𝑅subscript𝜌0\\langle\\mathcal{S},\\mathcal{A},\\mathcal{P},R,\\rho_{0}\\rangle. At the beginning of each episode, an initial state, 𝐬0∈𝒮subscript𝐬0𝒮\\mathbf{s}_{0}\\in\\mathcal{S}, is sampled from the initial-state distribution ρ0subscript𝜌0\\rho_{0} over the state space 𝒮𝒮\\mathcal{S}. Then, at each discrete time-step t≥0𝑡0t\\geq 0, an agent takes an action, 𝐚t∈𝒜subscript𝐚𝑡𝒜\\mathbf{a}_{t}\\in\\mathcal{A}, according to a policy π​(𝐚t|𝐬t)𝜋conditionalsubscript𝐚𝑡subscript𝐬𝑡\\pi(\\mathbf{a}_{t}|\\mathbf{s}_{t}). As a result, the MDP transitions to the next state according to a transition distribution 𝒫​(𝐬t+1|𝐬t,𝐚t)𝒫conditionalsubscript𝐬𝑡1subscript𝐬𝑡subscript𝐚𝑡\\mathcal{P}(\\mathbf{s}_{t+1}|\\mathbf{s}_{t},\\mathbf{a}_{t}). The agent collects a scalar reward, rt=R​(𝐬t,𝐚t)subscript𝑟𝑡𝑅subscript𝐬𝑡subscript𝐚𝑡r_{t}=R(\\mathbf{s}_{t},\\mathbf{a}_{t}), from the environment according to a bounded reward function, R:𝒮×𝒜→[Rmin,Rmax]:𝑅→𝒮𝒜subscript𝑅minsubscript𝑅maxR:\\mathcal{S}\\times\\mathcal{A}\\rightarrow[R_{\\mathrm{min}},R_{\\mathrm{max}}]. In infinite- and long-horizon settings, a discount factor, γ∈[0,1)𝛾01\\gamma\\in[0,1), is used to calculate the agent’s discounted return in a given episode, G=∑t≥0γt​rt𝐺subscript𝑡0superscript𝛾𝑡subscript𝑟𝑡G=\\sum_{t\\geq 0}\\gamma^{t}r_{t}. RL algorithms aim to find an optimal policy, π∗≔arg⁡maxπ∈Π⁡𝔼​[G]≔superscript𝜋subscript𝜋Π𝔼delimited-[]𝐺\\pi^{*}\\coloneqq\\operatorname*{\\arg\\!\\max}_{\\pi\\in\\Pi}\\mathbb{E}[G], for a class of stationary policies ΠΠ\\Pi. In high-dimensional, continuous state (or observation) spaces, this learning problem is rendered tractable via a state encoder (e.g., a neural network), ϕ:𝒮→ℝn:italic-ϕ→𝒮superscriptℝ𝑛\\phi:\\mathcal{S}\\rightarrow\\mathbb{R}^{n},\nwhich is used to\nlearn a policy of the form π​(𝐚|ϕ​(𝐬))𝜋conditional𝐚italic-ϕ𝐬\\pi(\\mathbf{a}|\\phi(\\mathbf{s})). The following (pseudo222Pseudo-metrics are a generalization of metrics that allow distinct points to have zero distance. For simplicity, we broadly use the term ”metric” in the remainder of this paper at the cost of imprecision.)-metric, based on the Wasserstein metric (see Appendix A for a review), is of particular relevance to this work. Distances are assigned to state pairs, (𝐬i,𝐬j)∈𝒮×𝒮subscript𝐬𝑖subscript𝐬𝑗𝒮𝒮(\\mathbf{s}_{i},\\mathbf{s}_{j})\\in\\mathcal{S}\\times\\mathcal{S}, according to a pessimistic measure  of how much the rewards collected in each state and the respective transition distributions differ. A distance of zero for a pair implies state aggregation, or bisimilarity. The following metric exists and is unique, given R:𝒮×𝒜→[ref]0 [ref]1:𝑅→𝒮𝒜01R:\\mathcal{S}\\times\\mathcal{A}\\rightarrow[ref]0 [ref]1 and c∈(0,1)𝑐01c\\in(0,1) for continuous MDPs: An earlier version of this metric for finite MDPs used separate weighting constants cR,cT≥0subscript𝑐𝑅subscript𝑐𝑇0c_{R},c_{T}\\geq 0 for the first and second terms respectively, and required that cR+cT≤1subscript𝑐𝑅subscript𝑐𝑇1c_{R}+c_{T}\\leq 1 . Here, when the weighting constant cTsubscript𝑐𝑇c_{T} of the W1​(d)subscript𝑊1𝑑W_{1}(d) term is in [0,1)01[0,1), the RHS is a contraction mapping, ℱ​(d):𝔪​𝔢​𝔱→𝔪​𝔢​𝔱:ℱ𝑑→𝔪𝔢𝔱𝔪𝔢𝔱\\mathcal{F}(d):\\mathfrak{met}\\rightarrow\\mathfrak{met}, in the space of metrics. Then, the Banach fixed-point theorem can be applied to ensure the existence of a unique metric, which also ensures convergence via fixed-point iteration for finite MDPs. For more details, we refer the reader to   and the proof of Remark 1 in Appendix B.\nNotice that c𝑐c (or cTsubscript𝑐𝑇c_{T}) determines a timescale for the bisimulation metric, weighting the importance of current versus future rewards, analogously to the discount factor γ𝛾\\gamma.\nMore recently, an on-policy bisimulation metric (also called π𝜋\\pi-bisimulation) was proposed to circumvent the intractibility introduced by taking the max\\max operation over high-dimensional action spaces (e.g., continuous control), as well as the inherent pessimism of the policy-independent form . Given a fixed policy π𝜋\\pi, the following on-policy bisimulation metric exists and is unique: where riπ≔𝔼𝐚∼π​[R​(𝐬i,𝐚)]≔superscriptsubscript𝑟𝑖𝜋subscript𝔼similar-to𝐚𝜋delimited-[]𝑅subscript𝐬𝑖𝐚r_{i}^{\\pi}\\coloneqq\\mathbb{E}_{\\mathbf{a}\\sim\\pi}[R(\\mathbf{s}_{i},\\mathbf{a})] and 𝒫π(⋅|𝐬i)≔𝔼𝐚∼π[𝒫(⋅|𝐬i,𝐚)]\\mathcal{P}^{\\pi}(\\cdot|\\mathbf{s}_{i})\\coloneqq\\mathbb{E}_{\\mathbf{a}\\sim\\pi}[\\mathcal{P}(\\cdot|\\mathbf{s}_{i},\\mathbf{a})]. Zhang et al. [ref]53 proposed to learn a similar on-policy bisimulation metric directly in the embedding space via an MSE objective. They proposed an algorithm for jointly learning a policy π​(𝐚|ϕ​(𝐬))𝜋conditional𝐚italic-ϕ𝐬\\pi(\\mathbf{a}|\\phi(\\mathbf{s})) with an on-policy bisimulation metric. Below, we define a generalized variant of their objective: where d^π,ϕ​(𝐬i,𝐬j)≔∥ϕ​(𝐬i)−ϕ​(𝐬j)∥q2≔subscript^𝑑𝜋italic-ϕsubscript𝐬𝑖subscript𝐬𝑗subscriptdelimited-∥∥italic-ϕsubscript𝐬𝑖italic-ϕsubscript𝐬𝑗subscript𝑞2\\widehat{d}_{\\pi,\\phi}(\\mathbf{s}_{i},\\mathbf{s}_{j})\\coloneqq\\lVert\\phi(\\mathbf{s}_{i})-\\phi(\\mathbf{s}_{j})\\rVert_{q_{2}} and they used (q1=2,q2=1)formulae-sequencesubscript𝑞12subscript𝑞21(q_{1}=2,q_{2}=1). Notice that the recursion induced by this objective is different from prior metrics in three ways; (i) a W2subscript𝑊2W_{2} metric was used instead of a W1subscript𝑊1W_{1} metric since W2subscript𝑊2W_{2} has a convenient closed form for Gaussian distributions when q1=2subscript𝑞12q_{1}=2, (ii) the distance function used for the bisimulation metric and the Wasserstein metric are different (L1subscript𝐿1L_{1} and L2subscript𝐿2L_{2} respectively), and (iii) a forward dynamics model is used instead of the ground truth dynamics. While they may introduce practical benefits, these differences violate the conditions under which the existence of a unique bisimulation metric has been proven    . Thus, we will (i) assume a unique metric exists for all Wasserstein metrics Wpsubscript𝑊𝑝W_{p} when necessary (see Assumption 1), (ii) study losses that use a matching metric, i.e., q1=q2=qsubscript𝑞1subscript𝑞2𝑞q_{1}=q_{2}=q, and (iii) introduce a constraint on forward models in Sec. 3.2.2. Next, we note that they recommend the use of stop gradients for the W2subscript𝑊2W_{2} term. The resulting gradient updates may be considered as approximate fixed-point iteration in the space of metrics: where αnsubscript𝛼𝑛\\alpha_{n} is a learning rate. However, in practice, π𝜋\\pi and 𝒫^^𝒫\\widehat{\\mathcal{P}} may also be updated in training, which is of particular relevance when they have form π​(𝐚|ϕ​(𝐬))𝜋conditional𝐚italic-ϕ𝐬\\pi(\\mathbf{a}|\\phi(\\mathbf{s})) and 𝒫^​(ϕ​(𝐬′)|ϕ​(𝐬),𝐚)^𝒫conditionalitalic-ϕsuperscript𝐬′italic-ϕ𝐬𝐚\\widehat{\\mathcal{P}}(\\phi(\\mathbf{s}^{\\prime})|\\phi(\\mathbf{s}),\\mathbf{a}) as in [ref]53. In the next section, we will discuss conditions under which joint updates to a policy π𝜋\\pi and a metric defined by state encodings ϕitalic-ϕ\\phi may or may not converge in practical settings: where dπ∗subscript𝑑superscript𝜋d_{\\pi^{*}} is the on-policy bisimulation metric for the optimal policy π∗superscript𝜋\\pi^{*}."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Surprise-Based Intrinsic Motivation for Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1703.01732",
+      "authors": "Joshua Achiam and Shankar Sastry",
+      "orig_title": "Surprise-based intrinsic motivation for deep reinforcement learning",
+      "paper_id": "1703.01732v1"
+    },
+    {
+      "index": 1,
+      "title": "Contrastive Behavioral Similarity Embeddings for Generalization in Reinforcement Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Rishabh Agarwal, Marlos C. Machado, Pablo Samuel Castro, and Marc G. Bellemare",
+      "orig_title": "Contrastive behavioral similarity embeddings for generalization in reinforcement learning",
+      "paper_id": "2101.05265v2"
+    },
+    {
+      "index": 2,
+      "title": "Learning to poke by poking: experiential learning of intuitive physics",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.07419",
+      "authors": "Pulkit Agrawal, Ashvin Nair, Pieter Abbeel, Jitendra Malik, and Sergey Levine"
+    },
+    {
+      "index": 3,
+      "title": "A survey on intrinsic motivation in reinforcement learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.06976",
+      "authors": "Arthur Aubret, Laetitia Matignon, and Salima Hassas"
+    },
+    {
+      "index": 4,
+      "title": "Unifying count-based exploration and intrinsic motivation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.01868",
+      "authors": "Marc G Bellemare, Sriram Srinivasan, Georg Ostrovski, Tom Schaul, David Saxton, and Remi Munos"
+    },
+    {
+      "index": 5,
+      "title": "Online Abstraction with MDP Homomorphisms for Deep Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "18th International Conference on Autonomous Agents and MultiAgent Systems",
+      "authors": "Ondrej Biza and Robert Platt",
+      "orig_title": "Online abstraction with MDP homomorphisms for deep learning",
+      "paper_id": "1811.12929v2"
+    },
+    {
+      "index": 6,
+      "title": "OpenAI gym",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.01540",
+      "authors": "Greg Brockman, Vicki Cheung, Ludwig Pettersson, Jonas Schneider, John Schulman, Jie Tang, and Wojciech Zaremba"
+    },
+    {
+      "index": 7,
+      "title": "Large-Scale Study of Curiosity-Driven Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1808.04355",
+      "authors": "Yuri Burda, Harri Edwards, Deepak Pathak, Amos Storkey, Trevor Darrell, and Alexei A Efros",
+      "orig_title": "Large-scale study of curiosity-driven learning",
+      "paper_id": "1808.04355v1"
+    },
+    {
+      "index": 8,
+      "title": "Using bisimulation for policy transfer in MDPs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Pablo Castro and Doina Precup"
+    },
+    {
+      "index": 9,
+      "title": "Scalable methods for computing state similarity in deterministic Markov Decision Processes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Pablo Samuel Castro",
+      "orig_title": "Scalable methods for computing state similarity in deterministic Markov decision processes",
+      "paper_id": "1911.09291v1"
+    },
+    {
+      "index": 10,
+      "title": "An elementary proof of the triangle inequality for the Wasserstein metric",
+      "abstract": "",
+      "year": "2008",
+      "venue": "American Mathematical Society",
+      "authors": "Philippe Clement and Wolfgang Desch"
+    },
+    {
+      "index": 11,
+      "title": "Efficient Model–Based Deep Reinforcement Learning with Variational State Tabulation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Dane Corneil, Wulfram Gerstner, and Johanni Brea",
+      "orig_title": "Efficient model-based deep reinforcement learning with variational state tabulation",
+      "paper_id": "1802.04325v2"
+    },
+    {
+      "index": 12,
+      "title": "Metrics for finite Markov decision processes",
+      "abstract": "",
+      "year": "2004",
+      "venue": "20th Conference on Uncertainty in Artificial Intelligence, UAI ’04",
+      "authors": "Norm Ferns, Prakash Panangaden, and Doina Precup"
+    },
+    {
+      "index": 13,
+      "title": "Bisimulation metrics for continuous Markov decision processes",
+      "abstract": "",
+      "year": "2011",
+      "venue": "SIAM J. Comput.",
+      "authors": "Norm Ferns, Prakash Panangaden, and Doina Precup"
+    },
+    {
+      "index": 14,
+      "title": "Bisimulation metrics are optimal value functions",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Thirtieth Conference on Uncertainty in Artificial Intelligence, UAI’14",
+      "authors": "Norm Ferns and Doina Precup"
+    },
+    {
+      "index": 15,
+      "title": "Combined Reinforcement Learning via Abstract Representations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Vincent François-Lavet, Yoshua Bengio, Doina Precup, and Joelle Pineau",
+      "orig_title": "Combined reinforcement learning via abstract representations",
+      "paper_id": "1809.04506v2"
+    },
+    {
+      "index": 16,
+      "title": "DeepMDP: Learning Continuous Latent Space Models for Representation Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Carles Gelada, Saurabh Kumar, Jacob Buckman, Ofir Nachum, and Marc G Bellemare",
+      "orig_title": "DeepMDP: Learning continuous latent space models for representation learning",
+      "paper_id": "1906.02736v1"
+    },
+    {
+      "index": 17,
+      "title": "Learning Actionable Representations with Goal-Conditioned Policies",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1811.07819",
+      "authors": "Dibya Ghosh, Abhishek Gupta, and Sergey Levine",
+      "orig_title": "Learning actionable representations with goal-conditioned policies",
+      "paper_id": "1811.07819v2"
+    },
+    {
+      "index": 18,
+      "title": "Equivalence notions and model minimization in markov decision processes",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Artificial Intelligence",
+      "authors": "Robert Givan, Thomas Dean, and Matthew Greig"
+    },
+    {
+      "index": 19,
+      "title": "Variational Intrinsic Control",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.07507",
+      "authors": "Karol Gregor, Danilo Jimenez Rezende, and Daan Wierstra",
+      "orig_title": "Variational intrinsic control",
+      "paper_id": "1611.07507v1"
+    },
+    {
+      "index": 20,
+      "title": "The Value Equivalence Principle for Model-Based Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Christopher Grimm, Andre Barreto, Satinder Singh, and David Silver",
+      "orig_title": "The value equivalence principle for model-based reinforcement learning",
+      "paper_id": "2011.03506v1"
+    },
+    {
+      "index": 21,
+      "title": "World Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1803.10122",
+      "authors": "David Ha and Jürgen Schmidhuber",
+      "orig_title": "World models",
+      "paper_id": "1803.10122v4"
+    },
+    {
+      "index": 22,
+      "title": "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine",
+      "orig_title": "Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor",
+      "paper_id": "1801.01290v2"
+    },
+    {
+      "index": 23,
+      "title": "Soft Actor-Critic Algorithms and Applications",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1812.05905",
+      "authors": "Tuomas Haarnoja, Aurick Zhou, Kristian Hartikainen, George Tucker, Sehoon Ha, Jie Tan, Vikash Kumar, Henry Zhu, Abhishek Gupta, Pieter Abbeel, et al.",
+      "orig_title": "Soft actor-critic algorithms and applications",
+      "paper_id": "1812.05905v2"
+    },
+    {
+      "index": 24,
+      "title": "Learning Latent Dynamics for Planning from Pixels",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Danijar Hafner, Timothy Lillicrap, Ian Fischer, Ruben Villegas, David Ha, Honglak Lee, and James Davidson",
+      "orig_title": "Learning latent dynamics for planning from pixels",
+      "paper_id": "1811.04551v5"
+    },
+    {
+      "index": 25,
+      "title": "In defense of the triplet loss for person re-identification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1703.07737",
+      "authors": "Alexander Hermans, Lucas Beyer, and Bastian Leibe"
+    },
+    {
+      "index": 26,
+      "title": "Learning Plannable Representations with Causal InfoGAN",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1807.09341",
+      "authors": "Thanard Kurutach, Aviv Tamar, Ge Yang, Stuart Russell, and Pieter Abbeel",
+      "orig_title": "Learning plannable representations with causal InfoGAN",
+      "paper_id": "1807.09341v1"
+    },
+    {
+      "index": 27,
+      "title": "CURL: Contrastive Unsupervised Representations for Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Michael Laskin, Aravind Srinivas, and Pieter Abbeel",
+      "orig_title": "Curl: Contrastive unsupervised representations for reinforcement learning",
+      "paper_id": "2004.04136v4"
+    },
+    {
+      "index": 28,
+      "title": "Metrics and continuity in reinforcement learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Charline Le Lan, Marc G Bellemare, and Pablo Samuel Castro",
+      "orig_title": "Metrics and continuity in reinforcement learning",
+      "paper_id": "2102.01514v1"
+    },
+    {
+      "index": 29,
+      "title": "Stochastic latent actor-critic: Deep reinforcement learning with a latent variable model",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.00953",
+      "authors": "Alex X Lee, Anusha Nagabandi, Pieter Abbeel, and Sergey Levine"
+    },
+    {
+      "index": 30,
+      "title": "Towards a unified theory of state abstraction for MDPs",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Ninth International Symposium on Artificial Intelligence and Mathematics",
+      "authors": "Lihong Li, Thomas J. Walsh, and Michael L. Littman"
+    },
+    {
+      "index": 31,
+      "title": "Efficient memory-based learning for robot control",
+      "abstract": "",
+      "year": "1990",
+      "venue": "",
+      "authors": "Andrew William Moore"
+    },
+    {
+      "index": 32,
+      "title": "Visual Reinforcement Learning with Imagined Goals",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1807.04742",
+      "authors": "Ashvin Nair, Vitchyr Pong, Murtaza Dalal, Shikhar Bahl, Steven Lin, and Sergey Levine",
+      "orig_title": "Visual reinforcement learning with imagined goals",
+      "paper_id": "1807.04742v2"
+    },
+    {
+      "index": 33,
+      "title": "Dreaming: Model-based Reinforcement Learning by Latent Imagination without Reconstruction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2007.14535",
+      "authors": "Masashi Okada and Tadahiro Taniguchi",
+      "orig_title": "Dreaming: Model-based reinforcement learning by latent imagination without reconstruction",
+      "paper_id": "2007.14535v2"
+    },
+    {
+      "index": 34,
+      "title": "The distance between two random vectors with given dispersion matrices",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Linear Algebra and its Applications",
+      "authors": "Ingram Olkin and Friedrich Pukelsheim"
+    },
+    {
+      "index": 35,
+      "title": "Curiosity-driven Exploration by Self-supervised Prediction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Deepak Pathak, Pulkit Agrawal, Alexei A Efros, and Trevor Darrell",
+      "orig_title": "Curiosity-driven exploration by self-supervised prediction",
+      "paper_id": "1705.05363v1"
+    },
+    {
+      "index": 36,
+      "title": "Biasing approximate dynamic programming with a lower discount factor",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Marek Petrik and Bruno Scherrer"
+    },
+    {
+      "index": 37,
+      "title": "An algebraic approach to abstraction in reinforcement learning",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": "Balaraman Ravindran"
+    },
+    {
+      "index": 38,
+      "title": "Approximate homomorphisms: A framework for non-exact minimization in Markov decision processes",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": "Balaraman Ravindran and Andrew G Barto"
+    },
+    {
+      "index": 39,
+      "title": "Empowerment–an introduction",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Guided Self-Organization: Inception",
+      "authors": "Christoph Salge, Cornelius Glackin, and Daniel Polani"
+    },
+    {
+      "index": 40,
+      "title": "Optimal transport for applied mathematicians",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Birkäuser, NY",
+      "authors": "Filippo Santambrogio"
+    },
+    {
+      "index": 41,
+      "title": "FaceNet: A Unified Embedding for Face Recognition and Clustering",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Florian Schroff, Dmitry Kalenichenko, and James Philbin",
+      "orig_title": "FaceNet: A unified embedding for face recognition and clustering",
+      "paper_id": "1503.03832v3"
+    },
+    {
+      "index": 42,
+      "title": "Incentivizing Exploration In Reinforcement Learning With Deep Predictive Models",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1507.00814",
+      "authors": "Bradly C Stadie, Sergey Levine, and Pieter Abbeel",
+      "orig_title": "Incentivizing exploration in reinforcement learning with deep predictive models",
+      "paper_id": "1507.00814v3"
+    },
+    {
+      "index": 43,
+      "title": "Decoupling Representation Learning from Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2009.08319",
+      "authors": "Adam Stooke, Kimin Lee, Pieter Abbeel, and Michael Laskin",
+      "orig_title": "Decoupling representation learning from reinforcement learning",
+      "paper_id": "2009.08319v3"
+    },
+    {
+      "index": 44,
+      "title": "DeepMind Control Suite",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1801.00690",
+      "authors": "Yuval Tassa, Yotam Doron, Alistair Muldal, Tom Erez, Yazhe Li, Diego de Las Casas, David Budden, Abbas Abdolmaleki, Josh Merel, Andrew Lefrancq, et al.",
+      "orig_title": "DeepMind control suite",
+      "paper_id": "1801.00690v1"
+    },
+    {
+      "index": 45,
+      "title": "Bounding performance loss in approximate MDP homomorphisms",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Jonathan Taylor, Doina Precup, and Prakash Panagaden"
+    },
+    {
+      "index": 46,
+      "title": "Mujoco: A physics engine for model-based control",
+      "abstract": "",
+      "year": "2012",
+      "venue": "2012 IEEE/RSJ International Conference on Intelligent Robots and Systems",
+      "authors": "Emanuel Todorov, Tom Erez, and Yuval Tassa"
+    },
+    {
+      "index": 47,
+      "title": "Plannable Approximations to MDP Homomorphisms: Equivariance under Actions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "19th International Conference on Autonomous Agents and MultiAgent Systems",
+      "authors": "Elise van der Pol, Thomas Kipf, Frans A Oliehoek, and Max Welling",
+      "orig_title": "Plannable approximations to MDP homomorphisms: Equivariance under actions",
+      "paper_id": "2002.11963v1"
+    },
+    {
+      "index": 48,
+      "title": "MDP homomorphic networks: Group symmetries in reinforcement learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Elise van der Pol, Daniel Worrall, Herke van Hoof, Frans Oliehoek, and Max Welling"
+    },
+    {
+      "index": 49,
+      "title": "Optimal transport: old and new, volume 338",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Springer Science & Business Media",
+      "authors": "Cédric Villani"
+    },
+    {
+      "index": 50,
+      "title": "Embed to control: a locally linear latent dynamics model for control from raw images",
+      "abstract": "",
+      "year": "2015",
+      "venue": "28th International Conference on Neural Information Processing Systems",
+      "authors": "Manuel Watter, Jost Tobias Springenberg, Joschka Boedecker, and Martin Riedmiller"
+    },
+    {
+      "index": 51,
+      "title": "Sampling Matters in Deep Embedding Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE International Conference on Computer Vision (ICCV)",
+      "authors": "Chao-Yuan Wu, R. Manmatha, Alexander J. Smola, and Philipp Krähenbühl",
+      "orig_title": "Sampling matters in deep embedding learning",
+      "paper_id": "1706.07567v2"
+    },
+    {
+      "index": 52,
+      "title": "Invariant representations for reinforcement learning without reconstruction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Amy Zhang, Rowan Thomas McAllister, Roberto Calandra, Yarin Gal, and Sergey Levine"
+    },
+    {
+      "index": 53,
+      "title": "SOLAR: Deep Structured Representations for Model-Based Reinforcement Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Marvin Zhang, Sharad Vikram, Laura Smith, Pieter Abbeel, Matthew Johnson, and Sergey Levine",
+      "orig_title": "Solar: Deep structured representations for model-based reinforcement learning",
+      "paper_id": "1808.09105v4"
+    },
+    {
+      "index": 54,
+      "title": "Modeling purposeful adaptive behavior with the principle of maximum causal entropy",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "Brian D Ziebart"
+    }
+  ]
+}

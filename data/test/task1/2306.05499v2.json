@@ -1,0 +1,597 @@
+{
+  "paper_id": "2306.05499v2",
+  "title": "Prompt Injection attack against LLM-integrated Applications",
+  "abstract": "Abstract\nLarge Language Models (LLMs), renowned for their superior proficiency in language comprehension and generation, stimulate a vibrant ecosystem of applications around them. However, their extensive assimilation into various services introduces significant security risks. This study deconstructs the complexities and implications of prompt injection attacks on actual LLM-integrated applications. Initially, we conduct an exploratory analysis on ten commercial applications, highlighting the constraints of current attack strategies in practice.\n\nPrompted by these limitations, we subsequently formulate HouYi, a novel black-box prompt injection attack technique, which draws inspiration from traditional web injection attacks. HouYi is compartmentalized into three crucial elements: a seamlessly-incorporated pre-constructed prompt, an injection prompt inducing context partition, and a malicious payload designed to fulfill the attack objectives. Leveraging HouYi, we unveil previously unknown and severe attack outcomes, such as unrestricted arbitrary LLM usage and uncomplicated application prompt theft.\nWe deploy HouYi on 36 actual LLM-integrated applications and discern 31 applications susceptible to prompt injection. 10 vendors have validated our discoveries, including Notion, which has the potential to impact millions of users.\nOur investigation illuminates both the possible risks of prompt injection attacks and the possible tactics for mitigation.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Notation",
+      "abstract": "",
+      "year": "",
+      "venue": "Notion",
+      "authors": "",
+      "orig_title": "Notion",
+      "paper_id": "2408.00899v1"
+    },
+    {
+      "index": 1,
+      "title": "Parea AI",
+      "abstract": "",
+      "year": "",
+      "venue": "Parea AI",
+      "authors": ""
+    },
+    {
+      "index": 2,
+      "title": "Supertools | Best AI Tools Guide",
+      "abstract": "",
+      "year": "",
+      "venue": "Supertools",
+      "authors": ""
+    },
+    {
+      "index": 3,
+      "title": "Prompt Injection Attacks against GPT-3",
+      "abstract": "",
+      "year": "2022",
+      "venue": "simonwillison.net",
+      "authors": ""
+    },
+    {
+      "index": 4,
+      "title": "Rate Limits OpenAI API",
+      "abstract": "",
+      "year": "",
+      "venue": "OpenAI API",
+      "authors": ""
+    },
+    {
+      "index": 5,
+      "title": "\"Real Attackers Don’t Compute Gradients\": Bridging the Gap between Adversarial ML Research and Practice",
+      "abstract": "",
+      "year": "2023",
+      "venue": "SaTML",
+      "authors": "Giovanni Apruzzese, Hyrum S. Anderson, Savino Dambra, David Freeman, Fabio Pierazzi, and Kevin A. Roundy"
+    },
+    {
+      "index": 6,
+      "title": "Spinning Language Models: Risks of Propaganda-As-A-Service and Countermeasures",
+      "abstract": "",
+      "year": "2022",
+      "venue": "S&P",
+      "authors": "Eugene Bagdasaryan and Vitaly Shmatikov"
+    },
+    {
+      "index": 7,
+      "title": "On the Dangers of Stochastic Parrots: Can Language Models Be Too Big?",
+      "abstract": "",
+      "year": "",
+      "venue": "FAccT",
+      "authors": "Emily M. Bender, Timnit Gebru, Angelina McMillan-Major, and Shmargaret Shmitchell"
+    },
+    {
+      "index": 8,
+      "title": "Emergent autonomous scientific research capabilities of large language models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Daniil A Boiko, Robert MacKnight, and Gabe Gomes"
+    },
+    {
+      "index": 9,
+      "title": "SQLrand: Preventing SQL injection attacks",
+      "abstract": "",
+      "year": "2004",
+      "venue": "ACNS",
+      "authors": "Stephen W Boyd and Angelos D Keromytis"
+    },
+    {
+      "index": 10,
+      "title": "Large Language Models as Tool Makers",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Tianle Cai, Xuezhi Wang, Tengyu Ma, Xinyun Chen, and Denny Zhou",
+      "orig_title": "Large Language Models as Tool Makers",
+      "paper_id": "2305.17126v2"
+    },
+    {
+      "index": 11,
+      "title": "Low-code LLM: Visual Programming over LLMs",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Yuzhe Cai, Shaoguang Mao, Wenshan Wu, Zehua Wang, Yaobo Liang, Tao Ge, Chenfei Wu, Wang You, Ting Song, Yan Xia, et al.",
+      "orig_title": "Low-code LLM: Visual Programming over LLMs",
+      "paper_id": "2304.08103v3"
+    },
+    {
+      "index": 12,
+      "title": "Writesonic",
+      "abstract": "",
+      "year": "",
+      "venue": "Writesonic",
+      "authors": "ChatAIWriter"
+    },
+    {
+      "index": 13,
+      "title": "SQL injection attacks and defense",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Elsevier",
+      "authors": "Justin Clarke"
+    },
+    {
+      "index": 14,
+      "title": "How to Jailbreak ChatGPT",
+      "abstract": "",
+      "year": "",
+      "venue": "watcher.guru",
+      "authors": "Lavina Daryanani"
+    },
+    {
+      "index": 15,
+      "title": "Exploring Prompt Injection Attacks - NCC Group Research Blog",
+      "abstract": "",
+      "year": "2023",
+      "venue": "NCC Group Research Blog",
+      "authors": ""
+    },
+    {
+      "index": 16,
+      "title": "RealToxicityPrompts: Evaluating Neural Toxic Degeneration in Language Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "EMNLP",
+      "authors": "Samuel Gehman, Suchin Gururangan, Maarten Sap, Yejin Choi, and Noah A. Smith"
+    },
+    {
+      "index": 17,
+      "title": "PaLM 2",
+      "abstract": "",
+      "year": "",
+      "venue": "Google AI",
+      "authors": "Google AI"
+    },
+    {
+      "index": 18,
+      "title": "Auto-GPT",
+      "abstract": "",
+      "year": "",
+      "venue": "GitHub",
+      "authors": "Significant Gravitas"
+    },
+    {
+      "index": 19,
+      "title": "Not what you’ve signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Kai Greshake, Sahar Abdelnabi, Shailesh Mishra, Christoph Endres, Thorsten Holz, and Mario Fritz",
+      "orig_title": "Not what you’ve signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection",
+      "paper_id": "2302.12173v2"
+    },
+    {
+      "index": 20,
+      "title": "Diava: A traffic-based framework for detection of sql injection attacks and vulnerability analysis of leaked data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Reliability",
+      "authors": "Haifeng Gu, Jianning Zhang, Tian Liu, Ming Hu, Junlong Zhou, Tongquan Wei, and Mingsong Chen"
+    },
+    {
+      "index": 21,
+      "title": "Defense Tactics",
+      "abstract": "",
+      "year": "",
+      "venue": "Prompt Engineering Guide",
+      "authors": "Prompt Engineering Guide"
+    },
+    {
+      "index": 22,
+      "title": "Cross-Site Scripting (XSS) attacks and defense mechanisms: classification and state-of-the-art",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Int. J. Syst. Assur. Eng. Manag.",
+      "authors": "Shashank Gupta and Brij Bhooshan Gupta"
+    },
+    {
+      "index": 23,
+      "title": "Swot analysis: a theoretical review",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Emet GURL"
+    },
+    {
+      "index": 24,
+      "title": "A classification of SQL-injection attacks and countermeasures",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ISSSR",
+      "authors": "William G Halfond, Jeremy Viegas, Alessandro Orso, et al."
+    },
+    {
+      "index": 25,
+      "title": "ToolkenGPT: Augmenting Frozen Language Models with Massive Tools via Tool Embeddings",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Shibo Hao, Tianyang Liu, Zhen Wang, and Zhiting Hu",
+      "orig_title": "ToolkenGPT: Augmenting Frozen Language Models with Massive Tools via Tool Embeddings",
+      "paper_id": "2305.11554v4"
+    },
+    {
+      "index": 26,
+      "title": "Current state of research on cross-site scripting (XSS)–A systematic literature review",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Information and Software Technology",
+      "authors": "Isatou Hydara, Abu Bakar Md Sultan, Hazura Zulzalil, and Novia Admodisastro"
+    },
+    {
+      "index": 27,
+      "title": "Language Models can Solve Computer Tasks",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Geunwoo Kim, Pierre Baldi, and Stephen McAleer",
+      "orig_title": "Language models can solve computer tasks",
+      "paper_id": "2303.17491v3"
+    },
+    {
+      "index": 28,
+      "title": "Api-bank: A benchmark for tool-augmented llms",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Minghao Li, Feifan Song, Bowen Yu, Haiyang Yu, Zhoujun Li, Fei Huang, and Yongbin Li"
+    },
+    {
+      "index": 29,
+      "title": "Taskmatrix. ai: Completing tasks by connecting foundation models with millions of apis",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Yaobo Liang, Chenfei Wu, Ting Song, Wenshan Wu, Yan Xia, Yu Liu, Yang Ou, Shuai Lu, Lei Ji, Shaoguang Mao, et al."
+    },
+    {
+      "index": 30,
+      "title": "ChatGPT-powered Conversational Drug Editing Using Retrieval and Domain Feedback",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Shengchao Liu, Jiongxiao Wang, Yijin Yang, Chengpeng Wang, Ling Liu, Hongyu Guo, and Chaowei Xiao",
+      "orig_title": "ChatGPT-powered Conversational Drug Editing Using Retrieval and Domain Feedback",
+      "paper_id": "2305.18090v1"
+    },
+    {
+      "index": 31,
+      "title": "Adversarial Training for Large Neural Language Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "Xiaodong Liu, Hao Cheng, Pengcheng He, Weizhu Chen, Yu Wang, Hoifung Poon, and Jianfeng Gao",
+      "orig_title": "Adversarial Training for Large Neural Language Models",
+      "paper_id": "2004.08994v2"
+    },
+    {
+      "index": 32,
+      "title": "Jailbreaking ChatGPT via Prompt Engineering: An Empirical Study",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Yi Liu, Gelei Deng, Zhengzi Xu, Yuekang Li, Yaowen Zheng, Ying Zhang, Lida Zhao, Tianwei Zhang, and Yang Liu"
+    },
+    {
+      "index": 33,
+      "title": "SelfCheckGPT: Zero-Resource Black-Box Hallucination Detection for Generative Large Language Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Potsawee Manakul, Adian Liusie, and Mark JF Gales",
+      "orig_title": "Selfcheckgpt: Zero-resource black-box hallucination detection for generative large language models",
+      "paper_id": "2303.08896v3"
+    },
+    {
+      "index": 34,
+      "title": "Sources of Hallucination by Large Language Models on Inference Tasks",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Nick McKenna, Tianyi Li, Liang Cheng, Mohammad Javad Hosseini, Mark Johnson, and Mark Steedman",
+      "orig_title": "Sources of Hallucination by Large Language Models on Inference Tasks",
+      "paper_id": "2305.14552v2"
+    },
+    {
+      "index": 35,
+      "title": "Notable: Transferable Backdoor Attacks Against Prompt-based NLP Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACL",
+      "authors": "Kai Mei, Zheng Li, Zhenting Wang, Yang Zhang, and Shiqing Ma",
+      "orig_title": "NOTABLE: Transferable Backdoor Attacks Against Prompt-based NLP Models",
+      "paper_id": "2305.17826v1"
+    },
+    {
+      "index": 36,
+      "title": "Introducing LLaMA: A foundational, 65-billion-parameter large language model",
+      "abstract": "",
+      "year": "",
+      "venue": "Meta AI",
+      "authors": "Meta"
+    },
+    {
+      "index": 37,
+      "title": "Evaluating the Robustness of Neural Language Models to Input Perturbations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "EMNLP 2021",
+      "authors": "Milad Moradi and Matthias Samwald"
+    },
+    {
+      "index": 38,
+      "title": "GPT-4",
+      "abstract": "",
+      "year": "",
+      "venue": "OpenAI",
+      "authors": "OpenAI"
+    },
+    {
+      "index": 39,
+      "title": "OWASP Top 10 List for Large Language Models version 0.1",
+      "abstract": "",
+      "year": "",
+      "venue": "OWASP",
+      "authors": "OWASP"
+    },
+    {
+      "index": 40,
+      "title": "What is Jailbreaking in AI models like ChatGPT?",
+      "abstract": "",
+      "year": "",
+      "venue": "Techopedia",
+      "authors": "Kaushik Pal"
+    },
+    {
+      "index": 41,
+      "title": "ART: Automatic multi-step reasoning and tool-use for large language models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Bhargavi Paranjape, Scott Lundberg, Sameer Singh, Hannaneh Hajishirzi, Luke Zettlemoyer, and Marco Tulio Ribeiro"
+    },
+    {
+      "index": 42,
+      "title": "Generative Agents: Interactive Simulacra of Human Behavior",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Joon Sung Park, Joseph C O’Brien, Carrie J Cai, Meredith Ringel Morris, Percy Liang, and Michael S Bernstein",
+      "orig_title": "Generative agents: Interactive simulacra of human behavior",
+      "paper_id": "2304.03442v2"
+    },
+    {
+      "index": 43,
+      "title": "Ignore Previous Prompt: Attack Techniques For Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS ML Safety Workshop",
+      "authors": "Fábio Perez and Ian Ribeiro",
+      "orig_title": "Ignore Previous Prompt: Attack Techniques For Language Models",
+      "paper_id": "2211.09527v1"
+    },
+    {
+      "index": 44,
+      "title": "Pricing",
+      "abstract": "",
+      "year": "",
+      "venue": "OpenAI",
+      "authors": ""
+    },
+    {
+      "index": 45,
+      "title": "Instruction Defense",
+      "abstract": "",
+      "year": "",
+      "venue": "Learn Prompting",
+      "authors": "Learn Prompting"
+    },
+    {
+      "index": 46,
+      "title": "Instruction Defense",
+      "abstract": "",
+      "year": "",
+      "venue": "Learn Prompting",
+      "authors": "Learn Prompting"
+    },
+    {
+      "index": 47,
+      "title": "Prompt Leaking",
+      "abstract": "",
+      "year": "",
+      "venue": "Learn Prompting",
+      "authors": "Learn Prompting"
+    },
+    {
+      "index": 48,
+      "title": "Random Sequence Enclosure",
+      "abstract": "",
+      "year": "",
+      "venue": "Learn Prompting",
+      "authors": "Learn Prompting"
+    },
+    {
+      "index": 49,
+      "title": "Sandwich Defense",
+      "abstract": "",
+      "year": "",
+      "venue": "Learn Prompting",
+      "authors": "Learn Prompting"
+    },
+    {
+      "index": 50,
+      "title": "Separate LLM Evaluation",
+      "abstract": "",
+      "year": "",
+      "venue": "Learn Prompting",
+      "authors": "Learn Prompting"
+    },
+    {
+      "index": 51,
+      "title": "XML Tagging",
+      "abstract": "",
+      "year": "",
+      "venue": "Learn Prompting",
+      "authors": "Learn Prompting"
+    },
+    {
+      "index": 52,
+      "title": "CREATOR: Disentangling Abstract and Concrete Reasonings of Large Language Models through Tool Creation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Cheng Qian, Chi Han, Yi R Fung, Yujia Qin, Zhiyuan Liu, and Heng Ji"
+    },
+    {
+      "index": 53,
+      "title": "The Full Story of Large Language Models and RLHF",
+      "abstract": "",
+      "year": "",
+      "venue": "AssemblyAI",
+      "authors": "Marco Ramponi"
+    },
+    {
+      "index": 54,
+      "title": "Tricking LLMs into Disobedience: Understanding, Analyzing, and Preventing Jailbreaks",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Abhinav Rao, Sachin Vashistha, Atharva Naik, Somak Aditya, and Monojit Choudhury"
+    },
+    {
+      "index": 55,
+      "title": "Get a Model! Model Hijacking Attack Against Machine Learning Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NDSS",
+      "authors": "Ahmed Salem, Michael Backes, and Yang Zhang",
+      "orig_title": "Get a Model! Model Hijacking Attack Against Machine Learning Models",
+      "paper_id": "2111.04394v1"
+    },
+    {
+      "index": 56,
+      "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Timo Schick, Jane Dwivedi-Yu, Roberto Dessì, Roberta Raileanu, Maria Lomeli, Luke Zettlemoyer, Nicola Cancedda, and Thomas Scialom",
+      "orig_title": "Toolformer: Language models can teach themselves to use tools",
+      "paper_id": "2302.04761v1"
+    },
+    {
+      "index": 57,
+      "title": "Role-Play with Large Language Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Murray Shanahan, Kyle McDonell, and Laria Reynolds",
+      "orig_title": "Role-play with large language models",
+      "paper_id": "2305.16367v1"
+    },
+    {
+      "index": 58,
+      "title": "HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in Hugging Face",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Yongliang Shen, Kaitao Song, Xu Tan, Dongsheng Li, Weiming Lu, and Yueting Zhuang",
+      "orig_title": "Hugginggpt: Solving ai tasks with chatgpt and its friends in huggingface",
+      "paper_id": "2303.17580v4"
+    },
+    {
+      "index": 59,
+      "title": "Why So Toxic? Measuring and Triggering Toxic Behavior in Open-Domain Chatbots",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CCS",
+      "authors": "Wai Man Si, Michael Backes, Jeremy Blackburn, Emiliano De Cristofaro, Gianluca Stringhini, Savvas Zannettou, and Yang Zhang",
+      "orig_title": "Why So Toxic?: Measuring and Triggering Toxic Behavior in Open-Domain Chatbots",
+      "paper_id": "2209.03463v2"
+    },
+    {
+      "index": 60,
+      "title": "Two-in-One: A Model Hijacking Attack Against Text Generation Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Wai Man Si, Michael Backes, Yang Zhang, and Ahmed Salem",
+      "orig_title": "Two-in-One: A Model Hijacking Attack Against Text Generation Models",
+      "paper_id": "2305.07406v1"
+    },
+    {
+      "index": 61,
+      "title": "Contrastive Learning Reduces Hallucination in Conversations",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint",
+      "authors": "Weiwei Sun, Zhengliang Shi, Shen Gao, Pengjie Ren, Maarten de Rijke, and Zhaochun Ren",
+      "orig_title": "Contrastive Learning Reduces Hallucination in Conversations",
+      "paper_id": "2212.10400v1"
+    },
+    {
+      "index": 62,
+      "title": "A systematic analysis of XSS sanitization in web application frameworks",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ESORICS",
+      "authors": "Joel Weinberger, Prateek Saxena, Devdatta Akhawe, Matthew Finifter, Richard Shin, and Dawn Song"
+    },
+    {
+      "index": 63,
+      "title": "Fundamental limitations of alignment in Large Language Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Yotam Wolf, Noam Wies, Yoav Levine, and Amnon Shashua",
+      "orig_title": "Fundamental limitations of alignment in large language models",
+      "paper_id": "2304.11082v6"
+    },
+    {
+      "index": 64,
+      "title": "On the Tool Manipulation Capability of Open-source Large Language Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint",
+      "authors": "Qiantong Xu, Fenglu Hong, Bo Li, Changran Hu, Zhengyu Chen, and Jian Zhang",
+      "orig_title": "On the Tool Manipulation Capability of Open-source Large Language Models",
+      "paper_id": "2305.16504v1"
+    },
+    {
+      "index": 65,
+      "title": "React: Synergizing reasoning and acting in language models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICLR",
+      "authors": "Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao"
+    },
+    {
+      "index": 66,
+      "title": "Interpreting the Robustness of Neural NLP Models to Textual Perturbations",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACL",
+      "authors": "Yunxiang Zhang, Liangming Pan, Samson Tan, and Min-Yen Kan"
+    },
+    {
+      "index": 67,
+      "title": "Fine-mixing: Mitigating Backdoors in Fine-tuned Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "EMNLP",
+      "authors": "Zhiyuan Zhang, Lingjuan Lyu, Xingjun Ma, Chenguang Wang, and Xu Sun",
+      "orig_title": "Fine-mixing: Mitigating Backdoors in Fine-tuned Language Models",
+      "paper_id": "2210.09545v1"
+    }
+  ]
+}

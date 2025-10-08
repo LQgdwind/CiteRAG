@@ -1,0 +1,379 @@
+{
+  "paper_id": "2412.01059v3",
+  "title": "Blindfold: Confidential Memory Management by Untrusted Operating System",
+  "sections": {
+    "i introduction": "Modern operating systems (OSes) enjoy unfettered access to the application data.\nThis access is problematic because the OS may not be trustworthy, due to vulnerabilities from its large attack surface  or lack of trust in the OS provider.\nIn recent years, many have attempted to ameliorate this problem under the umbrella of Confidential Computing (CC).\nWe say that a process or application is sensitive if it does not trust the OS; we call the memory used by such applications Confidential Memory.\nExisting CC solutions do not adequately support legitimate OS access to Confidential Memory and, as a result, poorly support modern big-data applications.\n(i) Some, e.g., TrustShadow  and BlackBox , hide memory used by sensitive applications from the OS, and as a result, OS functions stop working for such memory.\nOthers, e.g., Overshadow , resort to expensive encryption for all OS access.\n(ii) When the OS requires clear-text access to user memory, e.g., system call arguments, existing CC solutions take a case-by-case approach, leading to inflated trusted computing base (TCB) and extra data copy.\n(iii) Many of them resort to using an additional level of address translation managed by the TCB to decouple protection from address translation    0  .\nAs a result, important OS optimization for big-data applications, e.g., page migration 1 and hugepage 2, would no longer work.\n(iv) Other hardware-based solutions, such as Intel SGX, often suffer from hardware limitations. For example, applications built on top of Intel SGX suffer from a limited Enclave Page Cache (EPC) as most platforms have 128 MB or 256 MB of Processor Reserved Memory (PRM) 3. This paper reports our experience of overcoming the above limitations and allowing an untrusted Linux kernel to manage confidential memory without jeopardizing its confidentiality.\nWe present Blindfold and its implementation for ARMv8-A.\nLike many existing CC solutions, Blindfold employs a small trusted software called Guardian that runs at a higher privilege level than the Linux kernel.\nWith Blindfold, we demonstrate the effectiveness of a suite of techniques that can be adopted by existing CC solutions to overcome the limitations discussed above.\nFirst, unlike previous work that deploys additional nested (or shadow) page tables and interrupt tables in TCB, Blindfold keeps them out of the TCB (Guardian) but lets Guardian determine which one to use.\nThat is, it switches between these tables, instead of nesting them (see Figure 2).\nBlindfold employs this idea to mediate memory access by the OS and the DMA (§IV-A) as well as protect the control flow integrity (CFI) of the protected application in interrupts (§IV-C).\nThis technique can be used to isolate software regardless of which privilege mode it runs in, an objective of Tyche 4.\nSecond, unlike previous work that supports semantic kernel access in a case-by-case manner, Blindfold employs a single mechanism, a lightweight capability system, to support all (see Figure 2; §IV-B).\nA sensitive process explicitly grants a capability to the OS when making a system call.\nThird, to enable  nonsemantic kernel access to manage confidential memory avoiding high overhead, Blindfold identifies the most popular memory operations in the kernel and provides secure ABI for management (see Figure 2; §IV-A), instead of always providing an encrypted view of user pages to the OS as in prior work like Overshadow . With Blindfold’s prototype, we empirically show, for the first time, that the Linux kernel along with most (if not all) of its optimizations can indeed function properly with confidential memory.\nOnly memory compression 5 would lose its effectiveness (but still work) under Blindfold.\nImportantly, we are able to quantify the cost of managing confidential memory.\nWith proper optimization, Blindfold imposes about 3% to 25% performance overhead to unprotected, memory and compute intensive applications, while 10% to 44% to protected ones.\nHowever, it does impose substantial overhead for I/O-intensive applications, including those that require frequent restarts.\nMuch of the overhead comes from cryptography and control-flow changes, instead of memory access.\nMoreover, Blindfold requires about 400 LOC of modification of the Linux kernel.\nIts Guardian, implemented in mostly safe Rust (2.2K LOC), is about half the size of TCB from related systems   , because Guardian does not manage memory or handle exceptions. We note that Blindfold only uses widely available and time-tested architectural supports (§III-B) and as a result it is highly portable.\nAt the time of this writing, a basic x86-64 port (without full features) already works.\nMoreover, Blindfold supports legacy binaries and supports both protected and unprotected applications on the same system, with unprotected ones paying small performance overhead, except I/O intensive applications similar to BlackBox  and TrustShadow .\nBlindfold is open-source and available from 6 and an early prototype of it is described in 7"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "“Overshadow: a virtualization-based approach to retrofitting protection in commodity operating systems",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Overshadow: a virtualization-based approach to retrofitting protection in commodity operating systems",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ACM Int. Conf. Architectural Support for Programming Languages & Operating Systems (ASPLOS)",
+      "authors": "X. Chen, T. Garfinkel, E. C. Lewis, P. Subrahmanyam, C. A. Waldspurger, D. Boneh, J. Dwoskin, and D. R. Ports"
+    },
+    {
+      "index": 2,
+      "title": "Inktag: Secure applications on an untrusted operating system",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM Int. Conf. Architectural Support for Programming Languages & Operating Systems (ASPLOS)",
+      "authors": "O. S. Hofmann, S. Kim, A. M. Dunn, M. Z. Lee, and E. Witchel"
+    },
+    {
+      "index": 3,
+      "title": "Sego: Pervasive trusted metadata for efficiently verified untrusted system services",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Int. Conf. Architectural Support for Programming Languages & Operating Systems (ASPLOS)",
+      "authors": "Y. Kwon, A. M. Dunn, M. Z. Lee, O. S. Hofmann, Y. Xu, and E. Witchel"
+    },
+    {
+      "index": 4,
+      "title": "TrustShadow: Secure execution of unmodified applications with ARM TrustZone",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Int. Conf. Mobile Systems, Applications, & Services (MobiSys)",
+      "authors": "L. Guan, P. Liu, X. Xing, X. Ge, S. Zhang, M. Yu, and T. Jaeger"
+    },
+    {
+      "index": 5,
+      "title": "Protecting cloud virtual machines from hypervisor and host operating system exploits",
+      "abstract": "",
+      "year": "2019",
+      "venue": "USENIX Security Symp.",
+      "authors": "S.-W. Li, J. S. Koh, and J. Nieh"
+    },
+    {
+      "index": 6,
+      "title": "TwinVisor: Hardware-isolated confidential virtual machines for ARM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM Symp. Operating Systems Principles (SOSP)",
+      "authors": "D. Li, Z. Mi, Y. Xia, B. Zang, H. Chen, and H. Guan"
+    },
+    {
+      "index": 7,
+      "title": "BlackBox: A container security monitor for protecting containers on untrusted operating systems",
+      "abstract": "",
+      "year": "2022",
+      "venue": "USENIX Conf. Operating Systems Design and Implementation (OSDI)",
+      "authors": "A. Van’t Hof and J. Nieh"
+    },
+    {
+      "index": 8,
+      "title": "Linux Threat Report 2021 1H: Linux threats in the cloud and security recommendations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "M. Logan and P. Kinger"
+    },
+    {
+      "index": 9,
+      "title": "Cloudvisor: retrofitting protection of virtual machines in multi-tenant cloud with nested virtualization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ACM Symp. Operating Systems Principles (SOSP)",
+      "authors": "F. Zhang, J. Chen, H. Chen, and B. Zang"
+    },
+    {
+      "index": 10,
+      "title": "(mostly) exitless VM protection from untrusted hypervisor through disaggregated nested virtualization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "USENIX Security Symp.",
+      "authors": "Z. Mi, D. Li, H. Chen, B. Zang, and H. Guan"
+    },
+    {
+      "index": 11,
+      "title": "Page migration — the linux kernel documentation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "The Linux kernel development community"
+    },
+    {
+      "index": 12,
+      "title": "Transparent hugepage support — the linux kernel documentation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "——"
+    },
+    {
+      "index": 13,
+      "title": "Find the Size of Enclave Page Cache (EPC)",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Intel"
+    },
+    {
+      "index": 14,
+      "title": "Creating trust by abolishing hierarchies",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Wrkshp. Hot Topics in Operating Systems (HotOS)",
+      "authors": "C. Castes, A. Ghosn, N. S. Kalani, Y. Qian, M. Kogias, M. Payer, and E. Bugnion"
+    },
+    {
+      "index": 15,
+      "title": "In-kernel memory compression",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "D. Magenheimer"
+    },
+    {
+      "index": 16,
+      "title": "Blindfold",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "C. Li"
+    },
+    {
+      "index": 17,
+      "title": "MProtect: Operating System Memory Management without Access",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2212.12671",
+      "authors": "C. Li, S.-s. Lee, M. H. Yun, and L. Zhong",
+      "orig_title": "MProtect: Operating system memory management without access",
+      "paper_id": "2212.12671v1"
+    },
+    {
+      "index": 18,
+      "title": "Nested kernel: An operating system architecture for intra-kernel privilege separation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM Int. Conf. Architectural Support for Programming Languages & Operating Systems (ASPLOS)",
+      "authors": "N. Dautenhahn, T. Kasampalis, W. Dietz, J. Criswell, and V. Adve"
+    },
+    {
+      "index": 19,
+      "title": "SKEE: A lightweight secure kernel-level execution environment for ARM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Network and Distributed System Security Symp. (NDSS)",
+      "authors": "A. M. Azab, K. Swidowski, R. Bhutkar, J. Ma, W. Shen, R. Wang, and P. Ning"
+    },
+    {
+      "index": 20,
+      "title": "Ginseng: Keeping secrets in registers when you distrust the operating system",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Network and Distributed System Security Symp. (NDSS)",
+      "authors": "M. Yun and L. Zhong"
+    },
+    {
+      "index": 21,
+      "title": "Virtual memory primer — the linux kernel documentation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "The Linux kernel development community"
+    },
+    {
+      "index": 22,
+      "title": "SANCTUARY: Arming TrustZone with user-space enclaves.",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Network and Distributed System Security Symp. (NDSS)",
+      "authors": "F. Brasser, D. Gens, P. Jauernig, A.-R. Sadeghi, and E. Stapf"
+    },
+    {
+      "index": 23,
+      "title": "User space memory access from the linux kernel",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "M. Jones"
+    },
+    {
+      "index": 24,
+      "title": "Investigating kernel user-space access",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "B. Dooks and K. Hu"
+    },
+    {
+      "index": 25,
+      "title": "Freebsd kernel developer’s manual, copy",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "FreeBSD"
+    },
+    {
+      "index": 26,
+      "title": "SCONE: Secure linux containers with Intel SGX",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX Conf. Operating Systems Design and Implementation (OSDI)",
+      "authors": "S. Arnautov, B. Trach, F. Gregor, T. Knauth, A. Martin, C. Priebe, J. Lind, D. Muthukumaran, D. O’keeffe, M. L. Stillwell et al."
+    },
+    {
+      "index": 27,
+      "title": "End-to-end arguments in system design",
+      "abstract": "",
+      "year": "1984",
+      "venue": "ACM Transactions on Computer Systems (TOCS)",
+      "authors": "J. H. Saltzer, D. P. Reed, and D. D. Clark"
+    },
+    {
+      "index": 28,
+      "title": "Return-oriented programming: Systems, languages, and applications",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ACM Trans. Information and System Security (TISSEC)",
+      "authors": "R. Roemer, E. Buchanan, H. Shacham, and S. Savage"
+    },
+    {
+      "index": 29,
+      "title": "Iago attacks: Why the system call API is a bad untrusted RPC interface",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM Int. Conf. Architectural Support for Programming Languages & Operating Systems (ASPLOS)",
+      "authors": "S. Checkoway and H. Shacham"
+    },
+    {
+      "index": 30,
+      "title": "ARM trusted firmware",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "ARM"
+    },
+    {
+      "index": 31,
+      "title": "Rustcrypto project",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "RustCrypto"
+    },
+    {
+      "index": 32,
+      "title": "LMbench - Tools for Performance Analysis",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 33,
+      "title": "Example code of using DNN module in OpenCV",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "OpenCV"
+    },
+    {
+      "index": 34,
+      "title": "Unnecessary gettimeoftheday / ustime calls or mstime caching",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "A. Talvensaari"
+    },
+    {
+      "index": 35,
+      "title": "Excessive calls to mstime()",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "guybe7"
+    },
+    {
+      "index": 36,
+      "title": "LTP - Linux Test Project",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 37,
+      "title": "Innovative instructions and software model for isolated execution",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Int. Wrkshp. Hardware and Architectural Support for Security and Privacy (HASP)",
+      "authors": "F. McKeen, I. Alexandrovich, A. Berenzon, C. V. Rozas, H. Shafi, V. Shanbhogue, and U. R. Savagaonkar"
+    },
+    {
+      "index": 38,
+      "title": "Intel® software guard extensions (Intel® SGX) software support for dynamic memory allocation inside an enclave",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Int. Wrkshp. Hardware and Architectural Support for Security and Privacy (HASP)",
+      "authors": "B. C. Xing, M. Shanahan, and R. Leslie-Hurd"
+    },
+    {
+      "index": 39,
+      "title": "Exokernel: An operating system architecture for application-level resource management",
+      "abstract": "",
+      "year": "1995",
+      "venue": "ACM Symp. Operating Systems Principles (SOSP)",
+      "authors": "D. R. Engler, M. F. Kaashoek, and J. O’Toole Jr"
+    },
+    {
+      "index": 40,
+      "title": "Introducing Arm confidential compute architecture",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "ARM"
+    },
+    {
+      "index": 41,
+      "title": "Intel trust domain extensions (Intel TDX)",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Intel"
+    },
+    {
+      "index": 42,
+      "title": "Bareflank",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Assured Information Security, Inc."
+    },
+    {
+      "index": 43,
+      "title": "seL4: formal verification of an OS kernel",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ACM Symp. Operating Systems Principles (SOSP)",
+      "authors": "G. Klein, K. Elphinstone, G. Heiser, J. Andronick, D. Cock, P. Derrin, D. Elkaduwe, K. Engelhardt, R. Kolanski, M. Norrish, T. Sewell, H. Tuch, and S. Winwood"
+    },
+    {
+      "index": 44,
+      "title": "CertiKOS: An extensible architecture for building certified concurrent OS kernels",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX Conf. Operating Systems Design and Implementation (OSDI)",
+      "authors": "R. Gu, Z. Shao, H. Chen, X. N. Wu, J. Kim, V. Sjöberg, and D. Costanzo"
+    },
+    {
+      "index": 45,
+      "title": "Midas: Systematic kernel TOCTTOU protection",
+      "abstract": "",
+      "year": "2022",
+      "venue": "USENIX Security Symp.",
+      "authors": "A. Bhattacharyya, U. Tesic, and M. Payer"
+    }
+  ]
+}

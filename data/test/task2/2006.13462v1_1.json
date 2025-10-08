@@ -1,0 +1,443 @@
+{
+  "paper_id": "2006.13462v1",
+  "title": "DeepMnemonic: Password Mnemonic Genera- tion via Deep Attentive Encoder-Decoder Model",
+  "sections": {
+    "introduction": "Nowadays, user authentication is the key to ensuring the security of user accounts for most online services, such as social media, e-commerce, and online banking.\nAlthough various authentication schemes have emerged in recent years, e.g., pattern-based or biometric-based authentication, the password-based authentication remains a prevailing choice in most real-world applications, whose security relies on the difficulty in cracking passwords.\nChoosing strong passwords becomes extremely important and necessary. In reality, service providers often present password policies to aid users in creating strong passwords.\nSuch policies may require that a password be longer than a pre-defined minimum length, or contain multiple types of characters (letters, numbers, and special characters).\nSuch policies are expected to guide the generation of passwords that are resistant to password attacks , but users tend to choose passwords that are easy to memorize in practice .\nAs a result, password policies may not be as effective as expected . Much effort has been made to evaluate the strength of passwords  or to generate strong passwords .\nVarious methods, on the other hand, have been presented to crack passwords, assess whether passwords are sufficiently strong or not, or reduce password guessability 012.\nHowever, no rigorous effort has been made to address the memorability of strong passwords.\nStrong passwords are usually difficult for users to memorize because their entropy values are beyond many users’ memorability 345.\nThe memorability of strong password has become one of the biggest hindrances to the wide adoption of strong passwords in real-world applications. One possible approach to addressing this problem is to generate passwords that are not only secure but also easy to remember.\nDifferent strategies have been applied to generating word-based memorable passwords, such as pronounceable passwords 67, meaningful passwords 8, and passwords concatenating random words 9.\nUnfortunately, some of such strategies were demonstrated to be vulnerable to certain attacks 80, and moreover, there is no theoretical guarantee that the generated passwords are indeed strong.\nIn addition, various user-defined rules were adopted for the generation of expression-based memorable passwords 102.\nOne limitation of this approach is that the strength of the generated passwords largely depends on the uncertainty of the phrases chosen by users.\nThis approach also tends to suffer from the low quality of the generation rules 2. Instead of generating strong and memorable passwords, recent effort has been made to assist users in remembering passwords using external tools, such as helper cards 3, hint images 45 and engaging games 6.\nIn particular, Jeyaraman and Topkara 7 proposed a heuristic method that relies on textual hint headlines to deal with the memorability issue of strong passwords.\nGiven a password, they proposed to search and find an existing natural language headline that suggests the password from a given corpus (i.e., Reuter Corpus Volume 1).\nIf the search is unsuccessful, they would then use an external semantic lexicon named WordNet 8 to replace certain words in an existing headline with their synonyms.\nIn this way, they could find a headline or a variant headline and use it as a hint for memorizing a given password.\nThis approach is subject to the following limitations:\n(i) It can only handle the passwords composed of alphabetic characters. Manual intervention is needed to tackle digits or special characters, which are non-trivial for the composition of strong passwords in reality.\n(ii) Meaningful hint headlines are often missing by simply searching the given corpus while creating variant headlines at the word level by using an external lexicon may result in syntactically incorrect or semantically inconsistent headline sentences.\n(iii) It only works for short passwords that consist of 6 or 7 characters due to the limited lengths of the headlines in the corpus. In this work, given strong passwords, we propose to automatically generate mnemonics, i.e., natural language sentences, to bridge the gap between security and memorability of the passwords.\nSpecifically, we introduce a new mnemonic generation system named DeepMnemonic, which is capable of generating a semantically meaningful mnemonic sentence for each given textual password.\nThe core of DeepMnemonic is an attentive encoder-decoder neural network.\nIt learns to transform any given user password into a mnemonic sentence by first encoding the password character sequence and then decoding the encoded information into the mnemonic sentence via a specially designed attention strategy.\nBoth encoder and decoder are implemented with recurrent neural networks that can capture the contextual dependency among pair-wise input passwords and mnemonic sentences.\nThe key insight of DeepMnemonic is inspired by a cognitive psychology theory 9, which states that the human ability to memorize and recall certain information is positively influenced by associating additional semantic content with the information 7.\nThe natural language mnemonic sentences generated by DeepMnemonic can provide such semantically meaningful content for users to remember and recall the given strong passwords. Different from the existing textual password hint systems 7, DeepMnemonic enjoys several unique properties:\n(i) Feature-free: DeepMnemonic is an end-to-end solution, which aims to directly map a given textual password to its corresponding mnemonic sentence, and no manual feature engineering is needed in the learning process.\n(ii) Long-password-friendly: The attention-based recurrent neural network component in DeepMnemonic is capable of identifying salient information in long passwords for generating semantically meaningful sentences.\n(iii) Learning-adaptive: The learning of DeepMnemonic is fitted to different types of password-sentence training pairs so as to process diversified passwords and meet various mnemonic generation requirements. In summary, we have made the following main contributions in this work: We introduce DeepMnemonic, a mnemonic sentence generation system, to help users remember strong passwords.\nDeepMnemonic utilizes an encoder-decoder neural network model to generate meaningful mnemonic sentences for given strong passwords. We quantitatively evaluate the capability of DeepMnemonic in mnemonic sentence generation.\nOur experimental results show that DeepMnemonic achieves 99.09% MP (Mnemonic Proportion) and 16.47 BLEU-4 (BiLingual Evaluation Understudy), outperforming an n-gram language model baseline (83.62% MP and 5.09 BLEU-4). We conduct a user study to qualitatively evaluate the helpfulness of DeepMnemonic.\nThe results demonstrate that DeepMnemonic helps users with 54.47% decrease in time spent on remembering passwords and 57.14% decrease in recall error measured by the edit distance between each pair of the given password and its recalled version. The rest of this paper is organized as follows.\nSection 2 describes the password mnemonic generation problem and its application scenario.\nSection 3 introduces DeepMnemonic, a deep attentive encoder-decoder system that can generate mnemonic sentences for the given textual passwords.\nIn Section 4 and Section 5, we evaluate DeepMnemonic quantitatively and qualitatively in experiment and user study, respectively.\nSection 6 discusses several usability issues of DeepMnemonic.\nSection 7 summarizes the related work, and Section 8 concludes this paper."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Improving computer security for authentication of users: Influence of proactive password restrictions",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Behavior Research Methods",
+      "authors": "R. W. Proctor, M.-C. Lien, K.-P. L. Vu, E. E. Schultz, and G. Salvendy"
+    },
+    {
+      "index": 1,
+      "title": "I added ‘!’at the end to make it secure”: Observing password creation in the lab",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SOUPS",
+      "authors": "B. Ur, F. Noma, J. Bees, S. M. Segreti, R. Shay, L. Bauer, N. Christin, and L. F. Cranor"
+    },
+    {
+      "index": 2,
+      "title": "Testing metrics for password creation policies by attacking large sets of revealed passwords",
+      "abstract": "",
+      "year": "2010",
+      "venue": "17th ACM conference on Computer and communications security",
+      "authors": "M. Weir, S. Aggarwal, M. Collins, and H. Stern"
+    },
+    {
+      "index": 3,
+      "title": "A study of probabilistic password models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Security and Privacy (SP), 2014 IEEE Symposium on",
+      "authors": "J. Ma, W. Yang, M. Luo, and N. Li"
+    },
+    {
+      "index": 4,
+      "title": "Fast, lean, and accurate: Modeling password guessability using neural networks.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX Security Symposium",
+      "authors": "W. Melicher, B. Ur, S. M. Segreti, S. Komanduri, L. Bauer, N. Christin, and L. F. Cranor"
+    },
+    {
+      "index": 5,
+      "title": "fuzzypsm: A new password strength meter using fuzzy probabilistic context-free grammars",
+      "abstract": "",
+      "year": "2016",
+      "venue": "46th Annual IEEE/IFIP International Conference on Dependable Systems and Networks (DSN)",
+      "authors": "D. Wang, D. He, H. Cheng, and P. Wang"
+    },
+    {
+      "index": 6,
+      "title": "Improving text passwords through persuasion",
+      "abstract": "",
+      "year": "2008",
+      "venue": "4th symposium on Usable privacy and security",
+      "authors": "A. Forget, S. Chiasson, P. C. Van Oorschot, and R. Biddle"
+    },
+    {
+      "index": 7,
+      "title": "Persuasion for stronger passwords: Motivation and pilot study",
+      "abstract": "",
+      "year": "2008",
+      "venue": "International Conference on Persuasive Technology",
+      "authors": "——"
+    },
+    {
+      "index": 8,
+      "title": "Building better passwords using probabilistic techniques",
+      "abstract": "",
+      "year": "2012",
+      "venue": "28th Annual Computer Security Applications Conference",
+      "authors": "S. Houshmand and S. Aggarwal"
+    },
+    {
+      "index": 9,
+      "title": "Password cracking using probabilistic context-free grammars",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Security and Privacy, 2009 30th IEEE Symposium on",
+      "authors": "M. Weir, S. Aggarwal, B. De Medeiros, and B. Glodek"
+    },
+    {
+      "index": 10,
+      "title": "On semantic patterns of passwords and their security impact.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NDSS",
+      "authors": "R. Veras, C. Collins, and J. Thorpe"
+    },
+    {
+      "index": 11,
+      "title": "Adaptive password-strength meters from markov models.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "NDSS",
+      "authors": "C. Castelluccia, M. Dürmuth, and D. Perito"
+    },
+    {
+      "index": 12,
+      "title": "Password memorability and security: Empirical results",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE Security & privacy",
+      "authors": "J. Yan, A. Blackwell, R. Anderson, and A. Grant"
+    },
+    {
+      "index": 13,
+      "title": "The atomic components of thought",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Psychology Press",
+      "authors": "J. R. Anderson and C. J. Lebiere"
+    },
+    {
+      "index": 14,
+      "title": "The magical number seven, plus or minus two: Some limits on our capacity for processing information.",
+      "abstract": "",
+      "year": "1956",
+      "venue": "Psychological review",
+      "authors": "G. A. Miller"
+    },
+    {
+      "index": 15,
+      "title": "Password generator",
+      "abstract": "",
+      "year": "2017",
+      "venue": "https://www.warpconduit.net/password-generator/",
+      "authors": "WarpConduit_Computing"
+    },
+    {
+      "index": 16,
+      "title": "Safepassword",
+      "abstract": "",
+      "year": "2017",
+      "venue": "https://www.safepasswd.com/",
+      "authors": "R. Accettura"
+    },
+    {
+      "index": 17,
+      "title": "Mnemonic strong password generator",
+      "abstract": "",
+      "year": "2017",
+      "venue": "http://www.bad-neighborhood.com/password-generator.htm",
+      "authors": "Bad_Neighborhood"
+    },
+    {
+      "index": 18,
+      "title": "Mnemonic password generator",
+      "abstract": "",
+      "year": "2017",
+      "venue": "http://edoceo.com/utilitas/mnemonic-password-generator",
+      "authors": "edoceo"
+    },
+    {
+      "index": 19,
+      "title": "An empirical study of mnemonic sentence-based password generation strategies",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "W. Yang, N. Li, O. Chowdhury, A. Xiong, and R. W. Proctor"
+    },
+    {
+      "index": 20,
+      "title": "Human selection of mnemonic phrase-based passwords",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Second Symposium on Usable Privacy and Security, SOUPS ’06",
+      "authors": "C. Kuo, S. Romanosky, and L. F. Cranor"
+    },
+    {
+      "index": 21,
+      "title": "A large-scale analysis of the mnemonic password advice",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NDSS",
+      "authors": "J. Kiesel, B. Stein, and S. Lucks"
+    },
+    {
+      "index": 22,
+      "title": "Passwords decay, words endure: Secure and re-usable multiple password mnemonics",
+      "abstract": "",
+      "year": "2007",
+      "venue": "2007 ACM symposium on Applied computing",
+      "authors": "U. Topkara, M. J. Atallah, and M. Topkara"
+    },
+    {
+      "index": 23,
+      "title": "A proposal of an associating image-based password creating method and a development of a password creating support system",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Advanced Information Networking and Applications (AINA), 2010 24th IEEE International Conference on",
+      "authors": "M. Fukumitsu, T. Katoh, B. B. Bista, and T. Takata"
+    },
+    {
+      "index": 24,
+      "title": "Using system-generated mnemonics to improve the usability and security of password authentication",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Human Factors and Ergonomics Society Annual Meeting",
+      "authors": "K. A. Juang, S. Ranganayakulu, and J. S. Greenstein"
+    },
+    {
+      "index": 25,
+      "title": "Improving memorization and long term recall of system assigned passwords",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "J. Doolani et al."
+    },
+    {
+      "index": 26,
+      "title": "Have the cake and eat it too-infusing usability into text-password based authentication systems",
+      "abstract": "",
+      "year": "2005",
+      "venue": "21st Annual Computer Security Applications Conference",
+      "authors": "S. Jeyaraman and U. Topkara"
+    },
+    {
+      "index": 27,
+      "title": "Wordnet",
+      "abstract": "",
+      "year": "",
+      "venue": "https://wordnet.princeton.edu/",
+      "authors": "P. University"
+    },
+    {
+      "index": 28,
+      "title": "Analysis of a mnemonic device: Modern psychology uncovers the powerful components of an ancient system for improving memory",
+      "abstract": "",
+      "year": "1970",
+      "venue": "American Scientist",
+      "authors": "G. H. Bower"
+    },
+    {
+      "index": 29,
+      "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 International Conference on Learning Representations (ICLR)",
+      "authors": "D. Bahdanau, K. Cho, and Y. Bengio",
+      "orig_title": "Neural machine translation by jointly learning to align and translate",
+      "paper_id": "1409.0473v7"
+    },
+    {
+      "index": 30,
+      "title": "Bidirectional recurrent neural networks",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE Transactions on Signal Processing",
+      "authors": "M. Schuster and K. K. Paliwal"
+    },
+    {
+      "index": 31,
+      "title": "Learning phrase representations using rnn encoder-decoder for statistical machine translation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "2014 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+      "authors": "K. Cho, B. Van Merriënboer, C. Gulcehre, D. Bahdanau, F. Bougares, H. Schwenk, and Y. Bengio"
+    },
+    {
+      "index": 32,
+      "title": "Dropout: a simple way to prevent neural networks from overfitting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "N. Srivastava, G. Hinton, A. Krizhevsky, I. Sutskever, and R. Salakhutdinov"
+    },
+    {
+      "index": 33,
+      "title": "Pharaoh: a beam search decoder for phrase-based statistical machine translation models",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Conference of the Association for Machine Translation in the Americas",
+      "authors": "P. Koehn"
+    },
+    {
+      "index": 34,
+      "title": "Sequence to sequence learning with neural networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in neural information processing systems",
+      "authors": "I. Sutskever, O. Vinyals, and Q. V. Le"
+    },
+    {
+      "index": 35,
+      "title": "Foundations of statistical natural language processing",
+      "abstract": "",
+      "year": "1999",
+      "venue": "MIT press",
+      "authors": "C. D. Manning, C. D. Manning, and H. Schütze"
+    },
+    {
+      "index": 36,
+      "title": "Bleu: a method for automatic evaluation of machine translation",
+      "abstract": "",
+      "year": "2002",
+      "venue": "40th annual meeting on association for computational linguistics",
+      "authors": "K. Papineni, S. Roukos, T. Ward, and W.-J. Zhu"
+    },
+    {
+      "index": 37,
+      "title": "Memory: A contribution to experimental psychology",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Annals of neurosciences",
+      "authors": "H. Ebbinghaus"
+    },
+    {
+      "index": 38,
+      "title": "Approximate statistical tests for comparing supervised classification learning algorithms",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Neural computation",
+      "authors": "T. G. Dietterich"
+    },
+    {
+      "index": 39,
+      "title": "Student’s t-test for gaussian scale mixtures",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Journal of Mathematical Sciences",
+      "authors": "N. K. Bakirov and G. J. Szekely"
+    },
+    {
+      "index": 40,
+      "title": "What you see is not what you get: Leakage-resilient password entry schemes for smart glasses",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 ACM on Asia Conference on Computer and Communications Security",
+      "authors": "Y. Li, Y. Cheng, Y. Li, and R. H. Deng"
+    },
+    {
+      "index": 41,
+      "title": "Digital identity guidelines",
+      "abstract": "",
+      "year": "2017",
+      "venue": "https://pages.nist.gov/800-63-3/",
+      "authors": "NIST"
+    },
+    {
+      "index": 42,
+      "title": "Guess again (and again and again): Measuring password strength by simulating password-cracking algorithms",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Security and Privacy (SP), 2012 IEEE Symposium on",
+      "authors": "P. G. Kelley, S. Komanduri, M. L. Mazurek, R. Shay, T. Vidas, L. Bauer, N. Christin, L. F. Cranor, and J. Lopez"
+    },
+    {
+      "index": 43,
+      "title": "How does your password measure up? the effect of strength meters on password creation.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "USENIX Security Symposium",
+      "authors": "B. Ur, P. G. Kelley, S. Komanduri, J. Lee, M. Maass, M. L. Mazurek, T. Passaro, R. Shay, T. Vidas, L. Bauer et al."
+    },
+    {
+      "index": 44,
+      "title": "Birthday, name and bifacial-security: understanding passwords of chinese web users",
+      "abstract": "",
+      "year": "2019",
+      "venue": "28th USENIX Security Symposium (USENIX Security 19)",
+      "authors": "D. Wang, P. Wang, D. He, and Y. Tian"
+    },
+    {
+      "index": 45,
+      "title": "Understanding human-chosen pins: characteristics, distribution and security",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 ACM on Asia Conference on Computer and Communications Security",
+      "authors": "D. Wang, Q. Gu, X. Huang, and P. Wang"
+    },
+    {
+      "index": 46,
+      "title": "Popularity is everything: A new approach to protecting passwords from statistical-guessing attacks",
+      "abstract": "",
+      "year": "2010",
+      "venue": "5th USENIX conference on Hot topics in security",
+      "authors": "S. Schechter, C. Herley, and M. Mitzenmacher"
+    },
+    {
+      "index": 47,
+      "title": "Correct horse battery staple: Exploring the usability of system-assigned passphrases",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Eighth Symposium on Usable Privacy and Security, SOUPS ’12",
+      "authors": "R. Shay, P. G. Kelley, S. Komanduri, M. L. Mazurek, B. Ur, T. Vidas, L. Bauer, N. Christin, and L. F. Cranor"
+    },
+    {
+      "index": 48,
+      "title": "An empirical study of mnemonic password creation tips",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Computers & Security",
+      "authors": "B. Ye, Y. Guo, L. Zhang, and X. Guo"
+    },
+    {
+      "index": 49,
+      "title": "Alphapwd: A password generation strategy based on mnemonic shape",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "J. Song, D. Wang, Z. Yun, and X. Han"
+    },
+    {
+      "index": 50,
+      "title": "How to memorize a random 60-bit string",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Parking",
+      "authors": "M. Ghazvininejad and K. Knight"
+    },
+    {
+      "index": 51,
+      "title": "Papiapass: Sentence-based passwords using dependency trees",
+      "abstract": "",
+      "year": "2016",
+      "venue": "13th International Iranian Society of Cryptology Conference on Information Security and Cryptology (ISCISC)",
+      "authors": "H. A. Yajam, Y. K. Ahmadabadi, and M. Akhaee"
+    },
+    {
+      "index": 52,
+      "title": "Natural language processing for information assurance and security: an overview and implementations",
+      "abstract": "",
+      "year": "2001",
+      "venue": "2000 workshop on New security paradigms",
+      "authors": "M. J. Atallah, C. J. McDonough, V. Raskin, and S. Nirenburg"
+    },
+    {
+      "index": 53,
+      "title": "A neural probabilistic language model",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Journal of machine learning research",
+      "authors": "Y. Bengio, R. Ducharme, P. Vincent, and C. Jauvin"
+    }
+  ]
+}

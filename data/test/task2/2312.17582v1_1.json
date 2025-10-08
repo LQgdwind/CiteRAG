@@ -1,0 +1,447 @@
+{
+  "paper_id": "2312.17582v1",
+  "title": "Darwin3: A large-scale neuromorphic chip with a Novel ISA and On-Chip Learning",
+  "sections": {
+    "introduction": "Spiking neural networks (SNNs) have garnered significant attention from researchers due to their ability to process spatial-temporal information in an efficient event-driven manner. To exploit the capabilities of SNNs, several spiking neural network simulation platforms have been introduced, such as Brian2, NEST[ref]2, and SPAIC.\nNevertheless, the dependence of these platforms on using extensive GPU and CPU resources to mimic the spiking dynamics with a high count of timing steps potentially diminish the intrinsic advantages of SNNs. Neuromorphic chips are designed for efficient execution of spiking neural networks, which have demonstrated promising performance in brain simulation and specific ultra-low power scenarios. However, several limitations prevent them from fully leveraging the advantages of spiking neural networks. To better leverage the benefits of the SNN models, we should emphasize the three aspects when designing neuromorphic chips: Flexibility of Neural Models: One of the key functions of neuromorphic chips is to simulate diverse biological neurons and synapses. However, many neuromorphic chips only support a single type of neuron model, as evidenced in platforms like Neurogrid, which is based on analog neuron circuits. Some works introduce a degree of configurability to accommodate various neuron models. Loihi achieved enhanced learning capabilities through configurable sets of traces and delays. FlexLearn has conceived a versatile data path that amalgamates key features from diverse models. Moreover, endeavors have been undertaken to develop fully configurable neuronal models using instructions. SpiNNaker’s multi-core processors[ref]7, based on conventional ARM cores, provide significant flexibility. However, it is associated with reduced performance and energy efficiency compared to other accelerators. While Loihi2 presents an instruction set incorporating logical and mathematical operations similar to RISC instructions. However, instruction sets designed for conventional neural networks lack efficiency for SNNs despite their flexibility. Synapse Density: To further unlock the potential of SNNs, neuromorphic chips need to support the representation of large-scale SNNs with more complex topologies. However, current neuromorphic chips pay less attention to this aspect, primarily concentrating on simulating the behavior of neurons and synapses. For instance, TrueNorth0 employs a crossbar design for synaptic connections, but it suffers from limited and fixed fan-in/fan-out capacity. Loihi  takes an approach by using axon indexes to encode topology, thereby enhancing flexibility. Loihi2  proposes optimizing for convolutional and factorized connections but gives less attention to other connection types. Unicorn 1 introduces a technique for merging synapses from multiple cores to extend the synaptic scale of a single core. Thus, improving synapse density for various topologies under limited storage conditions is crucial for optimizing the cost-effectiveness of the chip. On-chip Learning Ability: Learning capability is a critical feature of biological neural networks. Currently, only a few neuromorphic chips support on-chip learning. Among those, the supported learning rules are pretty restricted. For instance, BrainscaleS22 only accommodates fixed learning algorithms. Loihi supports programmable rules for pre-, post-, and reward traces. Loihi2 extends its capabilities of the programmable rules applied to pre-, post-, and generalized ”third-factor” traces. However, even with the enhanced flexibility exhibited by Loihi2, it cannot accommodate novel learning rules that might emerge. The latest research achievements in the field of electrochemical memory array3 also provide new reference solutions. In this paper, we design a large-scale neuromorphic chip with a domain-specific Instruction Set Architecture (ISA), named Darwin3, to support model flexibility, system scalability, and on-chip learning capability of the chip. Darwin3 is the third generation of our Darwin 4 family of neuromorphic chips, which was successfully taped out and lit up in December 2022. Our main contributions are as follows. 1) We propose a domain-specific instruction set architecture (ISA) for neuromorphic systems, capable of efficiently describing diverse models and learning rules, including the integrate-and-fire (LIF) family5, Izhikevich6, and STDP7, among others. The proposed architecture excels in achieving high parallelism during computational operations, including loading parameters and updating state variables such as membrane potential and weights. 2) We design a novel mechanism to represent the topology of SNNs. This mechanism effectively compresses the information required to describe synaptic connections, thereby reducing overall memory usage. The article is organized as follows: Firstly, we introduce the topic and briefly overview the article’s contents. Second, we present the neuromorphic computing domain-specific ISA. Then, we offer the overall architecture of the neuromorphic chip and the implementation of each part, including the architecture of neuron nodes and the mechanism of topology representation. Lastly, we demonstrate the experiment results."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Brian 2, an intuitive and efficient neural simulator",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Elife",
+      "authors": "Marcel Stimberg, Romain Brette, and Dan FM Goodman"
+    },
+    {
+      "index": 1,
+      "title": "Nest: An environment for neural systems simulations",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Forschung und wisschenschaftliches Rechnen, Beiträge zum Heinz-Billing-Preis",
+      "authors": "Markus Diesmann and Marc-Oliver Gewaltig"
+    },
+    {
+      "index": 2,
+      "title": "SPAIC: A Spike-based Artificial Intelligence Computing Framework",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Computational Intelligence",
+      "authors": "Chaofei Hong, Mengwen Yuan, Mengxiao Zhang, Xiao Wang, Chegnjun Zhang, Jiaxin Wang, Gang Pan, Zhaohui Wu, and Huajin Tang",
+      "orig_title": "Spaic: A spike-based artificial intelligence computing framework",
+      "paper_id": "2207.12750v1"
+    },
+    {
+      "index": 3,
+      "title": "Neurogrid: A mixed-analog-digital multichip system for large-scale neural simulations",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE",
+      "authors": "Ben Varkey Benjamin, Peiran Gao, Emmett McQuinn, Swadesh Choudhary, Anand R Chandrasekaran, Jean-Marie Bussat, Rodrigo Alvarez-Icaza, John V Arthur, Paul A Merolla, and Kwabena Boahen"
+    },
+    {
+      "index": 4,
+      "title": "Loihi: A neuromorphic manycore processor with on-chip learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Ieee Micro",
+      "authors": "Mike Davies, Narayan Srinivasa, Tsung-Han Lin, Gautham Chinya, Yongqiang Cao, Sri Harsha Choday, Georgios Dimou, Prasad Joshi, Nabil Imam, Shweta Jain, et al."
+    },
+    {
+      "index": 5,
+      "title": "Flexlearn: fast and highly efficient brain simulations using flexible on-chip learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/ACM International Symposium on Microarchitecture",
+      "authors": "Eunjin Baek, Hunjun Lee, Youngsok Kim, and Jangwoo Kim"
+    },
+    {
+      "index": 6,
+      "title": "Spinnaker: A 1-w 18-core system-on-chip for massively-parallel neural network simulation",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Journal of Solid-State Circuits",
+      "authors": "Eustace Painkras, Luis A Plana, Jim Garside, Steve Temple, Francesco Galluppi, Cameron Patterson, David R Lester, Andrew D Brown, and Steve B Furber"
+    },
+    {
+      "index": 7,
+      "title": "Efficient Neuromorphic Signal Processing with Loihi 2",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Workshop on Signal Processing Systems (SiPS)",
+      "authors": "Garrick Orchard, E Paxon Frady, Daniel Ben Dayan Rubin, Sophia Sanborn, Sumit Bam Shrestha, Friedrich T Sommer, and Mike Davies",
+      "orig_title": "Efficient neuromorphic signal processing with loihi 2",
+      "paper_id": "2111.03746v1"
+    },
+    {
+      "index": 8,
+      "title": "Mapping very large scale spiking neuron network to neuromorphic hardware",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM International Conference on Architectural Support for Programming Languages and Operating Systems",
+      "authors": "Ouwen Jin, Qinghui Xing, Ying Li, Shuiguang Deng, Shuibing He, and Gang Pan"
+    },
+    {
+      "index": 9,
+      "title": "Truenorth: Design and tool flow of a 65 mw 1 million neuron programmable neurosynaptic chip",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE transactions on computer-aided design of integrated circuits and systems",
+      "authors": "Filipp Akopyan, Jun Sawada, Andrew Cassidy, Rodrigo Alvarez-Icaza, John Arthur, Paul Merolla, Nabil Imam, Yutaka Nakamura, Pallab Datta, Gi-Joon Nam, et al."
+    },
+    {
+      "index": 10,
+      "title": "Unicorn: A multicore neuromorphic processor with flexible fan-in and unconstrained fan-out for neurons",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM/IEEE Design Automation Conference",
+      "authors": "Zhijie Yang, Lei Wang, Yao Wang, Linghui Peng, Xiaofan Chen, Xun Xiao, Yaohua Wang, and Weixia Xu"
+    },
+    {
+      "index": 11,
+      "title": "The BrainScaleS-2 accelerated neuromorphic system with hybrid plasticity",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Frontiers in Neuroscience",
+      "authors": "Christian Pehle, Sebastian Billaudelle, Benjamin Cramer, Jakob Kaiser, Korbinian Schreiber, Yannik Stradmann, Johannes Weis, Aron Leibfried, Eric Müller, and Johannes Schemmel",
+      "orig_title": "The brainscales-2 accelerated neuromorphic system with hybrid plasticity",
+      "paper_id": "2201.11063v2"
+    },
+    {
+      "index": 12,
+      "title": "Open-loop analog programmable electrochemical memory array",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Nature Communications",
+      "authors": "Peng Chen, Fenghao Liu, Peng Lin, Peihong Li, Yu Xiao, Bihua Zhang, and Gang Pan"
+    },
+    {
+      "index": 13,
+      "title": "Darwin: A neuromorphic hardware co-processor based on spiking neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of systems architecture",
+      "authors": "De Ma, Juncheng Shen, Zonghua Gu, Ming Zhang, Xiaolei Zhu, Xiaoqiang Xu, Qi Xu, Yangjing Shen, and Gang Pan"
+    },
+    {
+      "index": 14,
+      "title": "A review of the integrate-and-fire neuron model: I. homogeneous synaptic input",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Biological cybernetics",
+      "authors": "Anthony N Burkitt"
+    },
+    {
+      "index": 15,
+      "title": "Simple model of spiking neurons",
+      "abstract": "",
+      "year": "2003",
+      "venue": "IEEE Transactions on neural networks",
+      "authors": "Eugene M Izhikevich"
+    },
+    {
+      "index": 16,
+      "title": "Spike timing–dependent plasticity: a hebbian learning rule",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Annu. Rev. Neurosci.",
+      "authors": "Natalia Caporale and Yang Dan"
+    },
+    {
+      "index": 17,
+      "title": "Fourier analysis of sinusoidally driven thalamocortical relay neurons and a minimal integrate-and-fire-or-burst model",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Journal of neurophysiology",
+      "authors": "Gregory D Smith, Charles L Cox, S Murray Sherman, and John Rinzel"
+    },
+    {
+      "index": 18,
+      "title": "Type i membranes, phase resetting curves, and synchrony",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Neural computation",
+      "authors": "Bard Ermentrout"
+    },
+    {
+      "index": 19,
+      "title": "Adaptive exponential integrate-and-fire model as an effective description of neuronal activity",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Journal of neurophysiology",
+      "authors": "Romain Brette and Wulfram Gerstner"
+    },
+    {
+      "index": 20,
+      "title": "A quantitative description of membrane current and its application to conduction and excitation in nerve",
+      "abstract": "",
+      "year": "1952",
+      "venue": "The Journal of physiology",
+      "authors": "Alan L Hodgkin and Andrew F Huxley"
+    },
+    {
+      "index": 21,
+      "title": "The local electric changes associated with repetitive action in a non-medullated axon",
+      "abstract": "",
+      "year": "1948",
+      "venue": "The Journal of physiology",
+      "authors": "Alan L Hodgkin"
+    },
+    {
+      "index": 22,
+      "title": "The dynamic synapse",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Neuron",
+      "authors": "Daniel Choquet and Antoine Triller"
+    },
+    {
+      "index": 23,
+      "title": "Modeling synapses",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Computational modeling methods for neuroscientists",
+      "authors": "Arnd Roth, Mark CW van Rossum, et al."
+    },
+    {
+      "index": 24,
+      "title": "Synaptic plasticity: multiple forms, functions, and mechanisms",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Neuropsychopharmacology",
+      "authors": "Ami Citri and Robert C Malenka"
+    },
+    {
+      "index": 25,
+      "title": "The hebb rule for synaptic plasticity: algorithms and implementations",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Neural models of plasticity",
+      "authors": "Terrence J Sejnowski and Gerald Tesauro"
+    },
+    {
+      "index": 26,
+      "title": "Neuronal synapse as a memristor: Modeling pair-and triplet-based stdp rule",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE transactions on biomedical circuits and systems",
+      "authors": "Weiran Cai, Frank Ellinger, and Ronald Tetzlaff"
+    },
+    {
+      "index": 27,
+      "title": "Bio-plausible digital implementation of a reward modulated stdp synapse",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Neural Computing and Applications",
+      "authors": "Fernando M Quintana, Fernando Perez-Pena, and Pedro L Galindo"
+    },
+    {
+      "index": 28,
+      "title": "Learning real-world stimuli in a neural network with spike-driven synaptic dynamics",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Neural computation",
+      "authors": "Joseph M Brader, Walter Senn, and Stefano Fusi"
+    },
+    {
+      "index": 29,
+      "title": "Anp-i: A 28nm 1.5 pj/sop asynchronous spiking neural network processor enabling sub-o. 1 μ𝜇\\muj/sample on-chip learning for edge-ai applications",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE International Solid-State Circuits Conference (ISSCC)",
+      "authors": "Jilin Zhang, Dexuan Huo, Jian Zhang, Chunqi Qian, Qi Liu, Liyang Pan, Zhihua Wang, Ning Qiao, Kea-Tiong Tang, and Hong Chen"
+    },
+    {
+      "index": 30,
+      "title": "Low latency network-on-chip router microarchitecture using request masking technique",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Journal of Reconfigurable Computing",
+      "authors": "Alireza Monemi, Chia Yee Ooi, and Muhammad Nadzir Marsono"
+    },
+    {
+      "index": 31,
+      "title": "Process variation delay and congestion aware routing algorithm for asynchronous noc design",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Transactions on Very Large Scale Integration (VLSI) Systems",
+      "authors": "Rabab Ezz-Eldin, Magdy A El-Moursy, and Hesham FA Hamed"
+    },
+    {
+      "index": 32,
+      "title": "A fair arbitration for network-on-chip routing with odd-even turn model",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Microelectronics Journal",
+      "authors": "Lu Liu, Zhangming Zhu, Duan Zhou, and Yintang Yang"
+    },
+    {
+      "index": 33,
+      "title": "A scalable multicore architecture with heterogeneous memory structures for dynamic neuromorphic asynchronous processors (dynaps)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on biomedical circuits and systems",
+      "authors": "Saber Moradi, Ning Qiao, Fabio Stefanini, and Giacomo Indiveri"
+    },
+    {
+      "index": 34,
+      "title": "The SpiNNaker 2 Processing Element Architecture for Hybrid Digital Neuromorphic Computing",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.08392",
+      "authors": "Sebastian Höppner, Yexin Yan, Andreas Dixius, Stefan Scholze, Johannes Partzsch, Marco Stolba, Florian Kelber, Bernhard Vogginger, Felix Neumärker, Georg Ellguth, et al.",
+      "orig_title": "The spinnaker 2 processing element architecture for hybrid digital neuromorphic computing",
+      "paper_id": "2103.08392v2"
+    },
+    {
+      "index": 35,
+      "title": "A 65nm 236.5 nj/classification neuromorphic processor with 7.5% energy overhead on-chip learning using direct spike-only feedback",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Solid-State Circuits Conference-(ISSCC)",
+      "authors": "Jeongwoo Park, Juyun Lee, and Dongsuk Jeon"
+    },
+    {
+      "index": 36,
+      "title": "A 0.086-mm2 12.7-pJ/SOP 64k-Synapse 256-Neuron Online-Learning Digital Spiking Neuromorphic Processor in 28nm CMOS",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE transactions on biomedical circuits and systems",
+      "authors": "Charlotte Frenkel, Martin Lefebvre, Jean-Didier Legat, and David Bol",
+      "orig_title": "A 0.086-mm2 12.7-pj/sop 64k-synapse 256-neuron online-learning digital spiking neuromorphic processor in 28-nm cmos",
+      "paper_id": "1804.07858v3"
+    },
+    {
+      "index": 37,
+      "title": "Neuromorphic architectures for spiking deep neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Electron Devices Meeting (IEDM)",
+      "authors": "Giacomo Indiveri, Federico Corradi, and Ning Qiao"
+    },
+    {
+      "index": 38,
+      "title": "Scalable energy-efficient, low-latency implementations of trained spiking deep belief networks on spinnaker",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Joint Conference on Neural Networks (IJCNN)",
+      "authors": "Evangelos Stromatias, Daniel Neil, Francesco Galluppi, Michael Pfeiffer, Shih-Chii Liu, and Steve Furber"
+    },
+    {
+      "index": 39,
+      "title": "A million spiking-neuron integrated circuit with a scalable communication network and interface",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Science",
+      "authors": "Paul A Merolla, John V Arthur, Rodrigo Alvarez-Icaza, Andrew S Cassidy, Jun Sawada, Filipp Akopyan, Bryan L Jackson, Nabil Imam, Chen Guo, Yutaka Nakamura, et al."
+    },
+    {
+      "index": 40,
+      "title": "Mapping convolutional neural networks onto neuromorphic chip for spike-based computation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "China Semiconductor Technology International Conference (CSTIC)",
+      "authors": "Chenglong Zou, Xiaoxin Cui, Yisong Kuang, and Xinan Wang"
+    },
+    {
+      "index": 41,
+      "title": "Convolutional Networks for Fast, Energy-Efficient Neuromorphic Computing",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Proc. Natl. Acad. Sci. USA",
+      "authors": "KE Steven, PA Merolla, JV Arthur, and AS Cassidy",
+      "orig_title": "Convolutional networks for fast, energy-efficient neuromorphic computing",
+      "paper_id": "1603.08270v2"
+    },
+    {
+      "index": 42,
+      "title": "Energy-Efficient Deployment of Machine Learning Workloads on Neuromorphic Hardware",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE International Green and Sustainable Computing Conference (IGSC)",
+      "authors": "Peyton Chandarana, Mohammadreza Mohammadi, James Seekings, and Ramtin Zand",
+      "orig_title": "Energy-efficient deployment of machine learning workloads on neuromorphic hardware",
+      "paper_id": "2210.05006v2"
+    },
+    {
+      "index": 43,
+      "title": "An Efficient Spiking Neural Network for Recognizing Gestures with a DVS Camera on the Loihi Neuromorphic Processor",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Joint Conference on Neural Networks (IJCNN)",
+      "authors": "Riccardo Massa, Alberto Marchisio, Maurizio Martina, and Muhammad Shafique",
+      "orig_title": "An efficient spiking neural network for recognizing gestures with a dvs camera on the loihi neuromorphic processor",
+      "paper_id": "2006.09985v2"
+    },
+    {
+      "index": 44,
+      "title": "Reckon: A 28nm sub-mm2 task-agnostic spiking recurrent neural network processor enabling on-chip learning over second-long timescales",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE International Solid-State Circuits Conference (ISSCC)",
+      "authors": "Charlotte Frenkel and Giacomo Indiveri"
+    },
+    {
+      "index": 45,
+      "title": "In-Hardware Learning of Multilayer Spiking Neural Networks on a Neuromorphic Processor",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM/IEEE Design Automation Conference (DAC)",
+      "authors": "Amar Shrestha, Haowen Fang, Daniel Patrick Rider, Zaidao Mei, and Qinru Qiu",
+      "orig_title": "In-hardware learning of multilayer spiking neural networks on a neuromorphic processor",
+      "paper_id": "2105.03649v1"
+    },
+    {
+      "index": 46,
+      "title": "spynnaker: a software package for running pynn simulations on spinnaker",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Frontiers in neuroscience",
+      "authors": "Oliver Rhodes, Petruţ A Bogdan, Christian Brenninkmeijer, Simon Davidson, Donal Fellows, Andrew Gait, David R Lester, Mantas Mikaitis, Luis A Plana, Andrew GD Rowley, et al."
+    },
+    {
+      "index": 47,
+      "title": "Click elements: An implementation style for data-driven compilation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Symposium on Asynchronous Circuits and Systems",
+      "authors": "Ad Peeters, Frank Te Beest, Mark De Wit, and Willem Mallon"
+    },
+    {
+      "index": 48,
+      "title": "Unsupervised learning of digit recognition using spike-timing-dependent plasticity",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Frontiers in computational neuroscience",
+      "authors": "Peter U Diehl and Matthew Cook"
+    },
+    {
+      "index": 49,
+      "title": "Multi-Level Firing with Spiking DS-ResNet: Enabling Better and Deeper Directly-Trained Spiking Neural Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Joint Conference on Artificial Intelligence (IJCAI-22)",
+      "authors": "Lang Feng, Qianhui Liu, Huajin Tang, De Ma, and Gang Pan",
+      "orig_title": "Multi-level firing with spiking ds-resnet: Enabling better and deeper directly-trained spiking neural networks",
+      "paper_id": "2210.06386v2"
+    },
+    {
+      "index": 50,
+      "title": "Fast-SNN: Fast Spiking Neural Network by Converting Quantized ANN",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Yangfan Hu, Qian Zheng, Xudong Jiang, and Gang Pan",
+      "orig_title": "Fast-snn: Fast spiking neural network by converting quantized ann",
+      "paper_id": "2305.19868v1"
+    },
+    {
+      "index": 51,
+      "title": "Intrusion detection system using voting-based neural network",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Tsinghua Science and Technology",
+      "authors": "Mohammad Hashem Haghighat and Jun Li"
+    }
+  ]
+}

@@ -1,0 +1,517 @@
+{
+  "paper_id": "2203.10790v2",
+  "title": "ScalableViT: Rethinking the Context-oriented Generalization of Vision Transformer",
+  "sections": {
+    "introduction": "Convolutional Neural Networks (CNNs) dominated the computer vision field last few years, which attributes to their capacity in modeling realistic images from a local to global perception.\nAlthough they have been widely applied in various vision tasks, there are still deficiencies in global visual perception.\nThis global view is essential for downstream tasks, such as object detection and semantic segmentation.\nRecently, ViT  and its follow-ups [ref]35 [ref]26 [ref]5  employed transformer encoders to address the image task and achieved comparable performance against their CNN counterparts because of the global receptive field.\nHowever, the global perception of the Transformer entails an unaffordable computation since self-attention (the primary operation of the Transformer) is quadratically computed on the whole sequence.\nTo alleviate this overhead, typical Swin transformer [ref]26 employed Window-based Self-Attention (WSA), which partitioned a feature map into many non-overlapped sub-regions and enabled it to process large-scale images with linear complexity. They also proposed a novel Shifted Window-based Self-Attention (SWSA) to compensate for losses of potential long-range dependency.\nTwins [ref]5 combined the WSA with Global Sub-sampled Attention (GSA) for better performance. To gain an insight into the WSA [ref]5 [ref]26, we visualize feature maps after the second block. As shown in Fig. 1, features captured by the WSA are dispersed, and their responses incline to partial rather than object-oriented.\nIt may attribute to an invariably fixed dimension that results in limited learning ability, thereby the final performance of the model being highly determined by the difficulty of input data.\nTo alleviate this problem, we develop a novel self-attention mechanism, termed Scalable Self-Attention (SSA), which simultaneously introduces two scaling factors (rnsubscript𝑟𝑛r_{n} and rcsubscript𝑟𝑐r_{c}) to spatial and channel dimensions. Namely, SSA selectively applies these factors to q​u​e​r​y𝑞𝑢𝑒𝑟𝑦query, k​e​y𝑘𝑒𝑦key, and v​a​l​u​e𝑣𝑎𝑙𝑢𝑒value matrices (Q𝑄Q, K𝐾K, and V𝑉V), ensuring the dimension is more elastic and no longer deeply bound by the input.\nOn the one hand, SSA aggregates redundant tokens with similar semantic information to a more compact one via spatial scalability. Consequently, unnecessary intermediate multiplication operations are eliminated, and the computational complexity is reduced significantly.\nIn the third row of Fig. 1, we can easily observe that spatial scalability can bring nearly contiguous visual modeling for objects, but some contextual cues are still lost.\nHence, on the other hand, we expand the channel dimension to learn a more graphic representation.\nAs depicted in the last row of Fig. 1, SSA successfully obtains complete object activation while maintaining context-oriented generalization via channel scalability. For instance, the contextual cues of the cat in the last column are represented in detail.\nSuch scaling factors also restore the output dimension to align with the input, which makes the residual connection feasible. Moreover, we propose an Interactive Window-based Self-Attention (IWSA) that consists of a regular WSA and a local interactive module (LIM).\nThe IWSA establishes information connections by re-merging independent v​a​l​u​e𝑣𝑎𝑙𝑢𝑒value tokens and aggregating spatial information from adjacent windows. Therefore, it no longer limits the self-attention to local windows, particularly non-overlapping windows.\nSuch characteristic enhances the desired global receptive field and takes good advantage of the most significant superiority of the Transformer in a single layer.\nThe effectiveness of LIM for WSA is validated in Tab. 5(b).\nTo achieve a more efficient backbone for general vision tasks, we adopt a hierarchical design   and propose a new Vision Transformer architecture, termed ScalableViT, which alternately arranges IWSA and SSA blocks in each stage. Main contributions of our ScalableViT lie in two aspects: For the global self-attention, we propose SSA to supply context-oriented generalization in the vanilla self-attention block, which significantly reduces computational overhead without sacrificing contextual expressiveness. For the local self-attention, we design LIM to enhance the global perception ability of WSA. Both SSA and IWSA can model long-range dependency in a single layer instead of stacking more self-attention layers; hence, the ScalableViT is more suitable for visual tasks.\nWe employ ScalableViT on several vision tasks, including image-level classification on ImageNet , pixel-level object detection and instance segmentation on COCO , and semantic segmentation on ADE20K . Extensive experiments demonstrate that the ScalableViT outperforms other state-of-the-art Vision Transformers with similar or less computational cost.\nFor example, ScalableViT-S achieves +1.4% gains against Twins-SVT-S and +1.8% gains against Swin-T on ImageNet-1K classification."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Attention augmented convolutional networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Bello, I., Zoph, B., Le, Q., Vaswani, A., Shlens, J."
+    },
+    {
+      "index": 1,
+      "title": "GCNet: Non-local Networks Meet Squeeze-Excitation Networks and Beyond",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Cao, Y., Xu, J., Lin, S., Wei, F., Hu, H.",
+      "orig_title": "Gcnet: Non-local networks meet squeeze-excitation networks and beyond",
+      "paper_id": "1904.11492v1"
+    },
+    {
+      "index": 2,
+      "title": "End-to-end object detection with transformers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Carion, N., Massa, F., Synnaeve, G., Usunier, N., Kirillov, A., Zagoruyko, S."
+    },
+    {
+      "index": 3,
+      "title": "MMDetection: Open mmlab detection toolbox and benchmark",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.07155",
+      "authors": "Chen, K., Wang, J., Pang, J., Cao, Y., Xiong, Y., Li, X., Sun, S., Feng, W., Liu, Z., Xu, J., Zhang, Z., Cheng, D., Zhu, C., Cheng, T., Zhao, Q., Li, B., Lu, X., Zhu, R., Wu, Y., Dai, J., Wang, J., Shi, J., Ouyang, W., Loy, C.C., Lin, D."
+    },
+    {
+      "index": 4,
+      "title": "Twins: Revisiting the Design of Spatial Attention in Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.13840",
+      "authors": "Chu, X., Tian, Z., Wang, Y., Zhang, B., Ren, H., Wei, X., Xia, H., Shen, C.",
+      "orig_title": "Twins: Revisiting the design of spatial attention in vision transformers",
+      "paper_id": "2104.13840v4"
+    },
+    {
+      "index": 5,
+      "title": "Conditional Positional Encodings for Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2102.10882",
+      "authors": "Chu, X., Tian, Z., Zhang, B., Wang, X., Wei, X., Xia, H., Shen, C.",
+      "orig_title": "Conditional positional encodings for vision transformers",
+      "paper_id": "2102.10882v3"
+    },
+    {
+      "index": 6,
+      "title": "MMSegmentation: Openmmlab semantic segmentation toolbox and benchmark",
+      "abstract": "",
+      "year": "2020",
+      "venue": "https://github.com/open-mmlab/mmsegmentation",
+      "authors": "Contributors, M."
+    },
+    {
+      "index": 7,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR",
+      "authors": "Deng, J., Dong, W., Socher, R., Li, L., Li, K., Fei-Fei, L."
+    },
+    {
+      "index": 8,
+      "title": "Cswin transformer: A general vision transformer backbone with cross-shaped windows",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2107.00652",
+      "authors": "Dong, X., Bao, J., Chen, D., Zhang, W., Yu, N., Yuan, L., Chen, D., Guo, B."
+    },
+    {
+      "index": 9,
+      "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., Uszkoreit, J., Houlsby, N.",
+      "orig_title": "An image is worth 16x16 words: Transformers for image recognition at scale",
+      "paper_id": "2010.11929v2"
+    },
+    {
+      "index": 10,
+      "title": "Understanding the difficulty of training deep feedforward neural networks",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Thirteenth International Conference on Artificial Intelligence and Statistics",
+      "authors": "Glorot, X., Bengio, Y."
+    },
+    {
+      "index": 11,
+      "title": "Transformer in Transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.00112",
+      "authors": "Han, K., Xiao, A., Wu, E., Guo, J., Xu, C., Wang, Y.",
+      "orig_title": "Transformer in transformer",
+      "paper_id": "2103.00112v3"
+    },
+    {
+      "index": 12,
+      "title": "Mask R-CNN",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE TPAMI",
+      "authors": "He, K., Gkioxari, G., Dollár, P., Girshick, R.B.",
+      "orig_title": "Mask R-CNN",
+      "paper_id": "1703.06870v3"
+    },
+    {
+      "index": 13,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "He, K., Zhang, X., Ren, S., Sun, J.",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 14,
+      "title": "Augment your batch: Improving generalization through instance repetition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Hoffer, E., Ben-Nun, T., Hubara, I., Giladi, N., Hoefler, T., Soudry, D."
+    },
+    {
+      "index": 15,
+      "title": "Local Relation Networks for Image Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Hu, H., Zhang, Z., Xie, Z., Lin, S.",
+      "orig_title": "Local relation networks for image recognition",
+      "paper_id": "1904.11491v1"
+    },
+    {
+      "index": 16,
+      "title": "Deep Networks with Stochastic Depth",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "Huang, G., Sun, Y., Liu, Z., Sedra, D., Weinberger, K.Q.",
+      "orig_title": "Deep networks with stochastic depth",
+      "paper_id": "1603.09382v3"
+    },
+    {
+      "index": 17,
+      "title": "Interlaced sparse self-attention for semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.12273",
+      "authors": "Huang, L., Yuan, Y., Guo, J., Zhang, C., Chen, X., Wang, J."
+    },
+    {
+      "index": 18,
+      "title": "Shuffle Transformer: Rethinking Spatial Shuffle for Vision Transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.03650",
+      "authors": "Huang, Z., Ben, Y., Luo, G., Cheng, P., Yu, G., Fu, B.",
+      "orig_title": "Shuffle transformer: Rethinking spatial shuffle for vision transformer",
+      "paper_id": "2106.03650v1"
+    },
+    {
+      "index": 19,
+      "title": "CCNet: Criss-Cross Attention for Semantic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Huang, Z., Wang, X., Huang, L., Huang, C., Wei, Y., Liu, W.",
+      "orig_title": "Ccnet: Criss-cross attention for semantic segmentation",
+      "paper_id": "1811.11721v2"
+    },
+    {
+      "index": 20,
+      "title": "How Much Position Information Do Convolutional Neural Networks Encode?",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Islam, M.A., Jia, S., Bruce, N.D.B.",
+      "orig_title": "How much position information do convolutional neural networks encode?",
+      "paper_id": "2001.08248v1"
+    },
+    {
+      "index": 21,
+      "title": "Panoptic Feature Pyramid Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Kirillov, A., Girshick, R.B., He, K., Dollár, P.",
+      "orig_title": "Panoptic feature pyramid networks",
+      "paper_id": "1901.02446v2"
+    },
+    {
+      "index": 22,
+      "title": "Feature Pyramid Networks for Object Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Lin, T., Dollár, P., Girshick, R.B., He, K., Hariharan, B., Belongie, S.J.",
+      "orig_title": "Feature pyramid networks for object detection",
+      "paper_id": "1612.03144v2"
+    },
+    {
+      "index": 23,
+      "title": "Focal Loss for Dense Object Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE TPAMI",
+      "authors": "Lin, T., Goyal, P., Girshick, R.B., He, K., Dollár, P.",
+      "orig_title": "Focal loss for dense object detection",
+      "paper_id": "1708.02002v2"
+    },
+    {
+      "index": 24,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "Lin, T., Maire, M., Belongie, S.J., Hays, J., Perona, P., Ramanan, D., Dollár, P., Zitnick, C.L.",
+      "orig_title": "Microsoft COCO: common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 25,
+      "title": "Swin transformer: Hierarchical vision transformer using shifted windows",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.14030",
+      "authors": "Liu, Z., Lin, Y., Cao, Y., Hu, H., Wei, Y., Zhang, Z., Lin, S., Guo, B."
+    },
+    {
+      "index": 26,
+      "title": "Decoupled Weight Decay Regularization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Loshchilov, I., Hutter, F.",
+      "orig_title": "Decoupled weight decay regularization",
+      "paper_id": "1711.05101v3"
+    },
+    {
+      "index": 27,
+      "title": "Stand-Alone Self-Attention in Vision Models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Parmar, N., Ramachandran, P., Vaswani, A., Bello, I., Levskaya, A., Shlens, J.",
+      "orig_title": "Stand-alone self-attention in vision models",
+      "paper_id": "1906.05909v1"
+    },
+    {
+      "index": 28,
+      "title": "Designing Network Design Spaces",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Radosavovic, I., Kosaraju, R.P., Girshick, R.B., He, K., Dollár, P.",
+      "orig_title": "Designing network design spaces",
+      "paper_id": "2003.13678v1"
+    },
+    {
+      "index": 29,
+      "title": "Dynamicvit: Efficient vision transformers with dynamic token sparsification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.02034",
+      "authors": "Rao, Y., Zhao, W., Liu, B., Lu, J., Zhou, J., Hsieh, C.J."
+    },
+    {
+      "index": 30,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Simonyan, K., Zisserman, A.",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 31,
+      "title": "Going deeper with convolutions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Szegedy, C., Liu, W., Jia, Y., Sermanet, P., Reed, S.E., Anguelov, D., Erhan, D., Vanhoucke, V., Rabinovich, A.",
+      "orig_title": "Going deeper with convolutions",
+      "paper_id": "1409.4842v1"
+    },
+    {
+      "index": 32,
+      "title": "Rethinking the inception architecture for computer vision",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Szegedy, C., Vanhoucke, V., Ioffe, S., Shlens, J., Wojna, Z."
+    },
+    {
+      "index": 33,
+      "title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning, ICML",
+      "authors": "Tan, M., Le, Q.V.",
+      "orig_title": "Efficientnet: Rethinking model scaling for convolutional neural networks",
+      "paper_id": "1905.11946v5"
+    },
+    {
+      "index": 34,
+      "title": "Training data-efficient image transformers & distillation through attention",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning, ICML",
+      "authors": "Touvron, H., Cord, M., Douze, M., Massa, F., Sablayrolles, A., Jégou, H.",
+      "orig_title": "Training data-efficient image transformers & distillation through attention",
+      "paper_id": "2012.12877v2"
+    },
+    {
+      "index": 35,
+      "title": "Scaling Local Self-Attention for Parameter Efficient Visual Backbones",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Vaswani, A., Ramachandran, P., Srinivas, A., Parmar, N., Hechtman, B.A., Shlens, J.",
+      "orig_title": "Scaling local self-attention for parameter efficient visual backbones",
+      "paper_id": "2103.12731v3"
+    },
+    {
+      "index": 36,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, L., Polosukhin, I.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 37,
+      "title": "Axial-deeplab: Stand-alone axial-attention for panoptic segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Wang, H., Zhu, Y., Green, B., Adam, H., Yuille, A.L., Chen, L."
+    },
+    {
+      "index": 38,
+      "title": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2102.12122",
+      "authors": "Wang, W., Xie, E., Li, X., Fan, D.P., Song, K., Liang, D., Lu, T., Luo, P., Shao, L.",
+      "orig_title": "Pyramid vision transformer: A versatile backbone for dense prediction without convolutions",
+      "paper_id": "2102.12122v2"
+    },
+    {
+      "index": 39,
+      "title": "CrossFormer++: A Versatile Vision Transformer Hinging on Cross-scale Attention",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2108.00154",
+      "authors": "Wang, W., Yao, L., Chen, L., Lin, B., Cai, D., He, X., Liu, W.",
+      "orig_title": "Crossformer: A versatile vision transformer hinging on cross-scale attention",
+      "paper_id": "2303.06908v2"
+    },
+    {
+      "index": 40,
+      "title": "Non-local Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Wang, X., Girshick, R.B., Gupta, A., He, K.",
+      "orig_title": "Non-local neural networks",
+      "paper_id": "1711.07971v3"
+    },
+    {
+      "index": 41,
+      "title": "CvT: Introducing Convolutions to Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.15808",
+      "authors": "Wu, H., Xiao, B., Codella, N., Liu, M., Dai, X., Yuan, L., Zhang, L.",
+      "orig_title": "Cvt: Introducing convolutions to vision transformers",
+      "paper_id": "2103.15808v1"
+    },
+    {
+      "index": 42,
+      "title": "TRT-ViT: TensorRT-oriented Vision Transformer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2205.09579",
+      "authors": "Xia, X., Li, J., Wu, J., Wang, X., Wang, M., Xiao, X., Zheng, M., Wang, R.",
+      "orig_title": "Trt-vit: Tensorrt-oriented vision transformer",
+      "paper_id": "2205.09579v3"
+    },
+    {
+      "index": 43,
+      "title": "Unified Perceptual Parsing for Scene Understanding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Xiao, T., Liu, Y., Zhou, B., Jiang, Y., Sun, J.",
+      "orig_title": "Unified perceptual parsing for scene understanding",
+      "paper_id": "1807.10221v1"
+    },
+    {
+      "index": 44,
+      "title": "Aggregated Residual Transformations for Deep Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Xie, S., Girshick, R.B., Dollár, P., Tu, Z., He, K.",
+      "orig_title": "Aggregated residual transformations for deep neural networks",
+      "paper_id": "1611.05431v2"
+    },
+    {
+      "index": 45,
+      "title": "Co-Scale Conv-Attentional Image Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.06399",
+      "authors": "Xu, W., Xu, Y., Chang, T., Tu, Z.",
+      "orig_title": "Co-scale conv-attentional image transformers",
+      "paper_id": "2104.06399v2"
+    },
+    {
+      "index": 46,
+      "title": "Disentangled Non-Local Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Yin, M., Yao, Z., Cao, Y., Li, X., Zhang, Z., Lin, S., Hu, H.",
+      "orig_title": "Disentangled non-local neural networks",
+      "paper_id": "2006.06668v2"
+    },
+    {
+      "index": 47,
+      "title": "Incorporating Convolution Designs into Visual Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.11816",
+      "authors": "Yuan, K., Guo, S., Liu, Z., Zhou, A., Yu, F., Wu, W.",
+      "orig_title": "Incorporating convolution designs into visual transformers",
+      "paper_id": "2103.11816v2"
+    },
+    {
+      "index": 48,
+      "title": "Tokens-to-token vit: Training vision transformers from scratch on imagenet",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2101.11986",
+      "authors": "Yuan, L., Chen, Y., Wang, T., Yu, W., Shi, Y., Jiang, Z., Tay, F.E., Feng, J., Yan, S."
+    },
+    {
+      "index": 49,
+      "title": "HRFormer: High-Resolution Transformer for Dense Prediction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2110.09408",
+      "authors": "Yuan, Y., Fu, R., Huang, L., Lin, W., Zhang, C., Chen, X., Wang, J.",
+      "orig_title": "Hrformer: High-resolution transformer for dense prediction",
+      "paper_id": "2110.09408v3"
+    },
+    {
+      "index": 50,
+      "title": "Cutmix: Regularization strategy to train strong classifiers with localizable features",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Yun, S., Han, D., Chun, S., Oh, S.J., Yoo, Y., Choe, J."
+    },
+    {
+      "index": 51,
+      "title": "mixup: Beyond Empirical Risk Minimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Zhang, H., Cissé, M., Dauphin, Y.N., Lopez-Paz, D.",
+      "orig_title": "mixup: Beyond empirical risk minimization",
+      "paper_id": "1710.09412v2"
+    },
+    {
+      "index": 52,
+      "title": "Random Erasing Data Augmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "Zhong, Z., Zheng, L., Kang, G., Li, S., Yang, Y.",
+      "orig_title": "Random erasing data augmentation",
+      "paper_id": "1708.04896v2"
+    },
+    {
+      "index": 53,
+      "title": "Semantic understanding of scenes through the ADE20K dataset",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Int. J. Comput. Vis.",
+      "authors": "Zhou, B., Zhao, H., Puig, X., Xiao, T., Fidler, S., Barriuso, A., Torralba, A."
+    }
+  ]
+}

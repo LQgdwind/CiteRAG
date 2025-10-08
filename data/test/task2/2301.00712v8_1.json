@@ -1,0 +1,531 @@
+{
+  "paper_id": "2301.00712v8",
+  "title": "On Finding Small Hyper-Gradients in Bilevel Optimization: Hardness Results and Improved Analysis",
+  "sections": {
+    "introduction": "The goal of bilevel optimization is to minimize the upper-level function f​(x,y)𝑓𝑥𝑦f(x,y) under the constraint that y𝑦y is minimized with respect to the lower-level function g​(x,y)𝑔𝑥𝑦g(x,y). Formally, it is defined as, Bilevel optimization in this form has received increasing attention due to its wide applications in many machine learning problems, including hyperparameter tuning  , neural architecture search 7   , meta-learning     , out-of-distribution learning ,\nadversarial training    , reinforcement learning  , causal learning  . The hyper-objective approach  reformulates Problem (1) by a minimization problem defined below, is called the hyper-objective. When φ​(x)𝜑𝑥\\varphi(x) has Lipschitz continuous gradients, a common is to find almost stationary points of φ​(x)𝜑𝑥\\varphi(x). Finding stationary points can be especially easy when the lower-level function is strongly convex, because Equation 2 can be simplified to the composite optimization problem below. Specifically, since Y∗​(x)superscript𝑌𝑥Y^{*}(x) has only one element when the lower-level function is strongly convex, we have Y∗​(x)={y∗​(x)}superscript𝑌𝑥superscript𝑦𝑥Y^{*}(x)=\\{y^{*}(x)\\} and Further, the implicit function theorem  implies This equation enables one to estimate the hyper-gradient ∇φ​(x)∇𝜑𝑥\\nabla\\varphi(x) and perform gradient descent on φ​(x)𝜑𝑥\\varphi(x).\nAID  and ITD  estimate\n∇φ​(x)∇𝜑𝑥\\nabla\\varphi(x) with Hessian-vector-product oracles.\nThe more recently proposed F2BA [ref]8 estimate ∇φ​(x)∇𝜑𝑥\\nabla\\varphi(x) with gradient oracles.\nAll these methods\ncan find a stationary point of φ​(x)𝜑𝑥\\varphi(x). However, due to the prevalence of nonconvex functions in real-world scenarios, the strong convexity assumption may limit the applicability of algorithms. Therefore, our work first aims to whether convexity, as a relaxation of strong convexity, suffices for finding small hyper-gradients efficiently. Specifically, we hope to answer the question below. Can we find stationary points of φ​(x)𝜑𝑥\\varphi(x) when the lower level function g​(x,y)𝑔𝑥𝑦g(x,y) is (strictly) convex but not strongly convex in y𝑦y? We provide a negative answer to the above question. We first prove in\nExample 3.1 that in the case where g​(x,⋅)𝑔𝑥⋅g(x,\\cdot) is merely convex, φ​(x)𝜑𝑥\\varphi(x) may not have stationary points since\nφ​(x)𝜑𝑥\\varphi(x) may be discontinuous.\nFurthermore, we show that the continuity of φ​(x)𝜑𝑥\\varphi(x) can be fully characterized by the Pompeiu–Hausdorff continuity of Y∗​(x)superscript𝑌𝑥Y^{*}(x)\nin Theorem 3.1. We then study the cases when ∇φ​(x)∇𝜑𝑥\\nabla\\varphi(x) exists, e.g. when\nthe lower-level function is strictly convex. We demonstrate that the stationary points of φ​(x)𝜑𝑥\\varphi(x) may still be computationally hard for any zero-respecting algorithms.\nThis algorithm class contains a broad range of existing algorithms, including all the algorithms mentioned in this paper. There exists a bilevel problem instance whose lower-level function is strictly convex and both f,g𝑓𝑔f,g satisfy regular smoothness conditions, such that any zero-respecting algorithm gets stuck at the initialization x0subscript𝑥0x_{0}. Given the negative result, we aim to study intermediate function classes that are not strongly convex but computationally tractable. In particular, we study the cases when the lower-level function satisfies the Polyak-Łojasiewicz (PL) conditions. This condition allows global nonconvexity but ensures local strong convexity uniformly in a subspace. The PL condition can pose nontrivial challenges since we have neither Equation 3 nor (4) in this case.\nResearchers have provided novel analyses in this case.\nXiao et al.  proposed a Hessian-vector-product-based method GALET with non-asymptotic convergence to KKT points of the gradient-based reformulated problem (Equation 11) when g𝑔g is PL in y𝑦y.\nKwon et al.  proved the differentiability of φ​(x)𝜑𝑥\\varphi(x) when the penalty function σ​f+g𝜎𝑓𝑔\\sigma f+g is uniformly PL in y𝑦y for all σ𝜎\\sigma in the neighborhood of zero, and\nshowed a proximal variant of F2BA, which we call Prox-F2BA, can find a stationary point of φ​(x)𝜑𝑥\\varphi(x). Based on their differentiability result, we show that GALET also converges to a stationary point of φ​(x)𝜑𝑥\\varphi(x) in Appendix C. Although Prox-F2BA  has been shown to converge to an ϵitalic-ϵ\\epsilon-stationary point of φ​(x)𝜑𝑥\\varphi(x) with 𝒪~​(ϵ−3)~𝒪superscriptitalic-ϵ3\\tilde{\\mathcal{O}}(\\epsilon^{-3}) first-order oracle calls,\nthe rate is suboptimal compared with the Ω​(ϵ−2)Ωsuperscriptitalic-ϵ2\\Omega(\\epsilon^{-2}) lower bound for finding stationary points of nonconvex functions [ref]6 111Carmon et al. [ref]6 proved the Ω​(ϵ−2)Ωsuperscriptitalic-ϵ2\\Omega(\\epsilon^{-2}) lower bound for nonconvex single-level optimization. This lower bound applies to nonconvex-PL bilevel optimization since it is a more general problem. . Therefore, listed as an important future direction, Kwon et al.  asked the question below. Can one achieve (near)-optimal rates for nonconvex-PL bilevel problems with gradient oracles? We give a positive answer to this question.\nInterestingly, we prove that the original F2BA [ref]8 is already near-optimal for this case, via an in-depth analysis to deal with the challenges arising from the PL condition. (a) Although Xiao et al.  did not provide the dependency on κ𝜅\\kappa in the complexity, we can calculate by the way in our Remark C.1.\nTheir analysis additionally requires the smallest singular value of ∇y​y2g​(x,y)superscriptsubscript∇𝑦𝑦2𝑔𝑥𝑦\\nabla_{yy}^{2}g(x,y) has a constant gap between zero, but such an assumption seems to be redundant by our Remark C.2. (b) We use p1,p2,p3subscript𝑝1subscript𝑝2subscript𝑝3p_{1},p_{2},p_{3} to denote the polynomial dependency in κ𝜅\\kappa since they are not provided by Kwon et al. .\n Under regular conditions as in Kwon et al. ,\nF2BA can provably find an ϵitalic-ϵ\\epsilon-stationary point of φ​(x)𝜑𝑥\\varphi(x) with 𝒪~​(ϵ−2)~𝒪superscriptitalic-ϵ2\\tilde{\\mathcal{O}}(\\epsilon^{-2}) first-order oracle calls for nonconvex-PL bilevel problems. We also extend our analysis to stochastic bilevel problems when an algorithm only has access to a noisy estimator of ∇f∇𝑓\\nabla f and ∇g∇𝑔\\nabla g. Under the partially stochastic setting when the noise is only in ∇g∇𝑔\\nabla g, we prove the stochastic F2BA has the near-optimal 𝒪~​(ϵ−4)~𝒪superscriptitalic-ϵ4\\tilde{\\mathcal{O}}(\\epsilon^{-4}) first-order oracle complexity . Under the more general fully stochastic setting when noise appears both in ∇f∇𝑓\\nabla f and ∇g∇𝑔\\nabla g, we prove the method has an 𝒪~​(ϵ−6)~𝒪superscriptitalic-ϵ6\\tilde{\\mathcal{O}}(\\epsilon^{-6}) complexity. Compared with Xiao et al. , our deterministic F2BA achieves the near-optimal rate on ϵitalic-ϵ\\epsilon without the assistance of Hessian-vector-product oracles. Our method also has a better dependency on κ𝜅\\kappa since we do not use a squared trick on the Hessian of g𝑔g. And we additionally study stochastic problems that have not been studied by Xiao et al. . Compared with Kwon et al. , we strictly improve the complexities for both deterministic and stochastic cases under the same assumptions.\nWe compare our results with prior works in Table 1, and leave a more detailed introduction of related works in Appendix A."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Amortized Implicit Differentiation for Stochastic Bilevel Optimization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Michael Arbel and Julien Mairal",
+      "orig_title": "Amortized implicit differentiation for stochastic bilevel optimization",
+      "paper_id": "2111.14580v3"
+    },
+    {
+      "index": 1,
+      "title": "Non-convex bilevel games with critical point selection maps",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Michael Arbel and Julien Mairal"
+    },
+    {
+      "index": 2,
+      "title": "Lower bounds for non-convex stochastic optimization",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Mathematical Programming",
+      "authors": "Yossi Arjevani, Yair Carmon, John C. Duchi, Dylan J. Foster, Nathan Srebro, and Blake Woodworth"
+    },
+    {
+      "index": 3,
+      "title": "Invariant risk minimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.02893",
+      "authors": "Martin Arjovsky, Léon Bottou, Ishaan Gulrajani, and David Lopez-Paz"
+    },
+    {
+      "index": 4,
+      "title": "Nonsmooth implicit differentiation for machine-learning and optimization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Jérôme Bolte, Tam Le, Edouard Pauwels, and Tony Silveti-Falls"
+    },
+    {
+      "index": 5,
+      "title": "Lower bounds for finding stationary points ii: first-order methods",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Mathematical Programming",
+      "authors": "Yair Carmon, John C. Duchi, Oliver Hinder, and Aaron Sidford"
+    },
+    {
+      "index": 6,
+      "title": "Stability and Generalization of Learning Algorithms that Converge to Global Optima",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Zachary Charles and Dimitris Papailiopoulos",
+      "orig_title": "Stability and generalization of learning algorithms that converge to global optima",
+      "paper_id": "1710.08402v1"
+    },
+    {
+      "index": 7,
+      "title": "Near-optimal fully first-order algorithms for finding stationary points in bilevel optimization",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2306.14853",
+      "authors": "Lesi Chen, Yaohua Ma, and Jingzhao Zhang"
+    },
+    {
+      "index": 8,
+      "title": "A framework for bilevel optimization that enables stochastic and global variance reduction algorithms",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Mathieu Dagréou, Pierre Ablin, Samuel Vaiter, and Thomas Moreau",
+      "orig_title": "A framework for bilevel optimization that enables stochastic and global variance reduction algorithms",
+      "paper_id": "2201.13409v4"
+    },
+    {
+      "index": 9,
+      "title": "Foundations of bilevel programming",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Springer Science & Business Media",
+      "authors": "Stephan Dempe"
+    },
+    {
+      "index": 10,
+      "title": "Generic methods for optimization-based modeling",
+      "abstract": "",
+      "year": "2012",
+      "venue": "AISTATS",
+      "authors": "Justin Domke"
+    },
+    {
+      "index": 11,
+      "title": "Implicit functions and solution mappings: A view from variational analysis, volume 616",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Springer",
+      "authors": "Asen L Dontchev, R Tyrrell Rockafellar, and R Tyrrell Rockafellar"
+    },
+    {
+      "index": 12,
+      "title": "Sharp analysis of stochastic optimization under global kurdyka-lojasiewicz inequality",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Ilyas Fatkhullin, Jalal Etesami, Niao He, and Negar Kiyavash"
+    },
+    {
+      "index": 13,
+      "title": "Global Convergence of Policy Gradient Methods for the Linear Quadratic Regulator",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Maryam Fazel, Rong Ge, Sham M. Kakade, and Mehran Mesbahi",
+      "orig_title": "Global convergence of policy gradient methods for the linear quadratic regulator",
+      "paper_id": "1801.05039v3"
+    },
+    {
+      "index": 14,
+      "title": "Forward and reverse gradient-based hyperparameter optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "Luca Franceschi, Michele Donini, Paolo Frasconi, and Massimiliano Pontil"
+    },
+    {
+      "index": 15,
+      "title": "Bilevel Programming for Hyperparameter Optimization and Meta-Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Luca Franceschi, Paolo Frasconi, Saverio Salzo, Riccardo Grazzi, and Massimiliano Pontil",
+      "orig_title": "Bilevel programming for hyperparameter optimization and meta-learning",
+      "paper_id": "1806.04910v2"
+    },
+    {
+      "index": 16,
+      "title": "Approximation methods for bilevel programming",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.02246",
+      "authors": "Saeed Ghadimi and Mengdi Wang"
+    },
+    {
+      "index": 17,
+      "title": "Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Communications of the ACM",
+      "authors": "Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio",
+      "orig_title": "Generative adversarial networks",
+      "paper_id": "2203.00667v1"
+    },
+    {
+      "index": 18,
+      "title": "On Differentiating Parameterized Argmin and Argmax Problems with Application to Bi-level Optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1607.05447",
+      "authors": "Stephen Gould, Basura Fernando, Anoop Cherian, Peter Anderson, Rodrigo Santa Cruz, and Edison Guo",
+      "orig_title": "On differentiating parameterized argmin and argmax problems with application to bi-level optimization",
+      "paper_id": "1607.05447v2"
+    },
+    {
+      "index": 19,
+      "title": "On the Iteration Complexity of Hypergradient Computation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "Riccardo Grazzi, Luca Franceschi, Massimiliano Pontil, and Saverio Salzo",
+      "orig_title": "On the iteration complexity of hypergradient computation",
+      "paper_id": "2006.16218v2"
+    },
+    {
+      "index": 20,
+      "title": "Identity Matters in Deep Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.04231",
+      "authors": "Moritz Hardt and Tengyu Ma",
+      "orig_title": "Identity matters in deep learning",
+      "paper_id": "1611.04231v3"
+    },
+    {
+      "index": 21,
+      "title": "A Two-Timescale Stochastic Algorithm Framework for Bilevel Optimization: Complexity Analysis and Application to Actor-Critic",
+      "abstract": "",
+      "year": "2023",
+      "venue": "SIAM Journal on Optimization",
+      "authors": "Mingyi Hong, Hoi-To Wai, Zhaoran Wang, and Zhuoran Yang",
+      "orig_title": "A two-timescale stochastic algorithm framework for bilevel optimization: Complexity analysis and application to actor-critic",
+      "paper_id": "2007.05170v4"
+    },
+    {
+      "index": 22,
+      "title": "Meta-Learning in Neural Networks: A Survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "Timothy Hospedales, Antreas Antoniou, Paul Micaelli, and Amos Storkey",
+      "orig_title": "Meta-learning in neural networks: A survey",
+      "paper_id": "2004.05439v2"
+    },
+    {
+      "index": 23,
+      "title": "Bilevel Optimization: Convergence Analysis and Enhanced Design",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "Kaiyi Ji, Junjie Yang, and Yingbin Liang",
+      "orig_title": "Bilevel optimization: Convergence analysis and enhanced design",
+      "paper_id": "2010.07962v3"
+    },
+    {
+      "index": 24,
+      "title": "Invariant and Transportable Representations for Anti-Causal Domain Shifts",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Yibo Jiang and Victor Veitch",
+      "orig_title": "Invariant and transportable representations for anti-causal domain shifts",
+      "paper_id": "2207.01603v1"
+    },
+    {
+      "index": 25,
+      "title": "Linear Convergence of Gradient and Proximal-Gradient Methods Under the Polyak-Łojasiewicz Condition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Joint European conference on machine learning and knowledge discovery in databases",
+      "authors": "Hamed Karimi, Julie Nutini, and Mark Schmidt",
+      "orig_title": "Linear convergence of gradient and proximal-gradient methods under the Polyak-Łojasiewicz condition",
+      "paper_id": "1608.04636v4"
+    },
+    {
+      "index": 26,
+      "title": "Actor-critic algorithms",
+      "abstract": "",
+      "year": "1999",
+      "venue": "NeurIPS",
+      "authors": "Vijay Konda and John Tsitsiklis"
+    },
+    {
+      "index": 27,
+      "title": "A Fully First-Order Method for Stochastic Bilevel Optimization",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICML",
+      "authors": "Jeongyeol Kwon, Dohyun Kwon, Stephen Wright, and Robert Nowak",
+      "orig_title": "A fully first-order method for stochastic bilevel optimization",
+      "paper_id": "2301.10945v1"
+    },
+    {
+      "index": 28,
+      "title": "On Penalty Methods for Nonconvex Bilevel Optimization and First-Order Stochastic Approximation",
+      "abstract": "",
+      "year": "2024",
+      "venue": "ICLR",
+      "authors": "Jeongyeol Kwon, Dohyun Kwon, Steve Wright, and Robert Nowak",
+      "orig_title": "On penalty methods for nonconvex bilevel optimization and first-order stochastic approximation",
+      "paper_id": "2309.01753v2"
+    },
+    {
+      "index": 29,
+      "title": "Nonsmooth composite nonconvex-concave minimax optimization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2209.10825",
+      "authors": "Jiajin Li, Linglingzhi Zhu, and Anthony Man-Cho So"
+    },
+    {
+      "index": 30,
+      "title": "Algorithmic Regularization in Over-parameterized Matrix Sensing and Neural Networks with Quadratic Activations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "COLT",
+      "authors": "Yuanzhi Li, Tengyu Ma, and Hongyang Zhang",
+      "orig_title": "Algorithmic regularization in over-parameterized matrix sensing and neural networks with quadratic activations",
+      "paper_id": "1712.09203v5"
+    },
+    {
+      "index": 31,
+      "title": "On Gradient Descent Ascent for Nonconvex-Concave Minimax Problems",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "Tianyi Lin, Chi Jin, and Michael I. Jordan",
+      "orig_title": "On gradient descent ascent for nonconvex-concave minimax problems",
+      "paper_id": "1906.00331v10"
+    },
+    {
+      "index": 32,
+      "title": "Near-Optimal Algorithms for Minimax Optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "COLT",
+      "authors": "Tianyi Lin, Chi Jin, and Michael I. Jordan",
+      "orig_title": "Near-optimal algorithms for minimax optimization",
+      "paper_id": "2002.02417v6"
+    },
+    {
+      "index": 33,
+      "title": "BOME! Bilevel Optimization Made Easy: A Simple First-Order Approach",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Bo Liu, Mao Ye, Stephen Wright, Peter Stone, and Qiang Liu",
+      "orig_title": "BOME! bilevel optimization made easy: A simple first-order approach",
+      "paper_id": "2209.08709v1"
+    },
+    {
+      "index": 34,
+      "title": "Loss landscapes and optimization in over-parameterized non-linear systems and neural networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Applied and Computational Harmonic Analysis",
+      "authors": "Chaoyue Liu, Libin Zhu, and Mikhail Belkin",
+      "orig_title": "Loss landscapes and optimization in over-parameterized non-linear systems and neural networks",
+      "paper_id": "2003.00307v2"
+    },
+    {
+      "index": 35,
+      "title": "Quasi-newton methods for saddle point problems",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Chengchang Liu and Luo Luo"
+    },
+    {
+      "index": 36,
+      "title": "DARTS: Differentiable architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Hanxiao Liu, Karen Simonyan, and Yiming Yang"
+    },
+    {
+      "index": 37,
+      "title": "A Generic First-Order Algorithmic Framework for Bi-Level Programming Beyond Lower-Level Singleton",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "Risheng Liu, Pan Mu, Xiaoming Yuan, Shangzhi Zeng, and Jin Zhang",
+      "orig_title": "A generic first-order algorithmic framework for bi-level programming beyond lower-level singleton",
+      "paper_id": "2006.04045v2"
+    },
+    {
+      "index": 38,
+      "title": "A Value-Function-based Interior-point Method for Non-convex Bi-level Optimization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "Risheng Liu, Xuan Liu, Xiaoming Yuan, Shangzhi Zeng, and Jin Zhang",
+      "orig_title": "A value-function-based interior-point method for non-convex bi-level optimization",
+      "paper_id": "2106.07991v1"
+    },
+    {
+      "index": 39,
+      "title": "A topological property of real analytic subsets",
+      "abstract": "",
+      "year": "1963",
+      "venue": "Coll. du CNRS, Les équations aux dérivées partielles",
+      "authors": "Stanislaw Lojasiewicz"
+    },
+    {
+      "index": 40,
+      "title": "Existence theorems of equilibrium points in stackelberg",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Optimization",
+      "authors": "Roberto Lucchetti, F Mignanego, and G Pieri"
+    },
+    {
+      "index": 41,
+      "title": "Lectures on convex optimization, volume 137",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Springer",
+      "authors": "Yurii Nesterov"
+    },
+    {
+      "index": 42,
+      "title": "Hyperparameter optimization with approximate gradient",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML",
+      "authors": "Fabian Pedregosa",
+      "orig_title": "Hyperparameter optimization with approximate gradient",
+      "paper_id": "1602.02355v6"
+    },
+    {
+      "index": 43,
+      "title": "Contextual transformation networks for online continual learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Quang Pham, Chenghao Liu, Doyen Sahoo, and HOI Steven"
+    },
+    {
+      "index": 44,
+      "title": "A general method for solving extremal problems",
+      "abstract": "",
+      "year": "1967",
+      "venue": "Doklady Akademii Nauk",
+      "authors": "Boris Teodorovich Polyak"
+    },
+    {
+      "index": 45,
+      "title": "Meta-learning with implicit gradients",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Aravind Rajeswaran, Chelsea Finn, Sham M. Kakade, and Sergey Levine"
+    },
+    {
+      "index": 46,
+      "title": "Optimization as a model for few-shot learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Sachin Ravi and Hugo Larochelle"
+    },
+    {
+      "index": 47,
+      "title": "Truncated back-propagation for bilevel optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AISTATS",
+      "authors": "Amirreza Shaban, Ching-An Cheng, Nathan Hatch, and Byron Boots"
+    },
+    {
+      "index": 48,
+      "title": "On Penalty-based Bilevel Gradient Descent Method",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICML",
+      "authors": "Han Shen and Tianyi Chen",
+      "orig_title": "On penalty-based bilevel gradient descent method",
+      "paper_id": "2302.05185v5"
+    },
+    {
+      "index": 49,
+      "title": "Certifying some distributional robustness with principled adversarial training",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Aman Sinha, Hongseok Namkoong, and John C. Duchi"
+    },
+    {
+      "index": 50,
+      "title": "ZARTS: On Zero-order Optimization for Neural Architecture Search",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Xiaoxing Wang, Wenxuan Guo, Jianlin Su, Xiaokang Yang, and Junchi Yan",
+      "orig_title": "ZARTS: On zero-order optimization for neural architecture search",
+      "paper_id": "2110.04743v2"
+    },
+    {
+      "index": 51,
+      "title": "An alternating method for bilevel optimization under the polyak-łojasiewicz condition",
+      "abstract": "",
+      "year": "2023",
+      "venue": "NeurIPS",
+      "authors": "Quan Xiao, Songtao Lu, and Tianyi Chen"
+    },
+    {
+      "index": 52,
+      "title": "Exact penalization and necessary optimality conditions for generalized bilevel programming problems",
+      "abstract": "",
+      "year": "1997",
+      "venue": "SIAM Journal on optimization",
+      "authors": "Jane J. Ye, DL Zhu, and Qiji Jim Zhu"
+    },
+    {
+      "index": 53,
+      "title": "On the lower bound of minimizing Polyak-Łojasiewicz functions",
+      "abstract": "",
+      "year": "2023",
+      "venue": "COLT",
+      "authors": "Pengyun Yue, Cong Fang, and Zhouchen Lin"
+    },
+    {
+      "index": 54,
+      "title": "iDARTS: Differentiable Architecture Search with Stochastic Implicit Gradients",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "Miao Zhang, Steven W. Su, Shirui Pan, Xiaojun Chang, Ehsan M Abbasnejad, and Reza Haffari",
+      "orig_title": "iDARTS: Differentiable architecture search with stochastic implicit gradients",
+      "paper_id": "2106.10784v1"
+    },
+    {
+      "index": 55,
+      "title": "Doubly smoothed gda: Global convergent algorithm for constrained nonconvex-nonconcave minimax optimization",
+      "abstract": "",
+      "year": "2023",
+      "venue": "NeurIPS",
+      "authors": "Taoli Zheng, Linglingzhi Zhu, Anthony Man-Cho So, Jose Blanchet, and Jiajin Li"
+    },
+    {
+      "index": 56,
+      "title": "Model Agnostic Sample Reweighting for Out-of-Distribution Learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICML",
+      "authors": "Xiao Zhou, Yong Lin, Renjie Pi, Weizhong Zhang, Renzhe Xu, Peng Cui, and Tong Zhang",
+      "orig_title": "Model agnostic sample reweighting for out-of-distribution learning",
+      "paper_id": "2301.09819v1"
+    },
+    {
+      "index": 57,
+      "title": "Neural Architecture Search with Reinforcement Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICLR",
+      "authors": "Barret Zoph and Quoc Le",
+      "orig_title": "Neural architecture search with reinforcement learning",
+      "paper_id": "1611.01578v2"
+    }
+  ]
+}

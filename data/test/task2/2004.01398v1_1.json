@@ -1,0 +1,503 @@
+{
+  "paper_id": "2004.01398v1",
+  "title": "TEA: Temporal Excitation and Aggregation for Action Recognition",
+  "sections": {
+    "related works": "With the tremendous success of deep learning methods on image-based recognition tasks     , some researchers started to explore the application of deep networks on video action recognition task  3   [ref]6 . Among them, Karpathy et al.  proposed to apply a single 2D CNN model on each frame of videos independently and explored several strategies to fuse temporal information. However, the method does not consider the motion change between frames, and the final performance is inferior to the hand-crafted feature-based algorithms. Donahue et al. [ref]6 used LSTM  to model the temporal relation by aggregating 2D CNN features. In this approach, the feature extraction of each frame is isolated, and only high-level 2D CNN features are considered for temporal relation learning. The existing methods usually follow two approaches to improve temporal modeling ability. The first one was based on two-stream architecture proposed by Simonyan and Zisserman 3. The architecture contained a spatial 2D CNN that learns still feature from frames and a temporal 2D CNN that models motion information in the form of optical flow . The training of the two streams is separated, and the final predictions for videos are averaged over two streams. Many following works had extended such a framework.   explored different mid-level combination strategies to fuse the features of two streams. TSN  proposed the sparse sampling strategy to capture long-range video clips. All these methods require additional computation and storage costs to deal with optical flow. Moreover, the interactions between different frames and the two modalities are limited, which usually occur at late layers only. In contrast, our proposed method discards optical flow extraction and learns approximate feature-level motion representations by calculating temporal differences. The motion encoding can be integrated with the learning of spatiotemporal features and utilized to discover and enhance their motion-sensitive ingredients. The most recent work STM  also attempted to model feature-level motion features and inserts motion modeling into spatiotemporal feature learning. Our method differs from STM in that STM directly adds the spatiotemporal features and motion encoding together. In contrast, our method utilizes motion features to recalibrate the features to enhance the motion pattern. Another typical video action recognition approach is based on 3D CNNs and its (2+1)D CNN variants  6   . The first work in this line was C3D , which performed 3D convolutions on adjacent frames to jointly model the spatial and temporal features in a unified approach. To utilize pre-trained 2D CNNs, Carreira and Zisserman  proposed I3D to inflate the pre-trained 2D convolutions to 3D ones. To reduce the heavy computations of 3D CNNs, some works proposed to decompose the 3D convolution into a 2D spatial convolution and a 1D temporal convolution 6    1 9 or utilize a mixup of 2D CNN and 3D CNN   4. In these methods, the long-range temporal connection can be theoretically established by stacking multiple local temporal convolutions. However, after a large number of local convolution operations, the useful features from distant frames have already been weakened and cannot be captured well. To address this issue, T3D  proposed to adopt densely connected structure  and combined different temporal windows . Non-local module  and stnet  applied self-attention mechanism to model long-range temporal relationship. Either additional parameters or time-consuming operations accompany these attempts. Different from these works, our proposed multiple temporal aggregation module is simple and efficient without introducing extra operators."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Action recognition with dynamic image networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Hakan Bilen, Basura Fernando, Efstratios Gavves, and Andrea Vedaldi"
+    },
+    {
+      "index": 1,
+      "title": "Dynamic image networks for action recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Hakan Bilen, Basura Fernando, Efstratios Gavves, Andrea Vedaldi, and Stephen Gould"
+    },
+    {
+      "index": 2,
+      "title": "Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Joao Carreira and Andrew Zisserman",
+      "orig_title": "Quo vadis, action recognition? a new model and the kinetics dataset",
+      "paper_id": "1705.07750v3"
+    },
+    {
+      "index": 3,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR",
+      "authors": "Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei"
+    },
+    {
+      "index": 4,
+      "title": "Temporal 3D ConvNets: New Architecture and Transfer Learning for Video Classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.08200",
+      "authors": "Ali Diba, Mohsen Fayyaz, Vivek Sharma, Amir Hossein Karami, Mohammad Mahdi Arzani, Rahman Yousefzadeh, and Luc Van Gool",
+      "orig_title": "Temporal 3d convnets: New architecture and transfer learning for video classification",
+      "paper_id": "1711.08200v1"
+    },
+    {
+      "index": 5,
+      "title": "Long-term Recurrent Convolutional Networks for Visual Recognition and Description",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Jeffrey Donahue, Lisa Anne Hendricks, Sergio Guadarrama, Marcus Rohrbach, Subhashini Venugopalan, Kate Saenko, and Trevor Darrell",
+      "orig_title": "Long-term recurrent convolutional networks for visual recognition and description",
+      "paper_id": "1411.4389v4"
+    },
+    {
+      "index": 6,
+      "title": "SlowFast Networks for Video Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Christoph Feichtenhofer, Haoqi Fan, Jitendra Malik, and Kaiming He",
+      "orig_title": "Slowfast networks for video recognition",
+      "paper_id": "1812.03982v3"
+    },
+    {
+      "index": 7,
+      "title": "Spatiotemporal multiplier networks for video action recognition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Christoph Feichtenhofer, Axel Pinz, and Richard P Wildes"
+    },
+    {
+      "index": 8,
+      "title": "Convolutional Two-Stream Network Fusion for Video Action Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Christoph Feichtenhofer, Axel Pinz, and Andrew Zisserman",
+      "orig_title": "Convolutional two-stream network fusion for video action recognition",
+      "paper_id": "1604.06573v2"
+    },
+    {
+      "index": 9,
+      "title": "Res2Net: A New Multi-scale Backbone Architecture",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.01169",
+      "authors": "Shang-Hua Gao, Ming-Ming Cheng, Kai Zhao, Xin-Yu Zhang, Ming-Hsuan Yang, and Philip Torr",
+      "orig_title": "Res2net: A new multi-scale backbone architecture",
+      "paper_id": "1904.01169v3"
+    },
+    {
+      "index": 10,
+      "title": "ActionVLAD: Learning spatio-temporal aggregation for action classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Rohit Girdhar, Deva Ramanan, Abhinav Gupta, Josef Sivic, and Bryan Russell",
+      "orig_title": "Actionvlad: Learning spatio-temporal aggregation for action classification",
+      "paper_id": "1704.02895v1"
+    },
+    {
+      "index": 11,
+      "title": "Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1706.02677",
+      "authors": "Priya Goyal, Piotr Dollár, Ross Girshick, Pieter Noordhuis, Lukasz Wesolowski, Aapo Kyrola, Andrew Tulloch, Yangqing Jia, and Kaiming He",
+      "orig_title": "Accurate, large minibatch sgd: Training imagenet in 1 hour",
+      "paper_id": "1706.02677v2"
+    },
+    {
+      "index": 12,
+      "title": "The “something something” video database for learning and evaluating visual common sense",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Raghav Goyal, Samira Ebrahimi Kahou, Vincent Michalski, Joanna Materzynska, Susanne Westphal, Heuna Kim, Valentin Haenel, Ingo Fruend, Peter Yianilos, Moritz Mueller-Freitag, et al.",
+      "orig_title": "The “something something” video database for learning and evaluating visual common sense",
+      "paper_id": "1706.04261v2"
+    },
+    {
+      "index": 13,
+      "title": "StNet: Local and Global Spatial-Temporal Modeling for Action Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "Dongliang He, Zhichao Zhou, Chuang Gan, Fu Li, Xiao Liu, Yandong Li, Limin Wang, and Shilei Wen",
+      "orig_title": "Stnet: Local and global spatial-temporal modeling for action recognition",
+      "paper_id": "1811.01549v3"
+    },
+    {
+      "index": 14,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 15,
+      "title": "Identity Mappings in Deep Residual Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Identity mappings in deep residual networks",
+      "paper_id": "1603.05027v3"
+    },
+    {
+      "index": 16,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural Computation",
+      "authors": "Sepp Hochreiter and Jürgen Schmidhuber"
+    },
+    {
+      "index": 17,
+      "title": "Squeeze-and-Excitation Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "J Hu, L Shen, S Albanie, G Sun, and E Wu",
+      "orig_title": "Squeeze-and-excitation networks",
+      "paper_id": "1709.01507v4"
+    },
+    {
+      "index": 18,
+      "title": "Squeeze-and-Excitation Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Jie Hu, Li Shen, and Gang Sun",
+      "orig_title": "Squeeze-and-excitation networks",
+      "paper_id": "1709.01507v4"
+    },
+    {
+      "index": 19,
+      "title": "Densely connected convolutional networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Gao Huang, Zhuang Liu, Laurens Van Der Maaten, and Kilian Q Weinberger"
+    },
+    {
+      "index": 20,
+      "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1502.03167",
+      "authors": "Sergey Ioffe and Christian Szegedy"
+    },
+    {
+      "index": 21,
+      "title": "STM: SpatioTemporal and Motion Encoding for Action Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Boyuan Jiang, MengMeng Wang, Weihao Gan, Wei Wu, and Junjie Yan",
+      "orig_title": "Stm: Spatiotemporal and motion encoding for action recognition",
+      "paper_id": "1908.02486v2"
+    },
+    {
+      "index": 22,
+      "title": "Large-scale video classification with convolutional neural networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CVPR",
+      "authors": "Andrej Karpathy, George Toderici, Sanketh Shetty, Thomas Leung, Rahul Sukthankar, and Li Fei-Fei"
+    },
+    {
+      "index": 23,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "NIPS",
+      "authors": "Alex Krizhevsky, Ilya Sutskever, and Geoffrey E Hinton"
+    },
+    {
+      "index": 24,
+      "title": "Hmdb: a large video database for human motion recognition",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICCV",
+      "authors": "Hildegard Kuehne, Hueihan Jhuang, Estíbaliz Garrote, Tomaso Poggio, and Thomas Serre"
+    },
+    {
+      "index": 25,
+      "title": "Temporal bilinear networks for video action recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "Yanghao Li, Sijie Song, Yuqi Li, and Jiaying Liu"
+    },
+    {
+      "index": 26,
+      "title": "TSM: Temporal Shift Module for Efficient Video Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Ji Lin, Chuang Gan, and Song Han",
+      "orig_title": "Tsm: Temporal shift module for efficient video understanding",
+      "paper_id": "1811.08383v3"
+    },
+    {
+      "index": 27,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva Ramanan, Piotr Dollár, and C Lawrence Zitnick",
+      "orig_title": "Microsoft coco: Common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 28,
+      "title": "Temporal difference networks for video action recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "WACV",
+      "authors": "Joe Yue-Hei Ng and Larry S Davis"
+    },
+    {
+      "index": 29,
+      "title": "Video and learning: a systematic review (2007–2017)",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLAK",
+      "authors": "Oleksandra Poquet, Lisa Lim, Negin Mirriahi, and Shane Dawson"
+    },
+    {
+      "index": 30,
+      "title": "Learning spatio-temporal representation with local and global diffusion",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Zhaofan Qiu, Ting Yao, Chong-Wah Ngo, Xinmei Tian, and Tao Mei"
+    },
+    {
+      "index": 31,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Journal of Computer Vision",
+      "authors": "Olga Russakovsky, Jia Deng, Hao Su, Jonathan Krause, Sanjeev Satheesh, Sean Ma, Zhiheng Huang, Andrej Karpathy, Aditya Khosla, Michael Bernstein, et al.",
+      "orig_title": "Imagenet large scale visual recognition challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 32,
+      "title": "Two-Stream Convolutional Networks for Action Recognition in Videos",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NIPS",
+      "authors": "Karen Simonyan and Andrew Zisserman",
+      "orig_title": "Two-stream convolutional networks for action recognition in videos",
+      "paper_id": "1406.2199v2"
+    },
+    {
+      "index": 33,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1556",
+      "authors": "Karen Simonyan and Andrew Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 34,
+      "title": "Ucf101: A dataset of 101 human actions classes from videos in the wild",
+      "abstract": "",
+      "year": "2012",
+      "venue": "arXiv preprint arXiv:1212.0402",
+      "authors": "Khurram Soomro, Amir Roshan Zamir, and Mubarak Shah"
+    },
+    {
+      "index": 35,
+      "title": "Human Action Recognition using Factorized Spatio-Temporal Convolutional Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Lin Sun, Kui Jia, Dit-Yan Yeung, and Bertram E Shi",
+      "orig_title": "Human action recognition using factorized spatio-temporal convolutional networks",
+      "paper_id": "1510.00562v1"
+    },
+    {
+      "index": 36,
+      "title": "Going deeper with convolutions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Christian Szegedy, Wei Liu, Yangqing Jia, Pierre Sermanet, Scott Reed, Dragomir Anguelov, Dumitru Erhan, Vincent Vanhoucke, and Andrew Rabinovich",
+      "orig_title": "Going deeper with convolutions",
+      "paper_id": "1409.4842v1"
+    },
+    {
+      "index": 37,
+      "title": "Learning spatiotemporal features with 3d convolutional networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Du Tran, Lubomir Bourdev, Rob Fergus, Lorenzo Torresani, and Manohar Paluri"
+    },
+    {
+      "index": 38,
+      "title": "Video classification with channel-separated convolutional networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.02811",
+      "authors": "Du Tran, Heng Wang, Lorenzo Torresani, and Matt Feiszli"
+    },
+    {
+      "index": 39,
+      "title": "A closer look at spatiotemporal convolutions for action recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Du Tran, Heng Wang, Lorenzo Torresani, Jamie Ray, Yann LeCun, and Manohar Paluri"
+    },
+    {
+      "index": 40,
+      "title": "Long-term Temporal Convolutions for Action Recognition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Gül Varol, Ivan Laptev, and Cordelia Schmid",
+      "orig_title": "Long-term temporal convolutions for action recognition",
+      "paper_id": "1604.04494v2"
+    },
+    {
+      "index": 41,
+      "title": "Residual attention network for image classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Fei Wang, Mengqing Jiang, Chen Qian, Shuo Yang, Cheng Li, Honggang Zhang, Xiaogang Wang, and Xiaoou Tang"
+    },
+    {
+      "index": 42,
+      "title": "Appearance-and-Relation Networks for Video Classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Limin Wang, Wei Li, Wen Li, and Luc Van Gool",
+      "orig_title": "Appearance-and-relation networks for video classification",
+      "paper_id": "1711.09125v2"
+    },
+    {
+      "index": 43,
+      "title": "Temporal Segment Networks: Towards Good Practices for Deep Action Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "Limin Wang, Yuanjun Xiong, Zhe Wang, Yu Qiao, Dahua Lin, Xiaoou Tang, and Luc Van Gool",
+      "orig_title": "Temporal segment networks: Towards good practices for deep action recognition",
+      "paper_id": "1608.00859v1"
+    },
+    {
+      "index": 44,
+      "title": "Non-local Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Xiaolong Wang, Ross Girshick, Abhinav Gupta, and Kaiming He",
+      "orig_title": "Non-local neural networks",
+      "paper_id": "1711.07971v3"
+    },
+    {
+      "index": 45,
+      "title": "Videos as Space-Time Region Graphs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Xiaolong Wang and Abhinav Gupta",
+      "orig_title": "Videos as space-time region graphs",
+      "paper_id": "1806.01810v2"
+    },
+    {
+      "index": 46,
+      "title": "Rethinking Spatiotemporal Feature Learning: Speed-Accuracy Trade-offs in Video Classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Saining Xie, Chen Sun, Jonathan Huang, Zhuowen Tu, and Kevin Murphy",
+      "orig_title": "Rethinking spatiotemporal feature learning: Speed-accuracy trade-offs in video classification",
+      "paper_id": "1712.04851v2"
+    },
+    {
+      "index": 47,
+      "title": "Describing Videos by Exploiting Temporal Structure",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Li Yao, Atousa Torabi, Kyunghyun Cho, Nicolas Ballas, Christopher Pal, Hugo Larochelle, and Aaron Courville",
+      "orig_title": "Describing videos by exploiting temporal structure",
+      "paper_id": "1502.08029v5"
+    },
+    {
+      "index": 48,
+      "title": "Beyond Short Snippets: Deep Networks for Video Classification",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Joe Yue-Hei Ng, Matthew Hausknecht, Sudheendra Vijayanarasimhan, Oriol Vinyals, Rajat Monga, and George Toderici",
+      "orig_title": "Beyond short snippets: Deep networks for video classification",
+      "paper_id": "1503.08909v2"
+    },
+    {
+      "index": 49,
+      "title": "A duality based approach for realtime tv-l 1 optical flow",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Joint Pattern Recognition Symposium",
+      "authors": "Christopher Zach, Thomas Pock, and Horst Bischof"
+    },
+    {
+      "index": 50,
+      "title": "Recognize actions by disentangling components of dynamics",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Yue Zhao, Yuanjun Xiong, and Dahua Lin"
+    },
+    {
+      "index": 51,
+      "title": "Trajectory convolution for action recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NIPS",
+      "authors": "Yue Zhao, Yuanjun Xiong, and Dahua Lin"
+    },
+    {
+      "index": 52,
+      "title": "Temporal Relational Reasoning in Videos",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Bolei Zhou, Alex Andonian, Aude Oliva, and Antonio Torralba",
+      "orig_title": "Temporal relational reasoning in videos",
+      "paper_id": "1711.08496v2"
+    },
+    {
+      "index": 53,
+      "title": "Eco: Efficient convolutional network for online video understanding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Mohammadreza Zolfaghari, Kamaljeet Singh, and Thomas Brox"
+    }
+  ]
+}

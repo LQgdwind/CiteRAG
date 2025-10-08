@@ -1,0 +1,483 @@
+{
+  "paper_id": "2411.03327v2",
+  "title": "Maximal Extractable Value in Decentralized Finance: Taxonomy, Detection, and Mitigation",
+  "sections": {
+    "transaction ordering": "Searchers extract MEV by manipulating the ordering of their transactions in a block with respect to victim transactions. This ordering is influenced by the incentives, such as priority fees and private transfers, offered to block producers. By offering greater incentives, searchers can prioritize their transactions and increase their profits. To promote fairness and mitigate MEV, various transaction ordering strategies have been proposed. These strategies are based on transaction submission or arrival times   [ref]19, random or deterministic sequencer  , or Market Maker (MM) designs [ref]36 . The most well-known strategy based on submission or arrival times is order fairness mechanisms such as receive order fairness, send order fairness, approximate order fairness, and block order fairness . Receive order fairness mechanism states that if a majority (more than 50%) of the validator nodes receives transaction T1subscript𝑇1T_{1} before T2subscript𝑇2T_{2}, then T1subscript𝑇1T_{1} should precede T2subscript𝑇2T_{2} in the final order of transactions . On the other hand, send order fairness states that if transaction T1subscript𝑇1T_{1} is sent before T2subscript𝑇2T_{2}, then T1subscript𝑇1T_{1} should precede T2subscript𝑇2T_{2} in the final order of transactions. Intel SGX Trusted Execution Environment (TEE)  or ARM Trustzone  could be used to verify and trust the timestamps of these transactions . However, due to network delays, achieving exact transaction ordering under the sender order fairness mechanism may not always be feasible . Consequently, approximate order fairness allows for flexibility, relaxing the strict sequencing of transactions T1subscript𝑇1T_{1} and T2subscript𝑇2T_{2} if validators receive them within a specified time window. If the majority of validator nodes receive T1subscript𝑇1T_{1} at least ϵitalic-ϵ\\epsilon rounds earlier than T2subscript𝑇2T_{2}, then all honest validator nodes should not deliver T2subscript𝑇2T_{2} until T1subscript𝑇1T_{1} has been delivered . These order fairness mechanisms primarily consider front-running, back-running, sandwich, arbitrage, and liquidation MEV transactions by focusing on transaction-level ordering. To address time-bandit MEV, a block order fairness mechanism is proposed. When transactions T1subscript𝑇1T_{1} and T2subscript𝑇2T_{2} are received by the validators within a specified time window, block order fairness mechanism ensures that the majority of validators receive T1subscript𝑇1T_{1} before T2subscript𝑇2T_{2}, then all honest validator nodes should not deliver T1subscript𝑇1T_{1} at a later block index than it delivers T2subscript𝑇2T_{2}  . Temporal order fairness strategies can be further extended by discretizing the time into periods measured in terms of time units or the number of blocks [ref]19. If multiple searchers submit competing transactions, then the dispute can be resolved using the Solomonic approach . This approach assumes that each transaction initiator (whether searcher or legitimate user) knows its own status. An initiator (selected randomly) is given the opportunity to withdraw their transaction. If the transaction is withdrawn, the other initiator’s transaction is executed, else the transaction amount is burned. If the legitimate initiator is given the opportunity to withdraw, they incur a loss. In contrast, if a searcher withdraws, they do not incur a loss. Both initiators incur transaction fees if they assert their transactions, which discourages searchers from making illegitimate claims. However, this approach is only suitable for mitigating replacement front-running. Furthermore, implementing and managing the random selection and token-burning mechanisms could be complex. In addition, the strategy becomes an iterative process with an increasing number of competing searchers, leading to increased costs and higher latency. The order fairness  [ref]19 strategies rely solely on transaction timestamps, which could create an unfair advantage for searchers with low-latency infrastructure [ref]8. To address this limitation, Mamageishvili et al.  proposed TimeBoost, an ordering strategy based on both transaction timestamps and gas fees. TimeBoost calculates a score for each transaction received within a specific time interval and orders transactions in descending order based on these scores. The score is determined by subtracting the transaction arrival time from a bidding function, which is defined as the ratio of t′​i​m​e​i​n​t​e​r​v​a​l×b​i​d′superscript𝑡′𝑖𝑚𝑒𝑖𝑛𝑡𝑒𝑟𝑣𝑎𝑙𝑏𝑖superscript𝑑′{}^{\\prime}time\\;interval\\times bid^{\\prime} and ∑′b​i​d​s+c​o​n​s​t​a​n​t′superscript′𝑏𝑖𝑑𝑠𝑐𝑜𝑛𝑠𝑡𝑎𝑛superscript𝑡′{}^{\\prime}\\sum bids+constant^{\\prime}. The transaction priority increases with the bid. Consequently, searchers may compete by resubmitting transactions with progressively increasing bids, potentially leading to network congestion and instability. Furthermore, TimeBoost could disproportionately favor wealthy searchers who can invest in low-latency infrastructure and afford to place high bids. To prevent favoring wealthy searchers, transaction ordering strategies based on random  or deterministic  sequencers have been proposed. Sinai and Hoh In  proposed the Quantum Random Transaction Ordering Protocol (Q-RTOP), which utilizes a quantum random number generator to finalize the order of transactions within a block. Empirical results demonstrate the effectiveness of Q-RTOP in randomizing over 8000 transactions in under 25 milliseconds. However, Q-RTOP does not guarantee that block producers will refrain from rearranging the randomized transactions to extract MEV, as proving that a block contains truly randomized transactions remains challenging. On the other hand, Doe et al.  proposed a deterministic sequencer strategy for transaction ordering based on transaction confidentiality and delay tolerance. The authors introduced a Weighted Sequencing Service (WSS) that computes the weight for each transaction based on delay tolerance, confidentiality, and transaction workload. Transactions are then ordered based on their weights. However, searchers may manipulate delay tolerance and confidentiality requirements of their transactions to influence the ordering. In the context of transaction ordering based on MM designs, Ciampi et al. [ref]36 proposed Fair Market Maker (FairMM), an AMM based on the ΠΠ\\Pi protocol that utilizes off-chain communication for transaction ordering. In this protocol, a buyer creates a smart contract specifying the required token amount and locks it on the blockchain. The buyer then sends their identity (without token details) to the seller off-chain, and the seller responds with the exchange rate. If the buyer agrees, the contract initiates the trade by forwarding trade details to a MM algorithm. The MM can then accept or decline to trade. If the MM conducts trades with other traders in between, a transaction reordering will be flagged. While FairMM does not explicitly prevent transaction reordering, it discourages malicious activities by publicly flagging any misbehavior. Furthermore, it cannot mitigate back-running transactions since a searcher can execute a transaction that back-runs the victim transaction without requiring any reordering. Empirical analysis shows that, compared to the popular AMM Uniswap, FairMM results in constant gas costs, higher throughput, and faster trade execution. Similarly, Moosavi and Clark  proposed Lissy, an alternative to traditional AMM for fair, efficient, and transparent token trading. Unlike continuous trading in an AMM, Lissy employs a call market mechanism for periodic trading, collecting orders over a set period and executing them simultaneously at a single clearing price. This approach eliminates front-running, where traders exploit timing differences to gain an advantage. However, Lissy faces scalability issues in the main Ethereum network due to periodic execution."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A taxonomy for decentralized finance",
+      "abstract": "",
+      "year": "2024",
+      "venue": "International Review of Financial Analysis",
+      "authors": "T. Puschmann and M. Huang-Sui"
+    },
+    {
+      "index": 1,
+      "title": "Sok: Decentralized exchanges (dex) with automated market maker (amm) protocols",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM Computing Surveys",
+      "authors": "J. Xu, K. Paruch, S. Cousaert, and Y. Feng"
+    },
+    {
+      "index": 2,
+      "title": "Frontrunner Jones and the Raiders of the Dark Forest: An Empirical Study of Frontrunning on the Ethereum Blockchain",
+      "abstract": "",
+      "year": "2021",
+      "venue": "30th USENIX Security Symposium (USENIX Security 21)",
+      "authors": "C. F. Torres, R. Camino et al.",
+      "orig_title": "Frontrunner jones and the raiders of the dark forest: An empirical study of frontrunning on the ethereum blockchain",
+      "paper_id": "2102.03347v2"
+    },
+    {
+      "index": 3,
+      "title": "An event study of the ethereum transition to proof-of-stake",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Commodities",
+      "authors": "E. Kapengut and B. Mizrach"
+    },
+    {
+      "index": 4,
+      "title": "Maximal extractable value and the blockchain commons",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Available at SSRN 4198139",
+      "authors": "P. Poux, P. De Filippi, and B. Deffains"
+    },
+    {
+      "index": 5,
+      "title": "Blockchains, mev and the knapsack problem: a primer",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "V. Mohan and P. Khezr"
+    },
+    {
+      "index": 6,
+      "title": "A Survey of DeFi Security: Challenges and Opportunities",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Journal of King Saud University-Computer and Information Sciences",
+      "authors": "W. Li, J. Bu, X. Li, H. Peng, Y. Niu, and Y. Zhang",
+      "orig_title": "A survey of defi security: Challenges and opportunities",
+      "paper_id": "2206.11821v3"
+    },
+    {
+      "index": 7,
+      "title": "Maximal extractable value mitigation approaches in ethereum and layer-2 chains: A comprehensive survey",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "Z. Alipanahloo, A. S. Hafid, and K. Zhang"
+    },
+    {
+      "index": 8,
+      "title": "MEV Ecosystem Evolution From Ethereum 1.0",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "Rasheed, Y. Chaurasia, P. Desai, and S. Gujar",
+      "orig_title": "Mev ecosystem evolution from ethereum 1.0",
+      "paper_id": "2406.13585v1"
+    },
+    {
+      "index": 9,
+      "title": "Ethreview: An ethereum-based product review system for mitigating rating frauds",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Computers & Security",
+      "authors": "M. Zulfiqar, F. Tariq, M. U. Janjua, A. N. Mian, A. Qayyum, J. Qadir, F. Sher, and M. Hassan"
+    },
+    {
+      "index": 10,
+      "title": "Flash boys 2.0: Frontrunning in decentralized exchanges, miner extractable value, and consensus instability",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE symposium on security and privacy (SP)",
+      "authors": "P. Daian, S. Goldfeder, T. Kell, Y. Li, X. Zhao, I. Bentov, L. Breidenbach, and A. Juels"
+    },
+    {
+      "index": 11,
+      "title": "Transaction fee mechanism design for the ethereum blockchain: An economic analysis of eip-1559",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2012.00854",
+      "authors": "T. Roughgarden"
+    },
+    {
+      "index": 12,
+      "title": "Ransomware activity and blockchain congestion",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Journal of Financial Economics",
+      "authors": "K. Sokolov"
+    },
+    {
+      "index": 13,
+      "title": "Trading and arbitrage in cryptocurrency markets",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Financial Economics",
+      "authors": "I. Makarov and A. Schoar"
+    },
+    {
+      "index": 14,
+      "title": "Quantifying blockchain extractable value: How dark is the forest?",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Symposium on Security and Privacy (SP)",
+      "authors": "K. Qin, L. Zhou, and A. Gervais"
+    },
+    {
+      "index": 15,
+      "title": "Estimating (miner) extractable value is hard, let’s go shopping!",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Financial Cryptography and Data Security",
+      "authors": "A. Judmayer, N. Stifter, P. Schindler, and E. Weippl"
+    },
+    {
+      "index": 16,
+      "title": "The prisma 2020 statement: an updated guideline for reporting systematic reviews",
+      "abstract": "",
+      "year": "2021",
+      "venue": "bmj",
+      "authors": "M. J. Page, J. E. McKenzie, P. M. Bossuyt, I. Boutron, T. C. Hoffmann, C. D. Mulrow, L. Shamseer, J. M. Tetzlaff, E. A. Akl, S. E. Brennan et al."
+    },
+    {
+      "index": 17,
+      "title": "Fairblock: Preventing blockchain front-running with minimal overheads",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Security and Privacy in Communication Systems",
+      "authors": "P. Momeni, S. Gorbunov, and B. Zhang"
+    },
+    {
+      "index": 18,
+      "title": "Cryptography versus incentives",
+      "abstract": "",
+      "year": "2023",
+      "venue": "The Economics of Blockchain Consensus: Exploring the Key Tradeoffs in Blockchain Design",
+      "authors": "J. Gans"
+    },
+    {
+      "index": 19,
+      "title": "Unraveling the MEV Enigma: ABI-Free Detection Model using Graph Neural Networks",
+      "abstract": "",
+      "year": "2024",
+      "venue": "Future Generation Computer Systems",
+      "authors": "S. Park, W. Jeong, Y. Lee, B. Son, H. Jang, and J. Lee",
+      "orig_title": "Unraveling the mev enigma: Abi-free detection model using graph neural networks",
+      "paper_id": "2305.05952v1"
+    },
+    {
+      "index": 20,
+      "title": "Demystifying defi mev activities in flashbots bundle",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "Z. Li, J. Li, Z. He, X. Luo, T. Wang, X. Ni, W. Yang, X. Chen, and T. Chen"
+    },
+    {
+      "index": 21,
+      "title": "Maximizing extractable value from automated market makers",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Financial Cryptography and Data Security",
+      "authors": "M. Bartoletti, J. H.-y. Chiang, and A. Lluch Lafuente"
+    },
+    {
+      "index": 22,
+      "title": "Remeasuring the Arbitrage and Sandwich Attacks of Maximal Extractable Value in Ethereum",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "T. Chi, N. He, X. Hu, and H. Wang",
+      "orig_title": "Remeasuring the arbitrage and sandwich attacks of maximal extractable value in ethereum",
+      "paper_id": "2405.17944v2"
+    },
+    {
+      "index": 23,
+      "title": "n-mvtl attack: Optimal transaction reordering attack on defi",
+      "abstract": "",
+      "year": "2023",
+      "venue": "European Symposium on Research in Computer Security",
+      "authors": "J. Wang, J. Li, Z. Li, X. Deng, and B. Xiao"
+    },
+    {
+      "index": 24,
+      "title": "Demystifying just-in-time (jit) liquidity attacks on uniswap v3",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Conference on Blockchain Research & Applications for Innovative Networks and Services (BRAINS)",
+      "authors": "X. Xiong, Z. Wang, W. Knottenbelt, and M. Huth"
+    },
+    {
+      "index": 25,
+      "title": "Routing mev in constant function market makers",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Web and Internet Economics",
+      "authors": "K. Kulkarni, T. Diamandis, and T. Chitra"
+    },
+    {
+      "index": 26,
+      "title": "Cyclic Arbitrage in Decentralized Exchanges",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Companion Proceedings of the Web Conference 2022",
+      "authors": "Y. Wang, Y. Chen, H. Wu, L. Zhou, S. Deng, and R. Wattenhofer",
+      "orig_title": "Cyclic arbitrage in decentralized exchanges",
+      "paper_id": "2105.02784v3"
+    },
+    {
+      "index": 27,
+      "title": "A flash (bot) in the pan: measuring maximal extractable value in private pools",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Internet Measurement Conference",
+      "authors": "B. Weintraub, C. F. Torres, C. Nita-Rotaru, and R. State"
+    },
+    {
+      "index": 28,
+      "title": "Twap oracle attacks: Easier done than said?",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE International Conference on Blockchain and Cryptocurrency (ICBC)",
+      "authors": "T. Mackinga, T. Nadahalli, and R. Wattenhofer"
+    },
+    {
+      "index": 29,
+      "title": "Mitigating frontrunning attacks in ethereum",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM International Symposium on Blockchain and Secure Critical Infrastructure",
+      "authors": "M. Varun, B. Palanisamy, and S. Sural"
+    },
+    {
+      "index": 30,
+      "title": "DeFiRanger: Detecting Price Manipulation Attacks on DeFi Applications",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "S. Wu, D. Wang, J. He, Y. Zhou, L. Wu, X. Yuan, Q. He, and K. Ren",
+      "orig_title": "Defiranger: Detecting price manipulation attacks on defi applications",
+      "paper_id": "2104.15068v1"
+    },
+    {
+      "index": 31,
+      "title": "Fairness Notions in DAG-based DLTs",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Conference on Blockchain Research & Applications for Innovative Networks and Services (BRAINS)",
+      "authors": "M. Raikwar, N. Polyanskii, and S. Müller",
+      "orig_title": "Fairness notions in dag-based dlts",
+      "paper_id": "2308.04831v2"
+    },
+    {
+      "index": 32,
+      "title": "Buying time: Latency racing vs. bidding for transaction ordering",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Conference on Advances in Financial Technologies (AFT 2023)",
+      "authors": "A. Mamageishvili, M. Kelkar, J. C. Schlegel, and E. W. Felten"
+    },
+    {
+      "index": 33,
+      "title": "Q-rtop: Quantum-secure random transaction ordering protocol for mitigating maximal extractable value attacks in blockchains with a priority gas-fee policy",
+      "abstract": "",
+      "year": "2024",
+      "venue": "IEEE Access",
+      "authors": "N. K. Sinai and H. I. Peter"
+    },
+    {
+      "index": 34,
+      "title": "Incentive mechanism design for mitigating frontrunning and transaction reordering in decentralized exchanges",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Access",
+      "authors": "D. M. Doe, J. Li, N. Dusit, L. Wang, and Z. Han"
+    },
+    {
+      "index": 35,
+      "title": "Fairmm: A fast and frontrunning-resistant crypto market-maker",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Symposium on Cyber Security, Cryptology, and Machine Learning",
+      "authors": "M. Ciampi, M. Ishaq, M. Magdon-Ismail, R. Ostrovsky, and V. Zikas"
+    },
+    {
+      "index": 36,
+      "title": "Lissy: Experimenting with on-chain order books",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Financial Cryptography and Data Security",
+      "authors": "M. Moosavi and J. Clark",
+      "orig_title": "Lissy: Experimenting with on-chain order books",
+      "paper_id": "2101.06291v3"
+    },
+    {
+      "index": 37,
+      "title": "Wendy grows up: More order fairness",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Financial Cryptography and Data Security. FC 2021 International Workshops: CoDecFin, DeFi, VOTING, and WTSC",
+      "authors": "K. Kursawe"
+    },
+    {
+      "index": 38,
+      "title": "A survey of intel sgx and its applications",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Frontiers of Computer Science",
+      "authors": "W. Zheng, Y. Wu, X. Wu, C. Feng, Y. Sui, X. Luo, and Y. Zhou"
+    },
+    {
+      "index": 39,
+      "title": "Demystifying arm trustzone: A comprehensive survey",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM computing surveys (CSUR)",
+      "authors": "S. Pinto and N. Santos"
+    },
+    {
+      "index": 40,
+      "title": "Universal composable transaction serialization with order fairness",
+      "abstract": "",
+      "year": "2024",
+      "venue": "Annual International Cryptology Conference",
+      "authors": "M. Ciampi, A. Kiayias, and Y. Shen"
+    },
+    {
+      "index": 41,
+      "title": "Order-fairness for byzantine consensus",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Cryptology–CRYPTO 2020: 40th Annual International Cryptology Conference, CRYPTO 2020, Santa Barbara, CA, USA, August 17–21, 2020, Proceedings, Part III",
+      "authors": "M. Kelkar, F. Zhang, S. Goldfeder, and A. Juels"
+    },
+    {
+      "index": 42,
+      "title": "The judgment of solomon: global protections for tradition and the problem of community ownership",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Cultural Analysis",
+      "authors": "D. Noyes"
+    },
+    {
+      "index": 43,
+      "title": "Blindperm: Efficient mev mitigation with an encrypted mempool and permutation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Cryptology ePrint Archive",
+      "authors": "A. Kavousi, D. V. Le, P. Jovanovic, and G. Danezis"
+    },
+    {
+      "index": 44,
+      "title": "Mevade: An mev-resistant blockchain design",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE International Conference on Blockchain and Cryptocurrency (ICBC)",
+      "authors": "J. Piet, V. Nair, and S. Subramanian"
+    },
+    {
+      "index": 45,
+      "title": "Revisiting transaction ledger robustness in the miner extractable value era",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Applied Cryptography and Network Security",
+      "authors": "F. Kamphuis, B. Magri, R. Lamberty, and S. Faust"
+    },
+    {
+      "index": 46,
+      "title": "First-price sealed-bid auction for ethereum gas auction under flashbots",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE International Conference on Metaverse Computing, Networking and Applications (MetaCom)",
+      "authors": "C. Jin, T. Wang, Z. Wang, L. Shi, and S. Zhang"
+    },
+    {
+      "index": 47,
+      "title": "The mev saga: Can regulation illuminate the dark forest?",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Advanced Information Systems Engineering",
+      "authors": "S. Ramos and J. Ellul"
+    },
+    {
+      "index": 48,
+      "title": "Dissecting Bitcoin and Ethereum Transactions: On the Lack of Transaction Contention and Prioritization Transparency in Blockchains",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Financial Cryptography and Data Security",
+      "authors": "J. Messias, V. Pahari, B. Chandrasekaran, K. P. Gummadi, and P. Loiseau",
+      "orig_title": "Dissecting bitcoin and ethereum transactions: On the lack of transaction contention and prioritization transparency in blockchains",
+      "paper_id": "2302.06962v2"
+    },
+    {
+      "index": 49,
+      "title": "Lanturn: Measuring economic security of smart contracts through adaptive learning",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "K. Babel, M. Javaheripi, Y. Ji, M. Kelkar, F. Koushanfar, and A. Juels"
+    },
+    {
+      "index": 50,
+      "title": "Simulation of front-running attacks and privacy mitigations in ethereum blockchain",
+      "abstract": "",
+      "year": "2022",
+      "venue": "European Modeling and Simulation Symposium, EMSS",
+      "authors": "Z. Stucke, T. Constantinides, and J. Cartlidge"
+    },
+    {
+      "index": 51,
+      "title": "Time is Money: Strategic Timing Games in Proof-of-Stake Protocols",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Conference on Advances in Financial Technologies",
+      "authors": "C. Schwarz-Schilling, F. Saleh, T. Thiery, J. Pan, N. Shah, and B. Monnot",
+      "orig_title": "Time is money: Strategic timing games in proof-of-stake protocols",
+      "paper_id": "2305.09032v1"
+    },
+    {
+      "index": 52,
+      "title": "Time Moves Faster When There is Nothing You Anticipate: The Role of Time in MEV Rewards",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Workshop on Decentralized Finance and Security",
+      "authors": "B. Öz, B. Kraner, N. Vallarano, B. S. Kruger, F. Matthes, and C. J. Tessone",
+      "orig_title": "Time moves faster when there is nothing you anticipate: The role of time in mev rewards",
+      "paper_id": "2307.05814v1"
+    },
+    {
+      "index": 53,
+      "title": "Strategic peer selection using transaction value and latency",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM CCS Workshop on Decentralized Finance and Security",
+      "authors": "K. Babel and L. Baker"
+    },
+    {
+      "index": 54,
+      "title": "On the Just-In-Time Discovery of Profit-Generating Transactions in DeFi Protocols",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Symposium on Security and Privacy (SP)",
+      "authors": "L. Zhou, K. Qin, A. Cully, B. Livshits, and A. Gervais",
+      "orig_title": "On the just-in-time discovery of profit-generating transactions in defi protocols",
+      "paper_id": "2103.02228v1"
+    },
+    {
+      "index": 55,
+      "title": "Towards quantifying cross-domain maximal extractable value for blockchain decentralisation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Information and Communications Security",
+      "authors": "J. H. Sjursen, W. Meng, and W.-Y. Chiu"
+    }
+  ]
+}

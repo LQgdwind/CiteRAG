@@ -1,0 +1,453 @@
+{
+  "paper_id": "2407.07584v1",
+  "title": "A Spectrum of Approximate Probabilistic Bisimulations",
+  "sections": {
+    "definitions and interrelation": "We start with the seminal notion of ε𝜀\\varepsilon-bisimulations of Desharnais et al. . While originally introduced for labeled Markov processes  , ε𝜀\\varepsilon-bisimulations were later adapted to other models like LMCs 4 [ref]38 or Segala’s probabilistic automata  . A reflexive111In contrast to  4 we require reflexivity of ε𝜀\\varepsilon-bisimulations. This is a rather natural assumption (a state should always simulate itself) that does not affect ∼εsubscriptsimilar-to𝜀\\sim_{\\varepsilon}. and symmetric relation R⊆S×S𝑅𝑆𝑆R\\subseteq S\\times S is an ε𝜀\\varepsilon-bisimulation if for all (s,t)∈R𝑠𝑡𝑅(s,t)\\in R and any A⊆S𝐴𝑆A\\subseteq S it holds that States s,t𝑠𝑡s,t are ε𝜀\\varepsilon-bisimilar, denoted s∼εtsubscriptsimilar-to𝜀𝑠𝑡s\\sim_{\\varepsilon}t, if there is an ε𝜀\\varepsilon-bisimulation R𝑅R with (s,t)∈R𝑠𝑡𝑅(s,t)\\in R. LMCs ℳ,𝒩ℳ𝒩\\mathcal{M},\\mathcal{N} are ε𝜀\\varepsilon-bisimilar, denoted ℳ∼ε𝒩subscriptsimilar-to𝜀ℳ𝒩\\mathcal{M}\\sim_{\\varepsilon}\\mathcal{N}, if si​n​i​tℳ∼εsi​n​i​t𝒩subscriptsimilar-to𝜀superscriptsubscript𝑠𝑖𝑛𝑖𝑡ℳsuperscriptsubscript𝑠𝑖𝑛𝑖𝑡𝒩s_{init}^{\\mathcal{M}}\\sim_{\\varepsilon}s_{init}^{\\mathcal{N}} in ℳ⊕𝒩direct-sumℳ𝒩\\mathcal{M}\\oplus\\mathcal{N}. Intuitively, s∼εtsubscriptsimilar-to𝜀𝑠𝑡s\\sim_{\\varepsilon}t if both states can mimic the other’s transition probabilities to any A⊆S𝐴𝑆A\\subseteq S by transitioning to the (potentially bigger) set ∼ε(A)subscriptsimilar-to𝜀absent𝐴{\\sim_{\\varepsilon}}(A) with a probability that is smaller by at most ε𝜀\\varepsilon than the original one. The parameter ε𝜀\\varepsilon describes how much the behavior of related states may differ: for ε𝜀\\varepsilon close to 111 more states can be related, while for ε≈0𝜀0\\varepsilon\\approx 0 related states behave almost equivalently. In the extreme case of ε=0𝜀0\\varepsilon=0, we have ∼0⁣=⁣∼subscriptsimilar-to0similar-to{\\sim_{0}}={\\sim}  4. Instead of being transitive, ε𝜀\\varepsilon-bisimulations are additive in their tolerances: s∼ε1tsubscriptsimilar-tosubscript𝜀1𝑠𝑡s\\sim_{\\varepsilon_{1}}t and t∼ε2usubscriptsimilar-tosubscript𝜀2𝑡𝑢t\\sim_{\\varepsilon_{2}}u implies s∼ε′usubscriptsimilar-tosuperscript𝜀′𝑠𝑢s\\sim_{\\varepsilon^{\\prime}}u for some 0≤ε′≤min⁡{1,ε1+ε2}0superscript𝜀′1subscript𝜀1subscript𝜀20\\leq\\varepsilon^{\\prime}\\leq\\min\\{1,\\varepsilon_{1}+\\varepsilon_{2}\\} .\nAs the next example suggests, transitivity is not always desirable for ε𝜀\\varepsilon-bisimulations if ε>0𝜀0\\varepsilon>0. Let ε=1n𝜀1𝑛\\varepsilon=\\frac{1}{n} for n≥1𝑛1n\\geq 1 and consider the LMC of Figure 2. There, the reflexive and symmetric closure of R={(si,si+1)∣0≤i≤n−1}𝑅conditional-setsubscript𝑠𝑖subscript𝑠𝑖10𝑖𝑛1R=\\{(s_{i},s_{i+1})\\mid 0\\leq i\\leq n-1\\} is an ε𝜀\\varepsilon-bisimulation.\nHence, s0subscript𝑠0s_{0} and snsubscript𝑠𝑛s_{n} are related by a chain of ε𝜀\\varepsilon-bisimilar states, even though they behave completely different: s0subscript𝑠0s_{0} transitions to the {a}𝑎\\{a\\}-labeled state x𝑥x with probability 00, snsubscript𝑠𝑛s_{n} does so with probability 111. There are different ways to characterize ε𝜀\\varepsilon-bisimulations. For example, Desharnais et al.  provide a characterization in terms of the values of maximum flows in specific flow networks. Their result is well-suited for algorithmic purposes, but is restricted to finite models. Another way to express condition (ii) of Definition 3.1 is via the existence of weight functions Δ:S→D​i​s​t​r​(S):Δ→𝑆𝐷𝑖𝑠𝑡𝑟𝑆\\Delta\\colon S\\to Distr(S) that describe how to split the successor probabilities of related states. This approach is used in, e.g.,  [ref]38  [ref]31. The following lemma describes one possible way to define such weight functions in order to characterize ε𝜀\\varepsilon-bisimulations. A reflexive and symmetric relation R⊆S×S𝑅𝑆𝑆R\\subseteq S\\times S that only relates states with the same label is an ε𝜀\\varepsilon-bisimulation iff for all (s,t)∈R𝑠𝑡𝑅(s,t)\\in R there is a map Δ:𝑆𝑢𝑐𝑐​(s)→𝐷𝑖𝑠𝑡𝑟​(𝑆𝑢𝑐𝑐​(t)):Δ→𝑆𝑢𝑐𝑐𝑠𝐷𝑖𝑠𝑡𝑟𝑆𝑢𝑐𝑐𝑡\\Delta\\colon\\mathit{Succ}(s)\\to\\mathit{Distr}(\\mathit{Succ}(t)) such that for all t′∈𝑆𝑢𝑐𝑐​(t)superscript𝑡′𝑆𝑢𝑐𝑐𝑡t^{\\prime}\\in\\mathit{Succ}(t) we have , and ∑s′∈𝑆𝑢𝑐𝑐​(s)subscriptsuperscript𝑠′𝑆𝑢𝑐𝑐𝑠\\sum_{s^{\\prime}\\in\\mathit{Succ}(s)}. Intuitively, Lemma 3.3 tells us that, if s∼εtsubscriptsimilar-to𝜀𝑠𝑡s\\sim_{\\varepsilon}t, the successors s′superscript𝑠′s^{\\prime} of s𝑠s can be mapped to distributions Δ​(s′)Δsuperscript𝑠′\\Delta(s^{\\prime}), i.e., convex combinations, of successors of t𝑡t. More precisely, it shows that (i) if we move from s𝑠s to a successor s′superscript𝑠′s^{\\prime} with probability  and, afterwards, from s′superscript𝑠′s^{\\prime} to a successor t′superscript𝑡′t^{\\prime} of t𝑡t with probability Δ​(s′)​(t′)Δsuperscript𝑠′superscript𝑡′\\Delta(s^{\\prime})(t^{\\prime}), then we reach t′superscript𝑡′t^{\\prime} with probability , and that (ii) the overall probability that the states s′superscript𝑠′s^{\\prime} and t′superscript𝑡′t^{\\prime} are ε𝜀\\varepsilon-bisimilar is at least 1−ε1𝜀1-\\varepsilon. A second notion of approximate probabilistic bisimulation are ε𝜀\\varepsilon-APBs, which stands short for approximate probabilistic bisimulations with precision ε𝜀\\varepsilon   . In contrast to ε𝜀\\varepsilon-bisimulations, where the differences in transition probabilities of related states are bounded w.r.t. all subsets A⊆S𝐴𝑆A\\subseteq S, an ε𝜀\\varepsilon-APB R𝑅R only requires a difference of at most ε𝜀\\varepsilon for the probabilities of related states to transition to R𝑅R-closed subsets of S𝑆S. A reflexive and symmetric relation R⊆S×S𝑅𝑆𝑆R\\subseteq S\\times S is an ε𝜀\\varepsilon-APB if for all (s,t)∈R𝑠𝑡𝑅(s,t)\\in R and any R𝑅R-closed set A⊆S𝐴𝑆A\\subseteq S it holds that We write s≡εtsubscript𝜀𝑠𝑡s\\equiv_{\\varepsilon}t if s𝑠s and t𝑡t are related by any ε𝜀\\varepsilon-APB, and ℳ≡ε𝒩subscript𝜀ℳ𝒩\\mathcal{M}\\equiv_{\\varepsilon}\\mathcal{N} if si​n​i​tℳ≡εsi​n​i​t𝒩subscript𝜀superscriptsubscript𝑠𝑖𝑛𝑖𝑡ℳsuperscriptsubscript𝑠𝑖𝑛𝑖𝑡𝒩s_{init}^{\\mathcal{M}}\\equiv_{\\varepsilon}s_{init}^{\\mathcal{N}} in ℳ⊕𝒩direct-sumℳ𝒩\\mathcal{M}\\oplus\\mathcal{N}. Like ∼εsubscriptsimilar-to𝜀\\sim_{\\varepsilon}, ε𝜀\\varepsilon-APBs are additive in their tolerances, and we have ≡0⁣=⁣∼⁣=⁣∼0subscript0similar-tosubscriptsimilar-to0{\\equiv_{0}}={\\sim}={\\sim_{0}}  . Let ε∈(0,1]𝜀01\\varepsilon\\in(0,1] and n=⌈1ε⌉∈ℕ𝑛1𝜀ℕn=\\left\\lceil\\frac{1}{\\varepsilon}\\right\\rceil\\in\\mathbb{N}. Consider ℳℳ\\mathcal{M} as in Figure 3, and let R𝑅R be the reflexive and symmetric closure of {(s,t),(x,x),(y,y)}∪{(ui,ui+1)∣0≤i≤n−1}𝑠𝑡𝑥𝑥𝑦𝑦conditional-setsubscript𝑢𝑖subscript𝑢𝑖10𝑖𝑛1\\{(s,t),(x,x),(y,y)\\}\\cup\\{(u_{i},u_{i+1})\\mid 0\\leq i\\leq n-1\\}.\nThe R𝑅R-closed sets in ℳℳ\\mathcal{M} are {s,t},{x},{y},{ui∣0≤i≤n}𝑠𝑡𝑥𝑦conditional-setsubscript𝑢𝑖0𝑖𝑛\\{s,t\\},\\{x\\},\\{y\\},\\{u_{i}\\mid 0\\leq i\\leq n\\} and their unions. For all (p,q)∈R𝑝𝑞𝑅(p,q)\\in R and R𝑅R-closed sets A𝐴A it holds that |||,\nso R𝑅R is an ε𝜀\\varepsilon-APB. Example 3.5 illustrates that the use of ε𝜀\\varepsilon-APBs as a notion that relates states with almost equivalent behavior is questionable: even though states s𝑠s and t𝑡t in Figure 3 are related by ≡εsubscript𝜀\\equiv_{\\varepsilon}, they behave completely different. This is caused by the set {u0,…,un}subscript𝑢0…subscript𝑢𝑛\\{u_{0},\\dots,u_{n}\\} of (unreachable) states being R𝑅R-closed, which in turn allows to relate s𝑠s and t𝑡t by the relation R𝑅R from the example. Such an anomaly cannot occur for ∼εsubscriptsimilar-to𝜀\\sim_{\\varepsilon}, and we in fact have s≁εtsubscriptnot-similar-to𝜀𝑠𝑡s\\nsim_{\\varepsilon}t in Figure 3 for every ε∈(0,1)𝜀01\\varepsilon\\in(0,1). In particular, this shows that ∼εsubscriptsimilar-to𝜀\\sim_{\\varepsilon} can be strictly finer than ≡εsubscript𝜀\\equiv_{\\varepsilon} for ε∈(0,1)𝜀01\\varepsilon\\in(0,1). Lastly, we introduce up-to-(n,ε)𝑛𝜀(n,\\varepsilon)-bisimulations  3, which are relations that require the behaviors of related states to differ by at most ε𝜀\\varepsilon for at least n𝑛n steps. The up-to-(n,ε)𝑛𝜀(n,\\varepsilon)-bisimulation ∼εn⊆S×S{\\sim_{\\varepsilon}^{n}}\\subseteq S\\times S is inductively defined on n𝑛n via s∼ε0tsuperscriptsubscriptsimilar-to𝜀0𝑠𝑡s\\sim_{\\varepsilon}^{0}t for all s,t∈S𝑠𝑡𝑆s,t\\in S and, for n≥0𝑛0n\\geq 0, s∼εn+1tsuperscriptsubscriptsimilar-to𝜀𝑛1𝑠𝑡s\\sim_{\\varepsilon}^{n+1}t iff for all A⊆S𝐴𝑆A\\subseteq S States s,t𝑠𝑡s,t are (n,ε)𝑛𝜀(n,\\varepsilon)-bisimilar if s∼εntsuperscriptsubscriptsimilar-to𝜀𝑛𝑠𝑡s\\sim_{\\varepsilon}^{n}t, and the notion is lifted to LMCs as usual. Similar to ∼εsubscriptsimilar-to𝜀\\sim_{\\varepsilon} and ≡εsubscript𝜀\\equiv_{\\varepsilon}, ∼εnsuperscriptsubscriptsimilar-to𝜀𝑛\\sim_{\\varepsilon}^{n} is reflexive and symmetric, but not transitive. Instead, it is additive in the tolerances and monotonic in n𝑛n and ε𝜀\\varepsilon, i.e., for n≥n′𝑛superscript𝑛′n\\geq n^{\\prime} and ε≤ε′𝜀superscript𝜀′\\varepsilon\\leq\\varepsilon^{\\prime}, s∼εntsuperscriptsubscriptsimilar-to𝜀𝑛𝑠𝑡s\\sim_{\\varepsilon}^{n}t implies s∼ε′n′tsuperscriptsubscriptsimilar-tosuperscript𝜀′superscript𝑛′𝑠𝑡s\\sim_{\\varepsilon^{\\prime}}^{n^{\\prime}}t 3. It is clear that s∼εntsuperscriptsubscriptsimilar-to𝜀𝑛𝑠𝑡s\\sim_{\\varepsilon}^{n}t for a fixed n𝑛n does not necessarily imply s∼εtsubscriptsimilar-to𝜀𝑠𝑡s\\sim_{\\varepsilon}t or s≡εtsubscript𝜀𝑠𝑡s\\equiv_{\\varepsilon}t, as (n,ε)𝑛𝜀(n,\\varepsilon)-bisimilarity only restricts the behavior of related states for n𝑛n steps. However, considering the limit n→∞→𝑛n\\to\\infty makes ∼εsubscriptsimilar-to𝜀\\sim_{\\varepsilon} and ∼εnsuperscriptsubscriptsimilar-to𝜀𝑛\\sim_{\\varepsilon}^{n} coincide, i.e., s∼εtsubscriptsimilar-to𝜀𝑠𝑡s\\sim_{\\varepsilon}t iff s∼εntsuperscriptsubscriptsimilar-to𝜀𝑛𝑠𝑡s\\sim_{\\varepsilon}^{n}t for all n∈ℕ𝑛ℕn\\in\\mathbb{N} . We now make precise the relationship between ε𝜀\\varepsilon-APBs and up-to-(n,ε)𝑛𝜀(n,\\varepsilon)-bisimulations. If ε∈(0,1)𝜀01\\varepsilon\\in(0,1), s≡εtsubscript𝜀𝑠𝑡s\\equiv_{\\varepsilon}t implies s∼εntsuperscriptsubscriptsimilar-to𝜀𝑛𝑠𝑡s\\sim_{\\varepsilon}^{n}t if n≤2𝑛2n\\leq 2, but not necessarily if n≥3𝑛3n\\geq 3."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Approximation metrics based on probabilistic bisimulations for general state-space Markov processes: A survey",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Electronic Notes in Theoretical Computer Science",
+      "authors": "Alessandro Abate"
+    },
+    {
+      "index": 1,
+      "title": "Probabilistic model checking of labelled Markov processes via finite approximate bisimulations",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Horizons of the Mind. A Tribute to Prakash Panangaden",
+      "authors": "Alessandro Abate, Marta Kwiatkowska, Gethin Norman, and David Parker"
+    },
+    {
+      "index": 2,
+      "title": "A note on the approximation of weak probabilistic bisimulation",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Alessandro Aldini"
+    },
+    {
+      "index": 3,
+      "title": "Two formal approaches for approximating noninterference properties",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Foundations of Security Analysis and Design II",
+      "authors": "Alessandro Aldini, Mario Bravetti, Alessandra Di Pierro, Roberto Gorrieri, Chris Hankin, and Herbert Wiklicky"
+    },
+    {
+      "index": 4,
+      "title": "A process-algebraic approach for the analysis of probabilistic noninterference",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. Comput. Secur.",
+      "authors": "Alessandro Aldini, Mario Bravetti, and Roberto Gorrieri"
+    },
+    {
+      "index": 5,
+      "title": "A quantitative approach to noninterference for probabilistic systems",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Electronic Notes in Theoretical Computer Science",
+      "authors": "Alessandro Aldini and Alessandra Di Pierro"
+    },
+    {
+      "index": 6,
+      "title": "Security analysis of a probabilistic non-repudiation protocol",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Process Algebra and Probabilistic Methods: Performance Modeling and Verification",
+      "authors": "Alessandro Aldini and Roberto Gorrieri"
+    },
+    {
+      "index": 7,
+      "title": "It usually works: The temporal logic of stochastic systems",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Computer Aided Verification (CAV 1995)",
+      "authors": "Adnan Aziz, Vigyan Singhal, Felice Balarin, Robert K. Brayton, and Alberto L. Sangiovanni-Vincentelli"
+    },
+    {
+      "index": 8,
+      "title": "Polynomial time algorithms for testing probabilistic bisimulation and simulation",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Computer Aided Verification (CAV 1996)",
+      "authors": "Christel Baier"
+    },
+    {
+      "index": 9,
+      "title": "Weak bisimulation for fully probabilistic processes",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Computer Aided Verification (CAV 1997)",
+      "authors": "Christel Baier and Holger Hermanns"
+    },
+    {
+      "index": 10,
+      "title": "Principles of Model Checking",
+      "abstract": "",
+      "year": "2008",
+      "venue": "The MIT Press",
+      "authors": "Christel Baier and Joost-Pieter Katoen"
+    },
+    {
+      "index": 11,
+      "title": "Comparative branching-time semantics for Markov chains",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Information and Computation",
+      "authors": "Christel Baier, Joost-Pieter Katoen, Holger Hermanns, and Verena Wolf"
+    },
+    {
+      "index": 12,
+      "title": "Sound approximate and asymptotic probabilistic bisimulations for PCTL",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Logical Methods in Computer Science",
+      "authors": "Massimo Bartoletti, Maurizio Murgia, and Roberto Zunino"
+    },
+    {
+      "index": 13,
+      "title": "On the relationship between bisimulation and trace equivalence in an approximate probabilistic context",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Foundations of Software Science and Computation Structures (FoSSaCS)",
+      "authors": "Gaoang Bian and Alessandro Abate"
+    },
+    {
+      "index": 14,
+      "title": "On the Relationship between Bisimulation and Trace Equivalence in an Approximate Probabilistic Context (Extended Version)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Gaoang Bian and Alessandro Abate",
+      "orig_title": "On the relationship between bisimulation and trace equivalence in an approximate probabilistic context (extended version)",
+      "paper_id": "1701.04547v3"
+    },
+    {
+      "index": 15,
+      "title": "Representation of systems of measurable sets",
+      "abstract": "",
+      "year": "1975",
+      "venue": "Mathematical Proceedings of the Cambridge Philosophical Society",
+      "authors": "Béla Bollobás and Nicolas Th. Varopoulos"
+    },
+    {
+      "index": 16,
+      "title": "Exact and ordinary lumpability in finite Markov chains",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Journal of Applied Probability",
+      "authors": "Peter Buchholz"
+    },
+    {
+      "index": 17,
+      "title": "Games for Bisimulations and Abstraction",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "David de Frutos-Escrig, Jeroen J. A. Keiren, and Tim A. C. Willemse",
+      "orig_title": "Games for bisimulations and abstraction",
+      "paper_id": "1611.00401v3"
+    },
+    {
+      "index": 18,
+      "title": "Optimal state-space lumping in Markov chains",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Information Processing Letters",
+      "authors": "Salem Derisavi, Holger Hermanns, and William H. Sanders"
+    },
+    {
+      "index": 19,
+      "title": "Metrics for labeled Markov systems",
+      "abstract": "",
+      "year": "1999",
+      "venue": "CONCUR’99 Concurrency Theory (CONCUR 1999)",
+      "authors": "Josée Desharnais, Vineet Gupta, Radha Jagadeesan, and Prakash Panangaden"
+    },
+    {
+      "index": 20,
+      "title": "A logical characterization of bisimulation for labeled Markov processes",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE Symposium on Logic in Computer Science (LiCS)",
+      "authors": "Josée Desharnais, Abbas Edalat, and Prakash Panangaden"
+    },
+    {
+      "index": 21,
+      "title": "Bisimulation for labelled Markov processes",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Information and Computation",
+      "authors": "Josée Desharnais, Abbas Edalat, and Prakash Panangaden"
+    },
+    {
+      "index": 22,
+      "title": "Approximating labelled Markov processes",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Information and Computation",
+      "authors": "Josée Desharnais, Vineet Gupta, Radha Jagadeesan, and Prakash Panangaden"
+    },
+    {
+      "index": 23,
+      "title": "Weak bisimulation is sound and complete for pCTL*",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Information and Computation",
+      "authors": "Josée Desharnais, Vineet Gupta, Radha Jagadeesan, and Prakash Panangaden"
+    },
+    {
+      "index": 24,
+      "title": "Approximate analysis of probabilistic processes: Logic, simulation and games",
+      "abstract": "",
+      "year": "2008",
+      "venue": "International Conference on Quantitative Evaluation of Systems (QEST 2008)",
+      "authors": "Josée Desharnais, François Laviolette, and Mathieu Tracol"
+    },
+    {
+      "index": 25,
+      "title": "Measuring the confinement of probabilistic systems",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Theoretical Computer Science",
+      "authors": "Alessandra Di Pierro, Chris Hankin, and Herbert Wiklicky"
+    },
+    {
+      "index": 26,
+      "title": "Robust PCTL model checking",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ACM International Conference on Hybrid Systems: Computation and Control (HSCC 2012)",
+      "authors": "Alessandro D’Innocenzo, Alessandro Abate, and Joost-Pieter Katoen"
+    },
+    {
+      "index": 27,
+      "title": "On the convergence rate of quasi lumpable Markov chains",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Formal Methods and Stochastic Models for Performance Evaluation",
+      "authors": "András Faragó"
+    },
+    {
+      "index": 28,
+      "title": "Bounds for quasi-lumpable markow chains",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Perform. Evaluation",
+      "authors": "Giuliana Franceschinis and Richard R. Muntz"
+    },
+    {
+      "index": 29,
+      "title": "Algebraic reasoning for probabilistic concurrent systems",
+      "abstract": "",
+      "year": "1990",
+      "venue": "IFIP TC2 Working Conference on Programming Concepts and Methods",
+      "authors": "Alessandro Giacalone, Chi-Chang Jou, and Scott A. Smolka"
+    },
+    {
+      "index": 30,
+      "title": "Formal multi-objective synthesis of continuous-state mdps",
+      "abstract": "",
+      "year": "2021",
+      "venue": "American Control Conference (ACC)",
+      "authors": "Sofie Haesaert, Petter Nilsson, and Sadegh Soudjani"
+    },
+    {
+      "index": 31,
+      "title": "Robust Dynamic Programming for Temporal Logic Control of Stochastic Systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Automatic Control",
+      "authors": "Sofie Haesaert and Sadegh Soudjani",
+      "orig_title": "Robust dynamic programming for temporal logic control of stochastic systems",
+      "paper_id": "1811.11445v1"
+    },
+    {
+      "index": 32,
+      "title": "A logic for reasoning about time and reliability",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Formal Aspects of Computing",
+      "authors": "Hans Hansson and Bengt Jonsson"
+    },
+    {
+      "index": 33,
+      "title": "The Probabilistic Model Checker Storm",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Journal on Software Tools for Technology Transfer (STTT)",
+      "authors": "Christian Hensel, Sebastian Junges, Joost-Pieter Katoen, Tim Quatmann, and Matthias Volk",
+      "orig_title": "The probabilistic model checker storm",
+      "paper_id": "2002.07080v2"
+    },
+    {
+      "index": 34,
+      "title": "A Near-Linear-Time Algorithm for Weak Bisimilarity on Markov Chains",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Concurrency Theory (CONCUR 2020)",
+      "authors": "David N. Jansen, Jan Friso Groote, Ferry Timmers, and Pengfei Yang"
+    },
+    {
+      "index": 35,
+      "title": "The probabilistic model checking landscape",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM/IEEE Symposium on Logic in Computer Science (LiCS’16)",
+      "authors": "Joost-Pieter Katoen"
+    },
+    {
+      "index": 36,
+      "title": "Bisimulation minimisation mostly speeds up probabilistic model checking",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Tools and Algorithms for the Construction and Analysis of Systems (TACAS 2007)",
+      "authors": "Joost-Pieter Katoen, Tim Kemna, Ivan Zapreev, and David N. Jansen"
+    },
+    {
+      "index": 37,
+      "title": "Approximate Bisimulation Minimisation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IARCS Annual Conference on Foundations of Software Technology and Theoretical Computer Science (FSTTCS 2021)",
+      "authors": "Stefan Kiefer and Qiyi Tang",
+      "orig_title": "Approximate Bisimulation Minimisation",
+      "paper_id": "2110.00326v1"
+    },
+    {
+      "index": 38,
+      "title": "Approximate Bisimulation Minimisation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "Stefan Kiefer and Qiyi Tang",
+      "orig_title": "Approximate bisimulation minimisation",
+      "paper_id": "2110.00326v1"
+    },
+    {
+      "index": 39,
+      "title": "The complexity of nonuniform random number generation",
+      "abstract": "",
+      "year": "1976",
+      "venue": "Algorithms and Complexity: New Directions and Recent Results",
+      "authors": "Donald E. Knuth and Andrew C. Yao"
+    },
+    {
+      "index": 40,
+      "title": "Model checking of safety properties",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Computer Aided Verification (CAV 1999)",
+      "authors": "Orna Kupferman and Moshe Y. Vardi"
+    },
+    {
+      "index": 41,
+      "title": "Bisimulation through probabilistic testing",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Information and Computation",
+      "authors": "Kim G. Larsen and Arne Skou"
+    },
+    {
+      "index": 42,
+      "title": "Optimal discrete uniform generation from coin flips, and applications",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "Jérémie O. Lumbroso"
+    },
+    {
+      "index": 43,
+      "title": "Communication and Concurrency",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Prentice-Hall, Inc.",
+      "authors": "R. Milner"
+    },
+    {
+      "index": 44,
+      "title": "A Calculus of Communicating Systems",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Springer-Verlag",
+      "authors": "Robin Milner"
+    },
+    {
+      "index": 45,
+      "title": "The temporal logic of programs",
+      "abstract": "",
+      "year": "1977",
+      "venue": "Annual Symposium on Foundations of Computer Science (SFCS 1977)",
+      "authors": "Amir Pnueli"
+    },
+    {
+      "index": 46,
+      "title": "Modeling and verification of randomized distributed real-time systems",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": "Roberto Segala"
+    },
+    {
+      "index": 47,
+      "title": "Probabilistic simulations for probabilistic processes",
+      "abstract": "",
+      "year": "1994",
+      "venue": "CONCUR ’94: Concurrency Theory",
+      "authors": "Roberto Segala and Nancy Lynch"
+    },
+    {
+      "index": 48,
+      "title": "Computing distances between probabilistic automata",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Workshop on Quantitative Aspects of Programming Languages (QAPL 2011)",
+      "authors": "Mathieu Tracol, Josée Desharnais, and Abir Zhioua"
+    },
+    {
+      "index": 49,
+      "title": "Simple O(m logn) time Markov chain lumping",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Tools and Algorithms for the Construction and Analysis of Systems",
+      "authors": "Antti Valmari and Giuliana Franceschinis"
+    },
+    {
+      "index": 50,
+      "title": "Probabilistic bisimilarity distances",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM SIGLOG News",
+      "authors": "Franck van Breugel"
+    },
+    {
+      "index": 51,
+      "title": "A complete axiomatization of branching bisimilarity for a simple process language with probabilistic choice",
+      "abstract": "",
+      "year": "2019",
+      "venue": "The Art of Modelling Computational Systems",
+      "authors": "Rob J. van Glabbeek, Jan Friso Groote, and Erik P. de Vink"
+    },
+    {
+      "index": 52,
+      "title": "Branching time and abstraction in bisimulation semantics",
+      "abstract": "",
+      "year": "1996",
+      "venue": "J. ACM",
+      "authors": "Rob J. van Glabbeek and W. Peter Weijland"
+    },
+    {
+      "index": 53,
+      "title": "Correctness issues of symbolic bisimulation computation for Markov chains",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Measurement, Modelling, and Evaluation of Computing Systems and Dependability and Fault Tolerance (MMB&DFT 2010)",
+      "authors": "Ralf Wimmer and Bernd Becker"
+    }
+  ]
+}

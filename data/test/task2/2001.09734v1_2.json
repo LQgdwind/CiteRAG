@@ -1,0 +1,379 @@
+{
+  "paper_id": "2001.09734v1",
+  "title": "One Explanation Does Not Fit All",
+  "sections": {
+    "introduction": "Given the opaque, “black-box” nature of complex Machine Learning (ML) systems, their deployment in mission-critical domains is limited by the extent to which they can be interpreted or validated. In particular, predictions, (trained) models and (training) data should be accounted for. One way to achieve this is by “transparency by design”, so that all components of a predictive system are “glass boxes”, i.e., ante-hoc transparency . Alternatively, transparency might be achieved with post-hoc tools, which have the advantage of not limiting the choice of a predictive model in advance . The latter approaches can either be model-specific or model-agnostic . Despite this wide range of available tools and techniques, many of them are non-interactive, providing the explainee (a recipient of an explanation) with a single explanation that has been optimised according to some predefined metric. While some of these methods simply cannot be customised by the end user without an in-depth understanding of their inner workings, others can take direct input from users with a varying level of domain expertise: from a lay audience – e.g., selecting regions of an image in order to query their influence on the classification outcome – to domain experts – e.g., tuning explanation parameters such as the importance of neighbouring data points. A particular risk of a lack of interaction and personalisation mechanisms is that the explanation may not always align with users’ expectations, reducing its overall value and usefulness. Allowing the user to guide and customise an explanation can benefit the transparency of a predictive system by making it more suitable and appealing to the explainee, for example, by adjusting its content and complexity. Therefore, personalisation can be understood as modifying an explanation or an explanatory process to answer user-specific questions. For counterfactual explanations of the form: “had feature X𝑋X been different, the prediction of the model would have been different too”, these can be user-defined constrains on the number and type of features (X𝑋X) that can and cannot appear in the conditional statement. Delegating the task of customising and personalising explanations to the end user via interaction mitigates the need for the difficult process of modelling the user’s mental model beforehand, rendering the task feasible and making the whole process feel more natural, engaging and less frustrating. In human interactions, understanding is naturally achieved via an explanatory dialogue [ref]26, possibly supported with visual aids. Mirroring this explanatory process for ML transparency would make it attractive and accessible to a wide audience. Furthermore, allowing the user to customise explanations extends their utility beyond ML transparency. The explainee can steer the explanatory process to inspect fairness (e.g., identify biases towards protected groups111A protected group is a sub-population in a data set created by fixing a value of a protected attribute such as age, gender or ethnicity, which discriminating upon is illegal.) , assess accountability (e.g., identify model errors such as non-monotonic predictions with respect to monotonic features)  or debug predictive models [ref]20 . In contrast to ML tasks  – where any interaction may be impeded by human-incomprehensible internal representations utilised by a predictive model – interacting with explainability systems is feasible as the representation has to be human-understandable in the first place, thereby enabling a bi-directional communication. Interaction with explanatory systems also allows incorporating new knowledge into the underlying ML algorithm and building a mental model of the explainee, which will help to customise the resulting explanations. Consider the example of explaining an image with a local surrogate method that relies upon super-pixel segmentation (e.g., LIME algorithm introduced by Ribeiro et al. ). While super-pixel discovery may be good at separating colour patches based on their edges, these segments do not often correspond to meaningful concepts such as ears or a tail for a dog image – see Figure 1 for an example. The explanation can be personalised by allowing the explainee to merge and split segments before analysing their influence on the output of a black-box model, thereby implicitly answering what prompted the explainee to alter the segmentation. User input is a welcome addition given the complexity of images; a similar approach is possible for tabular and text data, although user input is often unnecessary in these two cases. For tabular data the explainee may select certain feature values that are of interest or create meaningful binning for some of the continuous features; for text data (treated as a bag of words) the user may group some words into a phrase that conveys the correct meaning in that particular sentence. This exchange of knowledge between the explainee and the explainability system can considerably increase the quality of explanations, but also poses a significant safety, security and privacy risk. A malicious explainee may use such a system to reveal sensitive data used to train the underlying predictive (or explanatory) model, extract proprietary model components, or learn its behaviour in an attempt to game it (see Section 3.2). After Miller’s [ref]26 seminal work – inspired by explanation research in the social sciences – drew attention to the lack of human-aspect considerations in the eXplainable Artificial Intelligence (XAI) literature – with many such systems being designed by the technical community for the technical community  – researchers started acknowledging the end user when designing XAI solutions. While this has advanced human-centred design and validation of explanations produced by XAI systems, another of Miller’s insights received relatively little attention: the interactive, dialogue-like nature of explanations. Many of the state-of-the-art explainability approaches are static, one-off systems that do not take user input or preferences into consideration beyond the initial configuration and parametrisation  [ref]9    .222To clarify, the notion of interaction is with respect to the explanation, e.g., the ability of the explainee to personalise it, and not the overall interactiveness of the explainability system. While sometimes the underlying explanatory algorithms are simply incapable of a meaningful interaction, others do apply a technique or utilise an explanatory artefact that can support it in principle. Part of this trend can be attributed to the lack of a well-defined protocol for evaluating interactive explanations and the challenging process of assessing their quality and effectiveness, which – in contrast to a one-shot evaluation – is a software system engineering challenge333Building such systems requires a range of diverse components: user interface, natural language processing unit, natural language generation module, conversation management system and a suitable and well-designed XAI algorithm. Furthermore, most of these components are domain-specific and cannot be generalised beyond the selected data set and use case. and requires time- and resource-consuming user studies. Schneider and Handali  noted that bespoke explanations in AI – achieved through interaction or otherwise – are largely absent within the existing literature. Research in this space usually touches upon three aspects of “personalised” explanations. First, there are interactive machine learning systems where the user input is harnessed to improve performance of a predictive model or align the data processing with its operator’s prior beliefs. While the classic active learning paradigm dominates this space, Kulesza et al. [ref]20 designed a system that presents its users with classification explanations to help them refine and personalise the predictive task, hence focusing the interaction on the underlying ML model and not the explanations. Similarly, Kim et al.  introduced an interactive ML system with an explainability component, allowing its users to alter the data clustering based on their preferences. Secondly, the work of Krause et al.  and Weld and Bansal  focused on interactive (multi-modal) explainability systems. Here, the interaction allows the explainee to elicit more information about an ML system by receiving a range of diverse explanations derived from a collection of XAI algorithms such as Partial Dependence (PD)  and Individual Conditional Expectation (ICE) [ref]9 plots. While this body of research illustrates what such an interaction (with multiple explanatory modalities) might look like and persuasively argues its benefits , the advocated interaction is mostly with respect to the presentation medium itself – e.g., an interactive PD plot – and cannot be used to customise and personalise the explanation per se. Thirdly, Madumal et al.  and Schneider and Handali  developed theoretical frameworks for interactive, personalised explainability that prescribe the interaction protocol and design of such systems. However, these theoretical foundations have not yet been utilised to design and implement an interactive explainability system coherent with XAI desiderata outlined by Miller [ref]26, which could offer customisable explanations. A more detailed overview and discussion of the relevant literature is given in Section 2. In this paper we propose an architecture of a truly interactive explainability system, demonstrate how to build such a system, analyse its desiderata, and examine how a diverse range of explanations can be personalised (Section 3). Furthermore, we discuss lessons learnt from presenting it to both a technical and a lay audience, and provide a plan for future research in this direction (Section 4). As a first attempt to build an XAI system that allows the explainee to customise and personalise the explanations, we decided to use a decision tree as the underlying predictive model. This choice simplifies many steps of our initial study, allowing us to validate (and guarantee correctness of) the explanations and reduce the overall complexity of the explanation generation and tuning process by inspecting the structure of the underlying decision tree. Using ante-hoc explanations derived from a single predictive model also allows us to mitigate engineering challenges that come with combining multiple independent XAI algorithms as proposed by Weld and Bansal . Furthermore, a decision tree can provide a wide range of diverse explanation types, many of which can be customised and personalised. Specifically, for global model explanations we provide model visualisation, and feature importance; while as prediction explanations we provide decision rule – extracted from a root-to-leaf path, counterfactual – achieved by comparing decision rules for different tree leaves, and exemplar – a similar training data point extracted from the tree leaves. When presented to the user, all of these explanations span a wide range of explanatory artefacts in visualisation (images) and textualisation (natural language) domains, thereby allowing us to test the extent to which they can be interactively personalised. Contrastive explanations, in particular class-contrastive counterfactual statements, are the foundation of our system. These take the form of: “had one of the attributes been different in a particular way, the classification outcome would have changed as follows….” Arguably, they are the most suitable, natural and appealing explanations targeted at humans [ref]26 . In addition to all of their desired properties grounded in the social sciences [ref]26 and legal considerations , they can be easily adapted to an interactive dialogue aimed at personalisation, which is not widely utilised. In our system they are delivered in an interactive dialogue – a natural language conversation, which is the most intuitive explanatory mechanism [ref]26. In summary, our approach aims to build a holistic and diverse interactive XAI system where the interaction is focused on personalising explanations (in accordance with Miller’s [ref]26 notion of XAI interactivity) as opposed to simply building an XAI system that provides explanations interactively (to explain different aspects of a black-box system using a range of XAI algorithms) – a subtle but significant difference."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Natural Language Interaction with Explainable AI Models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition Workshops",
+      "authors": "Arjun R Akula, Sinisa Todorovic, Joyce Y Chai, and Song-Chun Zhu"
+    },
+    {
+      "index": 1,
+      "title": "Power to the people: The role of humans in interactive machine learning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "AI Magazine",
+      "authors": "Saleema Amershi, Maya Cakmak, William Bradley Knox, and Todd Kulesza"
+    },
+    {
+      "index": 2,
+      "title": "Formalizing explanatory dialogues",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Scalable Uncertainty Management",
+      "authors": "Abdallah Arioua and Madalina Croitoru"
+    },
+    {
+      "index": 3,
+      "title": "Justification narratives for individual classifications",
+      "abstract": "",
+      "year": "2014",
+      "venue": "AutoML workshop at ICML",
+      "authors": "Or Biran and Kathleen McKeown"
+    },
+    {
+      "index": 4,
+      "title": "Wizard of Oz studies — why and how",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Knowledge-based systems",
+      "authors": "Nils Dahlbäck, Arne Jönsson, and Lars Ahrenberg"
+    },
+    {
+      "index": 5,
+      "title": "Assumption-based argumentation",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Argumentation in artificial intelligence",
+      "authors": "Phan Minh Dung, Robert A Kowalski, and Francesca Toni"
+    },
+    {
+      "index": 6,
+      "title": "Bringing transparency design into practice",
+      "abstract": "",
+      "year": "2018",
+      "venue": "23rd International Conference on Intelligent User Interfaces",
+      "authors": "Malin Eiband, Hanna Schneider, Mark Bilandzic, Julian Fazekas-Con, Mareike Haug, and Heinrich Hussmann"
+    },
+    {
+      "index": 7,
+      "title": "Greedy function approximation: a gradient boosting machine",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Annals of statistics",
+      "authors": "Jerome H Friedman"
+    },
+    {
+      "index": 8,
+      "title": "Peeking inside the black box: Visualizing statistical learning with plots of individual conditional expectation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Journal of Computational and Graphical Statistics",
+      "authors": "Alex Goldstein, Adam Kapelner, Justin Bleich, and Emil Pitkin"
+    },
+    {
+      "index": 9,
+      "title": "Explaining and Harnessing Adversarial Examples",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Ian Goodfellow, Jonathon Shlens, and Christian Szegedy",
+      "orig_title": "Explaining and Harnessing Adversarial Examples",
+      "paper_id": "1412.6572v3"
+    },
+    {
+      "index": 10,
+      "title": "DARPA’s Explainable Artificial Intelligence Program",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AI Magazine",
+      "authors": "David Gunning and David W Aha"
+    },
+    {
+      "index": 11,
+      "title": "Towards a Generic Framework for Black-box Explanation Methods",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IJCAI Workshop on eXplainable Artificial Intelligence (XAI 2019)",
+      "authors": "Clement Henin and Daniel Le Métayer"
+    },
+    {
+      "index": 12,
+      "title": "Interactive optimization for steering machine classification",
+      "abstract": "",
+      "year": "2010",
+      "venue": "SIGCHI Conference on Human Factors in Computing Systems",
+      "authors": "Ashish Kapoor, Bongshin Lee, Desney Tan, and Eric Horvitz"
+    },
+    {
+      "index": 13,
+      "title": "iBCM: Interactive Bayesian case model empowering humans via intuitive interaction",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Been Kim, Elena Glassman, Brittney Johnson, and Julie Shah"
+    },
+    {
+      "index": 14,
+      "title": "Using visual analytics to interpret predictive machine learning models",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML Workshop on Human Interpretability in Machine Learning (WHI 2016)",
+      "authors": "Josua Krause, Adam Perer, and Enrico Bertini"
+    },
+    {
+      "index": 15,
+      "title": "Interacting with predictions: Visual inspection of black-box machine learning models",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 CHI Conference on Human Factors in Computing Systems",
+      "authors": "Josua Krause, Adam Perer, and Kenney Ng"
+    },
+    {
+      "index": 16,
+      "title": "Explanatory debugging: Supporting end-user debugging of machine-learned programs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "2010 IEEE Symposium on Visual Languages and Human-Centric Computing",
+      "authors": "Todd Kulesza, Simone Stumpf, Margaret Burnett, Weng-Keen Wong, Yann Riche, Travis Moore, Ian Oberst, Amber Shinsel, and Kevin McIntosh"
+    },
+    {
+      "index": 17,
+      "title": "Tell me more?: the effects of mental model soundness on personalizing an intelligent agent",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGCHI Conference on Human Factors in Computing Systems",
+      "authors": "Todd Kulesza, Simone Stumpf, Margaret Burnett, and Irwin Kwan"
+    },
+    {
+      "index": 18,
+      "title": "Too much, too little, or just right? Ways explanations impact end users’ mental models",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Visual Languages and Human-Centric Computing (VL/HCC), 2013 IEEE Symposium on",
+      "authors": "Todd Kulesza, Simone Stumpf, Margaret Burnett, Sherry Yang, Irwin Kwan, and Weng-Keen Wong"
+    },
+    {
+      "index": 19,
+      "title": "Principles of explanatory debugging to personalize interactive machine learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "20th international conference on intelligent user interfaces",
+      "authors": "Todd Kulesza, Margaret Burnett, Weng-Keen Wong, and Simone Stumpf"
+    },
+    {
+      "index": 20,
+      "title": "Counterfactual Fairness",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Matt J Kusner, Joshua Loftus, Chris Russell, and Ricardo Silva",
+      "orig_title": "Counterfactual fairness",
+      "paper_id": "1703.06856v3"
+    },
+    {
+      "index": 21,
+      "title": "Faithful and customizable explanations of black box models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 AAAI/ACM Conference on AI, Ethics, and Society",
+      "authors": "Himabindu Lakkaraju, Ece Kamar, Rich Caruana, and Jure Leskovec"
+    },
+    {
+      "index": 22,
+      "title": "The Doctor Just Won’t Accept That!",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Interpretable ML Symposium, 31st Conference on Neural Information Processing Systems (NIPS 2017)",
+      "authors": "Zachary C Lipton"
+    },
+    {
+      "index": 23,
+      "title": "A Unified Approach to Interpreting Model Predictions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems 30",
+      "authors": "Scott M Lundberg and Su-In Lee",
+      "orig_title": "A Unified Approach to Interpreting Model Predictions",
+      "paper_id": "1705.07874v2"
+    },
+    {
+      "index": 24,
+      "title": "A Grounded Interaction Protocol for Explainable Artificial Intelligence",
+      "abstract": "",
+      "year": "2019",
+      "venue": "18th International Conference on Autonomous Agents and MultiAgent Systems",
+      "authors": "Prashan Madumal, Tim Miller, Liz Sonenberg, and Frank Vetere"
+    },
+    {
+      "index": 25,
+      "title": "Explanation in Artificial Intelligence: Insights from the Social Sciences",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Artificial Intelligence",
+      "authors": "Tim Miller",
+      "orig_title": "Explanation in artificial intelligence: Insights from the social sciences",
+      "paper_id": "1706.07269v3"
+    },
+    {
+      "index": 26,
+      "title": "Explainable AI: Beware of Inmates Running the Asylum Or: How I Learnt to Stop Worrying and Love the Social and Behavioural Sciences",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCAI Workshop on eXplainable Artificial Intelligence (XAI 2017)",
+      "authors": "Tim Miller, Piers Howe, and Liz Sonenberg",
+      "orig_title": "Explainable AI: Beware of inmates running the asylum or: How I learnt to stop worrying and love the social and behavioural sciences",
+      "paper_id": "1712.00547v2"
+    },
+    {
+      "index": 27,
+      "title": "Scikit-learn: Machine Learning in Python",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "F. Pedregosa, G. Varoquaux, A. Gramfort, V. Michel, B. Thirion, O. Grisel, M. Blondel, P. Prettenhofer, R. Weiss, V. Dubourg, J. Vanderplas, A. Passos, D. Cournapeau, M. Brucher, M. Perrot, and E. Duchesnay"
+    },
+    {
+      "index": 28,
+      "title": "FACE: Feasible and Actionable Counterfactual Explanations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 AAAI/ACM Conference on AI, Ethics, and Society",
+      "authors": "Rafael Poyiadzi, Kacper Sokol, Raul Santos-Rodriguez, Tijl De Bie, and Peter Flach",
+      "orig_title": "FACE: Feasible and Actionable Counterfactual Explanations",
+      "paper_id": "1909.09369v2"
+    },
+    {
+      "index": 29,
+      "title": "“Why Should I Trust You?” Explaining the Predictions of Any Classifier",
+      "abstract": "",
+      "year": "2016",
+      "venue": "22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+      "authors": "Marco Tulio Ribeiro, Sameer Singh, and Carlos Guestrin",
+      "orig_title": "”Why Should I Trust You?”: Explaining the Predictions of Any Classifier",
+      "paper_id": "1602.04938v3"
+    },
+    {
+      "index": 30,
+      "title": "Anchors: High-precision model-agnostic explanations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Thirty-Second AAAI Conference on Artificial Intelligence",
+      "authors": "Marco Tulio Ribeiro, Sameer Singh, and Carlos Guestrin"
+    },
+    {
+      "index": 31,
+      "title": "Perturbation-Based Explanations of Prediction Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Human and Machine Learning",
+      "authors": "Marko Robnik-Šikonja and Marko Bohanec"
+    },
+    {
+      "index": 32,
+      "title": "Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Nature Machine Intelligence",
+      "authors": "Cynthia Rudin"
+    },
+    {
+      "index": 33,
+      "title": "Personalized Explanation for Machine Learning: a Conceptualization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ECIS",
+      "authors": "Johanes Schneider and Joshua Handali"
+    },
+    {
+      "index": 34,
+      "title": "Counterfactual Explanations of Machine Learning Predictions: Opportunities and Challenges for AI Safety",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SafeAI@AAAI",
+      "authors": "Kacper Sokol and Peter Flach"
+    },
+    {
+      "index": 35,
+      "title": "Explainability Fact Sheets: A Framework for Systematic Assessment of Explainable Approaches",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Conference on Fairness, Accountability, and Transparency",
+      "authors": "Kacper Sokol and Peter Flach"
+    },
+    {
+      "index": 36,
+      "title": "Glass-Box: Explaining AI Decisions With Counterfactual Statements Through Conversation With a Voice-enabled Virtual Assistant",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IJCAI",
+      "authors": "Kacper Sokol and Peter A Flach"
+    },
+    {
+      "index": 37,
+      "title": "bLIMEy: Surrogate Prediction Explanations Beyond LIME",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Workshop on Human-Centric Machine Learning (HCML 2019) at the 33rd Conference on Neural Information Processing Systems (NeurIPS 2019)",
+      "authors": "Kacper Sokol, Alexander Hepburn, Raul Santos-Rodriguez, and Peter Flach",
+      "orig_title": "bLIMEy: Surrogate Prediction Explanations Beyond LIME",
+      "paper_id": "1910.13016v1"
+    },
+    {
+      "index": 38,
+      "title": "Contrastive Explanations with Local Foil Trees",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML Workshop on Human Interpretability in Machine Learning (WHI 2018)",
+      "authors": "Jasper van der Waa, Marcel Robeer, J van Diggelen, Matthieu Brinkhuis, and Mark Neerincx"
+    },
+    {
+      "index": 39,
+      "title": "Counterfactual Explanations without Opening the Black Box: Automated Decisions and the GPDR",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Harv. JL & Tech.",
+      "authors": "Sandra Wachter, Brent Mittelstadt, and Chris Russell"
+    },
+    {
+      "index": 40,
+      "title": "Dialogical Models of Explanation",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ExaCt",
+      "authors": "Douglas Walton"
+    },
+    {
+      "index": 41,
+      "title": "A dialogue system specification for explanation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Synthese",
+      "authors": "Douglas Walton"
+    },
+    {
+      "index": 42,
+      "title": "A dialogue system for evaluating explanations",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Argument Evaluation and Evidence",
+      "authors": "Douglas Walton"
+    },
+    {
+      "index": 43,
+      "title": "The Challenge of Crafting Intelligible Intelligence",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Communications of the ACM",
+      "authors": "Daniel S Weld and Gagan Bansal",
+      "orig_title": "The challenge of crafting intelligible intelligence",
+      "paper_id": "1803.04263v3"
+    }
+  ]
+}

@@ -1,0 +1,433 @@
+{
+  "paper_id": "2006.04798v3",
+  "title": "Test and Yield Loss Reduction of AI and Deep Learning Accelerators",
+  "sections": {
+    "ii-a related work": "The error-tolerance nature of AI algorithms has been exploited in hardware to design energy-efficient AI accelerator architectures with approximate MACs -. In , using benchmark-driven analysis each neuron was ranked according to its sensitivity and error contribution to the output, and neurons that contributed the least to the error were then approximated and the network was retrained to recover accuracy loss. In hardware, neurons that were approximated were assigned to approximate PEs, while others were assigned to exact PEs . However, the challenges with these approximate approaches are, (i) sensitivity-based sorting, approximation, and retraining of neurons are always dependent on the workload . (ii) Assigning less sensitive neurons to approximate PEs will require runtime hardware reconfiguration for different tasks. (iii) In - pruning was not considered, but in modern NN/CNN pruning is applied as a well-established method to reduce network size where less important/sensitive connections are already pruned/removed during training 4-. Hence, the techniques of - will be much less effective when applied on an already pruned NN/CNN. (iv) Most importantly, since these approximate CNN/NN assume that the only source of error is the deterministic approximate multiplier and adders, any additional faults in the PE/MAC from process variation induced defects will cause a significant amount of inaccuracy in the prediction during inference. With the widespread use application AI accelerators, the testing of these hardware has become an emerging research problem . In , a comprehensive structural test flow was proposed that first identified critical faults by comparing the accuracies of the exact fault-free gate-level circuit of the neural network, and that of a faulty version. Next, the entire circuit was converted into an Boolean satisfiability (SAT) instance and solved with SAT solver with test patterns for the critical faults only. Since this approach is expensive and not scalable, a functional test method was proposed , where real workloads - the test images from MNIST and CIFAR10 benchmarks - are applied as test input to the gate-level netlist of the implemented neural network. To find if a fault was critical or ignorable, the fault was first injected into a neuron module and the test image set was applied. If the prediction accuracy of the test image set was within a certain threshold, the fault was considered unimportant, otherwise, it was a critical fault. However, the proposed simple approach of creating RTL of the full neural network, followed by gate-level synthesis and fault injection may not be scalable for mainstream CNNs [ref]44 such as AlexNet, VGG, ResNet, MobileNet, etc. that are used for real-world computer vision tasks of image recognition with many classes [ref]1. In  the authors first identified the location of faulty MACs (i.e., M​A​Ci,j𝑀𝐴subscript𝐶𝑖𝑗MAC_{i,j}), in the TPU systolic array and then all weights that were mapped to those faulty MACs were pruned (i.e., ∀wi,j=0for-allsubscript𝑤𝑖𝑗0\\forall w_{i,j}=0,where i,j𝑖𝑗i,j=location of faulty MAC), followed by retraining. Extra bypass MUX was required for each MAC to bypass it in case it was faulty. However, the major challenges of this approach are, (i) the pruning with retraining technique can preserve the model accuracy when only the small magnitude weights are pruned 4-. If a large magnitude weight is mapped to a faulty MAC, this method will result in accuracy degradation. (ii) Moreover, in modern AI/deep learning the models are already pruned 4- to reduce energy consumption and storage requirements, as a result further pruning of weights - corresponding to the faulty MACs - of an already pruned model will significantly reduce its accuracy. (iii) Another drawback of  is that weight pruning and retraining needs to be performed for each TPU chip based on its unique fault map and each individual workload. In contrast to permanent stuck-at faults, for low-energy operations where voltage is scaled down, possible timing  and memory errors  can also occur. However, by using appropriate PV guard-band, using circuits with shorter critical-paths and memory ECC these faults can be avoided."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Efficient Processing of Deep Neural Networks: A Tutorial and Survey",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE",
+      "authors": "V. Sze, Y. Chen, T. Yang and J. S. Emer",
+      "orig_title": "Efficient Processing of Deep Neural Networks: A Tutorial and Survey",
+      "paper_id": "1703.09039v2"
+    },
+    {
+      "index": 1,
+      "title": "Eyeriss v2: A Flexible Accelerator for Emerging Deep Neural Networks on Mobile Devices",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Journal on Emerging and Selected Topics in Circuits and Systems",
+      "authors": "Y. Chen, T. Yang, J. Emer and V. Sze",
+      "orig_title": "Eyeriss v2: A Flexible Accelerator for Emerging Deep Neural Networks on Mobile Devices",
+      "paper_id": "1807.07928v2"
+    },
+    {
+      "index": 2,
+      "title": "LNPU: A 25.3TFLOPS/W Sparse Deep-Neural-Network Learning Processor with Fine-Grained Mixed Precision of FP8-FP16",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Solid-State Circuits Conference - (ISSCC)",
+      "authors": "J. Lee et. al."
+    },
+    {
+      "index": 3,
+      "title": "A domain-specific architecture for deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Commun. ACM",
+      "authors": "N. Jouppi et. al."
+    },
+    {
+      "index": 4,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 5,
+      "title": "NVIDIA Tensor Core Programmability, Performance & Precision",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW)",
+      "authors": "S. Markidis, et. al.",
+      "orig_title": "NVIDIA Tensor Core Programmability, Performance & Precision",
+      "paper_id": "1803.04014v1"
+    },
+    {
+      "index": 6,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 7,
+      "title": "Artificial-intelligence hardware: New opportunities for semiconductor companies",
+      "abstract": "",
+      "year": "2019",
+      "venue": "McKinsey & Company",
+      "authors": "G. Batra et. al."
+    },
+    {
+      "index": 8,
+      "title": "GPU Killer: Google reveals just how powerful its TPU2 chip really is",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ZDNet",
+      "authors": "Liam Tung"
+    },
+    {
+      "index": 9,
+      "title": "Cerebras’s Giant Chip Will Smash Deep Learning’s Speed Barrier",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Spectrum",
+      "authors": "S. Moore"
+    },
+    {
+      "index": 10,
+      "title": "ImageNet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "NIPS",
+      "authors": "A. Krizhevsky, I. Sutskever, and G. E. Hinton"
+    },
+    {
+      "index": 11,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "K. He et. al",
+      "orig_title": "Deep Residual Learning for Image Recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 12,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 13,
+      "title": "ImageNet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE CVPR",
+      "authors": "J. Deng, W. Dong, R. Socher, L. Li, Kai Li and Li Fei-Fei"
+    },
+    {
+      "index": 14,
+      "title": "Yield and Reliability Challenges at 7nm and Below",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Electron Devices Technology and Manufacturing Conference (EDTM)",
+      "authors": "A. J. Strojwas, K. Doong and D. Ciplickas"
+    },
+    {
+      "index": 15,
+      "title": "Yield-centric layout optimization with precise quantification of lithographic yield loss",
+      "abstract": "",
+      "year": "2008",
+      "venue": "SPIE, Photomask and Next-Generation Lithography Mask Technology",
+      "authors": "S. Kobayashi, et. al."
+    },
+    {
+      "index": 16,
+      "title": "Concept Recognition in Production Yield Data Analytics",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Test Conference",
+      "authors": "M. Nero, C. Shan, L. Wang and N. Sumikawa"
+    },
+    {
+      "index": 17,
+      "title": "Accelerating 14nm device learning and yield ramp using parallel test structures as part of a new inline parametric test strategy",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICMTS",
+      "authors": "G. Moore et al."
+    },
+    {
+      "index": 18,
+      "title": "Cell-aware diagnosis: Defective inmates exposed in their cells",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European Test Symposium (ETS)",
+      "authors": "P. Maxwell, F. Hapke and H. Tang"
+    },
+    {
+      "index": 19,
+      "title": "Application of Cell-Aware Test on an Advanced 3nm CMOS Technology Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Test Conference (ITC)",
+      "authors": "Z. Gao et al."
+    },
+    {
+      "index": 20,
+      "title": "Intel’s 2020 Forecast is Grim",
+      "abstract": "",
+      "year": "2020",
+      "venue": "EE Times",
+      "authors": "B. Jorgenson"
+    },
+    {
+      "index": 21,
+      "title": "3 Ways Chiplets Are Remaking Processors",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Spectrum",
+      "authors": "S. Moore"
+    },
+    {
+      "index": 22,
+      "title": "Goodbye, Motherboard. Hello, Silicon-Interconnect Fabric",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Spectrum",
+      "authors": "P. Gupta and S. Iyer"
+    },
+    {
+      "index": 23,
+      "title": "Learning both Weights and Connections for Efficient Neural Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Neural Information Processing Systems (NIPS’15)",
+      "authors": "S. Han, J. Pool, J. Tran, and W. Dally",
+      "orig_title": "Learning both weights and connections for efficient neural networks",
+      "paper_id": "1506.02626v3"
+    },
+    {
+      "index": 24,
+      "title": "SNIP: Single-shot Network Pruning based on Connection Sensitivity",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "N. Lee, T. Ajanthan and P. Torr",
+      "orig_title": "SNIP: Single-shot network pruning based on connection sensitivity",
+      "paper_id": "1810.02340v2"
+    },
+    {
+      "index": 25,
+      "title": "Deep Compression: Compressing Deep Neural Networks with Pruning, Trained Quantization and Huffman Coding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICLR",
+      "authors": "S. Han, H. Mao, W. Dally"
+    },
+    {
+      "index": 26,
+      "title": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "N. Srivastava et. al."
+    },
+    {
+      "index": 27,
+      "title": "AxNN: Energy-efficient neuromorphic systems using approximate computing",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE/ACM International Symposium on Low Power Electronics and Design (ISLPED)",
+      "authors": "S. Venkataramani, A. Ranjan, K. Roy and A. Raghunathan"
+    },
+    {
+      "index": 28,
+      "title": "ApproxANN: An approximate computing framework for artificial neural network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Design, Automation & Test in Europe Conference & Exhibition (DATE)",
+      "authors": "Q. Zhang et. al."
+    },
+    {
+      "index": 29,
+      "title": "Design of power-efficient approximate multipliers for approximate artificial neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Computer-Aided Design (ICCAD)",
+      "authors": "V. Mrazek et. al."
+    },
+    {
+      "index": 30,
+      "title": "Improving the Accuracy and Hardware Efficiency of Neural Networks Using Approximate Multipliers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Very Large Scale Integration (VLSI) Systems",
+      "authors": "M. S. Ansari et. al"
+    },
+    {
+      "index": 31,
+      "title": "Testing of Neuromorphic Circuits: Structural vs Functional",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Test Conference (ITC)",
+      "authors": "A. Gebregiorgis and M. B. Tahoori"
+    },
+    {
+      "index": 32,
+      "title": "Fault-Tolerant Systolic Array Based Accelerators for Deep Neural Network Execution",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Design & Test",
+      "authors": "J. Zhang, K. Basu and S. Garg"
+    },
+    {
+      "index": 33,
+      "title": "Thundervolt: enabling aggressive voltage underscaling and timing error resilience for energy efficient deep learning accelerators",
+      "abstract": "",
+      "year": "2018",
+      "venue": "55th Annual Design Automation Conference",
+      "authors": "J. Zhang, K. Rangineni, Z .Ghodsi, and S Garg"
+    },
+    {
+      "index": 34,
+      "title": "Energy-Efficient Neural Network Acceleration in the Presence of Bit-Level Memory Errors",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Circuits and Systems I: Regular Papers",
+      "authors": "S. Kim et. al."
+    },
+    {
+      "index": 35,
+      "title": "On the design of fault-tolerant two-dimensional systolic arrays for yield enhancement",
+      "abstract": "",
+      "year": "1989",
+      "venue": "IEEE Transactions on Computers",
+      "authors": "J. Kim and S. M. Reddy"
+    },
+    {
+      "index": 36,
+      "title": "DNN Accelerator Architecture – SIMD or Systolic?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Computer Architecture Today, ACM SIGARCH",
+      "authors": "R.Das and T. Krishna"
+    },
+    {
+      "index": 37,
+      "title": "Quantized Convolutional Neural Networks for Mobile Devices",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "J. Wu et. al."
+    },
+    {
+      "index": 38,
+      "title": "8-bit Inference with TensorRT",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NVIDIA",
+      "authors": "S. Migacz"
+    },
+    {
+      "index": 39,
+      "title": "Mixed Precision Training",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "P. Micikevicius et. al.",
+      "orig_title": "Mixed Precision Training",
+      "paper_id": "1710.03740v3"
+    },
+    {
+      "index": 40,
+      "title": "BFloat16: The secret to high performance on Cloud TPUs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Google Cloud Blog",
+      "authors": "S. Wang and P. Kanwar"
+    },
+    {
+      "index": 41,
+      "title": "EvoApprox8b: Library of Approximate Adders and Multipliers for Circuit Design and Benchmarking of Approximation Methods",
+      "abstract": "",
+      "year": "2017",
+      "venue": "DATE",
+      "authors": "V. Mrazek et. al."
+    },
+    {
+      "index": 42,
+      "title": "Method and apparatus for disabling and swapping cores in a multi-core microprocessor",
+      "abstract": "",
+      "year": "",
+      "venue": "Intel Corporation, US Patent",
+      "authors": "R. Ray Ramadorai, et. al."
+    },
+    {
+      "index": 43,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 44,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 45,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 46,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 47,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 48,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    }
+  ]
+}

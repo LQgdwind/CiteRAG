@@ -1,0 +1,447 @@
+{
+  "paper_id": "2005.12326v2",
+  "title": "Towards Efficient Scheduling of Federated Mobile Devices under Computational and Statistical Heterogeneity",
+  "sections": {
+    "impact of non-iid data": "Non-IIDness is shown to have negative impact on collaborative convergence [ref]2 [ref]4 and data imbalance could exacerbate this issue. Instead of investigating data imbalance and non-IIDness together, we investigate how non-IID data alone is enough to impact accuracy and convergence. We seek answers to the fundamental question: How can we identify and deal with the users having non-IID distributions? Weight divergence, ‖𝒘i−∑i=1N𝒘i/N‖22superscriptsubscriptnormsubscript𝒘𝑖superscriptsubscript𝑖1𝑁subscript𝒘𝑖𝑁22\\|\\bm{w}_{i}-\\sum_{i=1}^{N}\\bm{w}_{i}/N\\|_{2}^{2} is used in [ref]4 to compare the norm difference between the local weights wisubscript𝑤𝑖w_{i} and the global average. Local loss is an equivalent indicator with less complexity, since it does not require pairwise weight computations. Fig. 5(a) compares the local loss of the non-IID outlier with the average loss from the rest users and the ideal case when the data is IID. The outlier user with only one class can be easily identified from the rest IID ones, which has over an order of magnitude loss value and is unable to converge compared to the rest. While identifying outliers is simple, the existing studies  [ref]4  have yet to reach a consensus on how to deal with them. With the outlier user only having a subset of classes, our intuition is that accuracy is directly associated with the distribution of classes among the users . To see how the number of classes impacts accuracy, we conduct the second experiment by iterating the number of classes per user from 222-888 (out of 101010 classes) plus a standard deviation of samples among the existing classes as the x𝑥x-axis. It is observed in Fig. 5(b) that higher disparity of class distributions among the users indeed leads to more accuracy degradation with a substantial loss of 10-15% on CIFAR10. Since the presence of non-IID outliers is inevitable in practices, we are facing two options: 1) simply exclude them from the population based on loss divergence ; 2) keep them in training. We take a closer look of these options and argue that the decision should be actually conditioning on the class distributions, rather than only based on the local loss or weight divergence. We demonstrate through a simple case to distribute CIFAR10 dataset among 4 users in different ways, and introduce a fifth user to act as the non-IID outlier. Ideal IID(10): the ideal baseline when all 444 users have identical distribution and all 10 classes are evenly distributed among them. Include Non-IID(10): the population has 10 classes. A fifth user with only one class is included, but her class has already presented in the population. The population becomes non-IID because of the fifth user. Include Non-IID(9): the population has 9 classes. A fifth user with that missing class (one-class outlier) is included. The population is also non-IID. Exclude IID(9): the population has 9 classes. Exclude the fifth user despite she possesses class samples from the missing class so the population remains IID . From the results in Fig. 6(a), we have two key observations: 1) if the class of the outlier user is also found in the population, inclusion of the outlier has minor influence on accuracy (but slows down convergence); 2) if such class is missing from the population, including the outlier user results 1-2% accuracy loss compared to the ideal IID case, but achieving a significant improvement of 5% accuracy compared to when the outlier user is completely removed from training. Based on these observations, we hypothesize that the selection of participants should not only rely on the local losses, but also whether they contain classes that are not yet included in the training set. Summary. The findings are inline with two fundamental principles of machine learning and the generality is effective for other experimental setup and datasets as well. FL adopts the principles of data parallelism . As long as the training data is partitioned in an IID fashion, it does not negatively impact the test accuracy. In fact, data parallelism will improve the accuracy during a fixed training time because of fast convergence. It is applicable to any neural network architecture and is model-agnostic. For non-IID data, our findings are based on: 1) class imbalance/non-IID data has negative impact on accuracy as validated in [ref]2 [ref]4; 2) models generalize poorly on unseen data samples, since machine learning is good at interpolation on the data it has been trained on, but bad at extrapolation to the out-of-distribution data. We discover more subtleties that simple exclusion of the “outliers” depending on the degree of class imbalance may undermine model generalization. We need to look into whether the users possess unseen samples that can help generalize the model."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Large scale distributed deep networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "NIPS",
+      "authors": "J. Dean, et. al."
+    },
+    {
+      "index": 1,
+      "title": "Communication-efficient learning of deep networks from decentralized data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AISTATS",
+      "authors": "B. McMahan, E. Moore, D. Ramage, S. Hampson, B. Arcas"
+    },
+    {
+      "index": 2,
+      "title": "On the Convergence of FedAvg on Non-IID Data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "X. Li, K. Huang, W. Yang, S. Wang and Z. Zhang",
+      "orig_title": "On the convergence of FedAvg on Non-IID Data",
+      "paper_id": "1907.02189v4"
+    },
+    {
+      "index": 3,
+      "title": "Federated Learning with Non-IID Data",
+      "abstract": "",
+      "year": "",
+      "venue": "arXiv:1806.00582",
+      "authors": "Y. Zhao, M. Li, L. Lai, N. Suda, D. Civin and V. Chandra",
+      "orig_title": "Federated Learning with Non-IID Data",
+      "paper_id": "1806.00582v2"
+    },
+    {
+      "index": 4,
+      "title": "Communication-Efficient On-Device Machine Learning: Federated Distillation and Augmentation under Non-IID Private Data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NIPS-MLPCD",
+      "authors": "E. Jeong, S. Oh, H. Kim, S. Kim, J. Park and M. Bennis",
+      "orig_title": "Communication-efficient on-device machine learning: federated distillation and augmentation under non-IID private data",
+      "paper_id": "1811.11479v2"
+    },
+    {
+      "index": 5,
+      "title": "Towards federated learning at scale: system design",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SysML Conference",
+      "authors": "K. Bonawitz, et. al."
+    },
+    {
+      "index": 6,
+      "title": "Exploring the Capabilities of Mobile Devices in Supporting Deep Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM/IEEE Symposium on Edge Computing",
+      "authors": "Y. Chen, S. Biookaghazadeh, and M. Zhao"
+    },
+    {
+      "index": 7,
+      "title": "Federated Learning: Strategies for Improving Communication Efficiency",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NIPS",
+      "authors": "J. Konecny, et. al.",
+      "orig_title": "Federated learning: strategies for improving communication efficiency",
+      "paper_id": "1610.05492v2"
+    },
+    {
+      "index": 8,
+      "title": "CMFL: Mitigating communication overhead for federated learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE ICDCS",
+      "authors": "L. Wang, W. Wang and B. Li"
+    },
+    {
+      "index": 9,
+      "title": "Can decentralized algorithms outperform centralized algorithms? A case study for decentralized parallel stochastic gradient descent",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS",
+      "authors": "X. Lian, et. al."
+    },
+    {
+      "index": 10,
+      "title": "Multi-objective Evolutionary Federated Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1812.07478",
+      "authors": "H. Zhu, Y. Jin",
+      "orig_title": "Multi-objective evolutionary federated learning",
+      "paper_id": "1812.07478v2"
+    },
+    {
+      "index": 11,
+      "title": "Federated Multi-Task Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS",
+      "authors": "V. Smith, C. Chiang, M. Sanjabi and A. Talwalkar",
+      "orig_title": "Federated multi-task learning",
+      "paper_id": "1705.10467v2"
+    },
+    {
+      "index": 12,
+      "title": "Client-Edge-Cloud Hierarchical Federated Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv: 1905.06641",
+      "authors": "L. Liu, J. Zhang, S. H. Song, K. Letaief",
+      "orig_title": "Client-Edge-Cloud hierarchical federated learning",
+      "paper_id": "1905.06641v2"
+    },
+    {
+      "index": 13,
+      "title": "Asynchronous Stochastic Gradient Descent with Delay Compensation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "S. Zheng, Q. Meng, T. Wang, W. Chen, N. Yu, Z. Ma and T. Liu",
+      "orig_title": "Asynchronous stochastic gradient descent with delay compensation",
+      "paper_id": "1609.08326v6"
+    },
+    {
+      "index": 14,
+      "title": "More effective distributed ML via a stale synchronous parallel parameter server",
+      "abstract": "",
+      "year": "2013",
+      "venue": "NIPS",
+      "authors": "Q. Ho, J. Cipar, H. Cui, J. Kim, S. Lee, P. Gibbons, G. Gibson, G. Ganger and E. Xing"
+    },
+    {
+      "index": 15,
+      "title": "Game of Threads: Enabling Asynchronous Poisoning Attacks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM ASPLOS",
+      "authors": "J. Vicarte, B. Schriber, R. Paccagnella and C. Fletcher"
+    },
+    {
+      "index": 16,
+      "title": "Gradient coding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NIPS",
+      "authors": "R. Tandon, Q. Lei, A. Dimakis and N. Karampatziakis"
+    },
+    {
+      "index": 17,
+      "title": "Federated Learning: Collaborative Machine Learning without Centralized Training Data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Google AI Blog",
+      "authors": "B. McMahan and D. Ramage"
+    },
+    {
+      "index": 18,
+      "title": "Practical secure aggregation for privacy-preserving machine learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM CCS",
+      "authors": "K. Bonawitz, et. al."
+    },
+    {
+      "index": 19,
+      "title": "Machine learning with adversaries: byzantine tolerant gradient descent",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS",
+      "authors": "P. Blanchard, E. Mhamdi, R. Guerraoui and J. Stainer"
+    },
+    {
+      "index": 20,
+      "title": "Apple A13 Bionic chip",
+      "abstract": "",
+      "year": "",
+      "venue": "macworld.com",
+      "authors": ""
+    },
+    {
+      "index": 21,
+      "title": "Huawei kirin 980 AI chip",
+      "abstract": "",
+      "year": "",
+      "venue": "consumer.huawei.com",
+      "authors": ""
+    },
+    {
+      "index": 22,
+      "title": "MobileDeepPill: A small-footprint mobile deep learning system for recognizing unconstrained pill images",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Mobisys",
+      "authors": "X. Zeng X, K. Cao, M. Zhang"
+    },
+    {
+      "index": 23,
+      "title": "Deepeye: Resource efficient local execution of multiple deep vision models using wearable commodity hardware",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Mobisys",
+      "authors": "A. Mathur, N. Lane, D. Bhattacharya, S. Boran, A. Forlivesi, C. Kawsar"
+    },
+    {
+      "index": 24,
+      "title": "Deep compression: compressing deep neural networks with pruning, trained quantization and huffman coding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICLR",
+      "authors": "S. Han, H. Mao and W. J. Dally"
+    },
+    {
+      "index": 25,
+      "title": "The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "J. Frankle and M. Carbin",
+      "orig_title": "The lottery ticket hypothesis: finding sparse, trainable neural networks",
+      "paper_id": "1803.03635v5"
+    },
+    {
+      "index": 26,
+      "title": "Close the gap between deep learning and mobile intelligence by incorporating training in the loop",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Multimedia",
+      "authors": "C. Wang, Y. Xiao, X. Gao, L. Li and J. Wang"
+    },
+    {
+      "index": 27,
+      "title": "ARM’s big.LITTLE",
+      "abstract": "",
+      "year": "",
+      "venue": "arm.com",
+      "authors": ""
+    },
+    {
+      "index": 28,
+      "title": "Android large heap",
+      "abstract": "",
+      "year": "",
+      "venue": "developer.android.com",
+      "authors": ""
+    },
+    {
+      "index": 29,
+      "title": "Quantifying inductive bias: AI learning algorithms and Valiant’s learning framework",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Journal of Artif. Intell.",
+      "authors": "D. Haussler"
+    },
+    {
+      "index": 30,
+      "title": "Approximation Schemes for Scheduling on Uniformly Related and Identical Parallel Machines",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ESA",
+      "authors": "L Epstein and J. Sgall"
+    },
+    {
+      "index": 31,
+      "title": "Optimus: an efficient dynamic resource scheduler for deep learning clusters",
+      "abstract": "",
+      "year": "2018",
+      "venue": "EuroSys",
+      "authors": "Y. Peng, Y. Bao, Y. Chen, C. Wu and C. Guo"
+    },
+    {
+      "index": 32,
+      "title": "Online Job Scheduling in Distributed Machine Learning Clusters",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE INFOCOM",
+      "authors": "Y. Bao, Y. Peng, C. Wu and Z. Li",
+      "orig_title": "Online Job Scheduling in Distributed Machine Learning Clusters",
+      "paper_id": "1801.00936v1"
+    },
+    {
+      "index": 33,
+      "title": "Gradient Diversity: a Key Ingredient for Scalable Distributed Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AISTATS",
+      "authors": "D. Yin, A. Pananjady, M. Lam, D. Papailiopoulos, K. Ramchandran and P. Bartlett",
+      "orig_title": "Gradient diversity: a key ingredient for scalable distributed learning",
+      "paper_id": "1706.05699v3"
+    },
+    {
+      "index": 34,
+      "title": "In-depth with the Snapdragon 810’s heat problems",
+      "abstract": "",
+      "year": "",
+      "venue": "arstechnica.com",
+      "authors": ""
+    },
+    {
+      "index": 35,
+      "title": "Assignment problems",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIAM",
+      "authors": "R. Burkard, M. Dell’Amico and S. Martello"
+    },
+    {
+      "index": 36,
+      "title": "Bottleneck generalized assignment problems",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Engineering Costs and Production Economics",
+      "authors": "J. B. Mazzola and A. W. Neebe"
+    },
+    {
+      "index": 37,
+      "title": "Gradient-based learning applied to document recognition",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE",
+      "authors": "Y. Lecun, L. Bottou, Y. Bengio and P. Haffner"
+    },
+    {
+      "index": 38,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 39,
+      "title": "Bin packing with fragmentable items: Presentation and approximations",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Theo. Comp. Sci.",
+      "authors": "B. LeCun, T. Mautor, F. Quessette and M. Weisser"
+    },
+    {
+      "index": 40,
+      "title": "MNIST dataset",
+      "abstract": "",
+      "year": "",
+      "venue": "yann.lecun.com",
+      "authors": ""
+    },
+    {
+      "index": 41,
+      "title": "CIFAR10 dataset",
+      "abstract": "",
+      "year": "",
+      "venue": "cs.toronto.edu",
+      "authors": ""
+    },
+    {
+      "index": 42,
+      "title": "Deep Learning for Java",
+      "abstract": "",
+      "year": "",
+      "venue": "deeplearning4j.org",
+      "authors": ""
+    },
+    {
+      "index": 43,
+      "title": "Optimize scheduling of federated learning on battery-powered mobile devices",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE IPDPS",
+      "authors": "C. Wang, X. Wei and P. Zhou"
+    },
+    {
+      "index": 44,
+      "title": "SqueezeNet: AlexNet-level accuracy with 50x fewer parameters and <0.5MB model size",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "F. Iandola, S. Han, M. W. Moskewicz, K. Ashraf, W. Dally and Kurt Keutzer",
+      "orig_title": "SqueezeNet: AlexNet-level accuracy with 50×× fewer parameters and <<0.5MB model size",
+      "paper_id": "1602.07360v4"
+    },
+    {
+      "index": 45,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE CVPR",
+      "authors": "K. He, X. Zhang, S. Ren and J. Sun",
+      "orig_title": "Deep Residual Learning for Image Recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 46,
+      "title": "Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI",
+      "authors": "C. Szegedy, S. Ioffe, V. Vanhoucke and A. A. Alemi",
+      "orig_title": "Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning",
+      "paper_id": "1602.07261v2"
+    },
+    {
+      "index": 47,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural Computation",
+      "authors": "S. Hochreiter and J. Schmidhuber"
+    },
+    {
+      "index": 48,
+      "title": "Restructuring Batch Normalization to Accelerate CNN Training",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SysML",
+      "authors": "W. Jung, D. Jung, B. Kim, S. Lee, W. Rhee and J. H. Ahn"
+    },
+    {
+      "index": 49,
+      "title": "Machine Learning at Facebook: Understanding Inference at the Edge",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Symposium on High Performance Computer Architecture (HPCA)",
+      "authors": "C. Wu, et. al"
+    },
+    {
+      "index": 50,
+      "title": "Physionet Challenge",
+      "abstract": "",
+      "year": "",
+      "venue": "physionet.org",
+      "authors": ""
+    }
+  ]
+}

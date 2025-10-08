@@ -1,0 +1,511 @@
+{
+  "paper_id": "2209.03402v3",
+  "title": "Counting Subgraphs in Somewhere Dense Graphs1footnote 11footnote 1This research was funded in whole, or in part, by EPSRC grant EP/V032305/1. For the purpose of Open Access, the authors have applied a CC BY public copyright licence to any Author Accepted Manuscript version arising from this submission. All data is provided in full in the results section of this paper.",
+  "sections": {
+    "introduction": "We study the following subgraph counting problem: given two graphs H𝐻H and G𝐺G, compute the number of copies of H𝐻H in G𝐺G. For several decades this problem has received widespread attention from the theoretical community, leading to a rich algorithmic toolbox that draws from different techniques  [ref]3   and to deep structural results in parameterised complexity theory  7. Since it was discovered that subgraph counts reveal global properties of complex networks  , subgraph counting has also found several applications in fields such as biology   genetics [ref]58, phylogeny , and data mining .\nUnfortunately, the subgraph counting problem is in general intractable, since it contains as special cases hard problems such as Clique. This does not mean however that the problem is always intractable; it just means that it is tractable when the pattern H𝐻H is restricted to certain graph families. Identifying these families of patterns that are efficiently countable has been a key question for the last twenty years. A long stream of research eventually showed that, unless standard conjectures fail, subgraph counting is tractable only for very restricted families of patterns  2     7  9. To circumvent this “wall of intractability”, in this work we restrict both the family of the pattern H𝐻H and the family of the host G𝐺G. Formally, given two classes of graphs ℋℋ\\mathcal{H} and 𝒢𝒢\\mathcal{G}, we study the problems #​Sub​(ℋ→𝒢)#Sub→ℋ𝒢\\#\\textsc{Sub}(\\mathcal{H}\\to\\mathcal{G}), #​IndSub​(ℋ→𝒢)#IndSub→ℋ𝒢\\#\\textsc{IndSub}(\\mathcal{H}\\to\\mathcal{G}), and #​Hom​(ℋ→𝒢)#Hom→ℋ𝒢\\#\\textsc{Hom}(\\mathcal{H}\\to\\mathcal{G}), defined as follows. For all of them, the input is a pair (H,G)𝐻𝐺(H,G) with H∈ℋ𝐻ℋH\\in\\mathcal{H} and G∈𝒢𝐺𝒢G\\in\\mathcal{G}. The outputs are respectively the number of subgraphs of G𝐺G isomorphic to H𝐻H, denoted by #​𝖲𝗎𝖻​(H→G)#𝖲𝗎𝖻→𝐻𝐺\\#\\mathsf{Sub}(H\\to G), the number of induced subgraphs of G𝐺G isomorphic to H𝐻H, denoted by #​𝖨𝗇𝖽𝖲𝗎𝖻​(H→G)#𝖨𝗇𝖽𝖲𝗎𝖻→𝐻𝐺\\#\\mathsf{IndSub}(H\\to G), and the number of homomorphisms (edge-preserving maps) from H𝐻H to G𝐺G, denoted by #​𝖧𝗈𝗆​(H→G)#𝖧𝗈𝗆→𝐻𝐺\\#\\mathsf{Hom}(H\\to G).\nOur goal is to determine for which ℋℋ\\mathcal{H} and 𝒢𝒢\\mathcal{G} these three problems are tractable. To formalize what we mean by tractable, we adopt the framework of parameterized complexity 1: we say that a problem is fixed-parameter tractable, or in the class FPTFPT\\mathrm{FPT}, if it is solvable in time f​(|H|)⋅|G|O​(1)⋅𝑓𝐻superscript𝐺𝑂1f(|H|)\\cdot|G|^{O(1)} for some computable function f𝑓f (see Section 2 for a complete introduction). For instance, we consider as tractable a running time of 2O​(|H|)⋅|G|⋅superscript2𝑂𝐻𝐺2^{O(|H|)}\\cdot|G| but not one of |G|O​(|H|)superscript𝐺𝑂𝐻|G|^{O(|H|)}. This captures the intuition that H𝐻H is “small” compared to G𝐺G, and is the main theoretical framework for subgraph counting . Thus, the goal of this work is understanding the fixed-parameter tractability of #​Sub​(ℋ→𝒢)#Sub→ℋ𝒢\\#\\textsc{Sub}(\\mathcal{H}\\to\\mathcal{G}), #​IndSub​(ℋ→𝒢)#IndSub→ℋ𝒢\\#\\textsc{IndSub}(\\mathcal{H}\\to\\mathcal{G}), and #​Hom​(ℋ→𝒢)#Hom→ℋ𝒢\\#\\textsc{Hom}(\\mathcal{H}\\to\\mathcal{G}) as a function of ℋℋ\\mathcal{H} and 𝒢𝒢\\mathcal{G}. Moreover, when those problems are not fixed-parameter tractable we aim to show that they are hard for the complexity class #​W​#Wdelimited-[]1\\#\\mathrm{W}, which can be thought of as the equivalent of NPNP\\mathrm{NP} for parameterized counting. We first briefly discuss which properties of 𝒢𝒢\\mathcal{G} are worthy of attention. When 𝒢𝒢\\mathcal{G} is the class of all graphs, it is well known that each of the three problems is either FPTFPT\\mathrm{FPT} or #​W​#W\\#\\mathrm{W}\\text{}-hard depending on whether certain structural parameters of ℋℋ\\mathcal{H} (such as treewidth or vertex cover number) are bounded or not.\nThus, when 𝒢𝒢\\mathcal{G} is the class of all graphs, the problem is solved.\nHowever, when 𝒢𝒢\\mathcal{G} is arbitrary, no such characterization is known. This is partly due to the fact that “natural” structural properties related to subgraph counting are harder to find for 𝒢𝒢\\mathcal{G} than for ℋℋ\\mathcal{H}; subgraph counting algorithms themselves usually exploit the structure of H𝐻H but not that of G𝐺G (think of tree decompositions).\nThere is however one deep structural property that, if held by 𝒢𝒢\\mathcal{G}, yields tractability: the property of being nowhere dense, introduced by Nešetřil and Ossona de Mendez . In a nutshell 𝒢𝒢\\mathcal{G} is nowhere dense if, for all r∈ℕ0𝑟subscriptℕ0r\\in\\mathbb{N}_{0}, its members do not contain as subgraphs the r𝑟r-subdivisions of arbitrarily large cliques; it can be shown that this generalizes several natural definitions of sparsity, including having bounded degree or bounded local treewidth, or excluding some topological minor.\nIn a remarkable result, Nešetřil and Ossona de Mendez proved:222In the realm of decision problems, an even more general meta-theorem is known for first-order model-checking on nowhere dense graphs . If 𝒢𝒢\\mathcal{G} is nowhere dense then #​Hom​(ℋ→𝒢)#Hom→ℋ𝒢\\#\\textsc{Hom}(\\mathcal{H}\\to\\mathcal{G}), #​Sub​(ℋ→𝒢)#Sub→ℋ𝒢\\#\\textsc{Sub}(\\mathcal{H}\\to\\mathcal{G}), and #​IndSub​(ℋ→𝒢)#IndSub→ℋ𝒢\\#\\textsc{IndSub}(\\mathcal{H}\\to\\mathcal{G}) are fixed-parameter tractable and can be solved in time\nf​(|H|)⋅|V​(G)|1+o​(1)⋅𝑓𝐻superscript𝑉𝐺1𝑜1f(|H|)\\cdot|V(G)|^{1+o(1)} for some computable function f𝑓f. Thus the case that 𝒢𝒢\\mathcal{G} is nowhere dense is closed, and we can focus on its complement — the case where 𝒢𝒢\\mathcal{G} is somewhere dense. Hence the question studied in this work is: when are #​Sub​(ℋ→𝒢)#Sub→ℋ𝒢\\#\\textsc{Sub}(\\mathcal{H}\\to\\mathcal{G}), #​IndSub​(ℋ→𝒢)#IndSub→ℋ𝒢\\#\\textsc{IndSub}(\\mathcal{H}\\to\\mathcal{G}), and #​Hom​(ℋ→𝒢)#Hom→ℋ𝒢\\#\\textsc{Hom}(\\mathcal{H}\\to\\mathcal{G}) fixed-parameter tractable, provided 𝒢𝒢\\mathcal{G} is somewhere dense?"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Interpreting nowhere dense graph classes as a classical notion of model theory",
+      "abstract": "",
+      "year": "2014",
+      "venue": "European J. Combin.",
+      "authors": "Hans Adler and Isolde Adler"
+    },
+    {
+      "index": 1,
+      "title": "Biomolecular network motif counting and discovery by color coding",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Bioinformatics",
+      "authors": "Noga Alon, Phuong Dao, Iman Hajirasouliha, Fereydoun Hormozdiari, and S. Cenk Sahinalp"
+    },
+    {
+      "index": 2,
+      "title": "Color-Coding",
+      "abstract": "",
+      "year": "1995",
+      "venue": "J. ACM",
+      "authors": "Noga Alon, Raphael Yuster, and Uri Zwick"
+    },
+    {
+      "index": 3,
+      "title": "Counting Subgraphs in Degenerate Graphs",
+      "abstract": "",
+      "year": "2022",
+      "venue": "J. ACM",
+      "authors": "Suman K. Bera, Lior Gishboliner, Yevgeny Levanzov, C. Seshadhri, and Asaf Shapira",
+      "orig_title": "Counting subgraphs in degenerate graphs",
+      "paper_id": "2010.05998v2"
+    },
+    {
+      "index": 4,
+      "title": "Linear Time Subgraph Counting, Graph Degeneracy, and the Chasm at Size Six",
+      "abstract": "",
+      "year": "2020",
+      "venue": "11th conference on Innovations in Theoretical Computer Science (ITCS)",
+      "authors": "Suman K. Bera, Noujan Pashanasangi, and C. Seshadhri",
+      "orig_title": "Linear time subgraph counting, graph degeneracy, and the chasm at size six",
+      "paper_id": "1911.05896v2"
+    },
+    {
+      "index": 5,
+      "title": "Near-Linear Time Homomorphism Counting in Bounded Degeneracy Graphs: The Barrier of Long Induced Cycles",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 ACM-SIAM Symposium on Discrete Algorithms (SODA)",
+      "authors": "Suman K. Bera, Noujan Pashanasangi, and C. Seshadhri",
+      "orig_title": "Near-linear time homomorphism counting in bounded degeneracy graphs: The barrier of long induced cycles",
+      "paper_id": "2010.08083v2"
+    },
+    {
+      "index": 6,
+      "title": "Twin-width I: tractable FO model checking",
+      "abstract": "",
+      "year": "2022",
+      "venue": "J. ACM",
+      "authors": "Édouard Bonnet, Eun Jung Kim, Stéphan Thomassé, and Rémi Watrigant",
+      "orig_title": "Twin-width I: tractable FO model checking",
+      "paper_id": "2004.14789v3"
+    },
+    {
+      "index": 7,
+      "title": "Exact and Approximate Pattern Counting in Degenerate Graphs: New Algorithms, Hardness Results, and Complexity Dichotomies",
+      "abstract": "",
+      "year": "2021",
+      "venue": "62nd IEEE Annual Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "Marco Bressan and Marc Roth",
+      "orig_title": "Exact and approximate pattern counting in degenerate graphs: New algorithms, hardness results, and complexity dichotomies",
+      "paper_id": "2103.05588v2"
+    },
+    {
+      "index": 8,
+      "title": "Path coupling: A technique for proving rapid mixing in markov chains",
+      "abstract": "",
+      "year": "1997",
+      "venue": "38th Annual Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "Russ Bubley and Martin E. Dyer"
+    },
+    {
+      "index": 9,
+      "title": "Counting Answers to Existential Positive Queries: A Complexity Classification",
+      "abstract": "",
+      "year": "2016",
+      "venue": "35th ACM SIGMOD-SIGACT-SIGAI Symposium on Principles of Database Systems (PODS)",
+      "authors": "Hubie Chen and Stefan Mengel"
+    },
+    {
+      "index": 10,
+      "title": "Tight lower bounds for certain parameterized NP-hard problems",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Inform. and Comput.",
+      "authors": "Jianer Chen, Benny Chor, Mike Fellows, Xiuzhen Huang, David W. Juedes, Iyad A. Kanj, and Ge Xia"
+    },
+    {
+      "index": 11,
+      "title": "Strong computational lower bounds via parameterized complexity",
+      "abstract": "",
+      "year": "2006",
+      "venue": "J. Comput. System Sci.",
+      "authors": "Jianer Chen, Xiuzhen Huang, Iyad A. Kanj, and Ge Xia"
+    },
+    {
+      "index": 12,
+      "title": "Understanding the Complexity of Induced Subgraph Isomorphisms",
+      "abstract": "",
+      "year": "2008",
+      "venue": "35th International Colloquium on Automata, Languages and Programming (ICALP)",
+      "authors": "Yijia Chen, Marc Thurley, and Mark Weyer"
+    },
+    {
+      "index": 13,
+      "title": "Counting matchings of size k is W[1]-hard",
+      "abstract": "",
+      "year": "2013",
+      "venue": "40th International Colloquium on Automata, Languages, and Programming (ICALP)",
+      "authors": "Radu Curticapean"
+    },
+    {
+      "index": 14,
+      "title": "The simple, little and slow things count: On parameterized counting complexity",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Radu Curticapean"
+    },
+    {
+      "index": 15,
+      "title": "A fixed-parameter perspective on #BIS",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Algorithmica",
+      "authors": "Radu Curticapean, Holger Dell, Fedor V. Fomin, Leslie Ann Goldberg, and John Lapinskas"
+    },
+    {
+      "index": 16,
+      "title": "Homomorphisms are a good basis for counting small subgraphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "49th Annual ACM SIGACT Symposium on Theory of Computing (STOC)",
+      "authors": "Radu Curticapean, Holger Dell, and Dániel Marx"
+    },
+    {
+      "index": 17,
+      "title": "Counting edge-injective homomorphisms and matchings on restricted graph classes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "34th Symposium on Theoretical Aspects of Computer Science (STACS)",
+      "authors": "Radu Curticapean, Holger Dell, and Marc Roth",
+      "orig_title": "Counting Edge-Injective Homomorphisms and Matchings on Restricted Graph Classes",
+      "paper_id": "1702.05447v2"
+    },
+    {
+      "index": 18,
+      "title": "Complexity of counting subgraphs: only the boundedness of the vertex-cover number counts",
+      "abstract": "",
+      "year": "2014",
+      "venue": "55th IEEE Annual Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "Radu Curticapean and Dániel Marx",
+      "orig_title": "Complexity of Counting Subgraphs: Only the Boundedness of the Vertex-Cover Number Counts",
+      "paper_id": "1407.2929v1"
+    },
+    {
+      "index": 19,
+      "title": "Parameterizing the permanent: Hardness for fixed excluded minors",
+      "abstract": "",
+      "year": "2022",
+      "venue": "5th Symposium on Simplicity in Algorithms (SOSA@SODA)",
+      "authors": "Radu Curticapean and Mingji Xia"
+    },
+    {
+      "index": 20,
+      "title": "Parameterized Algorithms",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer",
+      "authors": "Marek Cygan, Fedor V. Fomin, Lukasz Kowalik, Daniel Lokshtanov, Dániel Marx, Marcin Pilipczuk, Michal Pilipczuk, and Saket Saurabh"
+    },
+    {
+      "index": 21,
+      "title": "The complexity of counting homomorphisms seen from the other side",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Theoret. Comput. Sci.",
+      "authors": "Víctor Dalmau and Peter Jonsson"
+    },
+    {
+      "index": 22,
+      "title": "Counting H-colorings of partial k-trees",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Theoret. Comput. Sci.",
+      "authors": "Josep Díaz, Maria J. Serna, and Dimitrios M. Thilikos"
+    },
+    {
+      "index": 23,
+      "title": "Graph Theory (5th Edition)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Springer",
+      "authors": "Reinhard Diestel"
+    },
+    {
+      "index": 24,
+      "title": "Counting Induced Subgraphs: An Algebraic Approach to #W[1]-Hardness",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Algorithmica",
+      "authors": "Julian Dörfler, Marc Roth, Johannes Schmitt, and Philip Wellnitz"
+    },
+    {
+      "index": 25,
+      "title": "Testing first-order properties for subclasses of sparse graphs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "J. ACM",
+      "authors": "Zdenek Dvorák, Daniel Král, and Robin Thomas"
+    },
+    {
+      "index": 26,
+      "title": "The Parameterized Complexity of Counting Problems",
+      "abstract": "",
+      "year": "2004",
+      "venue": "SIAM J. Comput.",
+      "authors": "Jörg Flum and Martin Grohe"
+    },
+    {
+      "index": 27,
+      "title": "Parameterized Complexity Theory",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Texts in Theoretical Computer Science. An EATCS Series. Springer",
+      "authors": "Jörg Flum and Martin Grohe"
+    },
+    {
+      "index": 28,
+      "title": "Counting Small Induced Subgraphs with Hereditary Properties",
+      "abstract": "",
+      "year": "2022",
+      "venue": "54th Annual ACM SIGACT Symposium on Theory of Computing (STOC)",
+      "authors": "Jacob Focke and Marc Roth",
+      "orig_title": "Counting small induced subgraphs with hereditary properties",
+      "paper_id": "2111.02277v2"
+    },
+    {
+      "index": 29,
+      "title": "FO Model Checking on Posets of Bounded Width",
+      "abstract": "",
+      "year": "2015",
+      "venue": "56th IEEE Annual Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "Jakub Gajarský, Petr Hlinený, Daniel Lokshtanov, Jan Obdrzálek, Sebastian Ordyniak, M. S. Ramanujan, and Saket Saurabh",
+      "orig_title": "FO model checking on posets of bounded width",
+      "paper_id": "1504.04115v2"
+    },
+    {
+      "index": 30,
+      "title": "A new perspective on FO model checking of dense graph classes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Trans. Comput. Log.",
+      "authors": "Jakub Gajarský, Petr Hlinený, Jan Obdrzálek, Daniel Lokshtanov, and M. S. Ramanujan"
+    },
+    {
+      "index": 31,
+      "title": "FO model checking of interval graphs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Log. Methods Comput. Sci.",
+      "authors": "Robert Ganian, Petr Hlinený, Daniel Král, Jan Obdrzálek, Jarett Schwartz, and Jakub Teska"
+    },
+    {
+      "index": 32,
+      "title": "First order logic and twin-width in tournaments and dense oriented graphs",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CoRR",
+      "authors": "Colin Geniet and Stéphan Thomassé"
+    },
+    {
+      "index": 33,
+      "title": "The complexity of counting colourings and independent sets in sparse graphs and hypergraphs",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Comput. Complexity",
+      "authors": "Catherine S. Greenhill"
+    },
+    {
+      "index": 34,
+      "title": "Deciding first-order properties of nowhere dense graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. ACM",
+      "authors": "Martin Grohe, Stephan Kreutzer, and Sebastian Siebertz"
+    },
+    {
+      "index": 35,
+      "title": "On tree width, bramble size, and expansion",
+      "abstract": "",
+      "year": "2009",
+      "venue": "J. Combin. Theory Ser. B",
+      "authors": "Martin Grohe and Dániel Marx"
+    },
+    {
+      "index": 36,
+      "title": "On the complexity of SAT",
+      "abstract": "",
+      "year": "2001",
+      "venue": "J. Comput. System Sci.",
+      "authors": "Russell Impagliazzo and Ramamohan Paturi",
+      "orig_title": "On the Complexity of k-SAT",
+      "paper_id": "2111.06967v3"
+    },
+    {
+      "index": 37,
+      "title": "The parameterised complexity of counting connected subgraphs and graph motifs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "J. Comput. System Sci.",
+      "authors": "Mark Jerrum and Kitty Meeks"
+    },
+    {
+      "index": 38,
+      "title": "A polynomial-time approximation algorithm for the permanent of a matrix with nonnegative entries",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. ACM",
+      "authors": "Mark Jerrum, Alistair Sinclair, and Eric Vigoda"
+    },
+    {
+      "index": 39,
+      "title": "Topological network alignment uncovers biological function and phylogeny",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Journal of the Royal Society Interface",
+      "authors": "Oleksii Kuchaiev, Tijana Milenković, Vesna Memišević, Wayne Hayes, and Nataša Pržulj"
+    },
+    {
+      "index": 40,
+      "title": "Large Networks and Graph Limits, volume 60 of Colloquium Publications",
+      "abstract": "",
+      "year": "2012",
+      "venue": "American Mathematical Society",
+      "authors": "László Lovász"
+    },
+    {
+      "index": 41,
+      "title": "Can You Beat Treewidth?",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Theory Comput.",
+      "authors": "Dániel Marx"
+    },
+    {
+      "index": 42,
+      "title": "Tractable Hypergraph Properties for Constraint Satisfaction and Conjunctive Queries",
+      "abstract": "",
+      "year": "2013",
+      "venue": "J. ACM",
+      "authors": "Dániel Marx"
+    },
+    {
+      "index": 43,
+      "title": "The challenges of unbounded treewidth in parameterised subgraph counting problems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Discrete Appl. Math.",
+      "authors": "Kitty Meeks"
+    },
+    {
+      "index": 44,
+      "title": "Network Motifs: Simple Building Blocks of Complex Networks",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Science",
+      "authors": "R. Milo, S. Shen-Orr, S. Itzkovitz, N. Kashtan, D. Chklovskii, and U. Alon"
+    },
+    {
+      "index": 45,
+      "title": "Superfamilies of evolved and designed networks",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Science",
+      "authors": "Ron Milo, Shalev Itzkovitz, Nadav Kashtan, Reuven Levitt, Shai Shen-Orr, Inbal Ayzenshtat, Michal Sheffer, and Uri Alon"
+    },
+    {
+      "index": 46,
+      "title": "On nowhere dense graphs",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Eur. J. Comb.",
+      "authors": "Jaroslav Nešetřil and Patrice Ossona de Mendez"
+    },
+    {
+      "index": 47,
+      "title": "Sparsity – Graphs, Structures, and Algorithms, volume 28 of Algorithms and combinatorics",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Springer",
+      "authors": "Jaroslav Nešetřil and Patrice Ossona de Mendez"
+    },
+    {
+      "index": 48,
+      "title": "On the complexity of the subgraph problem",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Comment. Math. Univ. Carolin.",
+      "authors": "Jaroslav Nešetřil and Svatopluk Poljak"
+    },
+    {
+      "index": 49,
+      "title": "Parameterized Counting and Cayley Graph Expanders",
+      "abstract": "",
+      "year": "",
+      "venue": "SIAM J. Discrete Math.",
+      "authors": "Norbert Peyerimhoff, Marc Roth, Johannes Schmitt, Jakob Stix, Alina Vdovina, and Philip Wellnitz"
+    },
+    {
+      "index": 50,
+      "title": "Graph minors. V. Excluding a planar graph",
+      "abstract": "",
+      "year": "1986",
+      "venue": "J. Combin. Theory Ser. B",
+      "authors": "Neil Robertson and Paul D. Seymour"
+    },
+    {
+      "index": 51,
+      "title": "Counting Problems on Quantum Graphs: Parameterized and Exact Complexity Classifications",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Marc Roth"
+    },
+    {
+      "index": 52,
+      "title": "Detecting and counting small subgraphs, and evaluating a parameterized tutte polynomial: Lower bounds via toroidal grids and cayley graph expanders",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "Marc Roth, Johannes Schmitt, and Philip Wellnitz"
+    },
+    {
+      "index": 53,
+      "title": "Counting Small Induced Subgraphs Satisfying Monotone Properties",
+      "abstract": "",
+      "year": "2022",
+      "venue": "SIAM J. Comput.",
+      "authors": "Marc Roth, Johannes Schmitt, and Philip Wellnitz"
+    },
+    {
+      "index": 54,
+      "title": "Counting and finding homomorphisms is universal for parameterized complexity theory",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 ACM-SIAM Symposium on Discrete Algorithms (SODA)",
+      "authors": "Marc Roth and Philip Wellnitz"
+    },
+    {
+      "index": 55,
+      "title": "StreaM – A Stream-Based Algorithm for Counting Motifs in Dynamic Graphs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2nd International Conference on Algorithms for Computational Biology (AlCoB)",
+      "authors": "Benjamin Schiller, Sven Jager, Kay Hamacher, and Thorsten Strufe"
+    },
+    {
+      "index": 56,
+      "title": "On the presence of disjoint subgraphs of a specified type",
+      "abstract": "",
+      "year": "1988",
+      "venue": "J. Graph Theory",
+      "authors": "Carsten Thomassen"
+    },
+    {
+      "index": 57,
+      "title": "Counting motifs in the human interactome",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Nature communications",
+      "authors": "Ngoc Hieu Tran, Kwok Pui Choi, and Louxin Zhang"
+    },
+    {
+      "index": 58,
+      "title": "Scalable motif-aware graph clustering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "26th International Conference on World Wide Web (WWW)",
+      "authors": "Charalampos E. Tsourakakis, Jakub Pachocki, and Michael Mitzenmacher",
+      "orig_title": "Scalable motif-aware graph clustering",
+      "paper_id": "1606.06235v2"
+    },
+    {
+      "index": 59,
+      "title": "The Complexity of Enumeration and Reliability Problems",
+      "abstract": "",
+      "year": "1979",
+      "venue": "SIAM J. Comput.",
+      "authors": "Leslie G. Valiant"
+    }
+  ]
+}

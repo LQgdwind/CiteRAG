@@ -1,0 +1,487 @@
+{
+  "paper_id": "2204.00049v1",
+  "title": "AKF-SR: Adaptive Kalman Filtering-based Successor Representation",
+  "sections": {
+    "introduction": "Human and animals have the learning capabilities for evaluating consequences of their actions; therefore, can adapt their behavior based on the received reward after each action [ref]1  [ref]3.\nSuch an adaptive behavior can be achieved in the context of Artificial Intelligence (AI) via an optimal control policy, which can be obtained by Reinforcement Learning (RL) algorithms. Generally speaking, RL is a class of Machine Learning (ML) algorithms enabling an autonomous agent to learn a task to maximize expected future discounted rewards while interacting with its environment   [ref]6. Unlike supervised learning, RL approaches do not need labeled data, which is generally difficult to acquire, for performing their learning processes. Traditionally, RL algorithms are categorized into two main classes: (i) Model-Free (MF) methods    , which learn the value function using sample trajectories, and; (ii) Model-Based (MB) methods    that estimate transition and reward functions through search trees or dynamic programming. Algorithms belonging to the former category (MF algorithms) are particularly slow to adjust an agent to changes in its task (e.g., changes in the goal locations or reward function). The MB algorithms, on the other hand, can quickly adjust the agent to the changes. Such a rapid adaptation, however, comes with a high computational cost  . Reusing previous knowledge to facilitate learning of new tasks has been proposed as an appealing solution to the mentioned adaptation problems of MB and MF algorithms . To improve speed of an agent for learning a new task, which results from changes in its learned tasks, without considerable increase in computational cost, the agent should be able to identify the changes and reuse its knowledge from previous tasks. Reusing the transferred information learned from the previous tasks would not be feasible if the tasks are completely irrelevant. Therefore, in this paper, we focus on the changes in the reward function while the environment remains same. Successor Representation (SR) methods   are proposed as a potential solution to aforementioned adaptation problems of both MF and MB categories of RL algorithms in the case of changes in the reward function. The SR-based algorithms are faster to adapt to changes than MF algorithm, and provide more efficient computation than MB algorithms. The SR-based algorithms learn the expected immediate reward received after each action, together with the expected discounted future state occupancy (referred to as the SR)   . The value function is then factorized into the SR and the immediate reward in each of successor states. This factorization enables rapid policy evaluation under changes in the reward conditions as only the reward function needs to be relearned in new tasks. When the number of states are limited, the SR and the reward function (consequently, the value function) can be computed for each state. However, computation of the value function is not possible in RL problems with large number of states or when states are continuous; therefore, value function needs to be approximated. The function approximators in RL problems can be generally categorized into linear and non-linear function approximators  . In both cases, value of the approximate function is defined by a set of tunable parameters.\nNon-linear function approximators, such as artificial neural network   0 1 algorithms suffer from different issues including sensitivity of the model’s performance to a large number of parameters, lack of theoretical convergence guarantees, and also the need for a large number of episodes to achieve acceptable results. The linear function approximators transform the approximation problem into the problem of computing weights to fuse several local estimators. Since linear function approximators are simpler and better understood than the non-linear ones; therefore, several convergence guarantees have been provided  2 3. In this regard, Cerebellar Model Articulation Controllers (CMACs) 4 and Radial Basis Functions (RBFs) 5 are the commonly used linear estimators. It has been discovered that the RBFs can better represent gradual-continuous transitions in the functions to be approximated 6 7 8 9. Due to this advantage, in this paper, we use RBFs for the SR and reward function linear approximation task. Gershman et al.  have established that the temporal context model, a model of episodic memory, is actually direct estimation of the SR via Temporal Difference (TD) learning algorithms. Kulkarni et al.  proposed a deep learning method based on the combination of TD learning with Deep Neural Networks (DNNs) for estimation of the SR. Some other works     focused on the development of TD learning method by using different DNNs algorithms to represent the SR. CTDL framework proposed in  combines a DNN with a Self-Organising Map (SOM) to calculate action values to improve the performance and robustness of a DNN-based RL agent. Ma et al.  proposed a DNN framework, referred to as Universal Successor Representation (USR), to approximate the SR and incorporate it with actor-critic method to learn the SR. The methods proposed in     , which are based on the combination of the standard TD learning and DNNs, however, do not consider uncertainty of the SR (consequently, uncertainty in the value function), which exists at the heart of RL problems in the real world. When there is uncertainty about the environment, the agent should not be overconfident of its knowledge and exploit it all the time, but instead explore other available actions, which might be better and reduce uncertainty. The optimal solution for the exploration/exploitation trade-off is computationally intractable, but it has been shown that uncertainty can cause exploration through two different ways: by adding randomness to the value function or directing actions toward uncertain ones . The estimated uncertainty of the value function, therefore, is known as a useful information for quandary between exploration and exploitation dilemma  . Lehnert et al.,  proposed a different method from the TD-based SR learning algorithms, where the transition probability of the RL problem is first learned; the SR is then approximated based on the learned transition model. Although the proposed framework is more sample efficient than the TD-based frameworks, the trajectory for finding the transition model is far more complex due to the difficulty in learning the accurate transition model, which makes the TD-based methods more favorable in the literature. Machado et al.  has recently proposed a framework, known as the Substochastic Successor Representation (SSR), which uses the norm of the SR as an exploration bonus. In the proposed scheme, first, the SSR is learned by minimizing the TD error through a DNN. The value function is then learned through a DNN structured similar to DQN framework , which adopts the estimated SSR for exploration/exploitation trade-off. Geist et al.  proposed Kalman Temporal Difference (KTD) framework for uncertainty estimation of the value function, but in the context of MF methods. The proposed KTD framework also benefits from less sensitivity of the framework’s performance to model’s parameters and reduced time and memory requirement for finding and learning of the best model in comparison to DNN-based frameworks     . Less sensitivity to parameter settings improves the reproducibility aspect of a reliable algorithm to regenerate more consistent performances across multiple learning runs; therefore, reduces the risk of generating unpredictable performances in different practical applications . Geerts et al.  and Salimibeni et al. 0 applied KTD framework for the SR estimation in RL problems, respectively, with discrete state spaces and multiple agents. The proposed algorithms, however, do not use the uncertainty information of the estimated SR, which can be achieved from KTD algorithm, for the action selection process. Since value function is computed as a dot product between the SR and the reward function, there is a need for approximation of the reward function. However, Geerts et al.  do not discuss the reward function learning process. In this paper, as an initial step, we adopt the KTD framework for the SR learning process and propose a reward learning algorithm. Then, an innovative action selection scheme benefiting from the achieved uncertainty/belief of the estimated SR in order to deal with exploration/exploitation dilemma. As stated previously, within the SR domain, for computation of the value function, both the SR and reward function need to be learned. So far, we proposed application of KTD within this context for the SR learning. To learn the reward function, on the other hand, we develop a Kalman Filter (KF) to estimate the RBFs’ weights. The challenge here is selection of KF’s parameters. Performance of KF-based algorithms are highly dependent on the filter’s parameters. It has been shown that measurement noise covariances of a KF is one of the most important parameters of the filter and its improper selection can significantly degrade the filter’s act and even cause divergence of the filter 1 2. In the earlier studies, the underlying parameter assumed to be constant during the estimation process with its value being adapted manually by trial and error. Such a bruteforce approach, however, is significantly challenging due to variation of the parameter value. Lately, multiple studies have proposed to adjust the parameter value at each step via Adaptive Kalman Filter (AKF) approaches to enhance the overall accuracy of the filter 3. Generally speaking, AKF approaches can be categorized into two main groups: (i) Innovation-based Adaptive Estimation (IAE) methods 4, and; (ii) Multiple Model Adaptive Estimation (MMAE) methods 5. The former category uses a single Extended Kalman Filter (EKF) to adapt measurement noise covariances based on the innovation or the residual sequence. In the IAE methods, perfect knowledge of the system’s model and an appropriate window size is required for the parameter computation. The MMAE methodologies, on the other hand, use a weighted sum of multiple KFs running in parallel for the parameter adaptation addressing the aforementioned issue. Consequently, the MMAE methods have attracted more attention owing to their capabilities to manage parametric uncertainty and their independence from imposing specific requirements on the system model. Capitalizing on the success of MMAE frameworks, in this paper, we develop an innovative MMAE-based modeling framework for learning of the reward function within the SR context. Different algorithms were proposed for fusion of the KFs in MMAE systems 6, among which the classical scheme is used in this paper due to its exponentially fast convergence speed to the best candidate model (filter). In the classical MMAE scheme, weight of each filter is achieved from a Bayesian approach. Duration of the learning process and quality of the learned policies, which are obtained based on the proposed combination of KTD and MMAE techniques, highly depend on managing a trade-off between exploration and exploitation. Too much exploration prevents from maximizing the immediate rewards since the selected actions may result in a negative reward from the environment. On the other hand, exploiting uncertain knowledge offered by the environment reduces the expected future rewards because actions are selected given current information; therefore, may not be the optimal ones 7. As the value function is modeled as a function of stochastic variables; therefore, there is a stochastic variable for each state-action pair. The dilemma between exploration and exploitation should profit from such uncertain information . In this paper, we propose an active learning scheme, which uses the KTD framework to tackle the uncertainty computation, an important issue which has been overlooked in the literature. In summary, this paper proposes a SR-based framework, referred to as Adaptive Kalman Filtering-based Successor Representations (AKF-SR), which can adapt quickly to changes in the reward function or goal locations faster than MF methods and with the lower computational cost compared to MB algorithms. The following 444 key contributions are made in this paper: RBFs estimators are incorporated within the AKF-SR framework to project continuous states into feature vectors such that the SR and the reward function can be modeled as linear functions of the feature vectors. Within the proposed AKF-SR framework, we adopt MMAE and gradient descent-based schemes for the reward function estimation (learning) via KF, which respectively compensate for the insufficient information about the measurement noise covariance and measurement mapping function of the KF as the most important parameters of a KF. The KTD framework is used within the AKF-SR framework, which casts the SR learning procedure into a filtering problem to estimate uncertainty of the learned SR. Moreover, by applying KTD, we benefit from decreases in memory and time spent for the SR learning and also sensitivity of the framework’s performance to its parameters (i.e., more reliable) when compared with DNN-based algorithms. An active learning scheme is exploited to balance the amount of exploration and exploitation based on uncertainty information of the value function obtained from KTD algorithm of the SR learning. The proposed active learning mechanism effectively improves performance of the proposed AKF-SR framework in terms of cumulative reward as shown via three RL platforms. The remainder of the paper is organized as follows: In Section 2, an overview of RL and SR is presented. The proposed AKF-SR framework is developed in Section 3. Section 4 presents experimental results obtained based on three benchmark RL platforms illustrating effectiveness of the proposed AKF-SR framework. Finally, Section 5 provides conclusion of the paper."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "An Efficient Hardware Implementation of Reinforcement Learning: The Q-Learning Algorithm",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "S. Spanò, G.C. Cardarilli, L. Di Nunzio, R. Fazzolari, D. Giardino, M. Matta, A. Nannarelli, and M. Re"
+    },
+    {
+      "index": 1,
+      "title": "Universal Successor Representations for Transfer Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint",
+      "authors": "C. Ma, J. Wen, and Y. Bengio",
+      "orig_title": "Universal successor representations for transfer reinforcement learning",
+      "paper_id": "1804.03758v1"
+    },
+    {
+      "index": 2,
+      "title": "Rewards Prediction-Based Credit Assignment for Reinforcement Learning With Sparse Binary Rewards",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "M. Seo, L.F. Vecchietti, S. Lee, and D. Har"
+    },
+    {
+      "index": 3,
+      "title": "MM-KTD: Multiple Model Kalman Temporal Differences for Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Access",
+      "authors": "P. Malekzadeh, M. Salimibeni, A. Mohammadi, A. Assa and K. N. Plataniotis",
+      "orig_title": "MM-KTD: Multiple Model Kalman Temporal Differences for Reinforcement Learning",
+      "paper_id": "2006.00195v1"
+    },
+    {
+      "index": 4,
+      "title": "Modeling behavior of Computer Generated Forces with Machine Learning Techniques, the NATO Task Group approach",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Int. Con. Systems, Man, and Cyb. (SMC)",
+      "authors": "A. Toubman et al."
+    },
+    {
+      "index": 5,
+      "title": "Machine Learning Techniques for Autonomous Agents in Military Simulations - Multum in Parvo",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Int. Con. Systems, Man, and Cyb. (SMC)",
+      "authors": "J. J. Roessingh et al."
+    },
+    {
+      "index": 6,
+      "title": "Recovering Robustness in Model-Free Reinforcement Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "American Control Conference (ACC)",
+      "authors": "H. K. Venkataraman, and P. J. Seiler",
+      "orig_title": "Recovering Robustness in Model-Free Reinforcement Learning",
+      "paper_id": "1810.09337v3"
+    },
+    {
+      "index": 7,
+      "title": "Plume Tracing via Model-Free Reinforcement Learning Method",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "H. Hu, S. Song and C. L. P. Chen"
+    },
+    {
+      "index": 8,
+      "title": "Kalman meets Bellman: Improving Policy Evaluation through Value Tracking",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint",
+      "authors": "S.D.C. Shashua, and S. Mannor",
+      "orig_title": "Kalman meets bellman: Improving policy evaluation through value tracking",
+      "paper_id": "2002.07171v1"
+    },
+    {
+      "index": 9,
+      "title": "Information Theoretic MPC for Model-based Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Robotics and Automation (ICRA)",
+      "authors": "G. Williams, N. Wagener, B. Goldfain, P. Drews, J. M. Rehg, B. Boots, and E. A. Theodorou"
+    },
+    {
+      "index": 10,
+      "title": "Agnostic System Identification for Model-based Reinforcement Learning",
+      "abstract": "",
+      "year": "2012",
+      "venue": "arXiv",
+      "authors": "S. Ross and J. A. Bagnell"
+    },
+    {
+      "index": 11,
+      "title": "Model-Based Reinforcement Learning with Value-Targeted Regression",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "A. Ayoub, Z. Jia, C. Szepesvari, M. Wang, M., and L. Yang",
+      "orig_title": "Model-based reinforcement learning with value-targeted regression",
+      "paper_id": "2006.01107v1"
+    },
+    {
+      "index": 12,
+      "title": "A neurally plausible model learns successor representations in partially observable environments",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "E. Vértes,and M. Sahani",
+      "orig_title": "A neurally plausible model learns successor representations in partially observable environments",
+      "paper_id": "1906.09480v1"
+    },
+    {
+      "index": 13,
+      "title": "A Complementary Learning Systems Approach to Temporal Difference Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Neural Networks",
+      "authors": "S. Blakeman, and D. Mareschal",
+      "orig_title": "A complementary learning systems approach to temporal difference learning",
+      "paper_id": "1905.02636v1"
+    },
+    {
+      "index": 14,
+      "title": "Improving generalization for temporal difference learning: The successor representation",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Neural Computation",
+      "authors": "P. Dayan"
+    },
+    {
+      "index": 15,
+      "title": "The Successor Representation as a model of behavioural flexibility",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journées Francophones sur la Planification, la Décision et l’Apprentissage pour la conduite de systèmes (JFPDA)",
+      "authors": "A. Ducarouge, O. Sigaud"
+    },
+    {
+      "index": 16,
+      "title": "Deep Successor Reinforcement Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint",
+      "authors": "T.D. Kulkarni, A. Saeedi, S. Gautam, and S.J. Gershman",
+      "orig_title": "Deep successor reinforcement learning",
+      "paper_id": "1606.02396v1"
+    },
+    {
+      "index": 17,
+      "title": "Neural Fitted Q Iteration-first Experiences with a Data Efficient Neural Reinforcement Learning Method",
+      "abstract": "",
+      "year": "2005",
+      "venue": "European Conference on Machine Learning",
+      "authors": "M. Riedmiller"
+    },
+    {
+      "index": 18,
+      "title": "Flow Splitter: A Deep Reinforcement Learning-Based Flow Scheduler for Hybrid Optical-Electrical Data Center Network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "Y. Tang, H. Guo,T. Yuan, X. Gao, X. Hong, Y. Li, J. Qiu, Y. Zuo, and J. Wu"
+    },
+    {
+      "index": 19,
+      "title": "Unexpected Collision Avoidance Driving Strategy Using Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Access",
+      "authors": "M. Kim, S. Lee, J. Lim, J. Choi, and S.G. Kang"
+    },
+    {
+      "index": 20,
+      "title": "Deep reinforcement learning with optimized reward functions for robotic trajectory planning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "J. Xie, Z. Shao, Y. Li, Y. Guan, and J. Tan"
+    },
+    {
+      "index": 21,
+      "title": "An analysis of temporal-difference learning with function approximation",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE Transactions on Automatic Control",
+      "authors": "J. N. Tsitsiklis and B. Van Roy"
+    },
+    {
+      "index": 22,
+      "title": "Improved temporal difference methods with linear function approximation",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Learning and Approximate Dynamic Programming",
+      "authors": "D.P. Bertsekas, V.S. Borkar, and A. Nedic"
+    },
+    {
+      "index": 23,
+      "title": "Cmas: An Associative Neural Network Alternative to Backpropagation",
+      "abstract": "",
+      "year": "1990",
+      "venue": "IEEE",
+      "authors": "W. T. Miller, F. H. Glanz, and L. G. Kraft"
+    },
+    {
+      "index": 24,
+      "title": "Neural Networks: A Comprehensive Foundation",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Prentice Hall PTR",
+      "authors": "S. Haykin"
+    },
+    {
+      "index": 25,
+      "title": "Basis Function Adaptation in Temporal Difference Reinforcement Learning",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Annals of Operations Research",
+      "authors": "I. Menache, S. Mannor, and N. Shimkin"
+    },
+    {
+      "index": 26,
+      "title": "Restricted Gradient-descent Algorithm for Value-function Approximation in Reinforcement Learning",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Artificial Intelligence",
+      "authors": "A. d. M. S. Barreto and C. W. Anderson"
+    },
+    {
+      "index": 27,
+      "title": "Meta-cognitive neural network for classification problems in a sequential learning framework",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Neurocomputing",
+      "authors": "G.S. Babu, S. and Suresh"
+    },
+    {
+      "index": 28,
+      "title": "Comparison of CMACs and radial basis functions for local function approximators in reinforcement learning",
+      "abstract": "",
+      "year": "1997",
+      "venue": "International Conference on Neural Networks (ICNN)",
+      "authors": "R. M. Kretchmar and C. W. Anderson"
+    },
+    {
+      "index": 29,
+      "title": "The successor representation and temporal context",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Neural Computation",
+      "authors": "S.J. Gershman, C.D. Moore, M.T. Todd, K.A. Norman, and P.B. Sederberg"
+    },
+    {
+      "index": 30,
+      "title": "The successor representation in human reinforcement learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Nature Human Behaviour",
+      "authors": "I. Momennejad, E.M. Russek, J.H. Cheong, M.M. Botvinick, N.D. Daw, and S.J. Gershman"
+    },
+    {
+      "index": 31,
+      "title": "Predictive representations can link model-based reinforcement learning to model-free mechanisms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "PLoS computational biology",
+      "authors": "E.M. Russek, I. Momennejad, M.M. Botvinick, S.J. Gershman, and N.D. Daw"
+    },
+    {
+      "index": 32,
+      "title": "Reinforcement Learning: An Introduction",
+      "abstract": "",
+      "year": "1998",
+      "venue": "MIT Press",
+      "authors": "R. S. Sutton, A. G. Barto, F. Bach et al."
+    },
+    {
+      "index": 33,
+      "title": "Kalman Temporal Differences",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Journal of Artificial Intelligence Research",
+      "authors": "M. Geist and O. Pietquin"
+    },
+    {
+      "index": 34,
+      "title": "Successor features combine elements of model-free and model-based reinforcement learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "L. Lehnert, M.L. and Littman"
+    },
+    {
+      "index": 35,
+      "title": "Count-Based Exploration with the Successor Representation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "M.C. Machado, M.G. Bellemare, and M. Bowling",
+      "orig_title": "Count-based exploration with the successor representation",
+      "paper_id": "1807.11622v4"
+    },
+    {
+      "index": 36,
+      "title": "Human-level control through deep reinforcement learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature",
+      "authors": "V. Mnih, K. Kavukcuoglu, D. Silver, et al."
+    },
+    {
+      "index": 37,
+      "title": "Measuring the Reliability of Reinforcement Learning Algorithms",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "S.C. Chan, S. Fishman, J. Canny, et al.",
+      "orig_title": "Measuring the reliability of reinforcement learning algorithms",
+      "paper_id": "1912.05663v2"
+    },
+    {
+      "index": 38,
+      "title": "Probabilistic successor representations with Kalman temporal differences",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "J.P., Geerts, K.L. Stachenfeld, and N. Burgess"
+    },
+    {
+      "index": 39,
+      "title": "Makf-Sr: Multi-Agent Adaptive Kalman Filtering-Based Successor Representations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "M. Salimibeni, P. Malekzadeh, A. Mohammadi, P. Spachos and K. N. Plataniotis"
+    },
+    {
+      "index": 40,
+      "title": "Multiple Model-based Reinforcement Learning",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Neural Computation",
+      "authors": "K. Doya, K. Samejima, K.-i. Katagiri, and M. Kawato"
+    },
+    {
+      "index": 41,
+      "title": "Model Selection based on Kalman Temporal Differences Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Collaboration and Internet Computing (CIC)",
+      "authors": "T. Kitao, M. Shirai, and T. Miura"
+    },
+    {
+      "index": 42,
+      "title": "Adaptive adjustment of noise covariance in Kalman filter for dynamic state estimation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Power & Energy Society General Meeting",
+      "authors": "S. Akhlaghi, N. Zhou and Z. Huang"
+    },
+    {
+      "index": 43,
+      "title": "On the Identification of Variances and Adaptive Kalman Filtering",
+      "abstract": "",
+      "year": "1970",
+      "venue": "IEEE Transactions on Automatic Control",
+      "authors": "R. Mehra"
+    },
+    {
+      "index": 44,
+      "title": "Partitioning: A Unifying Framework for Adaptive Systems, i: Estimation",
+      "abstract": "",
+      "year": "1976",
+      "venue": "IEEE",
+      "authors": "D. G. Lainiotis"
+    },
+    {
+      "index": 45,
+      "title": "Similarity-based Multiple Model Adaptive Estimation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Access",
+      "authors": "A. Assa and K. N. Plataniotis"
+    },
+    {
+      "index": 46,
+      "title": "Adaptive ϵitalic-ϵ\\epsilon-greedy exploration in reinforcement learning based on value differences",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Annual Conference on Artificial Intelligence",
+      "authors": "T. Michel"
+    },
+    {
+      "index": 47,
+      "title": "Temporal Difference Updating without a Learning Rate",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "M. Hutter and S. Legg"
+    },
+    {
+      "index": 48,
+      "title": "Reinforcement Learning Based Stochastic Shortest Path Finding in Wireless Sensor Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "W. Xia, C. Di, H. Guo, and S. Li"
+    },
+    {
+      "index": 49,
+      "title": "Successor features for transfer in reinforcement learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Barreto, R. Dabney, R. Munos, J.J. Hunt, T. Schaul, H.V. Hasselt, and D. Silver"
+    },
+    {
+      "index": 50,
+      "title": "STUPEFY: Set-Valued Box Particle Filtering for Bluetooth Low Energy-Based Indoor Localization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Signal Processing Letters",
+      "authors": "P. Malekzadeh, A. Mohammadi, M. Barbulescu and K. N. Plataniotis"
+    },
+    {
+      "index": 51,
+      "title": "Event-Based Estimation With Information-Based Triggering and Adaptive Update",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Signal Processing",
+      "authors": "A. Mohammadi and K. N. Plataniotis"
+    },
+    {
+      "index": 52,
+      "title": "Improper Complex-Valued Bhattacharyya Distance",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "A. Mohammadi and K. N. Plataniotis"
+    },
+    {
+      "index": 53,
+      "title": "Distributed Widely Linear Multiple-Model Adaptive Estimation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Trans. Signal & Information Processing over Networks",
+      "authors": "A. Mohammadi and K. N. Plataniotis"
+    },
+    {
+      "index": 54,
+      "title": "A General and Adaptive Robust Loss Function",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "J. T. Barron",
+      "orig_title": "A General and Adaptive Robust Loss Function",
+      "paper_id": "1701.03077v10"
+    },
+    {
+      "index": 55,
+      "title": "Kalman filtering for matrix estimation",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Transactions on Aerospace and Electronic Systems",
+      "authors": "D. Choukroun, H. Weiss, I. Y. Bar-Itzhack and Y. Oshman"
+    },
+    {
+      "index": 56,
+      "title": "A note on the variance of a matrix",
+      "abstract": "",
+      "year": "1968",
+      "venue": "Econometrica",
+      "authors": "D.H. Nissen"
+    }
+  ]
+}

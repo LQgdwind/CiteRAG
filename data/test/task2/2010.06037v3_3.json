@@ -1,0 +1,461 @@
+{
+  "paper_id": "2010.06037v3",
+  "title": "Streaming enumeration on nested documents",
+  "sections": {
+    "appendix d applications in document spanners": "This section presents an application of our enumeration algorithm to the evaluation of recursive spanners . Practical formalisms to define document spanner for information extraction with recursion was only proposed very recently. In [ref]49, the author suggests using extraction grammars to specify document spanners, which is the natural extension of regular spanners to a controlled form of recursion. Furthermore, the author gives an enumeration algorithm for unambiguous functional extraction grammars that outputs the results with constant-delay after quintic time preprocessing (i.e., in the document). We can show a streaming enumeration algorithm with update-time that is independent of the document, and output-linear delay by restricting to the class of visibly pushdown extraction grammars. We proceed by recalling the framework of document spanners and extraction grammars to define the class of visibly pushdown extraction grammars and state the main algorithmic result. We start by recalling the basics of document spanners . Fix an alphabet ΣΣ\\Sigma and a set of variables 𝖵𝖺𝗋𝗌𝖵𝖺𝗋𝗌\\mathsf{Vars} such that Σ∩𝖵𝖺𝗋𝗌=∅Σ𝖵𝖺𝗋𝗌\\Sigma\\cap\\mathsf{Vars}=\\emptyset. A document d𝑑d over ΣΣ\\Sigma is basically a word in Σ∗superscriptΣ\\Sigma^{*}. A span s𝑠s of a document d𝑑d is a pair [i,j⟩𝑖𝑗[i,j\\rangle of natural numbers i𝑖i and j𝑗j with 1≤i≤j≤|d|+11𝑖𝑗𝑑11\\leq i\\leq j\\leq|d|+1. Intuitively, a span represents a substring of d𝑑d by identifying the starting and ending position.\nWe denote by 𝖲𝗉𝖺𝗇𝗌​(d)𝖲𝗉𝖺𝗇𝗌𝑑\\mathsf{Spans}(d) the set of all possible spans of d𝑑d.\nLet X⊆𝖵𝖺𝗋𝗌𝑋𝖵𝖺𝗋𝗌X\\subseteq\\mathsf{Vars} be a finite set of variables.\nAn (X,d)𝑋𝑑(X,d)-mapping μ:X→𝖲𝗉𝖺𝗇𝗌​(d):𝜇→𝑋𝖲𝗉𝖺𝗇𝗌𝑑\\mu\\colon X\\rightarrow\\mathsf{Spans}(d) assigns variables in X𝑋X to spans of d𝑑d. An (X,d)𝑋𝑑(X,d)-relation is a finite set of (X,d)𝑋𝑑(X,d)-mappings. Then a document spanner P𝑃P (or just spanner) is a function associated with a finite set X𝑋X of variables that maps documents d𝑑d into (X,d)𝑋𝑑(X,d)-relations. We use the framework of extraction grammars, recently proposed in [ref]49, to specify document spanners.\nFor X⊆𝖵𝖺𝗋𝗌𝑋𝖵𝖺𝗋𝗌X\\subseteq\\mathsf{Vars}, let CX={{x,}x∣x∈X}\\pazocal{C}_{X}=\\{\\{_{x},\\}_{x}\\mid x\\in X\\} be the set of captures of X𝑋X where, intuitively, {x\\{_{x} denotes the opening of x𝑥x, and }x\\}_{x} its closing.\nAn extraction context-free grammar, or extraction grammar for short, is a tuple G=(X,V,Σ,S,P)𝐺𝑋𝑉Σ𝑆𝑃G=(X,V,\\Sigma,S,P) such that X⊆𝖵𝖺𝗋𝗌𝑋𝖵𝖺𝗋𝗌X\\subseteq\\mathsf{Vars}, V𝑉V is a finite set of non-terminals symbols with V∩𝖵𝖺𝗋𝗌=∅𝑉𝖵𝖺𝗋𝗌V\\cap\\mathsf{Vars}=\\emptyset, ΣΣ\\Sigma is the alphabet of terminal symbols with Σ∩V=∅Σ𝑉\\Sigma\\cap V=\\emptyset, S∈V𝑆𝑉S\\in V is the start symbol, and P⊆V×(V∪Σ∪CX)∗𝑃𝑉superscript𝑉ΣsubscriptCXP\\subseteq V\\times(V\\cup\\Sigma\\cup\\pazocal{C}_{X})^{*} is a finite relation. In the literature, the elements of V𝑉V are also referred as “variables”, but we call them non-terminals to distinguish V𝑉V from 𝖵𝖺𝗋𝗌𝖵𝖺𝗋𝗌\\mathsf{Vars}.\nEach pair (A,α)∈P𝐴𝛼𝑃(A,\\alpha)\\in P is called a production and we write it as A→α→𝐴𝛼A\\rightarrow\\alpha. The set of productions P𝑃P defines the (left) derivation relation ⇒G⊆(V∪Σ∪CX)∗×(V∪Σ∪CX)∗\\Rightarrow_{G}\\ \\subseteq\\,(V\\cup\\Sigma\\cup\\pazocal{C}_{X})^{*}\\times(V\\cup\\Sigma\\cup\\pazocal{C}_{X})^{*} such that w​A​β⇒Gw​α​βsubscript⇒𝐺𝑤𝐴𝛽𝑤𝛼𝛽wA\\beta\\Rightarrow_{G}w\\alpha\\beta iff w∈(Σ∪CX)∗𝑤superscriptΣsubscriptCXw\\in(\\Sigma\\cup\\pazocal{C}_{X})^{*}, A∈V𝐴𝑉A\\in V, α,β∈(V∪Σ∪CX)∗𝛼𝛽superscript𝑉ΣsubscriptCX\\alpha,\\beta\\in(V\\cup\\Sigma\\cup\\pazocal{C}_{X})^{*}, and A→α∈P→𝐴𝛼𝑃A\\rightarrow\\alpha\\in P. We denote by ⇒G∗superscriptsubscript⇒𝐺\\Rightarrow_{G}^{*} the reflexive and transitive closure of ⇒Gsubscript⇒𝐺\\Rightarrow_{G}. Then the language defined by G𝐺G is L​(G)={w∈(Σ∪CX)∗∣S⇒G∗w}LGconditional-setwsuperscriptΣsubscriptCXsuperscriptsubscript⇒GSw\\pazocal{L}(G)=\\{w\\in(\\Sigma\\cup\\pazocal{C}_{X})^{*}\\mid S\\Rightarrow_{G}^{*}w\\}.\nA word w∈L​(G)𝑤LGw\\in\\pazocal{L}(G) is called a ref-word produced by G𝐺G. In order to define a spanner from G𝐺G, we need to interpret ref-words as mappings 9. Formally, a ref-word r=a1​…​an∈(Σ∪CX)∗𝑟subscript𝑎1…subscript𝑎𝑛superscriptΣsubscriptCXr=a_{1}\\ldots a_{n}\\in(\\Sigma\\cup\\pazocal{C}_{X})^{*} is called valid for X𝑋X if, for every x∈X𝑥𝑋x\\in X, there exists exactly one position i𝑖i with ai={xa_{i}=\\{_{x} and exactly one position j𝑗j with aj=}xa_{j}=\\ \\}_{x}, such that i<j𝑖𝑗i<j. In other words, a valid ref-word defines a correct match of open and close captures. Moreover, each x∈X𝑥𝑋x\\in X induces a unique factorization of r𝑟r of the form r=rxp⋅{x⋅rx⋅}x⋅rxsr=r_{x}^{p}\\cdot\\{_{x}\\,\\cdot\\,r_{x}\\,\\cdot\\,\\}_{x}\\cdot r_{x}^{s}.\nThis factorization defines an (X,d)𝑋𝑑(X,d)-mapping as follows.\nLet plain:(Σ∪CX)∗→Σ∗:plain→superscriptΣsubscriptCXsuperscriptΣ\\textsf{plain}:(\\Sigma\\cup\\pazocal{C}_{X})^{*}\\rightarrow\\Sigma^{*} be the morphism that removes the captures from ref-words, namely, plain​(a)=aplain𝑎𝑎\\textsf{plain}(a)=a when a∈Σ𝑎Σa\\in\\Sigma and plain​(c)=εplain𝑐𝜀\\textsf{plain}(c)=\\varepsilon when c∈CX𝑐subscriptCXc\\in\\pazocal{C}_{X}.\nWe extend plain to operate over strings in the obvious way.\nFurthermore, let r𝑟r be a valid ref-word for X𝑋X, d𝑑d be a document, and assume that plain​(r)=dplain𝑟𝑑\\textsf{plain}(r)=d.\nThen we define the (X,d)𝑋𝑑(X,d)-mapping μrsuperscript𝜇𝑟\\mu^{r} such that μr​(x)=[i,j⟩superscript𝜇𝑟𝑥𝑖𝑗\\mu^{r}(x)=[i,j\\rangle iff r=rxp⋅{x⋅rx⋅}x⋅rxsr=r_{x}^{p}\\cdot\\{_{x}\\,\\cdot\\,r_{x}\\,\\cdot\\,\\}_{x}\\cdot r_{x}^{s}, i=|plain​(rxp)|+1𝑖plainsuperscriptsubscript𝑟𝑥𝑝1i=|\\textsf{plain}(r_{x}^{p})|+1, and j=i+|plain​(rx)|𝑗𝑖plainsubscript𝑟𝑥j=i+|\\textsf{plain}(r_{x})|.\nFinally, the spanner ⟦G⟧delimited-⟦⟧𝐺\\llbracket G\\mkern 1.0mu\\rrbracket associated to an extraction grammar G𝐺G is defined over any document d∈Σ∗𝑑superscriptΣd\\in\\Sigma^{*} as follows: There are two classes of extraction grammars that are relevant for our discussion.\nThe first class of grammars are called functional extraction grammars.\nAn extraction grammar G𝐺G is functional if every r∈L​(G)𝑟LGr\\in\\pazocal{L}(G) is valid for X𝑋X. In [ref]49 it was shown that for any extraction grammar G𝐺G there exists an equivalent functional grammar G′superscript𝐺′G^{\\prime} (i.e. ⟦G⟧=⟦G′⟧\\llbracket G\\mkern 1.0mu\\rrbracket=\\llbracket G^{\\prime}\\mkern 1.0mu\\rrbracket). Non-functional grammars are problematic given that, even for regular spanners, their decision problems easily become intractable  . For this reason, we restrict to functional extraction grammars without loss of expressive power.\nThe second class of grammars are called unambiguous extraction grammars. An extraction grammar G𝐺G is unambiguous if for every r∈L​(G)𝑟LGr\\in\\pazocal{L}(G) there exists exactly one path from S𝑆S to r𝑟r in the graph ((V∪Σ∪CX)∗,⇒G)superscript𝑉ΣsubscriptCXsubscript⇒G((V\\cup\\Sigma\\cup\\pazocal{C}_{X})^{*},\\Rightarrow_{G}). In other words, there exists exactly one left-most derivation. We consider now a sub-class of extraction grammars for nested words. Let Σ=(Σ<,Σ>,Σ|)ΣsuperscriptΣ<superscriptΣ>superscriptΣ|\\Sigma=(\\Sigma^{\\texttt{<}},\\Sigma^{\\texttt{>}},\\Sigma^{\\texttt{|}}) be a structured alphabet. Then a visibly pushdown extraction grammar (VPEG) is a functional extraction grammar G=(X,V,Σ,S,P)𝐺𝑋𝑉Σ𝑆𝑃G=(X,V,\\Sigma,S,P) in which Σ=(Σ<,Σ>,Σ|)ΣsuperscriptΣ<superscriptΣ>superscriptΣ|\\Sigma=(\\Sigma^{\\texttt{<}},\\Sigma^{\\texttt{>}},\\Sigma^{\\texttt{|}}) is a structured alphabet, and all the productions in P𝑃P are of one of the following forms: (1) A→ε→𝐴𝜀A\\rightarrow\\varepsilon; (2) A→a​B→𝐴𝑎𝐵A\\rightarrow aB such that a∈Σ|∪CX𝑎superscriptΣ|subscriptCXa\\in\\Sigma^{\\texttt{|}}\\cup\\pazocal{C}_{X} and B∈V𝐵𝑉B\\in V; (3) A→<​a​B​b​>​C→𝐴<𝑎𝐵𝑏>𝐶A\\rightarrow{\\scriptsize\\texttt{<}}a\\,B\\,b{\\scriptsize\\texttt{>}}\\,C such that <​a∈Σ<<𝑎superscriptΣ<{\\scriptsize\\texttt{<}}a\\in\\Sigma^{\\texttt{<}}, b​>∈Σ>𝑏>superscriptΣ>b{\\scriptsize\\texttt{>}}\\in\\Sigma^{\\texttt{>}}, and B,C∈V𝐵𝐶𝑉B,C\\in V. Intuitively, rules A→a​B→𝐴𝑎𝐵A\\rightarrow aB allow to produce arbitrary sequences of neutral symbols, where rules A→<​a​B​b​>​C→𝐴<𝑎𝐵𝑏>𝐶A\\rightarrow{\\scriptsize\\texttt{<}}a\\,B\\,b{\\scriptsize\\texttt{>}}\\,C forces the word to be well-nested. Visibly pushdown extraction grammars are a subclass of extraction grammars that works for well-nested documents. In fact, the reader can notice that the visibly pushdown restriction for extraction grammars is the analog counterpart of visibly pushdown grammars111The definition of visibly pushdown grammars in  is slightly more complicated given that they consider nested words that are not necessary well-nested (see the discussion in Section 2). introduced in . Therefore, one could expect that VPEGs are less expressive than extraction grammars.\nInterestingly, we can use Theorem 4.3 to give an efficient streaming enumeration algorithm for evaluating VPEG. Fix a set of variables X𝑋X. The problem of, given a visibly pushdown extraction grammar G=(X,V,Σ,S,P)𝐺𝑋𝑉Σ𝑆𝑃G=(X,V,\\Sigma,S,P) and a stream SS\\pazocal{S}, enumerating all (X,S​[1,n])𝑋S1n(X,\\pazocal{S}[1,n])-mappings of ⟦G⟧(w)\\llbracket G\\mkern 1.0mu\\rrbracket(w) can be solved with update-time O​(2|G|3)Osuperscript2superscriptG3\\pazocal{O}(2^{|G|^{3}}), and output-linear delay. Furthermore, if G𝐺G is restricted to be unambiguous, then the problem can be solved with update-time O​(|G|3)OsuperscriptG3\\pazocal{O}(|G|^{3}). This result goes by constructing an extraction pushdown automata [ref]49 from G𝐺G, and reduce it to a visibly pushdown transducers. Note that, although the update-time of the algorithm is exponential in the size of the grammar, in terms of data-complexity the update-time is constant. Furthermore, for the special case of unambiguous grammars the update-time is even polynomial. Unambiguous grammars are very common in parsing tasks  and, thus, this restriction could be useful in practice."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "The Design and Analysis of Computer Algorithms",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Addison-Wesley",
+      "authors": "Alfred V. Aho, John E. Hopcroft, and Jeffrey D. Ullman"
+    },
+    {
+      "index": 1,
+      "title": "Compilers, principles, techniques",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Addison wesley",
+      "authors": "Alfred V Aho, Ravi Sethi, and Jeffrey D Ullman"
+    },
+    {
+      "index": 2,
+      "title": "Efficient filtering of XML documents for selective dissemination of information",
+      "abstract": "",
+      "year": "2000",
+      "venue": "VLDB",
+      "authors": "Mehmet Altınel and Michael J Franklin"
+    },
+    {
+      "index": 3,
+      "title": "Streamable regular transductions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "Rajeev Alur, Dana Fisman, Konstantinos Mamouras, Mukund Raghothaman, and Caleb Stanford"
+    },
+    {
+      "index": 4,
+      "title": "Invisible pushdown languages",
+      "abstract": "",
+      "year": "2004",
+      "venue": "STOC",
+      "authors": "Rajeev Alur and P. Madhusudan",
+      "orig_title": "Visibly pushdown languages",
+      "paper_id": "1511.00289v1"
+    },
+    {
+      "index": 5,
+      "title": "A circuit-based approach to efficient enumeration",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICALP",
+      "authors": "Antoine Amarilli, Pierre Bourhis, Louis Jachiet, and Stefan Mengel"
+    },
+    {
+      "index": 6,
+      "title": "Constant-delay enumeration for nondeterministic document spanners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICDT",
+      "authors": "Antoine Amarilli, Pierre Bourhis, Stefan Mengel, and Matthias Niewerth"
+    },
+    {
+      "index": 7,
+      "title": "Enumeration on trees with tractable combined complexity and efficient updates",
+      "abstract": "",
+      "year": "2019",
+      "venue": "PODS",
+      "authors": "Antoine Amarilli, Pierre Bourhis, Stefan Mengel, and Matthias Niewerth"
+    },
+    {
+      "index": 8,
+      "title": "Efficient logspace classes for enumeration, counting, and uniform generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "PODS",
+      "authors": "Marcelo Arenas, Luis Alberto Croquevielle, Rajesh Jayaram, and Cristian Riveros"
+    },
+    {
+      "index": 9,
+      "title": "Models and issues in data stream systems",
+      "abstract": "",
+      "year": "2002",
+      "venue": "SIGMOD",
+      "authors": "Brian Babcock, Shivnath Babu, Mayur Datar, Rajeev Motwani, and Jennifer Widom"
+    },
+    {
+      "index": 10,
+      "title": "MSO queries on tree decomposable structures are computable with linear delay",
+      "abstract": "",
+      "year": "2006",
+      "venue": "CSL",
+      "authors": "Guillaume Bagan"
+    },
+    {
+      "index": 11,
+      "title": "On acyclic conjunctive queries and constant delay enumeration",
+      "abstract": "",
+      "year": "2007",
+      "venue": "CSL",
+      "authors": "Guillaume Bagan, Arnaud Durand, and Etienne Grandjean"
+    },
+    {
+      "index": 12,
+      "title": "Buffering in query evaluation over XML streams",
+      "abstract": "",
+      "year": "2005",
+      "venue": "PODS",
+      "authors": "Ziv Bar-Yossef, Marcus Fontoura, and Vanja Josifovski"
+    },
+    {
+      "index": 13,
+      "title": "On the memory requirements of XPath evaluation over XML streams",
+      "abstract": "",
+      "year": "2007",
+      "venue": "J. Comput. Syst. Sci.",
+      "authors": "Ziv Bar-Yossef, Marcus Fontoura, and Vanja Josifovski"
+    },
+    {
+      "index": 14,
+      "title": "Stackless processing of streamed trees",
+      "abstract": "",
+      "year": "2021",
+      "venue": "PODS",
+      "authors": "Corentin Barloy, Filip Murlak, and Charles Paperman"
+    },
+    {
+      "index": 15,
+      "title": "Constant delay enumeration for conjunctive queries: a tutorial",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM SIGLOG News",
+      "authors": "Christoph Berkholz, Fabian Gerhardt, and Nicole Schweikardt"
+    },
+    {
+      "index": 16,
+      "title": "Answering conjunctive queries under updates",
+      "abstract": "",
+      "year": "2017",
+      "venue": "PODS",
+      "authors": "Christoph Berkholz, Jens Keppeler, and Nicole Schweikardt"
+    },
+    {
+      "index": 17,
+      "title": "JSON: Data model and query languages",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Inf. Syst.",
+      "authors": "Pierre Bourhis, Juan L. Reutter, and Domagoj Vrgoc"
+    },
+    {
+      "index": 18,
+      "title": "Trimming visibly pushdown automata",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "Mathieu Caralp, Pierre-Alain Reynier, and Jean-Marc Talbot"
+    },
+    {
+      "index": 19,
+      "title": "An efficient XPath query processor for XML streams",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ICDE",
+      "authors": "Yi Chen, Susan B. Davidson, and Yifeng Zheng"
+    },
+    {
+      "index": 20,
+      "title": "Materialized views",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Found. Trends Databases",
+      "authors": "Rada Chirkova and Jun Yang"
+    },
+    {
+      "index": 21,
+      "title": "Linear delay enumeration and monadic second-order logic",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Discret. Appl. Math.",
+      "authors": "Bruno Courcelle"
+    },
+    {
+      "index": 22,
+      "title": "Making data structures persistent",
+      "abstract": "",
+      "year": "1986",
+      "venue": "STOC",
+      "authors": "James R Driscoll, Neil Sarnak, Daniel Dominic Sleator, and Robert Endre Tarjan"
+    },
+    {
+      "index": 23,
+      "title": "First-order queries on structures of bounded degree are computable with constant delay",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM Trans. Comput. Log.",
+      "authors": "Arnaud Durand and Etienne Grandjean"
+    },
+    {
+      "index": 24,
+      "title": "Document spanners: A formal approach to information extraction",
+      "abstract": "",
+      "year": "2015",
+      "venue": "J. ACM",
+      "authors": "Ronald Fagin, Benny Kimelfeld, Frederick Reiss, and Stijn Vansummeren"
+    },
+    {
+      "index": 25,
+      "title": "Streamability of nested word transductions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "LMCS",
+      "authors": "Emmanuel Filiot, Olivier Gauwin, Pierre-Alain Reynier, and Frédéric Servais"
+    },
+    {
+      "index": 26,
+      "title": "Visibly pushdown transducers",
+      "abstract": "",
+      "year": "2018",
+      "venue": "JCSS",
+      "authors": "Emmanuel Filiot, Jean-François Raskin, Pierre-Alain Reynier, Frédéric Servais, and Jean-Marc Talbot"
+    },
+    {
+      "index": 27,
+      "title": "Efficient enumeration algorithms for regular document spanners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "TODS",
+      "authors": "Fernando Florenzano, Cristian Riveros, Martín Ugarte, Stijn Vansummeren, and Domagoj Vrgoc"
+    },
+    {
+      "index": 28,
+      "title": "A logic for document spanners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Theory Comput. Syst.",
+      "authors": "Dominik D. Freydenberger"
+    },
+    {
+      "index": 29,
+      "title": "Joining Extractions of Regular Expressions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "PODS",
+      "authors": "Dominik D. Freydenberger, Benny Kimelfeld, and Liat Peterfreund",
+      "orig_title": "Joining extractions of regular expressions",
+      "paper_id": "1703.10350v1"
+    },
+    {
+      "index": 30,
+      "title": "Streaming tree automata",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Inf. Process. Lett.",
+      "authors": "Olivier Gauwin, Joachim Niehren, and Yves Roos"
+    },
+    {
+      "index": 31,
+      "title": "Bounded delay and concurrency for earliest query answering",
+      "abstract": "",
+      "year": "2009",
+      "venue": "LATA",
+      "authors": "Olivier Gauwin, Joachim Niehren, and Sophie Tison"
+    },
+    {
+      "index": 32,
+      "title": "Earliest query answering for deterministic nested word automata",
+      "abstract": "",
+      "year": "2009",
+      "venue": "FCT",
+      "authors": "Olivier Gauwin, Joachim Niehren, and Sophie Tison"
+    },
+    {
+      "index": 33,
+      "title": "Efficient algorithms for evaluating XPath over streams",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIGMOD",
+      "authors": "Gang Gou and Rada Chirkova"
+    },
+    {
+      "index": 34,
+      "title": "Processing XML streams with deterministic automata and stream indexes",
+      "abstract": "",
+      "year": "2004",
+      "venue": "ACM Trans. Database Syst.",
+      "authors": "Todd J. Green, Ashish Gupta, Gerome Miklau, Makoto Onizuka, and Dan Suciu"
+    },
+    {
+      "index": 35,
+      "title": "Towards streaming evaluation of queries with correlation in complex event processing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICDT",
+      "authors": "Alejandro Grez and Cristian Riveros"
+    },
+    {
+      "index": 36,
+      "title": "A formal framework for complex event processing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICDT",
+      "authors": "Alejandro Grez, Cristian Riveros, and Martín Ugarte"
+    },
+    {
+      "index": 37,
+      "title": "The dynamic Yannakakis algorithm: Compact and efficient query processing under updates",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIGMOD",
+      "authors": "Muhammad Idris, Martín Ugarte, and Stijn Vansummeren"
+    },
+    {
+      "index": 38,
+      "title": "Random generation of combinatorial structures from a uniform distribution",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "Mark Jerrum, Leslie G. Valiant, and Vijay V. Vazirani"
+    },
+    {
+      "index": 39,
+      "title": "Querying XML streams",
+      "abstract": "",
+      "year": "2005",
+      "venue": "VLDB J.",
+      "authors": "Vanja Josifovski, Marcus Fontoura, and Attila Barta"
+    },
+    {
+      "index": 40,
+      "title": "Trade-offs in Static and Dynamic Evaluation of Hierarchical Queries",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PODS",
+      "authors": "Ahmet Kara, Milos Nikolic, Dan Olteanu, and Haozhe Zhang",
+      "orig_title": "Trade-offs in static and dynamic evaluation of hierarchical queries",
+      "paper_id": "1907.01988v7"
+    },
+    {
+      "index": 41,
+      "title": "Visibly pushdown automata for streaming XML",
+      "abstract": "",
+      "year": "2007",
+      "venue": "WWW",
+      "authors": "Viraj Kumar, P. Madhusudan, and Mahesh Viswanathan"
+    },
+    {
+      "index": 42,
+      "title": "Elements of finite model theory, volume 41",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Springer",
+      "authors": "Leonid Libkin"
+    },
+    {
+      "index": 43,
+      "title": "Document Spanners for Extracting Incomplete Information: Expressiveness and Complexity",
+      "abstract": "",
+      "year": "2018",
+      "venue": "PODS",
+      "authors": "Francisco Maturana, Cristian Riveros, and Domagoj Vrgoc",
+      "orig_title": "Document spanners for extracting incomplete information: Expressiveness and complexity",
+      "paper_id": "1707.00827v2"
+    },
+    {
+      "index": 44,
+      "title": "Incremental view maintenance with triple lock factorization benefits",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGMOD",
+      "authors": "Milos Nikolic and Dan Olteanu"
+    },
+    {
+      "index": 45,
+      "title": "SPEX: Streamed and progressive evaluation of XPath",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE Trans. Knowl. Data Eng.",
+      "authors": "Dan Olteanu"
+    },
+    {
+      "index": 46,
+      "title": "An efficient single-pass query evaluator for XML data streams",
+      "abstract": "",
+      "year": "2004",
+      "venue": "SAC",
+      "authors": "Dan Olteanu, Tim Furche, and François Bry"
+    },
+    {
+      "index": 47,
+      "title": "Size bounds for factorised representations of query results",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM TODS",
+      "authors": "Dan Olteanu and Jakub Závodný"
+    },
+    {
+      "index": 48,
+      "title": "Grammars for document spanners",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICDT",
+      "authors": "Liat Peterfreund"
+    },
+    {
+      "index": 49,
+      "title": "Recursive Programs for Document Spanners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICDT",
+      "authors": "Liat Peterfreund, Balder ten Cate, Ronald Fagin, and Benny Kimelfeld",
+      "orig_title": "Recursive programs for document spanners",
+      "paper_id": "1712.08198v3"
+    },
+    {
+      "index": 50,
+      "title": "Enumerating with constant delay the answers to a query",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ICDT",
+      "authors": "Luc Segoufin"
+    },
+    {
+      "index": 51,
+      "title": "Validating streaming XML documents",
+      "abstract": "",
+      "year": "2002",
+      "venue": "PODS",
+      "authors": "Luc Segoufin and Victor Vianu"
+    },
+    {
+      "index": 52,
+      "title": "The space complexity of processing XML twig queries over indexed documents",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ICDE",
+      "authors": "Mirit Shalem and Ziv Bar-Yossef"
+    },
+    {
+      "index": 53,
+      "title": "Navigational XPath: calculus and algebra",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIGMOD Record",
+      "authors": "Balder ten Cate and Maarten Marx"
+    },
+    {
+      "index": 54,
+      "title": "Aggregate Queries on Sparse Databases",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PODS",
+      "authors": "Szymon Torunczyk",
+      "orig_title": "Aggregate queries on sparse databases",
+      "paper_id": "1912.12338v1"
+    }
+  ]
+}

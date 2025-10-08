@@ -1,0 +1,419 @@
+{
+  "paper_id": "2007.05881v1",
+  "title": "Applying recent advances in Visual Question Answering to Record Linkage",
+  "sections": {
+    "chapter 1 introduction": "Record linkage is the process of joining records from multiple data sources that represents the same entity. Record linkage is used in domains where storing data is essential, therefore government agencies, the health sector, security agencies, online stores and other various organization would benefit immensely by any advances in this field. The task is commonly used for improving data quality, improving the order of items within databases and to reduce costs and give computational efficiency to data acquisition and data re-usage . All the research in record linkage has been done on textual data. Researchers have used various metrics to compute the similarity between textual fields and have proposed different machine learning methods to classify the output of these metrics . The problem with this approach is that for different domains, researches needed to use different similarity metrics and needed to design a lot of hand-crafted features, so the metric would be able to represent the similarity more accurately. This led to inefficient system development and systems that are not robust. In recent years Deep Learning has emerged as a solution to hand-crafting features, because of the ability of deep neural networks to extract features and knowledge from raw data . For record linkage, [ref]31 proposes three architectures that are based on Recurrent Neural Networks and they outperform the state-of-the-art record linkage system (that uses classical machine learning methods) on raw text. One thing that hasn’t been researched in record linkage is the linkage of multi-modal records. The rise of the Internet has introduced more visual content which provides more information about the entities. Our motivation is to build on top of the success that [ref]31 had with Deep Learning methods and we do this by proposing two Deep Learning architectures that will learn how to model multi-modal records and learn how to compute their similarity successfully. Another field that uses multi-modal data and combines them jointly is Visual Question Answering (VQA)[ref]2. In VQA they use Deep Learning architectures to combine an image and a question and they use the output of the fusion module to predict the answer to the question. In this way, VQA relates to Record Linkage, because both problems need to jointly encode both the visual and textual data. The solutions that we propose consist of two parts: two fusion modules that combine the visual and textual information for each record in the pair separately and a Siamese Neural Network that computes the similarity between the outputs of the fusion modules. For the fusion modules we propose, two solutions that were inspired by the fusion modules introduced in [ref]2 and [ref]46. The first proposed module is the Recurrent Neural Network + Convolutional Neural Network fusion module that uses recurrent neural networks to model the textual data and a pre-trained convolutional neural network that extracts features from images. The outputs of the networks are then fused by point-wise multiplication. An extension to this module is the Stacked Attention Network fusion module, that uses multiple attention layers to create a more refined encoding of the multi-modal data. To train the whole network we used the Avito Duplicate Ads Detection dataset . This dataset hasn’t been used in any previous research, so we also propose a simple baseline model that we will use to compare our two proposed solutions. The baseline model is a logistic regression model and for each pair of records, we compute two features: the Jaccard similarity coefficient between the textual data of each advertisement and the Euclidian distance between the feature vectors of the images associated with each advertisement. We hypothesized that by increasing the complexity of the structure of the fusion module we would get better results. We were also interested in how the models perform when the textual data in the advertisements is long. Finally, we hypothesised that the Stacked Attention Network fusion module would be able to learn how to find similar regions in the images of similar advertisements. For the Recurrent Neural Network + Convolutional Neural Network fusion module we did a small hyperparameter search and choose the model that performed best on the validation set. For the Stacked Attention Network we trained only one model because of time constraints. From the experiments, we concluded that the Recurrent Neural Network + Convolutional Neural Network performs better than the baseline model. We failed to prove our hypothesis that the increase in fusion module complexity (upgrading the RNN + CNN module to the Stacked Attention Network module) would result in better model performance. We also failed to prove that the Stacked Attention Network solution can learn how to attend similar regions in the images of similar advertisements, due to time constraints. We did however found out that the hyperparameter setting used in [ref]2 and  didn’t work for the Recurrent Neural Network + Convolutional Neural Network solution. Another interesting discovery was that the Recurrent Neural Network + Convolutional Neural Network model, both struggle with advertisements that have very different description lengths and advertisements that have long descriptions. This is because the Recurrent Neural Network + Convolutional Neural Network model tends to overfit the distribution of pairs of advertisements that have an average description length smaller than 40 words. The distribution of these type of pairs consists of more similar pairs and it is different than the distribution of pairs of advertisements that have an average description length of more then 40 words. The code used for this project is available at https://github.com/msmilevski/nrl. The following paragraph outlines the structure for the rest of the document. In Chapter 2 we talk about the related work done in Record Linkage and provide the needed background for the proposed models. Section 2.1 explores different similarity metrics and machine learning methods (supervised and unsupervised) that are widely used in record linkage. Section 2.2 introduces the reader to Deep Learning, explains the connection between Deep Learning and Record Linkage and also gives a short introduction to Recurrent and Convolutional Neural Networks. Section 2.3 explores the link between Visual Question Answering and Record Linkage, explains what Visual Question Answering is in more detail and also introduces the concept of the Attention mechanism. Section 2.4 introduces Siamese Neural Networks. Chapter 3 is for the Methodology. In Section 3.1 we describe the dataset that we are using and all the preprocessing that we have done to it. Section 3.2 outlines the baseline model. Section 3.3 describes the Siamese Neural Network architecture in detail and provides an illustration of the architecture of the proposed framework. Section 3.4 describes the Recurrent Neural Network + Convolutional Neural Network fusion module and provides an illustration of its architecture. Section 3.5 explains the concept of the Stacked Attention Network, provides mathematical formulas to better understand the fusion module and a diagram of how the Stacked Attention Network looks when it uses one attention layer. Chapter 4 presents the results from the experiments. In Section 4.1 we introduce the evaluation metric we use to compare our models. Section 4.2 presents the results for the baseline model. Section 4.3 explains the training process for neural networks. Section 4.4 presents the results from the hyperparameter search for the Recurrent Neural Network + Convolutional Neural Network fusion module and we explain the thought process behind our experiments. Section 4.5 presents the results for the Stacked Attention Network fusion module. Section 4.6 compares all three models that we trained. It also looks into how well the models perform for different text lengths. Chapter 5 summarizes our work and introduces some possibilities for future work."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Vqa: Visual question answering",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Computer Vision (ICCV)",
+      "authors": "S. Antol, A. Agrawal, J. Lu, M. Mitchell, D. Batra, C. L. Zitnick, and D. Parikh"
+    },
+    {
+      "index": 1,
+      "title": "Vqa: Visual question answering",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Stanislaw Antol, Aishwarya Agrawal, Jiasen Lu, Margaret Mitchell, Dhruv Batra, C Lawrence Zitnick, and Devi Parikh"
+    },
+    {
+      "index": 2,
+      "title": "SegNet: A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "Vijay Badrinarayanan, Alex Kendall, and Roberto Cipolla",
+      "orig_title": "Segnet: A deep convolutional encoder-decoder architecture for image segmentation",
+      "paper_id": "1511.00561v3"
+    },
+    {
+      "index": 3,
+      "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.0473",
+      "authors": "Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio",
+      "orig_title": "Neural machine translation by jointly learning to align and translate",
+      "paper_id": "1409.0473v7"
+    },
+    {
+      "index": 4,
+      "title": "Adaptive name matching in information integration",
+      "abstract": "",
+      "year": "2003",
+      "venue": "IEEE Intelligent Systems",
+      "authors": "Mikhail Bilenko, Raymond Mooney, William Cohen, Pradeep Ravikumar, and Stephen Fienberg"
+    },
+    {
+      "index": 5,
+      "title": "Enriching Word Vectors with Subword Information",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1607.04606",
+      "authors": "Piotr Bojanowski, Edouard Grave, Armand Joulin, and Tomas Mikolov",
+      "orig_title": "Enriching word vectors with subword information",
+      "paper_id": "1607.04606v2"
+    },
+    {
+      "index": 6,
+      "title": "Signature verification using a” siamese” time delay neural network",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Jane Bromley, Isabelle Guyon, Yann LeCun, Eduard Säckinger, and Roopak Shah"
+    },
+    {
+      "index": 7,
+      "title": "Murel: Multimodal relational reasoning for visual question answering",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Remi Cadene, Hedi Ben-Younes, Matthieu Cord, and Nicolas Thome"
+    },
+    {
+      "index": 8,
+      "title": "On the properties of neural machine translation: Encoder-decoder approaches",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1259",
+      "authors": "Kyunghyun Cho, Bart Van Merriënboer, Dzmitry Bahdanau, and Yoshua Bengio"
+    },
+    {
+      "index": 9,
+      "title": "Learning phrase representations using RNN encoder-decoder for statistical machine translation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CoRR",
+      "authors": "Kyunghyun Cho, Bart van Merrienboer, Çaglar Gülçehre, Fethi Bougares, Holger Schwenk, and Yoshua Bengio"
+    },
+    {
+      "index": 10,
+      "title": "A survey of indexing techniques for scalable record linkage and deduplication",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "P. Christen"
+    },
+    {
+      "index": 11,
+      "title": "Efficient data reconciliation",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Inf. Sci.",
+      "authors": "Munir Cochinwala, Verghese Kurien, Gail Lalk, and Dennis Shasha"
+    },
+    {
+      "index": 12,
+      "title": "Duplicate record detection: A survey",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE Trans. on Knowl. and Data Eng.",
+      "authors": "Ahmed K. Elmagarmid, Panagiotis G. Ipeirotis, and Vassilios S. Verykios"
+    },
+    {
+      "index": 13,
+      "title": "A theory for record linkage",
+      "abstract": "",
+      "year": "1969",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "Ivan P. Fellegi and Alan B. Sunter"
+    },
+    {
+      "index": 14,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MIT Press",
+      "authors": "Ian Goodfellow, Yoshua Bengio, and Aaron Courville",
+      "orig_title": "Deep Learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 15,
+      "title": "Incremental record linkage",
+      "abstract": "",
+      "year": "2014",
+      "venue": "VLDB Endow.",
+      "authors": "Anja Gruenheid, Xin Luna Dong, and Divesh Srivastava"
+    },
+    {
+      "index": 16,
+      "title": "Framework for evaluating clustering algorithms in duplicate detection",
+      "abstract": "",
+      "year": "2009",
+      "venue": "VLDB Endowment",
+      "authors": "Oktie Hassanzadeh, Fei Chiang, Hyun Chul Lee, and Renée J Miller"
+    },
+    {
+      "index": 17,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 18,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 19,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural computation",
+      "authors": "Sepp Hochreiter and Jürgen Schmidhuber"
+    },
+    {
+      "index": 20,
+      "title": "Siamese neural networks for one-shot image recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICML deep learning workshop",
+      "authors": "Gregory Koch, Richard Zemel, and Ruslan Salakhutdinov"
+    },
+    {
+      "index": 21,
+      "title": "Magellan: Toward building entity matching management systems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "PVLDB",
+      "authors": "Pradap Konda, Sanjib Das, Paul Suganthan G. C., AnHai Doan, Adel Ardalan, Jeffrey R. Ballard, Han Li, Fatemah Panahi, Haojun Zhang, Jeffrey F. Naughton, Shishir Prasad, Ganesh Krishnan, Rohit Deep, and Vijay Raghavendra"
+    },
+    {
+      "index": 22,
+      "title": "Evaluation of entity resolution approaches on real-world match problems",
+      "abstract": "",
+      "year": "2010",
+      "venue": "VLDB Endow.",
+      "authors": "Hanna Köpcke, Andreas Thor, and Erhard Rahm"
+    },
+    {
+      "index": 23,
+      "title": "Record linkage: similarity measures and algorithms",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ACM SIGMOD international conference on Management of data",
+      "authors": "Nick Koudas, Sunita Sarawagi, and Divesh Srivastava"
+    },
+    {
+      "index": 24,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Alex Krizhevsky, Ilya Sutskever, and Geoffrey E Hinton"
+    },
+    {
+      "index": 25,
+      "title": "Average precision score",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Scikit learn staff"
+    },
+    {
+      "index": 26,
+      "title": "Backpropagation applied to handwritten zip code recognition",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Neural Computation",
+      "authors": "Yann LeCun, Bernhard E. Boser, John S. Denker, Donnie Henderson, Richard E. Howard, Wayne E. Hubbard, and Lawrence D. Jackel"
+    },
+    {
+      "index": 27,
+      "title": "Gradient-based learning applied to document recognition",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Proceedings of the IEEE",
+      "authors": "Yann LeCun, Léon Bottou, Yoshua Bengio, Patrick Haffner, et al."
+    },
+    {
+      "index": 28,
+      "title": "Efficient clustering of high-dimensional data sets with application to reference matching",
+      "abstract": "",
+      "year": "2000",
+      "venue": "ACM SIGKDD international conference on Knowledge discovery and data mining",
+      "authors": "Andrew McCallum, Kamal Nigam, and Lyle H Ungar"
+    },
+    {
+      "index": 29,
+      "title": "Context dependent recurrent neural network language model",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Spoken Language Technology Workshop (SLT)",
+      "authors": "T. Mikolov and G. Zweig"
+    },
+    {
+      "index": 30,
+      "title": "Deep learning for entity matching: A design space exploration",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Management of Data, SIGMOD",
+      "authors": "Sidharth Mudgal, Han Li, Theodoros Rekatsinas, AnHai Doan, Youngchoon Park, Ganesh Krishnan, Rohit Deep, Esteban Arcaute, and Vijay Raghavendra"
+    },
+    {
+      "index": 31,
+      "title": "Dual Attention Networks for Multimodal Reasoning and Matching",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "Hyeonseob Nam, Jung-Woo Ha, and Jeonghee Kim",
+      "orig_title": "Dual attention networks for multimodal reasoning and matching",
+      "paper_id": "1611.00471v2"
+    },
+    {
+      "index": 32,
+      "title": "Understanding lstms, August 2015.",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Christopher Olah"
+    },
+    {
+      "index": 33,
+      "title": "Survey of Recent Advances in Visual Question Answering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Supriya Pandhre and Shagun Sodhani",
+      "orig_title": "Survey of recent advances in visual question answering",
+      "paper_id": "1709.08203v1"
+    },
+    {
+      "index": 34,
+      "title": "Glove: Global vectors for word representation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "EMNLP",
+      "authors": "Jeffrey Pennington, Richard Socher, and Christopher D. Manning"
+    },
+    {
+      "index": 35,
+      "title": "Learning representations by back-propagating errors",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Cognitive modeling",
+      "authors": "David E Rumelhart, Geoffrey E Hinton, Ronald J Williams, et al."
+    },
+    {
+      "index": 36,
+      "title": "Avito duplicate ads detection dataset, February 2015.",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Avito Russia"
+    },
+    {
+      "index": 37,
+      "title": "Edinburgh neural machine translation systems for wmt 16",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.02891",
+      "authors": "Rico Sennrich, Barry Haddow, and Alexandra Birch"
+    },
+    {
+      "index": 38,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1556",
+      "authors": "Karen Simonyan and Andrew Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 39,
+      "title": "Dropout: a simple way to prevent neural networks from overfitting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "journal of machine learning research",
+      "authors": "Nitish Srivastava, Geoffrey Hinton, Alex Krizhevsky, Ilya Sutskever, and Ruslan Salakhutdinov"
+    },
+    {
+      "index": 40,
+      "title": "Lstm neural networks for language modeling",
+      "abstract": "",
+      "year": "2012",
+      "venue": "annual conference of the international speech communication association",
+      "authors": "Martin Sundermeyer, Ralf Schlüter, and Hermann Ney"
+    },
+    {
+      "index": 41,
+      "title": "Sentiment analysis in latvian and russian: A survey",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Applied Computer Systems",
+      "authors": "Rinalds Vīksna and Gints Jēkabsons"
+    },
+    {
+      "index": 42,
+      "title": "Matching Networks for One Shot Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Oriol Vinyals, Charles Blundell, Timothy Lillicrap, Daan Wierstra, et al.",
+      "orig_title": "Matching networks for one shot learning",
+      "paper_id": "1606.04080v2"
+    },
+    {
+      "index": 43,
+      "title": "Methods for evaluating and creating data quality",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Information Systems",
+      "authors": "William E Winkler"
+    },
+    {
+      "index": 44,
+      "title": "Show, attend and tell: Neural image caption generation with visual attention",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "Kelvin Xu, Jimmy Ba, Ryan Kiros, Kyunghyun Cho, Aaron C. Courville, Ruslan Salakhutdinov, Richard S. Zemel, and Yoshua Bengio"
+    },
+    {
+      "index": 45,
+      "title": "Stacked Attention Networks for Image Question Answering",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "Zichao Yang, Xiaodong He, Jianfeng Gao, Li Deng, and Alexander J. Smola",
+      "orig_title": "Stacked attention networks for image question answering",
+      "paper_id": "1511.02274v2"
+    },
+    {
+      "index": 46,
+      "title": "Image Captioning with Semantic Attention",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Quanzeng You, Hailin Jin, Zhaowen Wang, Chen Fang, and Jiebo Luo",
+      "orig_title": "Image captioning with semantic attention",
+      "paper_id": "1603.03925v1"
+    },
+    {
+      "index": 47,
+      "title": "Learning to Compare Image Patches via Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Sergey Zagoruyko and Nikos Komodakis",
+      "orig_title": "Learning to compare image patches via convolutional neural networks",
+      "paper_id": "1504.03641v1"
+    }
+  ]
+}

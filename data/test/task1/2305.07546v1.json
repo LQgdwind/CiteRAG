@@ -1,0 +1,515 @@
+{
+  "paper_id": "2305.07546v1",
+  "title": "Understanding Automatic Differentiation Pitfalls",
+  "abstract": "Abstract\nAutomatic differentiation, also known as backpropagation, AD, autodiff, or algorithmic differentiation, is a popular technique for computing derivatives of computer programs accurately and efficiently.\nSometimes, however, the derivatives computed by AD could be interpreted as incorrect. These pitfalls occur systematically across tools and approaches. In this paper we broadly categorize problematic usages of AD and illustrate each category with examples such as chaos, time-averaged oscillations, discretizations, fixed-point loops, lookup tables, and linear solvers. We also review debugging techniques and their effectiveness in these situations.\n\nWith this article we hope to help readers avoid unexpected behavior, detect problems more easily when they occur, and have more realistic expectations from AD tools.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Society for Industrial and Applied Mathematics",
+      "authors": "Griewank A, Walther A."
+    },
+    {
+      "index": 1,
+      "title": "High-Performance Derivative Computations using CoDiPack",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Trans Math Softw",
+      "authors": "Sagebaum M, Albring T, Gauger NR.",
+      "orig_title": "High-Performance Derivative Computations Using CoDiPack",
+      "paper_id": "1709.07229v1"
+    },
+    {
+      "index": 2,
+      "title": "Automatic Differentiation in Machine Learning: a Survey",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J Mach Learn Res",
+      "authors": "Baydin AG, Pearlmutter BA, Radul AA, Siskind JM.",
+      "orig_title": "Automatic Differentiation in Machine Learning: A Survey",
+      "paper_id": "1502.05767v4"
+    },
+    {
+      "index": 3,
+      "title": "The art of differentiating computer programs: an introduction to algorithmic differentiation, vol. 24",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIAM",
+      "authors": "Naumann U."
+    },
+    {
+      "index": 4,
+      "title": "Recipes for Adjoint Code Construction",
+      "abstract": "",
+      "year": "1998",
+      "venue": "ACM Trans Math Softw",
+      "authors": "Giering R, Kaminski T."
+    },
+    {
+      "index": 5,
+      "title": "Automatic differentiation of algorithms",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Journal of Computational and Applied Mathematics",
+      "authors": "Bartholomew-Biggs M, Brown S, Christianson B, Dixon L."
+    },
+    {
+      "index": 6,
+      "title": "A mathematical view of automatic differentiation",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Acta Numerica",
+      "authors": "Griewank A."
+    },
+    {
+      "index": 7,
+      "title": "A Hitchhiker’s Guide to Automatic Differentiation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Numerical Algorithms",
+      "authors": "Hoffmann PHW.",
+      "orig_title": "A Hitchhiker’s Guide to Automatic Differentiation",
+      "paper_id": "1411.0583v5"
+    },
+    {
+      "index": 8,
+      "title": "A Review of Automatic Differentiation and its Efficient Implementation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery",
+      "authors": "Margossian CC.",
+      "orig_title": "A review of automatic differentiation and its efficient implementation",
+      "paper_id": "1811.05031v2"
+    },
+    {
+      "index": 9,
+      "title": "An introduction to algorithmic differentiation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "WIREs Data Mining and Knowledge Discovery",
+      "authors": "Gebremedhin AH, Walther A."
+    },
+    {
+      "index": 10,
+      "title": "You Only Linearize Once: Tangents Transpose to Gradients",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Proc ACM Program Lang",
+      "authors": "Radul A, Paszke A, Frostig R, Johnson MJ, Maclaurin D."
+    },
+    {
+      "index": 11,
+      "title": "Automated Derivation of the Adjoint of High-Level Transient Finite Element Programs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "SIAM Journal on Scientific Computing",
+      "authors": "Farrell PE, Ham DA, Funke SW, Rognes ME."
+    },
+    {
+      "index": 12,
+      "title": "Instead of Rewriting Foreign Code for Machine Learning, Automatically Synthesize Fast Gradients",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Moses W, Churavy V.",
+      "orig_title": "Instead of rewriting foreign code for machine learning, automatically synthesize fast gradients",
+      "paper_id": "2010.01709v1"
+    },
+    {
+      "index": 13,
+      "title": "Programming language features, usage patterns, and the efficiency of generated adjoint code",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Optimization Methods and Software",
+      "authors": "Hascoët L, Utke J."
+    },
+    {
+      "index": 14,
+      "title": "High resolution schemes using flux limiters for hyperbolic conservation laws",
+      "abstract": "",
+      "year": "1984",
+      "venue": "SIAM Journal on Numerical Analysis",
+      "authors": "Sweby PK."
+    },
+    {
+      "index": 15,
+      "title": "Runge–Kutta methods in optimal control and the transformed adjoint system",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Numerische Mathematik",
+      "authors": "Hager WW."
+    },
+    {
+      "index": 16,
+      "title": "Towards adjoint-based methods for aeroacoustic control",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Collis S, Ghayour K, Heinkenschloss M, Ulbrich M, Ulbrich S."
+    },
+    {
+      "index": 17,
+      "title": "A comparison of the continuous and discrete adjoint approach to automatic aerodynamic optimization",
+      "abstract": "",
+      "year": "2000",
+      "venue": "38th Aerospace sciences meeting and exhibit",
+      "authors": "Nadarajah S, Jameson A."
+    },
+    {
+      "index": 18,
+      "title": "Difficulties in sensitivity calculations for flows with discontinuities",
+      "abstract": "",
+      "year": "1997",
+      "venue": "AIAA Journal",
+      "authors": "Appel JR, Gunzburger MD."
+    },
+    {
+      "index": 19,
+      "title": "A Comprehensive Study of Adjoint-Based Optimization of Non-Linear Systems with Application to Burgers’ Equation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "46th AIAA Fluid Dynamics Conference American Institute of Aeronautics and Astronautics",
+      "authors": "Fikl A, Chenadec VL, Sayadi T, Schmid P."
+    },
+    {
+      "index": 20,
+      "title": "Convergence of Linearized and Adjoint Approximations for Discontinuous Solutions of Conservation Laws. Part 1: Linearized Approximations and Linearized Output Functionals",
+      "abstract": "",
+      "year": "2010",
+      "venue": "SIAM Journal on Numerical Analysis",
+      "authors": "Giles M, Ulbrich S."
+    },
+    {
+      "index": 21,
+      "title": "Derivatives and control in the presence of shocks",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Computational Fluid Dynamics Journal",
+      "authors": "Bardos C, Pironneau O."
+    },
+    {
+      "index": 22,
+      "title": "Do you trust derivatives or differences?",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Journal of Computational Physics",
+      "authors": "Moré JJ, Wild SM."
+    },
+    {
+      "index": 23,
+      "title": "Robust descent in differentiable optimization using automatic finite differences",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Optimization Methods and Software",
+      "authors": "Dussault JP, Hamelin B."
+    },
+    {
+      "index": 24,
+      "title": "Forward and adjoint sensitivity computation of chaotic dynamical systems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Journal of Computational Physics",
+      "authors": "Wang Q."
+    },
+    {
+      "index": 25,
+      "title": "Least squares shadowing sensitivity analysis of chaotic limit cycle oscillations",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Journal of Computational Physics",
+      "authors": "Wang Q, Hu R, Blonigan P."
+    },
+    {
+      "index": 26,
+      "title": "Adjoint sensitivity analysis of chaotic dynamical systems with non-intrusive least squares shadowing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Computational Physics",
+      "authors": "Blonigan PJ."
+    },
+    {
+      "index": 27,
+      "title": "Sensitivity analysis of limit cycle oscillations",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Journal of Computational Physics",
+      "authors": "Krakos JA, Wang Q, Hall SR, Darmofal DL."
+    },
+    {
+      "index": 28,
+      "title": "On the difficulty of training Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "arXiv",
+      "authors": "Pascanu R, Mikolov T, Bengio Y"
+    },
+    {
+      "index": 29,
+      "title": "The Vanishing Gradient Problem During Learning Recurrent Neural Nets and Problem Solutions",
+      "abstract": "",
+      "year": "1998",
+      "venue": "International Journal of Uncertainty, Fuzziness and Knowledge-Based Systems",
+      "authors": "Hochreiter S."
+    },
+    {
+      "index": 30,
+      "title": "A mathematical model for automatic differentiation in machine learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Bolte J, Pauwels E",
+      "orig_title": "A mathematical model for automatic differentiation in machine learning",
+      "paper_id": "2006.02080v2"
+    },
+    {
+      "index": 31,
+      "title": "Collected matrix derivative results for forward and reverse mode algorithmic differentiation",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Advances in Automatic Differentiation Springer",
+      "authors": "Giles MB."
+    },
+    {
+      "index": 32,
+      "title": "Automatic differentiation of codes in nuclear engineering applications",
+      "abstract": "",
+      "year": "2009",
+      "venue": "United States",
+      "authors": "Alexe M, Roderick O, Utke J, Anitescu M, Hovland P, Fanning T."
+    },
+    {
+      "index": 33,
+      "title": "Reciprocation, square root, inverse square root, and some elementary functions using small multipliers",
+      "abstract": "",
+      "year": "2000",
+      "venue": "IEEE Transactions on Computers",
+      "authors": "Ercegovac MD, Lang T, Muller JM, Tisserand A."
+    },
+    {
+      "index": 34,
+      "title": "The CORDIC Trigonometric Computing Technique",
+      "abstract": "",
+      "year": "1959",
+      "venue": "IRE Transactions on Electronic Computers",
+      "authors": "Volder JE."
+    },
+    {
+      "index": 35,
+      "title": "An accurate elementary mathematical library for the IEEE floating point standard",
+      "abstract": "",
+      "year": "1991",
+      "venue": "ACM Transactions on Mathematical Software (TOMS)",
+      "authors": "Gal S."
+    },
+    {
+      "index": 36,
+      "title": "Search for weakly interacting massive particles with the first five-tower data from the cryogenic dark matter search at the Soudan underground laboratory",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Physical Review Letters",
+      "authors": "Ahmed Z, Akerib D, Arrenberg S, Attisha M, Bailey C, Baudis L, et al."
+    },
+    {
+      "index": 37,
+      "title": "Systematically differentiating parametric discontinuities",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Bangaru SP, Michel J, Mu K, Bernstein G, Li TM, Ragan-Kelley J."
+    },
+    {
+      "index": 38,
+      "title": "Derivative convergence for iterative equation solvers",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Optimization Methods and Software",
+      "authors": "Griewank A, Bischof C, Corliss G, Carle A, Williamson K."
+    },
+    {
+      "index": 39,
+      "title": "Consistent treatment of incompletely converged iterative linear solvers in reverse-mode algorithmic differentiation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Computational Optimization and Applications",
+      "authors": "Akbarzadeh S, Hückelheim J, Müller JD."
+    },
+    {
+      "index": 40,
+      "title": "Automatic differentiation and iterative processes",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Optimization Methods and Software",
+      "authors": "Gilbert JC."
+    },
+    {
+      "index": 41,
+      "title": "Automatic differentiation of iterative processes",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Journal of Computational and Applied Mathematics",
+      "authors": "Beck T."
+    },
+    {
+      "index": 42,
+      "title": "Reverse accumulation and attractive fixed points",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Optimization Methods and Software",
+      "authors": "Christianson B."
+    },
+    {
+      "index": 43,
+      "title": "Reverse aumulation and implicit functions",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Optimization Methods and Software",
+      "authors": "Christianson B."
+    },
+    {
+      "index": 44,
+      "title": "Implementation and measurements of an efficient Fixed Point Adjoint",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Taftaf A, Hascoët L, Pascual V."
+    },
+    {
+      "index": 45,
+      "title": "Reverse-mode automatic differentiation and optimization of GPU kernels via Enzyme",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference for High Performance Computing, Networking, Storage and Analysis",
+      "authors": "Moses WS, Churavy V, Paehler L, Hückelheim J, Narayanan SHK, Schanen M, et al."
+    },
+    {
+      "index": 46,
+      "title": "Scalable Automatic Differentiation of Multiple Parallel Paradigms through Compiler Augmentation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on High Performance Computing, Networking, Storage and Analysis SC ’22, IEEE Press",
+      "authors": "Moses WS, Narayanan SHK, Paehler L, Churavy V, Schanen M, Hückelheim J, et al."
+    },
+    {
+      "index": 47,
+      "title": "LLVM: A compilation framework for lifelong program analysis & transformation",
+      "abstract": "",
+      "year": "2004",
+      "venue": "International Symposium on Code Generation and Optimization, 2004. CGO 2004. IEEE",
+      "authors": "Lattner C, Adve V."
+    },
+    {
+      "index": 48,
+      "title": "The if-problem in automatic differentiation",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Journal of Computational and Applied Mathematics",
+      "authors": "Beck T, Fischer H."
+    },
+    {
+      "index": 49,
+      "title": "An updated set of basic linear algebra subprograms (BLAS)",
+      "abstract": "",
+      "year": "2002",
+      "venue": "ACM Transactions on Mathematical Software",
+      "authors": "Blackford LS, Petitet A, Pozo R, Remington K, Whaley RC, Demmel J, et al."
+    },
+    {
+      "index": 50,
+      "title": "Templates for the solution of linear systems: building blocks for iterative methods",
+      "abstract": "",
+      "year": "1994",
+      "venue": "SIAM",
+      "authors": "Barrett R, Berry M, Chan TF, Demmel J, Donato J, Dongarra J, et al."
+    },
+    {
+      "index": 51,
+      "title": "Discrete adjoints on many cores Algorithmic differentiation of accelerated fluid simulations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Queen Mary University of London",
+      "authors": "Hückelheim JC."
+    },
+    {
+      "index": 52,
+      "title": "Checking the Calculation of Gradients",
+      "abstract": "",
+      "year": "1982",
+      "venue": "ACM Trans Math Softw",
+      "authors": "Wolfe P."
+    },
+    {
+      "index": 53,
+      "title": "Automatic differentiation in PyTorch",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Paszke A, Gross S, Chintala S, Chanan G, Yang E, DeVito Z, et al."
+    },
+    {
+      "index": 54,
+      "title": "Special Problems in Automatic Differentiation",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Automatic Differentiation of Algorithms: Theory, Implementation, and Application Philadelphia, PA: SIAM",
+      "authors": "Fischer H."
+    },
+    {
+      "index": 55,
+      "title": "Correctness of Automatic Differentiation via Diffeologies and Categorical Gluing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Foundations of Software Science and Computation Structures",
+      "authors": "Huot M, Staton S, Vákár M.",
+      "orig_title": "Correctness of Automatic Differentiation via Diffeologies and Categorical Gluing",
+      "paper_id": "2001.02209v3"
+    },
+    {
+      "index": 56,
+      "title": "Provably Correct, Asymptotically Efficient, Higher-Order Reverse-Mode Automatic Differentiation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Proc ACM Program Lang",
+      "authors": "Krawiec F, Peyton Jones S, Krishnaswami N, Ellis T, Eisenberg RA, Fitzgibbon A."
+    },
+    {
+      "index": 57,
+      "title": "Demystifying Differentiable Programming: Shift/Reset the Penultimate Backpropagator",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proc ACM Program Lang",
+      "authors": "Wang F, Zheng D, Decker J, Wu X, Essertel GM, Rompf T.",
+      "orig_title": "Demystifying Differentiable Programming: Shift/Reset the Penultimate Backpropagator",
+      "paper_id": "1803.10228v3"
+    },
+    {
+      "index": 58,
+      "title": "On Correctness of Automatic Differentiation for Non-Differentiable Functions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Lee W, Yu H, Rival X, Yang H.",
+      "orig_title": "On Correctness of Automatic Differentiation for Non-Differentiable Functions",
+      "paper_id": "2006.06903v2"
+    },
+    {
+      "index": 59,
+      "title": "On the Correctness of Automatic Differentiation for Neural Networks with Machine-Representable Parameters",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Lee W, Park S, Aiken A"
+    },
+    {
+      "index": 60,
+      "title": "ADEV: Sound Automatic Differentiation of Expected Values of Probabilistic Programs",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Proc ACM Program Lang",
+      "authors": "Lew AK, Huot M, Staton S, Mansinghka VK.",
+      "orig_title": "ADEV: Sound Automatic Differentiation of Expected Values of Probabilistic Programs",
+      "paper_id": "2212.06386v1"
+    }
+  ]
+}

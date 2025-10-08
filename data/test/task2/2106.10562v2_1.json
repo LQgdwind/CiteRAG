@@ -1,0 +1,421 @@
+{
+  "paper_id": "2106.10562v2",
+  "title": "Score-Based Explanations in Data Management and Machine Learning: An Answer-Set Programming Approach to Counterfactual Analysis",
+  "sections": {
+    "introduction": "In data management and machine learning one wants explanations for certain results. For example, for query results from databases, and for outcomes of classification models in machine learning (ML). Explanations, that may come in different forms, have been the subject of philosophical enquires for a long time, but, closer to our discipline, they appear under different forms in model-based diagnosis and in causality as developed in artificial intelligence. In the last few years, explanations that are based on numerical scores assigned to elements of a model that may contribute to an outcome have become popular. These scores attempt to capture the degree of contribution of those components to an outcome, e.g. answering questions like these: What is the contribution of this tuple to the answer to this query?  What is the contribution of this feature value of an entity to the displayed classification of the latter? For an example, consider a financial institution that uses a\nlearned classifier, 𝒞𝒞\\mathcal{C}, e.g. a decision tree, to determine if clients\nshould be granted loans or not, returning labels 00 or 111, resp. A\nparticular client, represented as an entity 𝐞𝐞\\mathbf{e}, applies for a loan, and the classifier\nreturns 𝒞​(𝐞)=1𝒞𝐞1\\mathcal{C}(\\mathbf{e})=1, i.e. the loan is rejected. The client requests\nan explanation. A common approach consists in giving scores to the feature values in 𝐞𝐞\\mathbf{e},\nto quantify their relevance in relation to the classification\noutcome. The higher the score of a feature value, the more explanatory is that value. For example, the fact that the client has value “5”\nfor feature Age (in years) could have the highest score. That is, the rejection of the loan application is due mostly to the client’s very young age. In the context of explainable AI , different scores have been proposed in the literature, and some that have a relatively older history have been applied. Among the latter we find the general responsibility score as found in actual causality [ref]26 . For a particular kind of application, one has to define the right causality setting, and then apply the responsibility measure to the participating variables (see  for a newer treatment of the subject). In particular, in data management, responsibility has been used to\nquantify the strength of a tuple as a cause for a query result  [ref]5. The Shapley value, as found in coalition game theory , has been used for the same purpose . Defining the right game function, the Shapley value assigned to a player reflects its contribution to the wealth function, which in databases corresponds to the query result. In the context of explanations to outcomes from classification models in ML, the Shapley value has been used to assign scores to the feature values taken by an entity that has been classified. With a particular game function, it has taken the form of the Shap score, which has become quite popular and influential  . Also recently, a responsibility score, Resp, has been introduced and investigated for the same purpose in [ref]9. It is\nbased on the notions of counterfactual intervention as appearing in actual causality, and causal responsibility. More specifically,\n(potential) executions of counterfactual interventions on a structural logico-probabilistic model  [ref]26 are investigated, with the purpose of answering hypothetical questions of the form:  What would happen if we change …?. Counterfactual interventions can be used to define different forms of score-based explanations. This is the case of causal responsibility in databases (c.f. Section 12).\nIn explainable AI, and more commonly with classification models of ML, counterfactual interventions become hypothetical changes on the entity whose classification is being explained, to detect possible changes in the outcome (c.f. [11, Sec. 8] for a more detailed discussion and references). Score-based explanations can also be defined in the absence of a model, and with or without explicit counterfactual interventions. Actually,\nexplanation scores such as Shap and Resp can be applied with black-box models, in that they\nuse, in principle, only the input/output relation that represents the\nclassifier, without having access to the internal components of the\nmodel. In this category we could find classifiers based on complex\nneural networks, or XGBoost . They are opaque enough to\nbe treated as black-box models. The Shap and Resp scores can also be applied with open-box models, with explicit models. Without having access to the elements of the classification model, the computation of both Shap and Resp is in general intractable, by their sheer definitions, and the possibly large number of counterfactual combinations that have to be considered in the computation. However, for certain classes of classifiers, e.g. decision trees, having access to the mathematical model may make the computation of Shap tractable, as shown in  , where it is also shown that for other classes of explicit models, its computation is still intractable. Something similar applies to Resp [ref]9. Other explanation scores used in machine learning\nappeal to the components of the mathematical model behind the\nclassifier. There can be all kinds of explicit models, and some are\neasier to understand or interpret or use for this purpose. For\nexample, the FICO score proposed in , for the FICO dataset\nabout loan requests, depends on the internal outputs and displayed\ncoefficients of two nested logistic regression models. Decision trees\n8, random forests , rule-based\nclassifiers, etc., could be seen as relatively easy to understand and use for providing\nexplanations.\n In\n[ref]9, the Shap and Resp scores were experimentally compared with each other, and also with the FICO score. One can specify in declarative terms the counterfactual versions of tuples in databases and of feature values in entities under classification. On this basis one can analyze diverse alternative counterfactuals, reason about them, and also specify the associated explanation scores. In these notes we do this for responsibility scores in databases and classifications models. More specifically, we use answer-set programming, a modern logic-programming paradigm that has become useful in many applications  . We show examples run with the DLV system and its extensions . An important advantage of using declarative specifications resides in the possibility of adding different forms of domain knowledge and semantic constraints. Doing this with purely procedural approaches would require changing the code accordingly. The answer-set programs (ASPs) we use are influenced by, and sometimes derived from, repair programs. These are ASPs that specify and compute the possible repairs of a database that is inconsistent with respect to a given set of integrity constraints . A useful connection between database repairs and actual causality in databases was established in [ref]5. Hence, the use of repairs and repair programs. In this article we survey some of the recent advances on the use and computation of the above mentioned score-based explanations, both for query answering in databases and for classification in ML. This is not intended to be an exhaustive survey of the area. Instead, it is heavily influenced by our latest research. Special emphasis is placed on the use of ASPs (for many more details on this see ). Taking advantage of the introduced repair programs, we also show how to specify and compute a numerical measure of inconsistency of database . In this case, this would be a global score, in contrast with the local scores applied to individual tuples in a database or feature values in an entity.  To introduce the concepts and techniques we will use mostly examples, trying to convey the main intuitions and issues. This paper is structured as follows. In Section 2 we provide some background material on databases and answer-set programs. In Section 3 we concentrate on causal explanations in databases, the responsibility score, and also the causal-effect score 4, as an alternative to the latter. In Section 4, we present the causality-repair connection and repair programs for causality and responsibility computation. In Section 5, we consider causality in databases at the attribute level, as opposed to the tuple level. In Section 6, we introduce causality and responsibility in databases that are subject to integrity constraints. In Section 7 we present the global inconsistency measure for a database and the ASPs to compute it. In Section 8, we describe the use of the Shapley value to provide explanation scores in databases.\nIn Section 8, we describe in general terms score-based explanations for classification results. In Section 10 we introduce and study the x-Resp score, a simpler version of the more general Resp score that we introduce in Section 12. In Section 11 we introduce counterfactual intervention programs (CIP), which are ASPs that specify counterfactuals and the x-Resp score. In Section 13, and for completeness, we briefly present the Shap score. We end in Section 14 with some final conclusions."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Computational Complexity",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Cambridge University Press",
+      "authors": "Arora, S. and Barak, B."
+    },
+    {
+      "index": 1,
+      "title": "Consistent Query Answers in Inconsistent Databases",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ACM PODS",
+      "authors": "Arenas, M., Bertossi, L. and Chomicki, J."
+    },
+    {
+      "index": 2,
+      "title": "The Tractability of SHAP-Scores over Deterministic and Decomposable Boolean Circuits",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI",
+      "authors": "Arenas, M., Pablo Barceló, P., Bertossi, L. and Monet, M."
+    },
+    {
+      "index": 3,
+      "title": "Database Repairing and Consistent Query Answering",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Synthesis Lectures in Data Management. Morgan & Claypool",
+      "authors": "Bertossi. L."
+    },
+    {
+      "index": 4,
+      "title": "From Causes for Database Queries to Repairs and Model-Based Diagnosis and Back",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Theory of Computing Systems",
+      "authors": "Bertossi, L. and Salimi, B.",
+      "orig_title": "From Causes for Database Queries to Repairs and Model-Based Diagnosis and Back",
+      "paper_id": "1507.00257v3"
+    },
+    {
+      "index": 5,
+      "title": "Causes for Query Answers from Databases: Datalog Abduction, View-Updates, and Integrity Constraints",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Int. J. Approximate Reasoning",
+      "authors": "Bertossi, L. and Salimi, B.",
+      "orig_title": "Causes for Query Answers from Databases: Datalog Abduction, View-Updates, and Integrity Constraints",
+      "paper_id": "1611.01711v3"
+    },
+    {
+      "index": 6,
+      "title": "Repair-Based Degrees of Database Inconsistency",
+      "abstract": "",
+      "year": "2019",
+      "venue": "LPNMR",
+      "authors": "Bertossi, L."
+    },
+    {
+      "index": 7,
+      "title": "Specifying and Computing Causes for Query Answers in Databases via Database Repairs and Repair-Programs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Knowledge and Information Systems",
+      "authors": "Bertossi, L.",
+      "orig_title": "Specifying and Computing Causes for Query Answers in Databases via Database Repairs and Repair Programs",
+      "paper_id": "1712.01001v7"
+    },
+    {
+      "index": 8,
+      "title": "Causality-based Explanation of Classification Outcomes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Fourth Workshop on Data Management for End-To-End Machine Learning, DEEM@SIGMOD",
+      "authors": "Bertossi, L., Li, J., Schleich, M., Suciu, D. and Vagena, Z.",
+      "orig_title": "Causality-Based Explanation of Classification Outcomes",
+      "paper_id": "2003.06868v2"
+    },
+    {
+      "index": 9,
+      "title": "An ASP-Based Approach to Counterfactual Explanations for Classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "RuleML-RR",
+      "authors": "Bertossi, L.",
+      "orig_title": "An ASP-Based Approach to Counterfactual Explanations for Classification",
+      "paper_id": "2004.13237v2"
+    },
+    {
+      "index": 10,
+      "title": "Declarative Approaches to Counterfactual Explanations for Classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv Paper 2011.07423",
+      "authors": "Bertossi, L."
+    },
+    {
+      "index": 11,
+      "title": "Classification and Regression Trees",
+      "abstract": "",
+      "year": "1984",
+      "venue": "CRC press",
+      "authors": "Breiman, L., Friedman, J., Stone, C. J. and Olshen, R. A."
+    },
+    {
+      "index": 12,
+      "title": "Answer Set Programming at a Glance",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Commun. ACM",
+      "authors": "Brewka, G., Eiter, T. and Truszczynski, M."
+    },
+    {
+      "index": 13,
+      "title": "Why and Where: A Characterization of Data Provenance",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ICDT",
+      "authors": "Buneman, P., Khanna, S. and Tan, W. C."
+    },
+    {
+      "index": 14,
+      "title": "Computable Functions in ASP: Theory and Implementation",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ICLP",
+      "authors": "Calimeri, F., Cozza, S., Ianni, G. and Leone, N."
+    },
+    {
+      "index": 15,
+      "title": "An ASP System with Functions, Lists,and Sets",
+      "abstract": "",
+      "year": "2009",
+      "venue": "LPNMR",
+      "authors": "Calimeri, F., Cozza, S., Ianni, G. and Leone, N."
+    },
+    {
+      "index": 16,
+      "title": "The Consistency Extractor System: Answer Set Programs for Consistent Query Answering in Databases",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Data & Knowledge Engineering",
+      "authors": "Caniupan, M. and Bertossi, L."
+    },
+    {
+      "index": 17,
+      "title": "An Interpretable Model with Globally Consistent Explanations for Credit Risk",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Chen, C., Lin, K., Rudin, C., Shaposhnik, Y., Wang, S. and Wang, T.",
+      "orig_title": "An Interpretable Model with Globally Consistent Explanations for Credit Risk",
+      "paper_id": "1811.12615v1"
+    },
+    {
+      "index": 18,
+      "title": "Responsibility and Blame: A Structural-Model Approach",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. Artif. Intell. Res.",
+      "authors": "Chockler, H. and Halpern, J."
+    },
+    {
+      "index": 19,
+      "title": "Complexity and Expressive Power of Logic Programming",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ACM Computing Surveys",
+      "authors": "Dantsin, E., Eiter, T., Gottlob, G. and Voronkov, A."
+    },
+    {
+      "index": 20,
+      "title": "On the Complexity of Cooperative Solution Concepts",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Math. Oper. Res.",
+      "authors": "Deng, X. and Papadimitriou, C."
+    },
+    {
+      "index": 21,
+      "title": "The Shapley Value for Cooperative Games under Precedence Constraints",
+      "abstract": "",
+      "year": "1992",
+      "venue": "International Journal of Game Theory",
+      "authors": "Faigle, U. and Kern, W."
+    },
+    {
+      "index": 22,
+      "title": "Classical Negation in Logic Programs and Disjunctive Databases",
+      "abstract": "",
+      "year": "1991",
+      "venue": "New Generation Computing",
+      "authors": "Gelfond, M. and Lifschitz, V."
+    },
+    {
+      "index": 23,
+      "title": "Knowledge Representation and Reasoning, and the Design of Intelligent Agents",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Cambridge Univ. Press",
+      "authors": "Gelfond, M. and Kahl, Y."
+    },
+    {
+      "index": 24,
+      "title": "Programming with Non-Determinism in Deductive Databases",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Annals of Mathematics in Artificial Intelligence",
+      "authors": "Giannotti, F., Greco, S., Sacca, D. and Zaniolo, C."
+    },
+    {
+      "index": 25,
+      "title": "Causes and Explanations: A Structural-Model Approach. Part I: Causes",
+      "abstract": "",
+      "year": "2005",
+      "venue": "The British journal for the philosophy of science",
+      "authors": "Halpern, J. and Pearl, J."
+    },
+    {
+      "index": 26,
+      "title": "A Modification of the Halpern-Pearl Definition of Causality",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IJCAI",
+      "authors": "Halpern, J. Y.",
+      "orig_title": "A Modification of the Halpern-Pearl Definition of Causality",
+      "paper_id": "1505.00162v1"
+    },
+    {
+      "index": 27,
+      "title": "On the Measure of Conflicts: Shapley Inconsistency Values",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Artif. Intell.",
+      "authors": "Hunter, A. and Konieczny, S."
+    },
+    {
+      "index": 28,
+      "title": "The DLV System for Knowledge Representation and Reasoning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ACM Transactions on Computational Logic",
+      "authors": "Leone, N., Pfeifer, G., Faber, W., Eiter, T., Gottlob, G., Perri, S. and Scarcello, F."
+    },
+    {
+      "index": 29,
+      "title": "The Shapley Value of Tuples in Query Answering",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICDT",
+      "authors": "Livshits, E., Bertossi, L., Kimelfeld, B. and Sebag, M.",
+      "orig_title": "The Shapley Value of Tuples in Query Answering",
+      "paper_id": "1904.08679v5"
+    },
+    {
+      "index": 30,
+      "title": "The Shapley Value of Inconsistency Measures for Functional Dependencies",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICDT",
+      "authors": "Livshits, E. and Kimelfeld, B.",
+      "orig_title": "The Shapley Value of Inconsistency Measures for Functional Dependencies",
+      "paper_id": "2009.13819v4"
+    },
+    {
+      "index": 31,
+      "title": "Complexity of Consistent Query Answering in Databases under Cardinality-Based and Incremental Repair Semantics",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ICDT",
+      "authors": "Lopatenko, A. and Bertossi, L."
+    },
+    {
+      "index": 32,
+      "title": "Explaining Predictions from Tree-based Boosting Ensembles",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Lucic, A., Haned, H. and de Rijke, M.",
+      "orig_title": "Explaining Predictions from Tree-Based Boosting Ensembles",
+      "paper_id": "1907.02582v1"
+    },
+    {
+      "index": 33,
+      "title": "From Local Explanations to Global Understanding with Explainable AI for Trees",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Nature Machine Intelligence",
+      "authors": "Lundberg, S., Erion, G., Chen, H., DeGrave, A., Prutkin, J., Nair, B., Katz, R., Himmelfarb, J., Bansal, N. and Lee, S.-I."
+    },
+    {
+      "index": 34,
+      "title": "A Unified Approach to Interpreting Model Predictions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Lundberg, S. and Lee, S.",
+      "orig_title": "A Unified Approach to Interpreting Model Predictions",
+      "paper_id": "1705.07874v2"
+    },
+    {
+      "index": 35,
+      "title": "The Complexity of Causality and Responsibility for Query Answers and Non-Answers",
+      "abstract": "",
+      "year": "2010",
+      "venue": "VLDB",
+      "authors": "Meliou, A., Gatterbauer, W., Moore, K. F. and Suciu, D."
+    },
+    {
+      "index": 36,
+      "title": "Causality in Databases",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Data Engineering Bulletin",
+      "authors": "Meliou, A., Gatterbauer, W., Halpern, J.Y., Koch, C., Moore, K. F. and Suciu, D."
+    },
+    {
+      "index": 37,
+      "title": "Machine Learning",
+      "abstract": "",
+      "year": "1997",
+      "venue": "McGraw-Hill",
+      "authors": "Mitchell, T. M."
+    },
+    {
+      "index": 38,
+      "title": "Interpretable Machine Learning: A Guide for Making Black Box Models Explainable",
+      "abstract": "",
+      "year": "2020",
+      "venue": "https://christophm.github.io/interpretable-ml-book",
+      "authors": "Molnar, C."
+    },
+    {
+      "index": 39,
+      "title": "Algorithmic Game Theory",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Cambridge University Press",
+      "authors": "Nisan, N., Roughgarden, T., Tardos, E. and Vazirani, V. V. (eds.)"
+    },
+    {
+      "index": 40,
+      "title": "The Impact of Negation on the Complexity of the Shapley Value in Conjunctive Queries",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PODS",
+      "authors": "Reshef, A., Kimelfeld, B. and Livshits, E.",
+      "orig_title": "The Impact of Negation on the Complexity of the Shapley Value in Conjunctive Queries",
+      "paper_id": "1912.12610v1"
+    },
+    {
+      "index": 41,
+      "title": "Stop Explaining Black Box Machine Learning Models for High Stakes Decisions and Use Interpretable Models Instead",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Nature Machine Intelligence",
+      "authors": "Rudin, C."
+    },
+    {
+      "index": 42,
+      "title": "The Shapley Value: Essays in Honor of Lloyd S. Shapley",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Cambridge University Press",
+      "authors": "Roth, A. E. (ed.)"
+    },
+    {
+      "index": 43,
+      "title": "Quantifying Causal Effects on Query Answering in Databases",
+      "abstract": "",
+      "year": "2016",
+      "venue": "8th USENIX Workshop on the Theory and Practice of Provenance (TaPP)",
+      "authors": "Salimi, B., Bertossi, L., Suciu, D. and Van den Broeck, G.",
+      "orig_title": "Quantifying Causal Effects on Query Answering in Databases",
+      "paper_id": "1603.02705v2"
+    },
+    {
+      "index": 44,
+      "title": "A Value for n-Person Games",
+      "abstract": "",
+      "year": "1953",
+      "venue": "Contributions to the Theory of Games",
+      "authors": "Shapley, L. S."
+    },
+    {
+      "index": 45,
+      "title": "Model-Based Problem Solving",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Handbook of Knowledge Representation, Elsevier",
+      "authors": "Struss, P."
+    },
+    {
+      "index": 46,
+      "title": "Probabilistic Databases",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Synthesis Lectures on Data Management, Morgan & Claypool",
+      "authors": "Suciu, D., Olteanu, D., Re, C. and Koch, C."
+    },
+    {
+      "index": 47,
+      "title": "On the Tractability of SHAP Explanations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI",
+      "authors": "Van den Broeck, G., Lykov, A., Schleich, M. and Suciu, D.",
+      "orig_title": "On the Tractability of SHAP Explanations",
+      "paper_id": "2009.08634v2"
+    }
+  ]
+}

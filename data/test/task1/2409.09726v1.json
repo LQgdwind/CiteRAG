@@ -1,0 +1,2535 @@
+{
+  "paper_id": "2409.09726v1",
+  "title": "High Definition Map Mapping and Update: A General Overview and Future Directions",
+  "abstract": "Abstract\nAlong with the rapid growth of autonomous vehicles (AVs), more and more demands are required for environment perception technology. Among others, HD mapping has become one of the more prominent roles in helping the vehicle realize essential tasks such as localization and path planning. While increasing research effort have been directed toward HD Map development. However, a comprehensive overview of the overall HD map mapping and update framework is still lacking. This article introduces the development and current state of the algorithm involved in creating HD map mapping and its maintenance. As part of this study, the primary data preprocessing approach of processing raw data to information ready to feed for mapping and update purposes, semantic segmentation, and localization are also briefly reviewed. Moreover, the map taxonomy, ontology, and quality assessment are extensively discussed, the map data’s general representation method is presented, and the mapping algorithm ranging from SLAM to transformers learning-based approaches are also discussed. The development of the HD map update algorithm, from change detection to the update methods, is also presented. Finally, the authors discuss possible future developments and the remaining challenges in HD map mapping and update technology. This paper simultaneously serves as a position paper and tutorial for those new to HD map mapping and update domains.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Taxonomy and Definitions for Terms Related to Driving Automation Systems for On-Road Motor Vehicles",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SAE International",
+      "authors": "SAE International"
+    },
+    {
+      "index": 1,
+      "title": "Towards fully autonomous driving: Systems and algorithms",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Intelligent Vehicles Symposium",
+      "authors": "Jesse Levinson, Jake Askeland, Jan Becker, Jennifer Dolson, David Held, Soeren Kammel, J. Zico Kolter, Dirk Langer, Oliver Pink, Vaughan Pratt, Michael Sokolsky, Ganymed Stanek, David Stavens, Alex Teichman, Moritz Werling, and Sebastian Thrun"
+    },
+    {
+      "index": 2,
+      "title": "Crowdsourced Road Semantics Mapping Based on Pixel-Wise Confidence Level",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Automotive Innovation",
+      "authors": "Benny Wijaya, Kun Jiang, Mengmeng Yang, Tuopu Wen, Xuewei Tang, and Diange Yang"
+    },
+    {
+      "index": 3,
+      "title": "HD Map Change Detection with Cross-Domain Deep Metric Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Iros",
+      "authors": "Minhyeok Heo, Jiwon Kim, and Sujung Kim"
+    },
+    {
+      "index": 4,
+      "title": "Crowd-sourced Semantic Edge Mapping for Autonomous Vehicles",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Intelligent Robots and Systems",
+      "authors": "Markus Herb, Tobias Weiherer, Nassir Navab, and Federico Tombari"
+    },
+    {
+      "index": 5,
+      "title": "HD Map Update for Autonomous Driving with Crowdsourced Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Robotics and Automation Letters",
+      "authors": "Kitae Kim, Soohyun Cho, and Woojin Chung"
+    },
+    {
+      "index": 6,
+      "title": "The “Here and Now” of HD Mapping for Connected Autonomous Driving",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Springer Nature Singapore",
+      "authors": "Liqiu Meng"
+    },
+    {
+      "index": 7,
+      "title": "LaneLoc: Lane marking based localization using highly accurate maps",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Intelligent Vehicles Symposium",
+      "authors": "Markus Schreiber, Carsten Knöppel, and Uwe Franke"
+    },
+    {
+      "index": 8,
+      "title": "High Precision Vehicle Localization based on Tightly-coupled Visual Odometry and Vector HD Map",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Intelligent Vehicles Symposium",
+      "authors": "Tuopu Wen, Zhongyang Xiao, Benny Wijaya, Kun Jiang, Mengmeng Yang, and Diange Yang"
+    },
+    {
+      "index": 9,
+      "title": "Unsettled Issues on HD Mapping Technology for Autonomous Driving and ADAS",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Felix Leach"
+    },
+    {
+      "index": 10,
+      "title": "High-precision lane-level road map building for vehicle navigation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE PLANS, Position Location and Navigation Symposium",
+      "authors": "Anning Chen, Arvind Ramanandan, and Jay A. Farrell"
+    },
+    {
+      "index": 11,
+      "title": "Generation of accurate lane-level maps from coarse prior maps and lidar",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Intelligent Transportation Systems Magazine",
+      "authors": "Avdhut Joshi and Michael R. James"
+    },
+    {
+      "index": 12,
+      "title": "High Definition Map for Automated Driving: Overview and Analysis",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Navigation",
+      "authors": "Rong Liu, Jinling Wang, and Bingqi Zhang"
+    },
+    {
+      "index": 13,
+      "title": "A review of high-definition map creation methods for autonomous driving",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Engineering Applications of Artificial Intelligence",
+      "authors": "Zhibin Bao, Sabir Hossain, Haoxiang Lang, and Xianke Lin"
+    },
+    {
+      "index": 14,
+      "title": "High-Definition Maps Construction Based on Visual Sensor : A Comprehensive Survey",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Intelligent Vehicles",
+      "authors": "Xuewei Tang, Kun Jiang, Mengmeng Yang, Zhaoyang Liu, Peijin Jia, Benny Wijaya, and Tuopu Wen"
+    },
+    {
+      "index": 15,
+      "title": "A lane-level road network model with global continuity",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Transportation Research Part C: Emerging Technologies",
+      "authors": "Tao Zhang, Stefano Arrigoni, Marco Garozzo, Dian ge Yang, and Federico Cheli"
+    },
+    {
+      "index": 16,
+      "title": "ASAM OpenDRIVE 1.7.0 Release",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 17,
+      "title": "NDS: The Benefits of a Common Map Data Standard for Autonomous Driving",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Philip Hubertus, Martin Schleicher, Fabian Klebert, Georg Horn, and Markus Junker"
+    },
+    {
+      "index": 18,
+      "title": "Extending the vision of automated vehicles with HD Maps and ADASIS",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "TomTom"
+    },
+    {
+      "index": 19,
+      "title": "Intelligent Transport Systems (ITS); Vehicular Communications; Basic Set of Applications; Local Dynamic Map (LDM); Rationale for and guidance on standardization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": "ETSI Technical Committee Intelligent Transport System (ITS)"
+    },
+    {
+      "index": 20,
+      "title": "A Flexible Multi-Layer Map Model Designed for Lane-Level Route Planning in Autonomous Vehicles",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Engineering",
+      "authors": "Kun Jiang, Diange Yang, Chaoran Liu, Tao Zhang, and Zhongyang Xiao"
+    },
+    {
+      "index": 21,
+      "title": "HD maps: Exploiting OpenDRIVE potential for Path Planning and Map Monitoring",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Intelligent Vehicles Symposium",
+      "authors": "Alejandro Diaz-Diaz, Manuel Ocana, Angel Llamazares, Carlos Gomez-Huelamo, Pedro Revenga, and Luis M. Bergasa"
+    },
+    {
+      "index": 22,
+      "title": "Operational Behavior of a High Definition Map Application White Paper",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "AECC"
+    },
+    {
+      "index": 23,
+      "title": "Map Container: A Map-based Framework for Cooperative Perception",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Kun Jiang, Yining Shi, Benny Wijaya, Mengmeng Yang, Tuopu Wen, Zhongyang Xiao, and Diange Yang",
+      "orig_title": "Map Container: A Map-based Framework for Cooperative Perception",
+      "paper_id": "2208.13226v1"
+    },
+    {
+      "index": 24,
+      "title": "A Knowledge Architecture Layer for Map Data in Autonomous Vehicles",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE 23rd International Conference on Intelligent Transportation Systems, ITSC 2020",
+      "authors": "Haonan Qiu, Adel Ayara, and Birte Glimm"
+    },
+    {
+      "index": 25,
+      "title": "Factors to evaluate capability of map for vehicle localization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Access",
+      "authors": "Ehsan Javanmardi, Mahdi Javanmardi, Yanlei Gu, and Shunsuke Kamijo"
+    },
+    {
+      "index": 26,
+      "title": "Data and information quality issues",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Allan Brimicombe"
+    },
+    {
+      "index": 27,
+      "title": "Quality Aspects of High-Definition Maps",
+      "abstract": "",
+      "year": "2021",
+      "venue": "The International Archives of the Photogrammetry, Remote Sensing and Spatial Information Sciences",
+      "authors": "J M Lógó, N Krausz, V Potó, and A Barsi"
+    },
+    {
+      "index": 28,
+      "title": "Minimum required accuracy for HD maps",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Journal of Navigation",
+      "authors": "Štěpán Křehlík, Marek Vanžura, and Adam Skokan"
+    },
+    {
+      "index": 29,
+      "title": "HDMapNet: An Online HD Map Construction and Evaluation Framework",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE International Conference on Robotics and Automation",
+      "authors": "Qi Li, Yue Wang, Yilun Wang, and Hang Zhao",
+      "orig_title": "HDMapNet: An Online HD Map Construction and Evaluation Framework",
+      "paper_id": "2107.06307v4"
+    },
+    {
+      "index": 30,
+      "title": "Online Map Vectorization for Autonomous Driving: A Rasterization Perspective",
+      "abstract": "",
+      "year": "2023",
+      "venue": "NeurIPS",
+      "authors": "Gongjie Zhang, Jiahao Lin, Shuang Wu, Yilin Song, Zhipeng Luo, Yang Xue, Shijian Lu, and Zuoguan Wang",
+      "orig_title": "Online Map Vectorization for Autonomous Driving: A Rasterization Perspective",
+      "paper_id": "2306.10502v2"
+    },
+    {
+      "index": 31,
+      "title": "One Thousand and One Hours: Self-driving Motion Prediction Dataset",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Machine Learning Research, CoRL",
+      "authors": "Long Chen, John Houston, Guido Zuidhof, Luca Bergamini, Yawei Ye, Long Chen, Ashesh Jain, Sammy Omari, Vladimir Iglovikov, and Peter Ondruska",
+      "orig_title": "One Thousand and One Hours: Self-driving Motion Prediction Dataset",
+      "paper_id": "2006.14480v2"
+    },
+    {
+      "index": 32,
+      "title": "Deriving HD maps for highly automated driving from vehicular probe data",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Intelligent Transportation Systems",
+      "authors": "K. Massow, B. Kwella, N. Pfeifer, F. Häusler, J. Pontow, I. Radusch, J. Hipp, F. Dölitzscher, and M. Haueis"
+    },
+    {
+      "index": 33,
+      "title": "Crowd-sourced mapping of new feature layer for high-definition map",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Sensors (Switzerland)",
+      "authors": "Chansoo Kim, Sungjin Cho, Myoungho Sunwoo, and Kichun Jo"
+    },
+    {
+      "index": 34,
+      "title": "LineNet: a Zoomable CNN for Crowdsourced High Definition Maps Modeling in Urban Environments",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Dun Liang, Yuanchen Guo, Shaokui Zhang, Song-Hai Zhang, Peter Hall, Min Zhang, and Shimin Hu",
+      "orig_title": "LineNet: a Zoomable CNN for Crowdsourced High Definition Maps Modeling in Urban Environments",
+      "paper_id": "1807.05696v1"
+    },
+    {
+      "index": 35,
+      "title": "Crowdsourced HD map patches based on road model inference and graph-based slam",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Intelligent Vehicles Symposium",
+      "authors": "Martin Liebner, Dominik Jain, Julian Schauseil, David Pannen, and Andreas Hackeloer"
+    },
+    {
+      "index": 36,
+      "title": "HD map change detection with a boosted particle filter",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Robotics and Automation",
+      "authors": "David Pannen, Martin Liebner, and Wolfram Burgard"
+    },
+    {
+      "index": 37,
+      "title": "An incremental fusing method for high-definition map updating",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Systems, Man and Cybernetics",
+      "authors": "Yinqi Liu, Mengxuan Song, and Yafeng Guo"
+    },
+    {
+      "index": 38,
+      "title": "How to Keep HD Maps for Automated Driving Up To Date",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE International Conference on Robotics and Automation",
+      "authors": "David Pannen, Martin Liebner, Wolfgang Hempel, and Wolfram Burgard"
+    },
+    {
+      "index": 39,
+      "title": "Trajectories know where map is wrong: an iterative framework for map-trajectory co-optimisation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "World Wide Web",
+      "authors": "Pingfu Chao, Wen Hua, and Xiaofang Zhou"
+    },
+    {
+      "index": 40,
+      "title": "Lane marking verification for high definition map maintenance using crowdsourced images",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE International Conference on Intelligent Robots and Systems",
+      "authors": "Binbin Li, Dezhen Song, Aaron Kingery, Dongfang Zheng, Yiliang Xu, and Huiwen Guo"
+    },
+    {
+      "index": 41,
+      "title": "Crowd-Sensing Assisted Vehicular Distributed Computing for HD Map Update",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE International Conference on Communications",
+      "authors": "Yanli Qi, Yiqing Zhou, Zhengang Pan, Ling Liu, and Jinglin Shi"
+    },
+    {
+      "index": 42,
+      "title": "Updating Point Cloud Layer of High Definition (HD) Map Based on Crowd-Sourcing of Multiple Vehicles Installed LiDAR",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Access",
+      "authors": "Chansoo Kim, Sungjin Cho, Myoungho Sunwoo, Paulo Resende, Benazouz Bradai, and Kichun Jo"
+    },
+    {
+      "index": 43,
+      "title": "Automatic Map Update Using Dashcam Videos",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Internet of Things Journal",
+      "authors": "Aziza Zhanabatyrova, Clayton Frederick Souza Leite, and Yu Xiao",
+      "orig_title": "Automatic Map Update Using Dashcam Videos",
+      "paper_id": "2109.12131v2"
+    },
+    {
+      "index": 44,
+      "title": "CoMap: Proactive Provision for Crowdsourcing Map in Automotive Edge Computing",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE International Conference on Communications (ICC",
+      "authors": "Yongjie Xue, Yuru Zhang, Qiang Liu, Dawei Chen, and Kyungtae Han",
+      "orig_title": "CoMap: Proactive Provision for Crowdsourcing Map in Automotive Edge Computing",
+      "paper_id": "2302.03204v1"
+    },
+    {
+      "index": 45,
+      "title": "A dynamic-trust-based recruitment framework for mobile crowd sensing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Communications",
+      "authors": "Yali Gao, Xiaoyong Li, Jirui Li, and Yunquan Gao"
+    },
+    {
+      "index": 46,
+      "title": "DTRF: A dynamic-trust-based recruitment framework for Mobile Crowd Sensing system",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IM 2017 - IFIP/IEEE International Symposium on Integrated Network and Service Management",
+      "authors": "Yali Gao, Xiaoyong Li, Jirui Li, and Yunquan Gao"
+    },
+    {
+      "index": 47,
+      "title": "A learning-based credible participant recruitment strategy for mobile crowd sensing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Internet of Things Journal",
+      "authors": "Hui Gao, Yu Xiao, Han Yan, Ye Tian, Danshi Wang, and Wendong Wang"
+    },
+    {
+      "index": 48,
+      "title": "Online worker selection towards high quality map collection for autonomous driving",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Global Communications Conference, GLOBECOM",
+      "authors": "Xiaofeng Cao, Yan Li, Jiarong Han, Peng Yang, Feng Lyu, Deke Guo, and Xuemin Shen"
+    },
+    {
+      "index": 49,
+      "title": "Automatic Lane-Level Intersection Map Generation using Low-Channel Roadside LiDAR",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CAA Journal of Automatica Sinica",
+      "authors": "Hui Liu, Ciyun Lin, Bowen Gong, and Dayong Wu"
+    },
+    {
+      "index": 50,
+      "title": "BiSeNet V2: Bilateral Network with Guided Aggregation for Real-time Semantic Segmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Journal of Computer Vision, 129(11):3051–3068",
+      "authors": "Changqian Yu, Changxin Gao, Jingbo Wang, Gang Yu, Chunhua Shen, and Nong Sang.",
+      "orig_title": "BiSeNet V2: Bilateral Network with Guided Aggregation for Real-Time Semantic Segmentation",
+      "paper_id": "2004.02147v1"
+    },
+    {
+      "index": 51,
+      "title": "ImageNet Classification with Deep Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advances in Neural Information Processing Systems 25 (NIPS",
+      "authors": "Alex Krizhevsky, Ilya Sutskever, and Geoffrey E. Hinton."
+    },
+    {
+      "index": 52,
+      "title": "Are we ready for autonomous driving? the KITTI vision benchmark suite",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Andreas Geiger, Philip Lenz, and Raquel Urtasun."
+    },
+    {
+      "index": 53,
+      "title": "The Cityscapes Dataset for Semantic Urban Scene Understanding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Marius Cordts, Mohamed Omran, Sebastian Ramos, Timo Rehfeld, Markus Enzweiler,\nRodrigo Benenson, Uwe Franke, Stefan Roth, and Bernt Schiele.",
+      "orig_title": "The Cityscapes Dataset for Semantic Urban Scene Understanding",
+      "paper_id": "1604.01685v2"
+    },
+    {
+      "index": 54,
+      "title": "Semantic Understanding of Scenes Through the ADE20K Dataset",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Journal of Computer Vision, 127(3):302–321",
+      "authors": "Bolei Zhou, Hang Zhao, Xavier Puig, Tete Xiao, Sanja Fidler, Adela Barriuso,\nand Antonio Torralba."
+    },
+    {
+      "index": 55,
+      "title": "Fully Convolutional Networks for Semantic Segmentation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence,\n39(4):640–651",
+      "authors": "Jonathan Long, Evan Shelhamer, and Trevor Darrell.",
+      "orig_title": "Fully Convolutional Networks for Semantic Segmentation",
+      "paper_id": "1605.06211v1"
+    },
+    {
+      "index": 56,
+      "title": "Semantic object classes in video: A high-definition ground truth database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Pattern Recognition Letters, 30(2):88–97",
+      "authors": "Gabriel J. Brostow, Julien Fauqueur, and Roberto Cipolla."
+    },
+    {
+      "index": 57,
+      "title": "ImageNet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Jia Deng, Wei Dong, R. Socher, Li-Jia Li, Kai Li, and Li Fei-Fei."
+    },
+    {
+      "index": 58,
+      "title": "SegNet: A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence,\n39(12):",
+      "authors": "Vijay Badrinarayanan, Alex Kendall, and Roberto Cipolla.",
+      "orig_title": "Segnet: A deep convolutional encoder-decoder architecture for image segmentation",
+      "paper_id": "1511.00561v3"
+    },
+    {
+      "index": 59,
+      "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence,\n40(4):834–848",
+      "authors": "Liang Chieh Chen, George Papandreou, Iasonas Kokkinos, Kevin Murphy, and\nAlan L. Yuille."
+    },
+    {
+      "index": 60,
+      "title": "Multi-Scale Context Aggregation by Dilated Convolutions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "4th International Conference on Learning Representations\n(ICLR)",
+      "authors": "Fisher Yu and Vladlen Koltun.",
+      "orig_title": "Multi-Scale Context Aggregation by Dilated Convolutions",
+      "paper_id": "1511.07122v3"
+    },
+    {
+      "index": 61,
+      "title": "Pyramid Scene Parsing Network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings - 30th IEEE Conference on Computer Vision and\nPattern Recognition, CVPR",
+      "authors": "Hengshuang Zhao, Jianping Shi, Xiaojuan Qi, Xiaogang Wang, and Jiaya Jia.",
+      "orig_title": "Pyramid scene parsing network",
+      "paper_id": "1612.01105v2"
+    },
+    {
+      "index": 62,
+      "title": "ENet: A Deep Neural Network Architecture for Real-Time Semantic Segmentation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Adam Paszke, Abhishek Chaurasia, Sangpil Kim, and Eugenio Culurciello.",
+      "orig_title": "ENet : A Deep Neural Network Architecture for Real-Time Semantic Segmentation",
+      "paper_id": "1606.02147v1"
+    },
+    {
+      "index": 63,
+      "title": "DFANet: Deep Feature Aggregation for Real-Time Semantic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Hanchao Li, Pengfei Xiong, Haoqiang Fan, and Jian Sun.",
+      "orig_title": "DFANet: Deep feature aggregation for real-time semantic segmentation",
+      "paper_id": "1904.02216v1"
+    },
+    {
+      "index": 64,
+      "title": "ICNet for Real-Time Semantic Segmentation on High-Resolution Images",
+      "abstract": "",
+      "year": "2018",
+      "venue": "15th European Conference on Computer Vision (ECCV)",
+      "authors": "Hengshuang Zhao, Xiaojuan Qi, Xiaoyong Shen, Jianping Shi, and Jiaya Jia.",
+      "orig_title": "ICNet for Real-Time Semantic Segmentation on High-Resolution Images",
+      "paper_id": "1704.08545v2"
+    },
+    {
+      "index": 65,
+      "title": "BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "15th European Conference on Computer Vision (ECCV)",
+      "authors": "Changqian Yu, Jingbo Wang, Chao Peng, Changxin Gao, Gang Yu, and Nong Sang.",
+      "orig_title": "BiSeNet: Bilateral segmentation network for real-time semantic segmentation",
+      "paper_id": "1808.00897v1"
+    },
+    {
+      "index": 66,
+      "title": "Deep Dual-Resolution Networks for Real-Time and Accurate Semantic Segmentation of Traffic Scenes",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems,\n14(8):1–12",
+      "authors": "Huihui Pan, Yuanduo Hong, Weichao Sun, and Yisong Jia."
+    },
+    {
+      "index": 67,
+      "title": "PIDNet: A Real-time Semantic Segmentation Network Inspired from PID Controller",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Jiacong Xu, Zixiang Xiong, and Shankar P. Bhattacharyya."
+    },
+    {
+      "index": 68,
+      "title": "SemanticKITTI: A Dataset for Semantic Scene Understanding of LiDAR Sequences",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proceedings of the IEEE International Conference on Computer\nVision",
+      "authors": "Jens Behley, Martin Garbade, Andres Milioto, Jan Quenzel, Sven Behnke, Cyrill\nStachniss, and Jurgen Gall.",
+      "orig_title": "SemanticKITTI: A dataset for semantic scene understanding of LiDAR sequences",
+      "paper_id": "1904.01416v3"
+    },
+    {
+      "index": 69,
+      "title": "SqueezeSegV3: Spatially-Adaptive Convolution for Efficient Point-Cloud Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision (ECCV), pages 1–19",
+      "authors": "Chenfeng Xu, Bichen Wu, Zining Wang, Wei Zhan, Peter Vajda, Kurt Keutzer, and\nMasayoshi Tomizuka.",
+      "orig_title": "SqueezeSegV3: Spatially-Adaptive Convolution for Efficient Point-Cloud Segmentation",
+      "paper_id": "2004.01803v2"
+    },
+    {
+      "index": 70,
+      "title": "RangeNet ++: Fast and Accurate LiDAR Semantic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems, (i):",
+      "authors": "Andres Milioto, Ignacio Vizzo, Jens Behley, and Cyrill Stachniss."
+    },
+    {
+      "index": 71,
+      "title": "Polarnet: An improved grid representation for online Lidar point clouds semantic segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Yang Zhang, Zixiang Zhou, Philip David, Xiangyu Yue, Zerong Xi, Boqing Gong,\nand Hassan Foroosh."
+    },
+    {
+      "index": 72,
+      "title": "SalsaNext: Fast, Uncertainty-Aware Semantic Segmentation of LiDAR Point Clouds",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Tiago Cortinhal, George Tzelepis, and Eren Erdal Aksoy."
+    },
+    {
+      "index": 73,
+      "title": "Randla-Net: Efficient semantic segmentation of large-scale point clouds",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Qingyong Hu, Bo Yang, Linhai Xie, Stefano Rosa, Yulan Guo, Zhihua Wang, Niki\nTrigoni, and Andrew Markham."
+    },
+    {
+      "index": 74,
+      "title": "KPConv: Flexible and deformable convolution for point clouds",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proceedings of the IEEE International Conference on Computer\nVision",
+      "authors": "Hugues Thomas, Charles R. Qi, Jean Emmanuel Deschaud, Beatriz Marcotegui,\nFrancois Goulette, and Leonidas Guibas."
+    },
+    {
+      "index": 75,
+      "title": "4D spatio-temporal convnets: Minkowski convolutional neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Christopher Choy, Junyoung Gwak, and Silvio Savarese."
+    },
+    {
+      "index": 76,
+      "title": "Deep FusionNet for Point Cloud Semantic Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision (ECCV), 12369\nLNCS(c):644–663",
+      "authors": "Feihu Zhang, Jin Fang, Benjamin Wah, and Philip Torr."
+    },
+    {
+      "index": 77,
+      "title": "3D-MiniNet: Learning a 2D Representation from Point Clouds for Fast and Efficient 3D LIDAR Semantic Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Robotics and Automation Letters, 5(4):",
+      "authors": "Inigo Alonso, Luis Riazuelo, Luis Montesano, and Ana C. Murillo."
+    },
+    {
+      "index": 78,
+      "title": "Searching Efficient 3D Architectures with Sparse Point-Voxel Convolution",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision (ECCV), pages 685–702",
+      "authors": "Haotian Tang, Zhijian Liu, Shengyu Zhao, Yujun Lin, Ji Lin, Hanrui Wang, and\nSong Han.",
+      "orig_title": "Searching Efficient 3D Architectures with Sparse Point-Voxel Convolution",
+      "paper_id": "2007.16100v2"
+    },
+    {
+      "index": 79,
+      "title": "Real-Time LiDAR Point Cloud Semantic Segmentation for Autonomous Driving",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Electronics, (11):1–13",
+      "authors": "Xing Xie, Lin Bai, and Xinming Huang."
+    },
+    {
+      "index": 80,
+      "title": "(AF)2 -S3Net: Attentive Feature Fusion with Adaptive Feature Selection for Sparse Semantic Segmentation Network",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition\n(CVPR)",
+      "authors": "Ran Cheng, Ryan Razani, Ehsan Taghavi, Enxu Li, and Bingbing Liu."
+    },
+    {
+      "index": 81,
+      "title": "2DPASS: 2D Priors Assisted Semantic Segmentation on LiDAR Point Clouds",
+      "abstract": "",
+      "year": "2022",
+      "venue": "European Conference on Computer Vision ECCV 2022, ]:1–19",
+      "authors": "Xu Yan, Jiantao Gao, Chaoda Zheng, Chao Zheng, Ruimao Zhang, Shuguang Cui, and\nZhen Li.",
+      "orig_title": "2DPASS: 2D Priors Assisted Semantic Segmentation on LiDAR Point Clouds",
+      "paper_id": "2207.04397v3"
+    },
+    {
+      "index": 82,
+      "title": "Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence,\n40(4):834—-848",
+      "authors": "Liang-chieh Chen, Iasonas Kokkinos, Kevin Murphy, and Alan L Yuille.",
+      "orig_title": "Semantic image segmentation with deep convolutional nets and fully connected CRFs",
+      "paper_id": "1412.7062v4"
+    },
+    {
+      "index": 83,
+      "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV), pages 833–851",
+      "authors": "Liang Chieh Chen, Yukun Zhu, George Papandreou, Florian Schroff, and Hartwig\nAdam.",
+      "orig_title": "Encoder-decoder with atrous separable convolution for semantic image segmentation",
+      "paper_id": "1802.02611v3"
+    },
+    {
+      "index": 84,
+      "title": "PSANet: Point-wise Spatial Attention Network for Scene Parsing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "15th European Conference on Computer Vision (ECCV)",
+      "authors": "Hengshuang Zhao, Yi Zhang, Shu Liu, and Jianping Shi."
+    },
+    {
+      "index": 85,
+      "title": "Context Prior for Scene Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Changqian Yu, Jingbo Wang, Changxin Gao, Gang Yu, Chunhua Shen, and Nong Sang.",
+      "orig_title": "Context prior for scene segmentation",
+      "paper_id": "2004.01547v1"
+    },
+    {
+      "index": 86,
+      "title": "RefineNet: Multi-Path Refinement Networks for High-Resolution Semantic Segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings - 30th IEEE Conference on Computer Vision and\nPattern Recognition, CVPR",
+      "authors": "Guosheng Lin, Anton Milan, Chunhua Shen, and Ian Reid.",
+      "orig_title": "RefineNet: Multi-path refinement networks for high-resolution semantic segmentation",
+      "paper_id": "1611.06612v3"
+    },
+    {
+      "index": 87,
+      "title": "Large Kernel Matters —— Improve Semantic Segmentation by Global Convolutional Network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings - 30th IEEE Conference on Computer Vision and\nPattern Recognition, CVPR",
+      "authors": "Chao Peng, Xiangyu Zhang, Gang Yu, Guiming Luo, and Jian Sun.",
+      "orig_title": "Large Kernel Matters - Improve Semantic Segmentation by Global Convolutional Network",
+      "paper_id": "1703.02719v1"
+    },
+    {
+      "index": 88,
+      "title": "Guided Upsampling Network for Real-Time Semantic Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "29th British Machine Vision Conference (BMVC), pages 1–12",
+      "authors": "Davide Mazzini.",
+      "orig_title": "Guided Upsampling Network for Real-Time Semantic Segmentation",
+      "paper_id": "1807.07466v1"
+    },
+    {
+      "index": 89,
+      "title": "ERFNet: Efficient Residual Factorized ConvNet for Real-Time Semantic Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems,\n19(1):263–272",
+      "authors": "Eduardo Romera, Jose M. Alvarez, Luis M. Bergasa, and Roberto Arroyo."
+    },
+    {
+      "index": 90,
+      "title": "Xception: Deep Learning with Depthwise Separable Convolutions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings - 30th IEEE Conference on Computer Vision and\nPattern Recognition (CVPR)",
+      "authors": "Francois Chollet.",
+      "orig_title": "Xception: Deep Learning with Depthwise Separable Convolutions",
+      "paper_id": "1610.02357v3"
+    },
+    {
+      "index": 91,
+      "title": "Fast-SCNN: Fast Semantic Segmentation Network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "30th British Machine Vision Conference (BMVC)",
+      "authors": "Rudra P K Poudel, Stephan Liwicki, and Roberto Cipolla."
+    },
+    {
+      "index": 92,
+      "title": "Image Segmentation Using Deep Learning: A Survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Shervin Minaee, Yuri Y. Boykov, Fatih Porikli, Antonio J. Plaza, Nasser\nKehtarnavaz, and Demetri Terzopoulos.",
+      "orig_title": "Image Segmentation Using Deep Learning: A Survey",
+      "paper_id": "2001.05566v5"
+    },
+    {
+      "index": 93,
+      "title": "Creation of high definition map for autonomous driving",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Archives of the Photogrammetry, Remote Sensing and\nSpatial Information Sciences - ISPRS Archives, 43(B4):415–420",
+      "authors": "F. Tsushima, N. Kishimoto, Y. Okada, and W. Che."
+    },
+    {
+      "index": 94,
+      "title": "RELLIS-3D Dataset: Data, Benchmarks and Analysis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Peng Jiang, Philip Osteen, Maggie Wigness, and Srikanth Saripalli."
+    },
+    {
+      "index": 95,
+      "title": "Towards 3D LiDAR-based semantic scene understanding of 3D point cloud sequences: The SemanticKITTI Dataset",
+      "abstract": "",
+      "year": "2021",
+      "venue": "The International Journal on Robotics Research, 40:959–967",
+      "authors": "Martin Garbade, Jan Quenzel, Andres Miloto, Sven Behnke, Jurgen Gall, and\nCyrill Stachniss."
+    },
+    {
+      "index": 96,
+      "title": "SqueezeSeg: Convolutional Neural Nets with Recurrent CRF for Real-Time Road-Object Segmentation from 3D LiDAR Point Cloud",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Bichen Wu, Alvin Wan, Xiangyu Yue, and Kurt Keutzer.",
+      "orig_title": "SqueezeSeg: Convolutional Neural Nets with Recurrent CRF for Real-Time Road-Object Segmentation from 3D LiDAR Point Cloud",
+      "paper_id": "1710.07368v1"
+    },
+    {
+      "index": 97,
+      "title": "SqueezeSegV2: Improved Model Structure and Unsupervised Domain Adaptation for Road-Object Segmentation from a LiDAR Point Cloud",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Bichen Wu, Xuanyu Zhou, Sicheng Zhao, Xiangyu Yue, and Kurt Keutzer.",
+      "orig_title": "SqueezeSegV2: Improved model structure and unsupervised domain adaptation for road-object segmentation from a LiDAR point cloud",
+      "paper_id": "1809.08495v1"
+    },
+    {
+      "index": 98,
+      "title": "YOLOv3: An Incremental Improvement",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Joseph Redmon and Ali Farhadi."
+    },
+    {
+      "index": 99,
+      "title": "PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings - 30th IEEE Conference on Computer Vision and\nPattern Recognition, CVPR",
+      "authors": "Charles R. Qi, Hao Su, Kaichun Mo, and Leonidas J. Guibas.",
+      "orig_title": "PointNet: Deep learning on point sets for 3D classification and segmentation",
+      "paper_id": "1612.00593v2"
+    },
+    {
+      "index": 100,
+      "title": "SalsaNet: Fast Road and Vehicle Segmentation in LiDAR Point Clouds for Autonomous Driving",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings",
+      "authors": "Eren Erdal Aksoy, Saimir Baci, and Selcuk Cavdar.",
+      "orig_title": "SalsaNet: Fast Road and Vehicle Segmentation in LiDAR Point Clouds for Autonomous Driving",
+      "paper_id": "1909.08291v1"
+    },
+    {
+      "index": 101,
+      "title": "VoxNet: A 3D Convolutional Neural Network for real-time object recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems",
+      "authors": "Daniel Maturana and Sebastian Scherer."
+    },
+    {
+      "index": 102,
+      "title": "ShapeNet: An Information-Rich 3D Model Repository",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Angel X. Chang, Thomas Funkhouser, Leonidas Guibas, Pat Hanrahan, Qixing Huang,\nZimo Li, Silvio Savarese, Manolis Savva, Shuran Song, Hao Su, Jianxiong Xiao,\nLi Yi, and Fisher Yu.",
+      "orig_title": "ShapeNet: An Information-Rich 3D Model Repository",
+      "paper_id": "1512.03012v1"
+    },
+    {
+      "index": 103,
+      "title": "VoxSegNet: Volumetric CNNs for Semantic Part Segmentation of 3D Shapes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics,\n26(9):",
+      "authors": "Zongji Wang and Feng Lu.",
+      "orig_title": "VoxSegNet: Volumetric CNNs for Semantic Part Segmentation of 3D Shapes",
+      "paper_id": "1809.00226v1"
+    },
+    {
+      "index": 104,
+      "title": "PointNet++: Deep Hierarchical Feature Learning on Point Sets in a Metric Space",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Charles R. Qi, Li Yi, Hao Su, and Leonidas J. Guibas.",
+      "orig_title": "PointNet++: Deep hierarchical feature learning on point sets in a metric space",
+      "paper_id": "1706.02413v1"
+    },
+    {
+      "index": 105,
+      "title": "Are We Hungry for 3D LiDAR Data for Semantic Segmentation? A Survey of Datasets and Methods",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems",
+      "authors": "Biao Gao, Yancheng Pan, Chengkun Li, Sibo Geng, and Huijing Zhao."
+    },
+    {
+      "index": 106,
+      "title": "Potential of radar for static object classification using deep learning methods",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 IEEE MTT-S International Conference on Microwaves for\nIntelligent Mobility, ICMIM",
+      "authors": "Jakob Lombacher, Markus Hahn, Jürgen Dickmann, and Christian\nWöhler."
+    },
+    {
+      "index": 107,
+      "title": "Semantic segmentation on radar point clouds",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 21st International Conference on Information Fusion, FUSION",
+      "authors": "Ole Schumann, Markus Hahn, Jürgen Dickmann, and Christian Wöhler."
+    },
+    {
+      "index": 108,
+      "title": "Semantic segmentation on automotive radar maps",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings",
+      "authors": "Robert Prophet, Gang Li, Christian Sturm, and Martin Vossiek."
+    },
+    {
+      "index": 109,
+      "title": "Semantic radar grids",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings,\n(Iv):",
+      "authors": "Jakob Lombacher, Kilian Laudt, Markus Hahn, Jurgen Dickmann, and Christian\nWohler."
+    },
+    {
+      "index": 110,
+      "title": "MMW radar-based technologies in autonomous driving: A review",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Sensors (Switzerland), 20(24):1–21",
+      "authors": "Taohua Zhou, Mengmeng Yang, Kun Jiang, Henry Wong, and Diange Yang."
+    },
+    {
+      "index": 111,
+      "title": "Semantic Segmentation of Radar Detections using Convolutions on Point Clouds",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Journal of Physics: Conference Series",
+      "authors": "M. Braun, A. Cennamo, M. Schoeler, K. Kollek, and A. Kummert."
+    },
+    {
+      "index": 112,
+      "title": "Full-resolution residual networks for semantic segmentation in street scenes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings - 30th IEEE Conference on Computer Vision and\nPattern Recognition, CVPR",
+      "authors": "Tobias Pohlen, Alexander Hermans, Markus Mathias, and Bastian Leibe."
+    },
+    {
+      "index": 113,
+      "title": "Radar-based Feature Design and Multiclass Classification for Road User Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings",
+      "authors": "Nicolas Scheiner, Nils Appenrodt, Jürgen DIckmann, and Bernhard Sick.",
+      "orig_title": "Radar-based Feature Design and Multiclass Classification for Road User Recognition",
+      "paper_id": "1905.11256v1"
+    },
+    {
+      "index": 114,
+      "title": "Multi-View Radar Semantic Segmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Proceedings of the IEEE International Conference on Computer\nVision",
+      "authors": "Arthur Ouaknine, Alasdair Newson, Patrick Pérez, Florence Tupin, and\nJulien Rebut.",
+      "orig_title": "Multi-View Radar Semantic Segmentation",
+      "paper_id": "2103.16214v2"
+    },
+    {
+      "index": 115,
+      "title": "High-Definition Map Generation Technologies For Autonomous Driving",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Zhibin Bao, Sabir Hossain, Haoxiang Lang, and Xianke Lin."
+    },
+    {
+      "index": 116,
+      "title": "MonoSLAM: Real-time single camera SLAM",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence,\n29(6):",
+      "authors": "Andrew J. Davison, Ian D. Reid, Nicholas D. Molton, and Olivier Stasse."
+    },
+    {
+      "index": 117,
+      "title": "SceneLib2 - MonoSLAM open-source library, 2015",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Hanme Kim and Hyon Lim."
+    },
+    {
+      "index": 118,
+      "title": "LSD-SLAM: Large-Scale Direct Monocular SLAM",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Proceedings of the IEEE International Conference on Computer\nVision",
+      "authors": "Jakob Engel, Jurgen Sturm, and Daniel Cremers."
+    },
+    {
+      "index": 119,
+      "title": "Large-scale direct SLAM for omnidirectional cameras",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems",
+      "authors": "Jakob Engel, Jorg Stuckler, and Daniel Cremers."
+    },
+    {
+      "index": 120,
+      "title": "Direct Sparse Odometry",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence,\n40(3):611–625",
+      "authors": "Jakob Engel, Vladlen Koltun, and Daniel Cremers.",
+      "orig_title": "Direct Sparse Odometry",
+      "paper_id": "1607.02565v2"
+    },
+    {
+      "index": 121,
+      "title": "SVO: Fast Semi-Direct Monocular Visual Odometry",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE International Conference on Robotics and Automation\n(ICRA)",
+      "authors": "Christian Forster, Matia Pizzoli, and Davide Scaramuzza."
+    },
+    {
+      "index": 122,
+      "title": "SVO: Semidirect Visual Odometry for Monocular and Multicamera Systems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Robotics, 33(2):249–265",
+      "authors": "Christian Forster, Zichao Zhang, Michael Gassner, Manuel Werlberger, and Davide\nScaramuzza."
+    },
+    {
+      "index": 123,
+      "title": "A multi-state constraint Kalman filter for vision-aided inertial navigation",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation, (April):",
+      "authors": "Anastasios I. Mourikis and Stergios I. Roumeliotis."
+    },
+    {
+      "index": 124,
+      "title": "Event-based visual inertial odometry",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings - 30th IEEE Conference on Computer Vision and\nPattern Recognition, CVPR",
+      "authors": "Alex Zihao Zhu, Nikolay Atanasov, and Kostas Daniilidis."
+    },
+    {
+      "index": 125,
+      "title": "Direct Sparse Mapping",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Robotics, 36(4):",
+      "authors": "Jon Zubizarreta, Iker Aguinaga, and Jose Maria Martinez Montiel.",
+      "orig_title": "Direct Sparse Mapping",
+      "paper_id": "1904.06577v2"
+    },
+    {
+      "index": 126,
+      "title": "Keyframe-Based Visual-Inertial Odometry Using Non Linear Optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "The International Journal of Robotics Research, 34(3):314–334",
+      "authors": "Stefan Leutenegger, Simon Lynen, Michael Bosse, Roland Siegwart, and Paul\nFurgale."
+    },
+    {
+      "index": 127,
+      "title": "VINS-Mono: A Robust and Versatile Monocular Visual-Inertial State Estimator",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Robotics, 34(4):",
+      "authors": "Tong Qin, Peiliang Li, and Shaojie Shen.",
+      "orig_title": "VINS-Mono: A Robust and Versatile Monocular Visual-Inertial State Estimator",
+      "paper_id": "1708.03852v1"
+    },
+    {
+      "index": 128,
+      "title": "Online Temporal Calibration for Monocular Visual-Inertial Systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems",
+      "authors": "Tong Qin and Shaojie Shen.",
+      "orig_title": "Online Temporal Calibration for Monocular Visual-Inertial Systems",
+      "paper_id": "1808.00692v1"
+    },
+    {
+      "index": 129,
+      "title": "OpenVINS: A Research Platform for Visual-Inertial Estimation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Patrick Geneva, Kevin Eckenhoff, Woosik Lee, Yulin Yang, and Guoquan Huang."
+    },
+    {
+      "index": 130,
+      "title": "ORB-SLAM: a Versatile and Accurate Monocular SLAM System",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Transactions on Robotics, 31(5):",
+      "authors": "Raul Mur-Artal, J. M.M. Montiel, and Juan D. Tardos.",
+      "orig_title": "ORB-SLAM: A Versatile and Accurate Monocular SLAM System",
+      "paper_id": "1502.00956v2"
+    },
+    {
+      "index": 131,
+      "title": "ORB-SLAM2: An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Robotics, 33(5):",
+      "authors": "Raul Mur-Artal and Juan D. Tardos."
+    },
+    {
+      "index": 132,
+      "title": "Visual-Inertial Monocular SLAM with Map Reuse",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Robotics and Automation Letters, 2(2):796–803",
+      "authors": "Raul Mur-Artal and Juan D. Tardos.",
+      "orig_title": "Visual-Inertial Monocular SLAM with Map Reuse",
+      "paper_id": "1610.05949v2"
+    },
+    {
+      "index": 133,
+      "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Robotics, 37(6):",
+      "authors": "Carlos Campos, Richard Elvira, Juan J.Gomez Rodriguez, Jose M.M. Montiel, and\nJuan D. Tardos.",
+      "orig_title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial, and Multimap SLAM",
+      "paper_id": "2007.11898v2"
+    },
+    {
+      "index": 134,
+      "title": "Stereo odometry based on careful feature selection and tracking",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 European Conference on Mobile Robots, ECMR 2015 -\nProceedings",
+      "authors": "Igor Cvišić and Ivan Petrović."
+    },
+    {
+      "index": 135,
+      "title": "SOFT-SLAM: Computationally efficient stereo visual simultaneous localization and mapping for autonomous unmanned aerial vehicles",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of Field Robotics, 35(4):578–595",
+      "authors": "Igor Cvišić, Josip Ćesić, Ivan Marković, and Ivan\nPetrović."
+    },
+    {
+      "index": 136,
+      "title": "Enhanced calibration of camera setups for high-performance visual odometry",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Robotics and Autonomous Systems, 155:",
+      "authors": "Igor Cvišić, Ivan Marković, and Ivan Petrović."
+    },
+    {
+      "index": 137,
+      "title": "SOFT2: Stereo Visual Odometry for Road Vehicles Based on a Point-to-Epipolar-Line Metric",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Robotics, 39(1):273–288",
+      "authors": "Igor Cvisic, Ivan Markovic, and Ivan Petrovic."
+    },
+    {
+      "index": 138,
+      "title": "Real-Time Performance-Focused Localization Techniques for Autonomous Vehicle: A Review",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems",
+      "authors": "Yongqiang Lu, Hongjie Ma, Edward Smart, and Hui Yu."
+    },
+    {
+      "index": 139,
+      "title": "Vehicles on RFID: Error-cognitive vehicle localization in GPS-less environments",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Vehicular Technology, 66(11):9943–9957",
+      "authors": "Hua Qin, Yang Peng, and Wensheng Zhang."
+    },
+    {
+      "index": 140,
+      "title": "GNSS positioning in non-line-of-sight context: A survey",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Science, Technology and Engineering Systems\nJournal, 2(3):722–731",
+      "authors": "Julia Breßler and Marcus Obst."
+    },
+    {
+      "index": 141,
+      "title": "Smart framework for GNSS-based navigation in urban environments",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Journal of Satellite Communications and\nNetworking, 35(2):123–137",
+      "authors": "Sul Gee Park and Deuk Jae Cho."
+    },
+    {
+      "index": 142,
+      "title": "Vehicle localization with tightly coupled GNSS and visual odometry",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings",
+      "authors": "Markus Schreiber, Hendrik Konigshof, Andre Marcel Hellmund, and Christoph\nStiller."
+    },
+    {
+      "index": 143,
+      "title": "Improving GPS-based vehicle positioning for Intelligent Transportation Systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings,\n(Iv):",
+      "authors": "Arghavan Amini, Reza Monir Vaghefi, Jesus M. De La Garza, and R. Michael\nBuehrer."
+    },
+    {
+      "index": 144,
+      "title": "Enhancing Least Squares GNSS Positioning with 3D Mapping without Accurate Prior Knowledge",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Navigation, Journal of the Institute of Navigation,\n64(1):75–91",
+      "authors": "Mounir Adjrad and Paul D. Groves."
+    },
+    {
+      "index": 145,
+      "title": "A novel GNSS positioning technique for improved accuracy in Urban canyon scenarios using 3D city model",
+      "abstract": "",
+      "year": "2014",
+      "venue": "27th International Technical Meeting of the Satellite Division\nof the Institute of Navigation, ION GNSS",
+      "authors": "Rakesh Kumar and Mark G. Petovello."
+    },
+    {
+      "index": 146,
+      "title": "A performance assessment of low-cost RTK GNSS receivers",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 IEEE/ION Position, Location and Navigation Symposium, PLANS",
+      "authors": "John Jackson, Brian Davis, and Demoz Gebre-Egziabher."
+    },
+    {
+      "index": 147,
+      "title": "An accurate GPS-IMU/DR data fusion method for driverless car based on a set of predictive models and grid constraints",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Sensors (Switzerland), 16(3)",
+      "authors": "Shiyao Wang, Zhidong Deng, and Gang Yin."
+    },
+    {
+      "index": 148,
+      "title": "Vehicle localization using wheel speed sensor (WSS) and inertial measurement unit (IMU)",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of the Society of Automotive Engineers Malaysia,\n2(1):43–59",
+      "authors": "W. M. H. Wan Azree, M. A. Abdul Rahman, and H. Zamzuri."
+    },
+    {
+      "index": 149,
+      "title": "Improving low cost sensor based vehicle positioning with Machine Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Control Engineering Practice, 74(March):168–176",
+      "authors": "Ikram Belhajem, Yann Ben Maissa, and Ahmed Tamtaoui."
+    },
+    {
+      "index": 150,
+      "title": "New likelihood updating for the IMM approach application to outdoor vehicles localization",
+      "abstract": "",
+      "year": "2009",
+      "venue": "2009 IEEE/RSJ International Conference on Intelligent Robots and\nSystems, IROS",
+      "authors": "Alexandre Ndjeng Ndjeng, Dominique Gruyer, and Sébastien Glaser."
+    },
+    {
+      "index": 151,
+      "title": "IMU-based virtual road profile sensor for vehicle localization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Sensors (Switzerland), 18(10)",
+      "authors": "Juhui Gim and Changsun Ahn."
+    },
+    {
+      "index": 152,
+      "title": "Inverse Depth Parametrization for Monocular SLAM",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Transactions on Robotics, 75(5):932–945",
+      "authors": "Javier Civera, Andrew J. Davison, and José María Martínez\nMontiel."
+    },
+    {
+      "index": 153,
+      "title": "Random Sample Paradigm for Model Consensus: A Apphcatlons to Image Fitting with Analysis and Automated Cartography",
+      "abstract": "",
+      "year": "1981",
+      "venue": "Graphics and Image Processing, 24(6):381–395",
+      "authors": "Martin A Fischler and Robert C Bolles."
+    },
+    {
+      "index": 154,
+      "title": "1-Point RANSAC for extended Kalman filtering: Application to real-time structure from motion and visual odometry",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Journal of Field Robotics, 27(5):609–631",
+      "authors": "Javier Civera, Oscar G. Grasa, Andrew J. Davison, and J. M.M. Montiel."
+    },
+    {
+      "index": 155,
+      "title": "Real-time monocular SLAM: Why filter?",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Hauke Strasdat, J. M.M. Montiel, and Andrew J. Davison."
+    },
+    {
+      "index": 156,
+      "title": "Scale drift-aware large scale monocular SLAM",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Robotics: Science and Systems, 6:73–80",
+      "authors": "Hauke Strasdat, J. M.M. Montiel, and Andrew J. Davison."
+    },
+    {
+      "index": 157,
+      "title": "DTAM: Dense tracking and mapping in real-time",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Proceedings of the IEEE International Conference on Computer\nVision",
+      "authors": "Richard A. Newcombe, Steven J. Lovegrove, and Andrew J. Davison."
+    },
+    {
+      "index": 158,
+      "title": "Registration of 3d point clouds and meshes: A survey from rigid to Nonrigid",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics,\n19(7):",
+      "authors": "Gary K.L. Tam, Zhi Quan Cheng, Yu Kun Lai, Frank C. Langbein, Yonghuai Liu,\nDavid Marshall, Ralph R. Martin, Xian Fang Sun, and Paul L. Rosin."
+    },
+    {
+      "index": 159,
+      "title": "Iterative point matching for registration of free-form curves and surfaces",
+      "abstract": "",
+      "year": "1994",
+      "venue": "International Journal of Computer Vision, 13(2):119–152",
+      "authors": "Zhengyou Zhang."
+    },
+    {
+      "index": 160,
+      "title": "An ICP variant using a point-to-line metric",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Andrea Censi."
+    },
+    {
+      "index": 161,
+      "title": "Linear Least-squares Optimization for Point-to-plane ICP Surface Registration",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Chapel Hill, University of North Carolina, (February):2–4",
+      "authors": "Kl Low."
+    },
+    {
+      "index": 162,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Robotics: Science and Systems Conference (RSS), 2:435",
+      "authors": "Aleksandr V Segal, Dirk Haehnel, and Sebastian Thrun.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 163,
+      "title": "ICP-based pose-graph SLAM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 IEEE International Symposium on Safety, Security, and\nRescue Robotics (SSRR)",
+      "authors": "Ellon Mendes, Pierrick Koch, and Simon Lacroix."
+    },
+    {
+      "index": 164,
+      "title": "G-ICP SLAM: An odometry-free 3D mapping system with robust 6DoF pose estimation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 IEEE International Conference on Robotics and Biomimetics,\nIEEE-ROBIO",
+      "authors": "Ryo Kuramachi, Akihito Ohsato, Yoko Sasaki, and Hiroshi Mizoguchi."
+    },
+    {
+      "index": 165,
+      "title": "Sensor Aware Lidar Odometry",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 European Conference on Mobile Robots, ECMR 2019 -\nProceedings",
+      "authors": "Dmitri Kovalenko, Mikhail Korobkin, and Andrey Minin.",
+      "orig_title": "Sensor aware lidar odometry",
+      "paper_id": "1907.09167v3"
+    },
+    {
+      "index": 166,
+      "title": "CT-ICP: Real-time Elastic LiDAR Odometry with Loop Closure",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Pierre Dellenbach, Jean-Emmanuel Deschaud, Bastien Jacquet, and François\nGoulette.",
+      "orig_title": "CT-ICP: Real-time Elastic LiDAR Odometry with Loop Closure",
+      "paper_id": "2109.12979v2"
+    },
+    {
+      "index": 167,
+      "title": "LOCUS: A Multi-Sensor Lidar-Centric Solution for High-Precision Odometry and 3D Mapping in Real-Time",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Robotics and Automation Letters, 6(2):421–428",
+      "authors": "Matteo Palieri, Benjamin Morrell, Abhishek Thakur, Kamak Ebadi, Jeremy Nash,\nArghya Chatterjee, Christoforos Kanellakis, Luca Carlone, Cataldo\nGuaragnella, and Ali Akbar Agha-Mohammadi.",
+      "orig_title": "LOCUS: A Multi-Sensor Lidar-Centric Solution for High-Precision Odometry and 3D Mapping in Real-Time",
+      "paper_id": "2012.14447v1"
+    },
+    {
+      "index": 168,
+      "title": "Direct LiDAR Odometry: Fast Localization with Dense Point Clouds",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Robotics and Automation Letters",
+      "authors": "Kenny Chen, Brett T. Lopez, Ali-akbar Agha-mohammadi, and Ankur Mehta.",
+      "orig_title": "Direct LiDAR Odometry: Fast Localization with Dense Point Clouds",
+      "paper_id": "2110.00605v3"
+    },
+    {
+      "index": 169,
+      "title": "Low-drift and real-time lidar odometry and mapping",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Robotics: Science and Systems Conference (RSS), 41(2):401–416",
+      "authors": "Ji Zhang and Sanjiv Singh."
+    },
+    {
+      "index": 170,
+      "title": "Tightly Coupled 3D Lidar Inertial Odometry and Mapping",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Haoyang Ye, Yuying Chen, and Ming Liu.",
+      "orig_title": "Tightly coupled 3D Lidar inertial odometry and mapping",
+      "paper_id": "1904.06993v1"
+    },
+    {
+      "index": 171,
+      "title": "LVI-SAM: Tightly-coupled Lidar-Visual-Inertial Odometry via Smoothing and Mapping",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems",
+      "authors": "Tixiao Shan, Brendan Englot, Drew Meyers, Wei Wang, Carlo Ratti, and Daniela\nRus."
+    },
+    {
+      "index": 172,
+      "title": "MULLS: Versatile LiDAR SLAM via Multi-metric Linear Least Square",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Yue Pan, Pengchuan Xiao, Yujie He, Zhenlei Shao, and Zesong Li.",
+      "orig_title": "MULLS: Versatile LiDAR SLAM via Multi-metric Linear Least Square",
+      "paper_id": "2102.03771v3"
+    },
+    {
+      "index": 173,
+      "title": "LIO-SAM: Tightly-coupled Lidar Inertial Odometry via Smoothing and Mapping",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems",
+      "authors": "Tixiao Shan, Brendan Englot, Drew Meyers, Wei Wang, Carlo Ratti, and Daniela\nRus.",
+      "orig_title": "LIO-SAM: Tightly-coupled Lidar Inertial Odometry via Smoothing and Mapping",
+      "paper_id": "2007.00258v3"
+    },
+    {
+      "index": 174,
+      "title": "LeGO-LOAM: Lightweight and Ground-Optimized Lidar Odometry and Mapping on Variable Terrain",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems",
+      "authors": "Tixiao Shan and Brendan Englot."
+    },
+    {
+      "index": 175,
+      "title": "Efficient and Accurate Tightly-Coupled Visual-Lidar SLAM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems",
+      "authors": "Chih-Chung Chou and Cheng-Fu Chou."
+    },
+    {
+      "index": 176,
+      "title": "Efficient LiDAR Odometry for Autonomous Driving",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Robotics and Automation Letters, 6(4):",
+      "authors": "Xin Zheng and Jianke Zhu."
+    },
+    {
+      "index": 177,
+      "title": "CT-ICP: Real-time Elastic LiDAR Odometry with Loop Closure",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Pierre Dellenbach, Jean Emmanuel Deschaud, Bastien Jacquet, and Francois\nGoulette.",
+      "orig_title": "CT-ICP: Real-time Elastic LiDAR Odometry with Loop Closure",
+      "paper_id": "2109.12979v2"
+    },
+    {
+      "index": 178,
+      "title": "Deep Learning for Laser Based Odometry Estimation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Science and Systems Conf. Workshop on Limits and Potentials of\nDeep Learning in Robotics",
+      "authors": "Austin Nicolai, Ryan Skeele, Christopher Eriksen, and Geoffrey A Hollinger."
+    },
+    {
+      "index": 179,
+      "title": "DeepVO: Towards end-to-end visual odometry with deep Recurrent Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Sen Wang, Ronald Clark, Hongkai Wen, and Niki Trigoni."
+    },
+    {
+      "index": 180,
+      "title": "3D point cloud registration for localization using a deep neural network auto-encoder",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings - 30th IEEE Conference on Computer Vision and\nPattern Recognition, CVPR",
+      "authors": "Gil Elbaz, Tamar Avraham, and Anath Fischer."
+    },
+    {
+      "index": 181,
+      "title": "LocNet: Global Localization in 3D Point Clouds for Mobile Vehicles",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings",
+      "authors": "Huan Yin, Li Tang, Xiaqing DIng, Yue Wang, and Rong Xiong.",
+      "orig_title": "LocNet: Global Localization in 3D Point Clouds for Mobile Vehicles",
+      "paper_id": "1712.02165v2"
+    },
+    {
+      "index": 182,
+      "title": "DeepLO: Geometry-Aware Deep LiDAR Odometry",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Younggun Cho, Giseop Kim, and Ayoung Kim."
+    },
+    {
+      "index": 183,
+      "title": "DeepCLR: Correspondence-Less Architecture for Deep End-to-End Point Cloud Registration",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 IEEE 23rd International Conference on Intelligent\nTransportation Systems, ITSC",
+      "authors": "Markus Horn, Nico Engel, Vasileios Belagiannis, Michael Buchholz, and Klaus\nDietmayer.",
+      "orig_title": "DeepCLR: Correspondence-Less Architecture for Deep End-to-End Point Cloud Registration",
+      "paper_id": "2007.11255v2"
+    },
+    {
+      "index": 184,
+      "title": "D3dlo: Deep 3d Lidar Odometry",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Philipp Adis, Nicolas Horst, and Mathias Wien."
+    },
+    {
+      "index": 185,
+      "title": "A Survey on Odometry for Autonomous Navigation Systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access, 7:",
+      "authors": "Sherif A.S. Mohamed, Mohammad Hashem Haghbayan, Tomi Westerlund, Jukka\nHeikkonen, Hannu Tenhunen, and Juha Plosila."
+    },
+    {
+      "index": 186,
+      "title": "Robust localization based on radar signal clustering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings",
+      "authors": "F. Schuster, M. Worner, C. G. Keller, M. Haueis, and C. Curio."
+    },
+    {
+      "index": 187,
+      "title": "Vehicle Localization using 76GHz Omnidirectional Millimeter-Wave Radar for Winter Automated Driving",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings",
+      "authors": "Keisuke Yoneda, Naoya Hashimoto, Ryo Yanase, Mohammad Aldibaja, and Naoki\nSuganuma."
+    },
+    {
+      "index": 188,
+      "title": "Real-time pose graph SLAM based on radar",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings",
+      "authors": "Martin Holder, Sven Hellwig, and Hermann Winner."
+    },
+    {
+      "index": 189,
+      "title": "CFEAR Radarodometry-Conservative Filtering for Efficient and Accurate Radar Odometry",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems",
+      "authors": "Daniel Adolfsson, Martin Magnusson, Anas Alhashimi, Achim J. Lilienthal, and\nHenrik Andreasson."
+    },
+    {
+      "index": 190,
+      "title": "Radar Odometry Combining Probabilistic Estimation and Unsupervised Feature Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Robotics: Science and Systems",
+      "authors": "Keenan Burnett, David J. Yoon, Angela P. Schoellig, and Timothy D. Barfoot.",
+      "orig_title": "Radar Odometry Combining Probabilistic Estimation and Unsupervised Feature Learning",
+      "paper_id": "2105.14152v3"
+    },
+    {
+      "index": 191,
+      "title": "Current map-matching algorithms for transport applications: State-of-the art and future research directions",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Transportation Research Part C: Emerging Technologies,\n15(5):312–328",
+      "authors": "Mohammed A. Quddus, Washington Y. Ochieng, and Robert B. Noland."
+    },
+    {
+      "index": 192,
+      "title": "Comparative Study and Application-Oriented Classification of Vehicular",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Intelligent Transportation Systems Magazine, (Summer",
+      "authors": "Matej Kubicka, Hugues Mounier, and Silviu-lulian Niculescu."
+    },
+    {
+      "index": 193,
+      "title": "Some map matching algorithms for personal navigation assistants",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Transportation Research Part C: Emerging Technologies,\n8(1-6):91–108",
+      "authors": "Christopher E. White, David Bernstein, and Alain L. Kornhauser."
+    },
+    {
+      "index": 194,
+      "title": "An Introduction to Map Matching for Personal Navigation Assistants",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": "David Bernstein and Alain Kornhauser."
+    },
+    {
+      "index": 195,
+      "title": "Approximate map matching with respect to the Fréchet distance",
+      "abstract": "",
+      "year": "2011",
+      "venue": "2011 Proceedings of the 13th Workshop on Algorithm Engineering\nand Experiments, ALENEX",
+      "authors": "Daniel Chen, Anne Driemel, Leonidas J. Guibas, Andy Nguyen, and Carola Wenk."
+    },
+    {
+      "index": 196,
+      "title": "Vehicle Self-localization with High-Precision Digital Maps",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Andreas Schindler."
+    },
+    {
+      "index": 197,
+      "title": "Visual localization within LIDAR maps for automated urban driving",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems, (Iros):176–183",
+      "authors": "Ryan W. Wolcott and Ryan M. Eustice."
+    },
+    {
+      "index": 198,
+      "title": "Shortest path and vehicle trajectory aided map-matching for low frequency GPS data",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Transportation Research Part C: Emerging Technologies,\n55:328–339",
+      "authors": "Mohammed Quddus and Simon Washington."
+    },
+    {
+      "index": 199,
+      "title": "Monocular camera localization in 3D LiDAR maps",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems",
+      "authors": "Tim Caselitz, Bastian Steder, Michael Ruhnke, and Wolfram Burgard."
+    },
+    {
+      "index": 200,
+      "title": "Point group associations for radar-based vehicle self-localization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "FUSION 2016 - 19th International Conference on Information\nFusion, Proceedings",
+      "authors": "Klaudius Werber, Jens Klappstein, Jurgen Dickmann, and Christian Waldschmidt."
+    },
+    {
+      "index": 201,
+      "title": "Sensor Fusion-Based Low-Cost Vehicle Localization System for Complex Urban Environments",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems,\n18(5):",
+      "authors": "Jae Kyu Suhr, Jeungin Jang, Daehong Min, and Ho Gi Jung."
+    },
+    {
+      "index": 202,
+      "title": "Using High Definition Maps to Estimate GNSS Positioning Uncertainty",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Franck Li, Philippe Bonnifait, Javier Ibañez-Guzmán, and Javier\nIbanez-Guzman."
+    },
+    {
+      "index": 203,
+      "title": "Estimating localization uncertainty using multi-hypothesis map-matching on high-definition road maps",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Intelligent Transportation Systems,\nProceedings, ITSC",
+      "authors": "Franck Li, Philippe Bonnifait, and Javier Ibanez-Guzman."
+    },
+    {
+      "index": 204,
+      "title": "LIDAR-Based Lane Marking Detection for Vehicle Positioning in an HD Map",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Intelligent Transportation Systems,\nProceedings, ITSC",
+      "authors": "Farouk Ghallabi, Fawzi Nashashibi, Ghayath El-Haj-Shhade, and Marie Anne\nMittet."
+    },
+    {
+      "index": 205,
+      "title": "Long-term Visual Localization using Semantically Segmented Images",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Erik Stenborg, Carl Toft, and Lars Hammarstrand.",
+      "orig_title": "Long-Term Visual Localization Using Semantically Segmented Images",
+      "paper_id": "1801.05269v2"
+    },
+    {
+      "index": 206,
+      "title": "Monocular Vehicle Self-localization method based on Compact Semantic Map",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Intelligent Transportation Systems,\nProceedings, ITSC",
+      "authors": "Zhongyang Xiao, Kun Jiang, Shichao Xie, Tuopu Wen, Chunlei Yu, and DIange Yang."
+    },
+    {
+      "index": 207,
+      "title": "Exploiting Sparse Semantic HD Maps for Self-Driving Vehicle Localization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems",
+      "authors": "Wei Chiu Ma, Raquel Urtasun, Ignacio Tartavull, Ioan Andrei Barsan, Shenlong\nWang, Min Bai, Gellert Mattyus, Namdar Homayounfar, Shrinidhi Kowshika\nLakshmikanth, and Andrei Pokrovsky.",
+      "orig_title": "Exploiting Sparse Semantic HD Maps for Self-Driving Vehicle Localization",
+      "paper_id": "1908.03274v1"
+    },
+    {
+      "index": 208,
+      "title": "Lane-level map-matching method for vehicle localization using GPS and camera on a high-definition map",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Sensors (Switzerland), 20(8):1–22",
+      "authors": "Jeong Min Kang, Tae Sung Yoon, Euntai Kim, and Jin Bae Park."
+    },
+    {
+      "index": 209,
+      "title": "Monocular localization with vector HD map (MLVHM): A low-cost method for commercial IVs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Sensors (Switzerland), 20(7):1–24",
+      "authors": "Zhongyang Xiao, Diange Yang, Tuopu Wen, Kun Jiang, and Ruidong Yan."
+    },
+    {
+      "index": 210,
+      "title": "Visual Semantic Localization based on HD Map for Autonomous Vehicles in Urban Scenarios",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Huayou Wang, Changliang Xue, Yanxing Zhou, Feng Wen, and Hongbo Zhang."
+    },
+    {
+      "index": 211,
+      "title": "Adding ears to intelligent connected vehicles by combining microphone arrays and high definition map",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IET Intelligent Transport Systems",
+      "authors": "Kun Jiang, Diange Yang, Benny Wijaya, Bowei Zhang, Mengmeng Yang, Kai Zhang,\nand Xuewei Tang."
+    },
+    {
+      "index": 212,
+      "title": "Learning Visual Semantic Map-Matching for Loosely Multi-sensor Fusion Localization of Autonomous Vehicles",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Intelligent Vehicles, 8(1):358–367",
+      "authors": "Zhihuang Zhang, Jintao Zhao, Changyao Huang, and Liang Li."
+    },
+    {
+      "index": 213,
+      "title": "BEV-Locator: An End-to-end Visual Semantic Localization Network Using Multi-View Images",
+      "abstract": "",
+      "year": "2022",
+      "venue": "14(8):1–12",
+      "authors": "Zhihuang Zhang, Meng Xu, Wenqiang Zhou, Tao Peng, Liang Li, and Stefan Poslad.",
+      "orig_title": "BEV-Locator: An End-to-end Visual Semantic Localization Network Using Multi-View Images",
+      "paper_id": "2211.14927v1"
+    },
+    {
+      "index": 214,
+      "title": "Road Shape Classification-Based Matching Between Lane Detection and HD Map for Robust Localization of Autonomous Cars",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Intelligent Vehicles, 8(5):3431–3443",
+      "authors": "Soyeong Kim, Sangkwon Kim, Student Member, Jiwon Seok, Chorong Ryu, Daesung\nHwang, and Kichun Jo."
+    },
+    {
+      "index": 215,
+      "title": "Lanelets: Efficient map representation for autonomous driving",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings,\n(Iv):420–425",
+      "authors": "Philipp Bender, Julius Ziegler, and Christoph Stiller."
+    },
+    {
+      "index": 216,
+      "title": "DeepMM: Deep Learning Based Map Matching with Data Augmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Mobile Computing",
+      "authors": "Jie Feng, Yong Li, Kai Zhao, Zhao Xu, Tong Xia, Jinglin Zhang, and Depeng Jin."
+    },
+    {
+      "index": 217,
+      "title": "Generation of a Precise Roadway Map for Autonomous Cars",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Transactons on Intelligent Transportation Systems,\n15(3):925–937",
+      "authors": "Kichun Jo and Myoungho Sunwoo."
+    },
+    {
+      "index": 218,
+      "title": "High-Definition Map Representation Techniques for Automated Vehicles",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Electronics (Switzerland), 11(20):1–16",
+      "authors": "Babak Ebrahimi Soorchaei, Mahdi Razzaghpour, Rodolfo Valiente, Arash Raftari,\nand Yaser Pourmohammadi Fallah."
+    },
+    {
+      "index": 219,
+      "title": "Approximate k-d tree search for efficient ICP",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Proceedings of International Conference on 3-D Digital Imaging\nand Modeling, 3DIM",
+      "authors": "M. Greenspan and M. Yurick."
+    },
+    {
+      "index": 220,
+      "title": "Multimedia Fusion at Semantic Level in Vehicle Cooperative Perception",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 IEEE International Conference on Multimedia & Expo\nWorkshops (ICMEW)",
+      "authors": "Zhongyang Xiao, Zhaobin Mo, Kun Jiang, and Diange Yang."
+    },
+    {
+      "index": 221,
+      "title": "Semantic 3D Object Maps for Everyday Manipulation in Human Living Environments",
+      "abstract": "",
+      "year": "2010",
+      "venue": "KI - Kunstliche Intelligenz, 24(4):345–348",
+      "authors": "Radu Bogdan Rusu."
+    },
+    {
+      "index": 222,
+      "title": "Lanelet2: A high-definition map framework for the future of automated driving",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Intelligent Transportation Systems,\nProceedings, ITSC",
+      "authors": "Fabian Poggenhans, Jan Hendrik Pauls, Johannes Janosovits, Stefan Orf,\nMaximilian Naumann, Florian Kuhnt, and Matthias Mayr."
+    },
+    {
+      "index": 223,
+      "title": "HiDaM: A Unified Data Model for High-definition (HD) Map Data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Proceedings - 2020 IEEE 36th International Conference on Data\nEngineering Workshops, ICDEW",
+      "authors": "Yunfan Kang and Amr Magdy."
+    },
+    {
+      "index": 224,
+      "title": "VAD: Vectorized Scene Representation for Efficient Autonomous Driving",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Computer Vision (ICCV)",
+      "authors": "Bo Jiang, Shaoyu Chen, Qing Xu, Bencheng Liao, Jiajie Chen, Helong Zhou, Qian\nZhang, Wenyu Liu, Chang Huang, and Xinggang Wang.",
+      "orig_title": "VAD: Vectorized Scene Representation for Efficient Autonomous Driving",
+      "paper_id": "2303.12077v3"
+    },
+    {
+      "index": 225,
+      "title": "Map-enhanced generative adversarial trajectory prediction method for automated vehicles",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Information Sciences, 622:",
+      "authors": "Hongyan Guo, Qingyu Meng, Xiaoming Zhao, Jun Liu, Dongpu Cao, and Hong Chen."
+    },
+    {
+      "index": 226,
+      "title": "Tutorial on High-Definition Map Generation for Automated Driving in Urban Environments",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Sensors, 22(18):1–25",
+      "authors": "Jinseop Jeong, Jun Yong Yoon, Hwanhong Lee, Hatem Darweesh, and Woosuk Sung."
+    },
+    {
+      "index": 227,
+      "title": "A computer algorithm for reconstructing a scene from two projections, pages 61–62",
+      "abstract": "",
+      "year": "1987",
+      "venue": "MA Fischler and O. Firschein, eds",
+      "authors": "H. C. Longuet-Higgins."
+    },
+    {
+      "index": 228,
+      "title": "Structure-from-motion revisited",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Conference on Computer Vision and Pattern Recognition\n(CVPR)",
+      "authors": "Johannes Lutz Schönberger and Jan-Michael Frahm."
+    },
+    {
+      "index": 229,
+      "title": "Pixelwise view selection for unstructured multi-view stereo",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Johannes Lutz Schönberger, Enliang Zheng, Marc Pollefeys, and Jan-Michael\nFrahm."
+    },
+    {
+      "index": 230,
+      "title": "An End-to-End System for Crowdsourced 3d Maps for Autonomous Vehicles: The Mapping Component",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and\nSystems (IROS)",
+      "authors": "Onkar Dabeer, Wei Ding, Radhika Gowaiker, Slawomir K Grzechnik, Mythreya J\nLakshman, Sean Lee, Gerhard Reitmayr, Arunandan Sharma, Kiran Somasundaram,\nRavi Teja Sukhavasi, and Xinzhou Wu.",
+      "orig_title": "An End-to-End System for Crowdsourced 3D Maps for Autonomous Vehicles : The Mapping Component",
+      "paper_id": "1703.10193v2"
+    },
+    {
+      "index": 231,
+      "title": "Video Processing Method for High-Definition Maps Generation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 International Multi-Conference on Industrial Engineering\nand Modern Technologies, FarEastCon",
+      "authors": "O. K. Golovnin and D. V. Rybnikov."
+    },
+    {
+      "index": 232,
+      "title": "Probabilistic Semantic Mapping for Urban Autonomous Driving Applications",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE International Conference on Intelligent Robots and\nSystems",
+      "authors": "David Paz, Hengyuan Zhang, Qinru Li, Hao Xiang, and Henrik I. Christensen.",
+      "orig_title": "Probabilistic semantic mapping for urban autonomous driving applications",
+      "paper_id": "2006.04894v2"
+    },
+    {
+      "index": 233,
+      "title": "Crowdsourced 3D Mapping: A Combined Multi-View Geometry and Self-Supervised Learning Approach",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "H Chawla, M Jukola, T Brouns, E Arani, B Zonooz, Self-supervised Learning\nApproach, and Las Vegas.",
+      "orig_title": "Crowdsourced 3D Mapping: A Combined Multi-View Geometry and Self-Supervised Learning Approach",
+      "paper_id": "2007.12918v1"
+    },
+    {
+      "index": 234,
+      "title": "Pose-graph based crowdsourced mapping framework",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 IEEE 3rd Connected and Automated Vehicles Symposium, CAVS",
+      "authors": "Anweshan Das, Joris Ijsselmuiden, and Gijs Dubbelman."
+    },
+    {
+      "index": 235,
+      "title": "Roadside HD Map Object Reconstruction Using Monocular Camera",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Robotics and Automation Letters, 7(3):",
+      "authors": "Tuopu Wen, Kun Jiang, Jinyu Miao, Benny Wijaya, Peijin Jia, Mengmeng Yang, and\nDiange Yang."
+    },
+    {
+      "index": 236,
+      "title": "Clothoid-Based Reference Path Reconstruction for HD Map Generation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems,\n25(1):587–601",
+      "authors": "Songyi Zhang, Runsheng Wang, Zhiqiang Jian, Wei Zhan, Nanning Zheng, and\nMasayoshi Tomizuka."
+    },
+    {
+      "index": 237,
+      "title": "Online Vectorized HD Map Construction using Geometry",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Zhixin Zhang, Yiyuan Zhang, Xiaohan Ding, Fusheng Jin, and Xiangyu Yue.",
+      "orig_title": "Online Vectorized HD Map Construction using Geometry",
+      "paper_id": "2312.03341v2"
+    },
+    {
+      "index": 238,
+      "title": "A Comparison of Automatic Nap-of-the-earth Guidance Strategies for Helicopters",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Journal of Field Robotics, 33(1):1–17",
+      "authors": "John G. Mooney and Eric N. Johnson."
+    },
+    {
+      "index": 239,
+      "title": "The graph SLAM algorithm with applications to large-scale mapping of urban structures",
+      "abstract": "",
+      "year": "2006",
+      "venue": "International Journal of Robotics Research, 25(5-6):403–429",
+      "authors": "Sebastian Thrun and Michael Montemerlo."
+    },
+    {
+      "index": 240,
+      "title": "A tutorial on graph-based SLAM",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Intelligent Transportation Systems Magazine, 2(4):31–43",
+      "authors": "Giorgio Grisetti, Rainer Kummerle, Cyrill Stachniss, and Wolfram Burgard."
+    },
+    {
+      "index": 241,
+      "title": "3D road marking reconstruction from street-level calibrated stereo pairs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ISPRS Journal of Photogrammetry and Remote Sensing,\n65(4):347–359",
+      "authors": "Bahman Soheilian, Nicolas Paparoditis, and Didier Boldo."
+    },
+    {
+      "index": 242,
+      "title": "High definition 3D map creation using GNSS/IMU/LiDAR sensor integration to support autonomous vehicle navigation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Sensors (Switzerland), 20(3)",
+      "authors": "Veli Ilci and Charles Toth."
+    },
+    {
+      "index": 243,
+      "title": "VectorNet: Encoding HD Maps and Agent Dynamics from Vectorized Representation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Jiyang Gao, Chen Sun, Hang Zhao, Yi Shen, Dragomir Anguelov, Congcong Li, and\nCordelia Schmid.",
+      "orig_title": "VectorNet: Encoding HD maps and agent dynamics from vectorized representation",
+      "paper_id": "2005.04259v1"
+    },
+    {
+      "index": 244,
+      "title": "HDMapGen: A Hierarchical Graph Generative Model of High Definition Maps",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Lu Mi, Hang Zhao, Charlie Nash, Xiaohan Jin, Jiyang Gao, Chen Sun, Cordelia\nSchmid, Nir Shavit, Yuning Chai, and Dragomir Anguelov.",
+      "orig_title": "HDMapGen: A Hierarchical Graph Generative Model of High Definition Maps",
+      "paper_id": "2106.14880v1"
+    },
+    {
+      "index": 245,
+      "title": "Cooperative concurrent mapping and localization",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation, 2(May):",
+      "authors": "John W. Fenwick, Paul M. Newman, and John J. Leonard."
+    },
+    {
+      "index": 246,
+      "title": "Multi-robot visual SLAM using a Rao-Blackwellized particle filter",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Robotics and Autonomous Systems, 58(1):68–80",
+      "authors": "Arturo Gil, Óscar Reinoso, Mónica Ballesta, and Miguel Juliá."
+    },
+    {
+      "index": 247,
+      "title": "C2TAM: A Cloud framework for cooperative tracking and mapping",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Robotics and Autonomous Systems, 62(4):401–413",
+      "authors": "L. Riazuelo, Javier Civera, and J. M.M. Montiel."
+    },
+    {
+      "index": 248,
+      "title": "DAvinCi: A cloud computing framework for service robots",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Proceedings - IEEE International Conference on Robotics and\nAutomation",
+      "authors": "Rajesh Arumugam, Vikas Reddy Enti, Liu Bingbing, Wu Xiaojun, Krishnamoorthy\nBaskaran, Foong Foo Kong, A. Senthil Kumar, Kang Dee Meng, and Goh Wai Kit."
+    },
+    {
+      "index": 249,
+      "title": "FastSLAM: A Factored Solution to the Simultaneous Localization and Mapping Problem with Unknown Data Association",
+      "abstract": "",
+      "year": "2003",
+      "venue": "PhD thesis, Carnegie Mellon University, Pittsburgh, PA, July",
+      "authors": "Michael Montemerlo."
+    },
+    {
+      "index": 250,
+      "title": "Rapyuta: A Cloud Robotics Platform",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Transactions on Automation Science and Engineering,\n12(2):481–493",
+      "authors": "Gajamohan Mohanarajah, Dominique Hunziker, Raffaello D’Andrea, and Markus\nWaibel."
+    },
+    {
+      "index": 251,
+      "title": "A Survey of Research on Cloud Robotics and Automation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Transactions on Automation Science and Engineering,\n12(2):398–409",
+      "authors": "Ben Kehoe, Sachin Patil, Pieter Abbeel, and Ken Goldberg."
+    },
+    {
+      "index": 252,
+      "title": "Past, Present, and Future of Simultaneous Localization And Mapping: Towards the Robust-Perception Age",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Robotics, 32(6):",
+      "authors": "Cesar Cadena, Luca Carlone, Henry Carrillo, Yasir Latif, Davide Scaramuzza,\nJose Neira, Ian Reid, and John J. Leonard.",
+      "orig_title": "Past, present, and future of simultaneous localization and mapping: Toward the robust-perception age",
+      "paper_id": "1606.05830v4"
+    },
+    {
+      "index": 253,
+      "title": "Lift, Splat, Shoot: Encoding Images from Arbitrary Camera Rigs by Implicitly Unprojecting to 3D",
+      "abstract": "",
+      "year": "2020",
+      "venue": "The European Conference on Computer Vision (ECCV)",
+      "authors": "Jonah Philion and Sanja Fidler.",
+      "orig_title": "Lift, Splat, Shoot: Encoding Images from Arbitrary Camera Rigs by Implicitly Unprojecting to 3D",
+      "paper_id": "2008.05711v1"
+    },
+    {
+      "index": 254,
+      "title": "SuperFusion: Multilevel LiDAR-Camera Fusion for Long-Range HD Map Generation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Hao Dong, Xianjing Zhang, Jintao Xu, Rui Ai, Weihao Gu, Huimin Lu, Juho\nKannala, and Xieyuanli Chen.",
+      "orig_title": "SuperFusion: Multilevel LiDAR-Camera Fusion for Long-Range HD Map Generation",
+      "paper_id": "2211.15656v4"
+    },
+    {
+      "index": 255,
+      "title": "End-to-end object detection with transformers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision, pages 213–229.\nSpringer",
+      "authors": "Nicolas Carion, Francisco Massa, Gabriel Synnaeve, Nicolas Usunier, Alexander\nKirillov, and Sergey Zagoruyko."
+    },
+    {
+      "index": 256,
+      "title": "MapTR: Structured Modeling and Learning for Online Vectorized HD Map Construction",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Bencheng Liao, Shaoyu Chen, Xinggang Wang, Tianheng Cheng, Qian Zhang, Wenyu\nLiu, and Chang Huang.",
+      "orig_title": "MapTR: Structured Modeling and Learning for Online Vectorized HD Map Construction",
+      "paper_id": "2208.14437v2"
+    },
+    {
+      "index": 257,
+      "title": "MapTRv2: An End-to-End Framework for Online Vectorized HD Map Construction",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Bencheng Liao, Shaoyu Chen, Yunchi Zhang, Bo Jiang, Qian Zhang, Wenyu Liu,\nChang Huang, and Xinggang Wang.",
+      "orig_title": "MapTRv2: An End-to-End Framework for Online Vectorized HD Map Construction",
+      "paper_id": "2308.05736v2"
+    },
+    {
+      "index": 258,
+      "title": "VectorMapNet: End-to-end Vectorized HD Map Learning",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Proceedings of Machine Learning Research, 202:21839–21866",
+      "authors": "Yicheng Liu, Tianyuan Yuan, Yue Wang, Yilun Wang, and Hang Zhao."
+    },
+    {
+      "index": 259,
+      "title": "End-to-End Vectorized HD-map Construction with Piecewise Bézier Curve",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Limeng Qiao, Wenjie Ding, Xi Qiu, and Chi Zhang.",
+      "orig_title": "End-to-End Vectorized HD-map Construction with Piecewise Bézier Curve",
+      "paper_id": "2306.09700v1"
+    },
+    {
+      "index": 260,
+      "title": "InstaGraM: Instance-level Graph Modeling for Vectorized HD Map Learning",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Juyeb Shin, Francois Rameau, Hyeonjun Jeong, and Dongsuk Kum.",
+      "orig_title": "InstaGraM: Instance-level Graph Modeling for Vectorized HD Map Learning",
+      "paper_id": "2301.04470v3"
+    },
+    {
+      "index": 261,
+      "title": "PivotNet: Vectorized Pivot Learning for End-to-end HD Map Construction",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE / CVF Computer Vision and Pattern Recognition Conference\n(CVPR)",
+      "authors": "Wenjie Ding, Limeng Qiao, Xi Qiu, and Chi Zhang.",
+      "orig_title": "PivotNet: Vectorized Pivot Learning for End-to-end HD Map Construction",
+      "paper_id": "2308.16477v2"
+    },
+    {
+      "index": 262,
+      "title": "ScalableMap: Scalable Map Learning for Online Long-Range Vectorized HD Map Construction",
+      "abstract": "",
+      "year": "2023",
+      "venue": "The Conference on Robot Learning (CoRL), (CoRL)",
+      "authors": "Jingyi Yu, Zizhao Zhang, Shengfu Xia, and Jizhang Sang.",
+      "orig_title": "ScalableMap: Scalable Map Learning for Online Long-Range Vectorized HD Map Construction",
+      "paper_id": "2310.13378v2"
+    },
+    {
+      "index": 263,
+      "title": "StreamMapNet: Streaming Mapping Network for Vectorized Online HD Map Construction",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE / CVF Computer Vision and Pattern Recognition Conference\n(CVPR)",
+      "authors": "Tianyuan Yuan, Yicheng Liu, Yue Wang, Yilun Wang, and Hang Zhao.",
+      "orig_title": "StreamMapNet: Streaming Mapping Network for Vectorized Online HD Map Construction",
+      "paper_id": "2308.12570v2"
+    },
+    {
+      "index": 264,
+      "title": "MachMap: End-to-End Vectorized Solution for Compact HD-Map Construction",
+      "abstract": "",
+      "year": "2023",
+      "venue": "(2):1–5",
+      "authors": "Limeng Qiao, Yongchao Zheng, Peng Zhang, Wenjie Ding, Xi Qiu, Xing Wei, and Chi\nZhang."
+    },
+    {
+      "index": 265,
+      "title": "Online hd map construction for cvpr 2023 challenge, 2023",
+      "abstract": "",
+      "year": "2024",
+      "venue": "Accessed: 2/1/",
+      "authors": "Tsinghua MARS Lab."
+    },
+    {
+      "index": 266,
+      "title": "MapNeXt: Revisiting Training and Scaling Practices for Online Vectorized HD Map Construction",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "Toyota Li."
+    },
+    {
+      "index": 267,
+      "title": "ADMap: Anti-disturbance framework for reconstructing online vectorized HD map",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "Haotian Hu, Fanyi Wang, Yaonong Wang, Laifeng Hu, Jingwei Xu, and Zhiwang\nZhang.",
+      "orig_title": "ADMap: Anti-disturbance framework for reconstructing online vectorized HD map",
+      "paper_id": "2401.13172v2"
+    },
+    {
+      "index": 268,
+      "title": "Cooperative simultaneous localization and mapping for multi-robot: Approach & experimental validation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Proceedings of the World Congress on Intelligent Control and\nAutomation (WCICA)",
+      "authors": "Tong Tao, Yalou Huang, Jing Yuan, Fengchi Sun, and Xiaolin Wu."
+    },
+    {
+      "index": 269,
+      "title": "A Collaborative Framework for High-Definition Mapping",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Intelligent Transportation Systems Conference, ITSC",
+      "authors": "Alexis Stoven-Dubois, Kuntima Kiala Miguel, Aziz Dziri, Bertrand Leroy, and\nRoland Chapuis.",
+      "orig_title": "A Collaborative Framework for High-Definition Mapping",
+      "paper_id": "1910.06014v2"
+    },
+    {
+      "index": 270,
+      "title": "Graph Optimization Methods for Large-Scale Crowdsourced Mapping",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Alexis Stoven-Dubois, Aziz Dziri, Bertrand Leroy, and Roland Chapuis."
+    },
+    {
+      "index": 271,
+      "title": "A Lightweight High Definition Mapping Method Based on Multi-Source Data Fusion Perception",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Applied Sciences (Switzerland), 13(5)",
+      "authors": "Haina Song, Binjie Hu, Qinyan Huang, Yi Zhang, and Jiwei Song."
+    },
+    {
+      "index": 272,
+      "title": "Integrity of map-matching algorithms",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Transportation Research Part C: Emerging Technologies,\n14(4):283–302",
+      "authors": "Mohammed A. Quddus, Washington Y. Ochieng, and Robert B. Noland."
+    },
+    {
+      "index": 273,
+      "title": "Dataset for testing and training of map-matching algorithms",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Intelligent Vehicles Symposium, Proceedings",
+      "authors": "Matej Kubicka, Arben Cela, Philippe Moulin, Hugues Mounier, and S. I.\nNiculescu."
+    },
+    {
+      "index": 274,
+      "title": "Real-time hd map change detection for crowdsourcing update based on mid-to-high-end sensors",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Sensors (Switzerland), 21(7):1–12",
+      "authors": "Pan Zhang, Mingming Zhang, and Jingnan Liu."
+    },
+    {
+      "index": 275,
+      "title": "Simultaneous localization and map change update for the high definition map-based autonomous driving car",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Sensors (Switzerland), 18(9)",
+      "authors": "Kichun Jo, Chansoo Kim, and Myoungho Sunwoo."
+    },
+    {
+      "index": 276,
+      "title": "Trust, but Verify: Cross-Modality Fusion for HD Map Change Detection",
+      "abstract": "",
+      "year": "2021",
+      "venue": "(NeurIPS):1–14",
+      "authors": "John Lambert and James Hays.",
+      "orig_title": "Trust, but Verify: Cross-Modality Fusion for HD Map Change Detection",
+      "paper_id": "2212.07312v1"
+    },
+    {
+      "index": 277,
+      "title": "CAOM: Change-aware online 3D mapping with heterogeneous multi-beam and push-broom LiDAR point clouds",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ISPRS Journal of Photogrammetry and Remote Sensing,\n195(November",
+      "authors": "Yangzi Cong, Chi Chen, Bisheng Yang, Fuxun Liang, Ruiqi Ma, and Fei Zhang."
+    },
+    {
+      "index": 278,
+      "title": "Multi-Session High-Definition Map-Monitoring System for Map Update",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ISPRS International Journal of Geo-Information, 13(1):6",
+      "authors": "Benny Wijaya, Mengmeng Yang, Tuopu Wen, Kun Jiang, Yunlong Wang, Zheng Fu,\nXuewei Tang, Dennis Octovan Sigomo, Jinyu Miao, and Diange Yang."
+    },
+    {
+      "index": 279,
+      "title": "HD map with RoadDNA",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "TomTom International BV."
+    },
+    {
+      "index": 280,
+      "title": "Frequent and Automatic Update of Lane-Level HD Maps with a Large Amount of Crowdsourced Data Acquired from Buses and Taxis in Seoul",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Minwoo Cho, Kitae Kim, Soohyun Cho, Seung-mo Cho, and Woojin Chung."
+    },
+    {
+      "index": 281,
+      "title": "CrowdRep: A Blockchain-based Reputation System for Crowdsourced HD Map Update",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Conference on Intelligent Transportation Systems,\nProceedings, ITSC",
+      "authors": "Benny Wijaya, Kun Jiang, Mengmeng Yang, Tuopu Wen, Xuewei Tang, Diange Yang,\nYanhai Ma, and Ricky Albert."
+    },
+    {
+      "index": 282,
+      "title": "Neural Map Prior for Autonomous Driving",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition",
+      "authors": "Xuan Xiong, Yicheng Liu, Tianyuan Yuan, Yue Wang, Yilun Wang, and Hang Zhao.",
+      "orig_title": "Neural Map Prior for Autonomous Driving",
+      "paper_id": "2304.08481v2"
+    },
+    {
+      "index": 283,
+      "title": "PolyMerge: A Novel Technique aimed at Dynamic HD Map Updates Leveraging Polylines",
+      "abstract": "",
+      "year": "2023",
+      "venue": "21st International Conference on Advanced Robotics (ICAR)",
+      "authors": "Mohamed Sayed, Stepan Perminov, and Dzmitry Tsetserukou.",
+      "orig_title": "PolyMerge: A Novel Technique aimed at Dynamic HD Map Updates Leveraging Polylines",
+      "paper_id": "2310.18416v2"
+    },
+    {
+      "index": 284,
+      "title": "Love of Variety Based Latency Analysis for High Definition Map Updating : Age of Information and Distributional Robust Perspectives",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Intelligent Vehicles, 8(2):1751–1764",
+      "authors": "Dawei Chen, Yifei Zhu, Dan Wang, and Senior Member."
+    },
+    {
+      "index": 285,
+      "title": "The Pascal Visual Object Classes (VOC) Challenge",
+      "abstract": "",
+      "year": "2010",
+      "venue": "International Journal of Computer Vision, 88(2):303–338",
+      "authors": "Everingham M., Van-Gool L., Williams C K I., Winn J., and Zisserman A."
+    },
+    {
+      "index": 286,
+      "title": "Complex Urban LiDAR Data Set",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 IEEE International Conference on Robotics and Automation,\nBrisbane, 21-26 May",
+      "authors": "Jinyong Jeong, Younggun Cho, Young Sik Shin, Hyunchul Roh, and Ayoung Kim.",
+      "orig_title": "Complex Urban LiDAR Data Set",
+      "paper_id": "1803.06121v1"
+    },
+    {
+      "index": 287,
+      "title": "Argoverse: 3D Tracking and Forecasting with Rich Maps",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proceedings of the IEEE/CVF Conference on Computer Vision and\nPattern Recognition (CVPR), June",
+      "authors": "Ming-Fang Chang, John Lambert, Patsorn Sangkloy, Jagjeet Singh, Slawomir Bak,\nAndrew Hartnett, De Wang, Peter Carr, Simon Lucey, Deva Ramanan, and James\nHays.",
+      "orig_title": "Argoverse: 3d tracking and forecasting with rich maps",
+      "paper_id": "1911.02620v1"
+    },
+    {
+      "index": 288,
+      "title": "Argoverse 2: Next Generation Datasets for Self-Driving Perception and Forecasting",
+      "abstract": "",
+      "year": "2021",
+      "venue": "J. Vanschoren and S. Yeung, editors, Proceedings of the\nNeural Information Processing Systems Track on Datasets and Benchmarks,\nvolume 1. Curran",
+      "authors": "Benjamin Wilson, William Qi, Tanmay Agarwal, John Lambert, Jagjeet Singh,\nSiddhesh Khandelwal, Bowen Pan, Ratnesh Kumar, Andrew Hartnett, Jhony\nKaesemodel Pontes, Deva Ramanan, Peter Carr, and James Hays.",
+      "orig_title": "Argoverse 2: Next generation datasets for self-driving perception and forecasting",
+      "paper_id": "2301.00493v1"
+    },
+    {
+      "index": 289,
+      "title": "nuScenes: A multimodal dataset for autonomous driving",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Proceedings of the IEEE Computer Society Conference on Computer\nVision and Pattern Recognition, (March):",
+      "authors": "Holger Caesar, Varun Bankiti, Alex H. Lang, Sourabh Vora, Venice Erin Liong,\nQiang Xu, Anush Krishnan, Yu Pan, Giancarlo Baldan, and Oscar Beijbom.",
+      "orig_title": "Nuscenes: A multimodal dataset for autonomous driving",
+      "paper_id": "1903.11027v5"
+    },
+    {
+      "index": 290,
+      "title": "DA4AD: End-to-End Deep Attention-based Visual Localization for Autonomous Driving",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Proceedings of the European Conference on Computer Vision\n(ECCV)",
+      "authors": "Yao Zhou, Guowei Wan, Shenhua Hou, Li Yu, Gang Wang, Xiaofei Rui, and Shiyu\nSong.",
+      "orig_title": "Da4ad: End-to-end deep attention-based visual localization for autonomous driving",
+      "paper_id": "2003.03026v2"
+    },
+    {
+      "index": 291,
+      "title": "CoMap: Proactive Provision for Crowdsourcing Map in Automotive Edge Computing",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Yongjie Xue, Yuru Zhang, and Qiang Liu.",
+      "orig_title": "CoMap : Proactive Provision for Crowdsourcing Map in Automotive Edge Computing",
+      "paper_id": "2302.03204v1"
+    },
+    {
+      "index": 292,
+      "title": "Attacks and Defenses in Crowdsourced Mapping Services",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MobiSys 2016 Companion - Companion Publication of the 14th\nAnnual International Conference on Mobile Systems, Applications, and\nServices",
+      "authors": "Gang Wang, Bolun Wang, Tianyi Wang, Ana Nika, Haitao Zheng, and Ben Y. Zhao."
+    },
+    {
+      "index": 293,
+      "title": "Ghost Riders : Sybil Attacks on Crowdsourced Mobile Mapping Services",
+      "abstract": "",
+      "year": "2018",
+      "venue": "26(3):",
+      "authors": "Gang Wang, Bolun Wang, Tianyi Wang, Ana Nika, Haitao Zheng, Ben Y Zhao, and\nSenior Member."
+    }
+  ]
+}

@@ -1,0 +1,467 @@
+{
+  "paper_id": "2105.02001v1",
+  "title": "Contrastive Learning and Self-Training for Unsupervised Domain Adaptation in Semantic Segmentation",
+  "sections": {
+    "introduction": "The goal in semantic image segmentation is to assign the correct class label to each pixel. This makes it suitable for complex image-based scene analysis that is required in applications like automated driving. However, in order to generate a labeled training dataset, pixel-level annotation must first be performed by humans. Since detailed manual labeling can take 90 minutes per image , it is associated with high costs. A potential workaround would be to generate the images and corresponding segmentation maps synthetically using computer game environments like Grand Theft Auto V (GTA5) . However, even current segmentation models    do not generalize well to data from a different domain. In fact, their segmentation performance decreases drastically when there is a discrepancy between the training and test distribution as in a synthetic-to-real scenario. The research field of unsupervised domain adaptation (UDA) studies how to transfer knowledge from a labeled source domain to an unlabeled target domain. The aim is to achieve the best possible results in the target domain, whereas the performance in the source domain is not considered. Current methods for UDA address the problem by minimizing the distribution discrepancy between the domains while doing a supervised training on source data. The distribution alignment can take place in the pixel space 5 3  [ref]44, feature space 6 7  [ref]45, output space  [ref]40   4, or even in several spaces in parallel. While adversarial training (AT) 0 is commonly used to minimize the distribution discrepancy between domains, it can fail to align the correct semantic categories. This is because adversarial training minimizes the mismatch between global distributions rather than class-specific ones, which can negatively affect the results . This is also true for discrepancy measures such as the maximum mean discrepancy , which can be minimized without aligning the correct class distributions across domains 9. To address the problem of misaligned classes across domains, we rely on contrastive learning (CL) 2. The basic idea of CL is to encourage positive data pairs to be similar and negative data pairs to be apart. To perform domain adaptation and match the features of the correct semantic categories, positive pairs consist of features from the same class but different domains while negative pairs are from different classes and possibly from different domains 9 7. Due to the lack of labels in the target domain, the class of each target feature must be determined based on the predictions of the model. However, since different class prior probabilities can bias the final segmentation layer towards the source domain, we extend our approach with self-training (ST), i.e. using target predictions as pseudo-labels. We start from the observation that target pixels are predicted with high uncertainty [ref]40. Moreover, these uncertain predictions may also vary between different classes during training and are therefore usually not considered for self-training. By using a memory-efficient temporal ensemble that combines the predictions of a single network over time 1, we obtain the predictive tendency of the model. This allows us to create robust pseudo-labels even for the uncertain predictions that have high information content. The temporal ensemble has the additional advantage that pseudo-labels are updated directly during training, which reduces the computational complexity compared to a separate stage-wise recalculation [ref]45 6 2  [ref]44. We summarize our contributions as follows: First, we extend contrastive learning and self-training using a memory-efficient temporal ensemble to UDA for semantic segmentation. Second, we empirically show that both approaches are able to transfer knowledge between domains. Furthermore, we show that combining our contrastive learning and self-training (CLST) approach leads to a symbiotic setup that yields competitive and superior state-of-the-art results for GTA5 →→\\rightarrow Cityscapes and SYNTHIA →→\\rightarrow Cityscapes, respectively."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "Liang-Chieh Chen, George Papandreou, Iasonas Kokkinos, Kevin Murphy, and Alan L Yuille"
+    },
+    {
+      "index": 1,
+      "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European conference on computer vision (ECCV)",
+      "authors": "Liang-Chieh Chen, Yukun Zhu, George Papandreou, Florian Schroff, and Hartwig Adam",
+      "orig_title": "Encoder-decoder with atrous separable convolution for semantic image segmentation",
+      "paper_id": "1802.02611v3"
+    },
+    {
+      "index": 2,
+      "title": "Domain adaptation for semantic segmentation with maximum squares loss",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Minghao Chen, Hongyang Xue, and Deng Cai"
+    },
+    {
+      "index": 3,
+      "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.05709",
+      "authors": "Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton",
+      "orig_title": "A simple framework for contrastive learning of visual representations",
+      "paper_id": "2002.05709v3"
+    },
+    {
+      "index": 4,
+      "title": "Big Self-Supervised Models are Strong Semi-Supervised Learners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.10029",
+      "authors": "Ting Chen, Simon Kornblith, Kevin Swersky, Mohammad Norouzi, and Geoffrey Hinton",
+      "orig_title": "Big self-supervised models are strong semi-supervised learners",
+      "paper_id": "2006.10029v2"
+    },
+    {
+      "index": 5,
+      "title": "No More Discrimination: Cross City Adaptation of Road Scene Segmenters",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Yi-Hsin Chen, Wei-Yu Chen, Yu-Ting Chen, Bo-Cheng Tsai, Yu-Chiang Frank Wang, and Min Sun",
+      "orig_title": "No more discrimination: Cross city adaptation of road scene segmenters",
+      "paper_id": "1704.08509v1"
+    },
+    {
+      "index": 6,
+      "title": "Self-ensembling with gan-based data augmentation for domain adaptation in semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Jaehoon Choi, Taekyung Kim, and Changick Kim"
+    },
+    {
+      "index": 7,
+      "title": "The Cityscapes Dataset for Semantic Urban Scene Understanding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Marius Cordts, Mohamed Omran, Sebastian Ramos, Timo Rehfeld, Markus Enzweiler, Rodrigo Benenson, Uwe Franke, Stefan Roth, and Bernt Schiele",
+      "orig_title": "The cityscapes dataset for semantic urban scene understanding",
+      "paper_id": "1604.01685v2"
+    },
+    {
+      "index": 8,
+      "title": "Self-ensembling for visual domain adaptation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1706.05208",
+      "authors": "Geoffrey French, Michal Mackiewicz, and Mark Fisher",
+      "orig_title": "Self-ensembling for visual domain adaptation",
+      "paper_id": "1706.05208v4"
+    },
+    {
+      "index": 9,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio"
+    },
+    {
+      "index": 10,
+      "title": "Bootstrap Your Own Latent A New Approach to Self-Supervised Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.07733",
+      "authors": "Jean-Bastien Grill, Florian Strub, Florent Altché, Corentin Tallec, Pierre H Richemond, Elena Buchatskaya, Carl Doersch, Bernardo Avila Pires, Zhaohan Daniel Guo, Mohammad Gheshlaghi Azar, et al.",
+      "orig_title": "Bootstrap your own latent: A new approach to self-supervised learning",
+      "paper_id": "2006.07733v3"
+    },
+    {
+      "index": 11,
+      "title": "Dimensionality reduction by learning an invariant mapping",
+      "abstract": "",
+      "year": "2006",
+      "venue": "2006 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR’06)",
+      "authors": "Raia Hadsell, Sumit Chopra, and Yann LeCun"
+    },
+    {
+      "index": 12,
+      "title": "Momentum Contrast for Unsupervised Visual Representation Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Kaiming He, Haoqi Fan, Yuxin Wu, Saining Xie, and Ross Girshick",
+      "orig_title": "Momentum contrast for unsupervised visual representation learning",
+      "paper_id": "1911.05722v3"
+    },
+    {
+      "index": 13,
+      "title": "Data-Efficient Image Recognition with Contrastive Predictive Coding",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Olivier Henaff",
+      "orig_title": "Data-efficient image recognition with contrastive predictive coding",
+      "paper_id": "1905.09272v3"
+    },
+    {
+      "index": 14,
+      "title": "CyCADA: Cycle-Consistent Adversarial Domain Adaptation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on machine learning",
+      "authors": "Judy Hoffman, Eric Tzeng, Taesung Park, Jun-Yan Zhu, Phillip Isola, Kate Saenko, Alexei Efros, and Trevor Darrell",
+      "orig_title": "Cycada: Cycle-consistent adversarial domain adaptation",
+      "paper_id": "1711.03213v3"
+    },
+    {
+      "index": 15,
+      "title": "Fcns in the wild: Pixel-level adversarial and constraint-based adaptation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1612.02649",
+      "authors": "Judy Hoffman, Dequan Wang, Fisher Yu, and Trevor Darrell"
+    },
+    {
+      "index": 16,
+      "title": "Domain transfer through deep activation matching",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Haoshuo Huang, Qixing Huang, and Philipp Krahenbuhl"
+    },
+    {
+      "index": 17,
+      "title": "Arbitrary style transfer in real-time with adaptive instance normalization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Xun Huang and Serge Belongie"
+    },
+    {
+      "index": 18,
+      "title": "Contrastive Adaptation Network for Unsupervised Domain Adaptation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Guoliang Kang, Lu Jiang, Yi Yang, and Alexander G Hauptmann",
+      "orig_title": "Contrastive adaptation network for unsupervised domain adaptation",
+      "paper_id": "1901.00976v2"
+    },
+    {
+      "index": 19,
+      "title": "Pixel-Level Cycle Association: A New Perspective for Domain Adaptive Semantic Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2011.00147",
+      "authors": "Guoliang Kang, Yunchao Wei, Yi Yang, Yueting Zhuang, and Alexander G Hauptmann",
+      "orig_title": "Pixel-level cycle association: A new perspective for domain adaptive semantic segmentation",
+      "paper_id": "2011.00147v1"
+    },
+    {
+      "index": 20,
+      "title": "Temporal Ensembling for Semi-Supervised Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1610.02242",
+      "authors": "Samuli Laine and Timo Aila",
+      "orig_title": "Temporal ensembling for semi-supervised learning",
+      "paper_id": "1610.02242v3"
+    },
+    {
+      "index": 21,
+      "title": "Content-consistent matching for domain adaptive semantic segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Guangrui Li, Guoliang Kang, Wu Liu, Yunchao Wei, and Yi Yang"
+    },
+    {
+      "index": 22,
+      "title": "Bidirectional learning for domain adaptation of semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Yunsheng Li, Lu Yuan, and Nuno Vasconcelos"
+    },
+    {
+      "index": 23,
+      "title": "Taking A Closer Look at Domain Shift: Category-level Adversaries for Semantics Consistent Domain Adaptation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Yawei Luo, Liang Zheng, Tao Guan, Junqing Yu, and Yi Yang",
+      "orig_title": "Taking a closer look at domain shift: Category-level adversaries for semantics consistent domain adaptation",
+      "paper_id": "1809.09478v3"
+    },
+    {
+      "index": 24,
+      "title": "UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.03426",
+      "authors": "Leland McInnes, John Healy, and James Melville",
+      "orig_title": "Umap: Uniform manifold approximation and projection for dimension reduction",
+      "paper_id": "1802.03426v3"
+    },
+    {
+      "index": 25,
+      "title": "Instance Adaptive Self-Training for Unsupervised Domain Adaptation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2008.12197",
+      "authors": "Ke Mei, Chuang Zhu, Jiaqi Zou, and Shanghang Zhang",
+      "orig_title": "Instance adaptive self-training for unsupervised domain adaptation",
+      "paper_id": "2008.12197v1"
+    },
+    {
+      "index": 26,
+      "title": "Unified Deep Supervised Domain Adaptation and Generalization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Saeid Motiian, Marco Piccirilli, Donald A Adjeroh, and Gianfranco Doretto",
+      "orig_title": "Unified deep supervised domain adaptation and generalization",
+      "paper_id": "1709.10190v1"
+    },
+    {
+      "index": 27,
+      "title": "Automatic differentiation in pytorch",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Adam Paszke, Sam Gross, Soumith Chintala, Gregory Chanan, Edward Yang, Zachary DeVito, Zeming Lin, Alban Desmaison, Luca Antiga, and Adam Lerer"
+    },
+    {
+      "index": 28,
+      "title": "Playing for data: Ground truth from computer games",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European conference on computer vision",
+      "authors": "Stephan R Richter, Vibhav Vineet, Stefan Roth, and Vladlen Koltun"
+    },
+    {
+      "index": 29,
+      "title": "The synthia dataset: A large collection of synthetic images for semantic segmentation of urban scenes",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "German Ros, Laura Sellart, Joanna Materzynska, David Vazquez, and Antonio M Lopez"
+    },
+    {
+      "index": 30,
+      "title": "Equivalence of distance-based and rkhs-based statistics in hypothesis testing",
+      "abstract": "",
+      "year": "2013",
+      "venue": "The Annals of Statistics",
+      "authors": "Dino Sejdinovic, Bharath Sriperumbudur, Arthur Gretton, and Kenji Fukumizu"
+    },
+    {
+      "index": 31,
+      "title": "Regularizing proxies with multi-adversarial training for unsupervised domain-adaptive semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.12282",
+      "authors": "Tong Shen, Dong Gong, Wei Zhang, Chunhua Shen, and Tao Mei"
+    },
+    {
+      "index": 32,
+      "title": "Improved deep metric learning with multi-class n-pair loss objective",
+      "abstract": "",
+      "year": "2016",
+      "venue": "30th International Conference on Neural Information Processing Systems",
+      "authors": "Kihyuk Sohn"
+    },
+    {
+      "index": 33,
+      "title": "High-Resolution Representations for Labeling Pixels and Regions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.04514",
+      "authors": "Ke Sun, Yang Zhao, Borui Jiang, Tianheng Cheng, Bin Xiao, Dong Liu, Yadong Mu, Xinggang Wang, Wenyu Liu, and Jingdong Wang",
+      "orig_title": "High-resolution representations for labeling pixels and regions",
+      "paper_id": "1904.04514v1"
+    },
+    {
+      "index": 34,
+      "title": "Mean teachers are better role models: Weight-averaged consistency targets improve semi-supervised deep learning results",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1703.01780",
+      "authors": "Antti Tarvainen and Harri Valpola",
+      "orig_title": "Mean teachers are better role models: Weight-averaged consistency targets improve semi-supervised deep learning results",
+      "paper_id": "1703.01780v6"
+    },
+    {
+      "index": 35,
+      "title": "Unsupervised domain adaptation for mobile semantic segmentation based on cycle consistency and feature alignment",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Image and Vision Computing",
+      "authors": "Marco Toldo, Umberto Michieli, Gianluca Agresti, and Pietro Zanuttigh"
+    },
+    {
+      "index": 36,
+      "title": "DACS: Domain Adaptation via Cross-domain Mixed Sampling",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Winter Conference on Applications of Computer Vision",
+      "authors": "Wilhelm Tranheden, Viktor Olsson, Juliano Pinto, and Lennart Svensson",
+      "orig_title": "Dacs: Domain adaptation via cross-domain mixed sampling",
+      "paper_id": "2007.08702v2"
+    },
+    {
+      "index": 37,
+      "title": "Learning to Adapt Structured Output Space for Semantic Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Yi-Hsuan Tsai, Wei-Chih Hung, Samuel Schulter, Kihyuk Sohn, Ming-Hsuan Yang, and Manmohan Chandraker",
+      "orig_title": "Learning to adapt structured output space for semantic segmentation",
+      "paper_id": "1802.10349v3"
+    },
+    {
+      "index": 38,
+      "title": "Domain Adaptation for Structured Output via Discriminative Patch Representations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Yi-Hsuan Tsai, Kihyuk Sohn, Samuel Schulter, and Manmohan Chandraker",
+      "orig_title": "Domain adaptation for structured output via discriminative patch representations",
+      "paper_id": "1901.05427v4"
+    },
+    {
+      "index": 39,
+      "title": "ADVENT: Adversarial Entropy Minimization for Domain Adaptation in Semantic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Tuan-Hung Vu, Himalaya Jain, Maxime Bucher, Matthieu Cord, and Patrick Pérez",
+      "orig_title": "Advent: Adversarial entropy minimization for domain adaptation in semantic segmentation",
+      "paper_id": "1811.12833v2"
+    },
+    {
+      "index": 40,
+      "title": "Differential Treatment for Stuff and Things: A Simple Unsupervised Domain Adaptation Method for Semantic Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Zhonghao Wang, Mo Yu, Yunchao Wei, Rogerio Feris, Jinjun Xiong, Wen-mei Hwu, Thomas S Huang, and Honghui Shi",
+      "orig_title": "Differential treatment for stuff and things: A simple unsupervised domain adaptation method for semantic segmentation",
+      "paper_id": "2003.08040v3"
+    },
+    {
+      "index": 41,
+      "title": "Self-ensembling attention networks: Addressing domain shift for semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Yonghao Xu, Bo Du, Lefei Zhang, Qian Zhang, Guoli Wang, and Liangpei Zhang"
+    },
+    {
+      "index": 42,
+      "title": "Mind the Class Weight Bias: Weighted Maximum Mean Discrepancy for Unsupervised Domain Adaptation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Hongliang Yan, Yukang Ding, Peihua Li, Qilong Wang, Yong Xu, and Wangmeng Zuo",
+      "orig_title": "Mind the class weight bias: Weighted maximum mean discrepancy for unsupervised domain adaptation",
+      "paper_id": "1705.00609v1"
+    },
+    {
+      "index": 43,
+      "title": "FDA: Fourier Domain Adaptation for Semantic Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Yanchao Yang and Stefano Soatto",
+      "orig_title": "Fda: Fourier domain adaptation for semantic segmentation",
+      "paper_id": "2004.05498v1"
+    },
+    {
+      "index": 44,
+      "title": "Category Anchor-Guided Unsupervised Domain Adaptation for Semantic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Qiming Zhang, Jing Zhang, Wei Liu, and Dacheng Tao",
+      "orig_title": "Category anchor-guided unsupervised domain adaptation for semantic segmentation",
+      "paper_id": "1910.13049v2"
+    },
+    {
+      "index": 45,
+      "title": "Unsupervised Scene Adaptation with Memory Regularization in vivo",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1912.11164",
+      "authors": "Zhedong Zheng and Yi Yang",
+      "orig_title": "Unsupervised scene adaptation with memory regularization in vivo",
+      "paper_id": "1912.11164v3"
+    },
+    {
+      "index": 46,
+      "title": "Rectifying Pseudo Label Learning via Uncertainty Estimation for Domain Adaptive Semantic Segmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Journal of Computer Vision",
+      "authors": "Zhedong Zheng and Yi Yang",
+      "orig_title": "Rectifying pseudo label learning via uncertainty estimation for domain adaptive semantic segmentation",
+      "paper_id": "2003.03773v3"
+    },
+    {
+      "index": 47,
+      "title": "Unpaired image-to-image translation using cycle-consistent adversarial networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Jun-Yan Zhu, Taesung Park, Phillip Isola, and Alexei A Efros"
+    },
+    {
+      "index": 48,
+      "title": "Confidence regularized self-training",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Yang Zou, Zhiding Yu, Xiaofeng Liu, BVK Kumar, and Jinsong Wang"
+    },
+    {
+      "index": 49,
+      "title": "Unsupervised domain adaptation for semantic segmentation via class-balanced self-training",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European conference on computer vision (ECCV)",
+      "authors": "Yang Zou, Zhiding Yu, BVK Vijaya Kumar, and Jinsong Wang"
+    }
+  ]
+}

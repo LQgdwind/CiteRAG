@@ -1,0 +1,497 @@
+{
+  "paper_id": "2402.10107v1",
+  "title": "Quantized Embedding Vectors for Controllable Diffusion Language Models",
+  "sections": {
+    "i introduction": "Large language models (LLMs) have shown their ability to generate high quality text [ref]1  and produce task-controllable outputs [ref]3 . Fine-tuning methods (e.g.,  ) can be employed to control LLMs based on supervised data, such as control text . This involves freezing pre-trained LLMs and generating texts using an external classifier, leading to lightweight and modular plug-and-play language models (PPLMs) [ref]8.\nNevertheless, achievements in control thus far have been restricted to basic attribute-level controls, such as sentiment or topic. [ref]3 [ref]8, and there is a need to improve their portability, convergence speed and perplexity [ref]3 . The existing practical challenge refers to optimizing the embedding and accelerating the generation process. The learned embedding defines a mapping that bridges the discrete text and the continuous input, and its quality affects the language perplexity. Accordingly, in the text generation process, (1) obtaining generation language models (GLMs) from scratch should be avoided; (2) the generating process should be facilitated; and the embedding space should be optimized by processing learned embedding vectors, as pre-trained and learned embedding vectors outperform randomly initialized embedding vectors on controllable DLMs (Diffusion Language Models) ; and (3) GLMs should be obtained using parameter-efficient fine-tuning (FT) methods to reduce the tunable weights. Neural network quantization has revolutionized modern deep learning by alleviating the issue of pressing demand for computing resources and power due to increasing size and training time of neural networks. Quantization methods in combination with continuous diffusion language models also have shown success in various domains such as computer vision , audio and music generation  . However, applying these methods to text generation has been challenging due to the discrete nature of text . On the other hand, adapter tuning methods have been widely used to fine-tune pre-trained language models by incorporating small neural modules into them, see    and references therein. Despite the effectiveness of this fine-tuning technique, it has not been explored in the context of controllable DLMs. To address (2) and (3), we propose a novel controllable DLM called Quantized Embedding Controllable Diffusion Language Models (QE-CDLM). This model is based on continuous diffusion and incorporates an adaption FT method to reduce the number of tunable weights. As shown in Figure 1, the QE-CDLM begins with a pre-trained language model (LM), which is fed with Gaussian noise vectors and word-corresponding vectors. The embedding spaces for different control tasks are then remodeled and optimized using corresponding quantization methods. This quantization process on embedding vectors leads to a reduction in the perplexity of the generated text. Additionally, the LoRA method, an efficient fine-tuning technique, balances the trade-off between tunable weights and the quality of DLMs. The contributions of QE-CDLM are as follows: We validate that quantizing the task-adapting embedding vectors makes controllable DLMs converging faster than the method of independent learned embedding vectors. The quantized embedding vector optimizes the task-specific embedding space in controllable DLMs. Utilizing quantization techniques, e.g., ternarization and binarization of embedding vectors, leads to control texts with improved perplexity. The adaption fine-tuning method achieves a satisfying trade-off between the quality of controllable DLMs and the number of tunable weights. Compared to classical FT methods, this approach shows competitive performance in generating control texts with a reduced number of tunable weights, making it more affordable, and thus increasing the portability. Our code to reproduce all the experimental results is publicly available at https://github.com/ChengKang520/Q-Controllable-DLM."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "S. Gehrmann et al",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "PaLM: Scaling Language Modeling with Pathways",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv:2204.02311",
+      "authors": "A. Chowdhery, S. Narang, J. Devlin, M. Bosma, G. Mishra, A. Roberts, P. Barham, H. W. Chung, C. Sutton, S. Gehrmann et al.",
+      "orig_title": "Palm: Scaling language modeling with pathways",
+      "paper_id": "2204.02311v5"
+    },
+    {
+      "index": 2,
+      "title": "OPT: Open Pre-trained Transformer Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv:2205.01068",
+      "authors": "S. Zhang, S. Roller, N. Goyal, M. Artetxe, M. Chen, S. Chen, C. Dewan, M. Diab, X. Li, X. V. Lin et al.",
+      "orig_title": "Opt: Open pre-trained transformer language models",
+      "paper_id": "2205.01068v4"
+    },
+    {
+      "index": 3,
+      "title": "Fudge: Controlled Text Generation With Future Discriminators",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2104.05218",
+      "authors": "K. Yang and D. Klein",
+      "orig_title": "FUDGE: controlled text generation with future discriminators",
+      "paper_id": "2104.05218v2"
+    },
+    {
+      "index": 4,
+      "title": "Diffusion-LM improves controllable text generation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv:2205.14217",
+      "authors": "X. L. Li, J. Thickstun, I. Gulrajani, P. Liang, and T. B. Hashimoto"
+    },
+    {
+      "index": 5,
+      "title": "Lora: Low-rank adaptation of large language models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2106.09685",
+      "authors": "E. J. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang, L. Wang, and W. Chen"
+    },
+    {
+      "index": 6,
+      "title": "Towards a Unified View of Parameter-Efficient Transfer Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2110.04366",
+      "authors": "J. He, C. Zhou, X. Ma, T. Berg-Kirkpatrick, and G. Neubig",
+      "orig_title": "Towards a unified view of parameter-efficient transfer learning",
+      "paper_id": "2110.04366v3"
+    },
+    {
+      "index": 7,
+      "title": "CTRL: A Conditional Transformer Language Model for Controllable Generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv:1909.05858",
+      "authors": "N. S. Keskar, B. McCann, L. R. Varshney, C. Xiong, and R. Socher",
+      "orig_title": "CTRL: A conditional transformer language model for controllable generation",
+      "paper_id": "1909.05858v2"
+    },
+    {
+      "index": 8,
+      "title": "A Plug-and-Play Method for Controlled Text Generation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2109.09707",
+      "authors": "D. Pascual, B. Egressy, C. Meister, R. Cotterell, and R. Wattenhofer",
+      "orig_title": "A plug-and-play method for controlled text generation",
+      "paper_id": "2109.09707v1"
+    },
+    {
+      "index": 9,
+      "title": "Vector Quantized Diffusion Model for Text-to-Image Synthesis",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "S. Gu, D. Chen, J. Bao, F. Wen, B. Zhang, D. Chen, L. Yuan, and B. Guo",
+      "orig_title": "Vector quantized diffusion model for text-to-image synthesis",
+      "paper_id": "2111.14822v3"
+    },
+    {
+      "index": 10,
+      "title": "Discrete contrastive diffusion for cross-modal and conditional generation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv:2206.07771",
+      "authors": "Y. Zhu, Y. Wu, K. Olszewski, J. Ren, S. Tulyakov, and Y. Yan"
+    },
+    {
+      "index": 11,
+      "title": "Diffsound: Discrete Diffusion Model for Text-to-sound Generation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv:2207.09983",
+      "authors": "D. Yang, J. Yu, H. Wang, W. Wang, C. Weng, Y. Zou, and D. Yu",
+      "orig_title": "Diffsound: Discrete diffusion model for text-to-sound generation",
+      "paper_id": "2207.09983v2"
+    },
+    {
+      "index": 12,
+      "title": "AdapterFusion: Non-Destructive Task Composition for Transfer Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv:2005.00247",
+      "authors": "J. Pfeiffer, A. Kamath, A. Rücklé, K. Cho, and I. Gurevych",
+      "orig_title": "Adapterfusion: Non-destructive task composition for transfer learning",
+      "paper_id": "2005.00247v3"
+    },
+    {
+      "index": 13,
+      "title": "Prefix-Tuning: Optimizing Continuous Prompts for Generation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2101.00190",
+      "authors": "X. L. Li and P. Liang",
+      "orig_title": "Prefix-tuning: Optimizing continuous prompts for generation",
+      "paper_id": "2101.00190v1"
+    },
+    {
+      "index": 14,
+      "title": "Deep Unsupervised Learning using Nonequilibrium Thermodynamics",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning",
+      "authors": "J. Sohl-Dickstein, E. Weiss, N. Maheswaranathan, and S. Ganguli",
+      "orig_title": "Deep unsupervised learning using nonequilibrium thermodynamics",
+      "paper_id": "1503.03585v8"
+    },
+    {
+      "index": 15,
+      "title": "Denoising Diffusion Probabilistic Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "J. Ho, A. Jain, and P. Abbeel",
+      "orig_title": "Denoising diffusion probabilistic models",
+      "paper_id": "2006.11239v2"
+    },
+    {
+      "index": 16,
+      "title": "DExperts: Decoding-Time Controlled Text Generation with Experts and Anti-Experts",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2105.03023",
+      "authors": "A. Liu, M. Sap, X. Lu, S. Swayamdipta, C. Bhagavatula, N. A. Smith, and Y. Choi",
+      "orig_title": "DExperts: Decoding-time controlled text generation with experts and anti-experts",
+      "paper_id": "2105.03023v2"
+    },
+    {
+      "index": 17,
+      "title": "Symbolic Music Generation with Diffusion Models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2103.16091",
+      "authors": "G. Mittal, J. Engel, C. Hawthorne, and I. Simon",
+      "orig_title": "Symbolic music generation with diffusion models",
+      "paper_id": "2103.16091v2"
+    },
+    {
+      "index": 18,
+      "title": "Improved denoising diffusion probabilistic models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "A. Q. Nichol and P. Dhariwal"
+    },
+    {
+      "index": 19,
+      "title": "DiffusionBERT: Improving Generative Masked Language Models with Diffusion Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv:2211.15029",
+      "authors": "Z. He, T. Sun, K. Wang, X. Huang, and X. Qiu",
+      "orig_title": "Diffusionbert: Improving generative masked language models with diffusion models",
+      "paper_id": "2211.15029v2"
+    },
+    {
+      "index": 20,
+      "title": "Exploring Controllable Text Generation Techniques",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv:2005.01822",
+      "authors": "S. Prabhumoye, A. W. Black, and R. Salakhutdinov",
+      "orig_title": "Exploring controllable text generation techniques",
+      "paper_id": "2005.01822v2"
+    },
+    {
+      "index": 21,
+      "title": "Plug and Play Language Models: a Simple Approach to Controlled Text Generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv:1912.02164",
+      "authors": "S. Dathathri, A. Madotto, J. Lan, J. Hung, E. Frank, P. Molino, J. Yosinski, and R. Liu",
+      "orig_title": "Plug and play language models: A simple approach to controlled text generation",
+      "paper_id": "1912.02164v4"
+    },
+    {
+      "index": 22,
+      "title": "Compressing Deep Convolutional Networks using Vector Quantization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv:1412.6115",
+      "authors": "Y. Gong, L. Liu, M. Yang, and L. Bourdev",
+      "orig_title": "Compressing deep convolutional networks using vector quantization",
+      "paper_id": "1412.6115v1"
+    },
+    {
+      "index": 23,
+      "title": "Vector quantization based approximate spectral clustering of large datasets",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Pattern Recognition",
+      "authors": "K. Taşdemir"
+    },
+    {
+      "index": 24,
+      "title": "Convergence of stochastic vector quantization and learning vector quantization with bregman divergences",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IFAC-PapersOnLine",
+      "authors": "C. N. Mavridis and J. S. Baras"
+    },
+    {
+      "index": 25,
+      "title": "Unleashing Transformers: Parallel Token Prediction with Discrete Absorbing Diffusion for Fast High-Resolution Image Generation from Vector-Quantized Codes",
+      "abstract": "",
+      "year": "2022",
+      "venue": "European Conference on Computer Vision",
+      "authors": "S. Bond-Taylor, P. Hessey, H. Sasaki, T. P. Breckon, and C. G. Willcocks",
+      "orig_title": "Unleashing transformers: parallel token prediction with discrete absorbing diffusion for fast high-resolution image generation from vector-quantized codes",
+      "paper_id": "2111.12701v1"
+    },
+    {
+      "index": 26,
+      "title": "Vector quantized diffusion model with codeunet for text-to-sign pose sequences generation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv:2208.09141",
+      "authors": "P. Xie, Q. Zhang, Z. Li, H. Tang, Y. Du, and X. Hu"
+    },
+    {
+      "index": 27,
+      "title": "nuqmm: Quantized matmul for efficient inference of large-scale generative language models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv:2206.09557",
+      "authors": "G. Park, B. Park, S. J. Kwon, B. Kim, Y. Lee, and D. Lee"
+    },
+    {
+      "index": 28,
+      "title": "Quantized neural networks: Training neural networks with low precision weights and activations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "I. Hubara, M. Courbariaux, D. Soudry, R. El-Yaniv, and Y. Bengio"
+    },
+    {
+      "index": 29,
+      "title": "Diffusion Models in Vision: A Survey",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv:2209.04747",
+      "authors": "F.-A. Croitoru, V. Hondru, R. T. Ionescu, and M. Shah",
+      "orig_title": "Diffusion models in vision: A survey",
+      "paper_id": "2209.04747v6"
+    },
+    {
+      "index": 30,
+      "title": "BinaryConnect: Training Deep Neural Networks with binary weights during propagations",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "M. Courbariaux, Y. Bengio, and J.-P. David",
+      "orig_title": "Binaryconnect: Training deep neural networks with binary weights during propagations",
+      "paper_id": "1511.00363v3"
+    },
+    {
+      "index": 31,
+      "title": "AdaBin: Improving Binary Neural Networks with Adaptive Binary Sets",
+      "abstract": "",
+      "year": "2022",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Z. Tu, X. Chen, P. Ren, and Y. Wang",
+      "orig_title": "AdaBin: improving binary neural networks with adaptive binary sets",
+      "paper_id": "2208.08084v2"
+    },
+    {
+      "index": 32,
+      "title": "TernaryNet: Faster Deep Model Inference without GPUs for Medical 3D Segmentation using Sparse and Binary Convolutions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International journal of computer assisted radiology and surgery",
+      "authors": "M. P. Heinrich, M. Blendowski, and O. Oktay",
+      "orig_title": "TernaryNet: faster deep model inference without gpus for medical 3D segmentation using sparse and binary convolutions",
+      "paper_id": "1801.09449v1"
+    },
+    {
+      "index": 33,
+      "title": "Trq: Ternary neural networks with residual quantization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Y. Li, W. Ding, C. Liu, B. Zhang, and G. Guo"
+    },
+    {
+      "index": 34,
+      "title": "U-Net Fixed-Point Quantization for Medical Image Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Large-Scale Annotation of Biomedical Data and Expert Label Synthesis and Hardware Aware Learning for Medical Imaging and Computer Assisted Intervention",
+      "authors": "M. AskariHemmat, S. Honari, L. Rouhier, C. S. Perone, J. Cohen-Adad, Y. Savaria, and J.-P. David",
+      "orig_title": "U-Net fixed-point quantization for medical image segmentation",
+      "paper_id": "1908.01073v2"
+    },
+    {
+      "index": 35,
+      "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Medical image computing and computer-assisted intervention",
+      "authors": "O. Ronneberger, P. Fischer, and T. Brox",
+      "orig_title": "U-net: Convolutional networks for biomedical image segmentation",
+      "paper_id": "1505.04597v1"
+    },
+    {
+      "index": 36,
+      "title": "Parameter-Efficient Transfer Learning for NLP",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "N. Houlsby, A. Giurgiu, S. Jastrzebski, B. Morrone, Q. De Laroussilhe, A. Gesmundo, M. Attariyan, and S. Gelly",
+      "orig_title": "Parameter-efficient transfer learning for nlp",
+      "paper_id": "1902.00751v2"
+    },
+    {
+      "index": 37,
+      "title": "The Power of Scale for Parameter-Efficient Prompt Tuning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2104.08691",
+      "authors": "B. Lester, R. Al-Rfou, and N. Constant",
+      "orig_title": "The power of scale for parameter-efficient prompt tuning",
+      "paper_id": "2104.08691v2"
+    },
+    {
+      "index": 38,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)",
+      "authors": "J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova",
+      "orig_title": "BERT: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 39,
+      "title": "Vector-quantized Image Modeling with Improved VQGAN",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2110.04627",
+      "authors": "J. Yu, X. Li, J. Y. Koh, H. Zhang, R. Pang, J. Qin, A. Ku, Y. Xu, J. Baldridge, and Y. Wu",
+      "orig_title": "Vector-quantized image modeling with improved VQGAN",
+      "paper_id": "2110.04627v3"
+    },
+    {
+      "index": 40,
+      "title": "Q8bert: Quantized 8bit bert",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 5th Workshop on Energy Efficient Machine Learning and Cognitive Computing-NeurIPS Edition (EMC2-NIPS)",
+      "authors": "O. Zafrir, G. Boudoukh, P. Izsak, and M. Wasserblat"
+    },
+    {
+      "index": 41,
+      "title": "A comprehensive study on post-training quantization for large language models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv:2303.08302",
+      "authors": "Z. Yao, C. Li, X. Wu, S. Youn, and Y. He"
+    },
+    {
+      "index": 42,
+      "title": "Score-Based Generative Modeling through Stochastic Differential Equations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv:2011.13456",
+      "authors": "Y. Song, J. Sohl-Dickstein, D. P. Kingma, A. Kumar, S. Ermon, and B. Poole",
+      "orig_title": "Score-based generative modeling through stochastic differential equations",
+      "paper_id": "2011.13456v2"
+    },
+    {
+      "index": 43,
+      "title": "The curious case of neural text degeneration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv:1904.09751",
+      "authors": "A. Holtzman, J. Buys, L. Du, M. Forbes, and Y. Choi"
+    },
+    {
+      "index": 44,
+      "title": "Minimum bayes-risk decoding for statistical machine translation",
+      "abstract": "",
+      "year": "2004",
+      "venue": "JOHNS HOPKINS UNIV BALTIMORE MD CENTER FOR LANGUAGE AND SPEECH PROCESSING (CLSP), Tech. Rep.",
+      "authors": "S. Kumar and W. Byrne"
+    },
+    {
+      "index": 45,
+      "title": "Auto-encoding variational bayes",
+      "abstract": "",
+      "year": "2014",
+      "venue": "2nd International Conference on Learning Representations, ICLR 2014, Banff, AB, Canada, April 14-16, 2014, Conference Track Proceedings",
+      "authors": "D. P. Kingma and M. Welling"
+    },
+    {
+      "index": 46,
+      "title": "Stochastic backpropagation and approximate inference in deep generative models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International conference on machine learning",
+      "authors": "D. J. Rezende, S. Mohamed, and D. Wierstra"
+    },
+    {
+      "index": 47,
+      "title": "The E2E dataset: New challenges for end-to-end generation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv:1706.09254",
+      "authors": "J. Novikova, O. Dušek, and V. Rieser"
+    },
+    {
+      "index": 48,
+      "title": "A corpus and cloze evaluation for deeper understanding of commonsense stories",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+      "authors": "N. Mostafazadeh, N. Chambers, X. He, D. Parikh, D. Batra, L. Vanderwende, P. Kohli, and J. Allen"
+    },
+    {
+      "index": 49,
+      "title": "Pointer Sentinel Mixture Models",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "S. Merity, C. Xiong, J. Bradbury, and R. Socher",
+      "orig_title": "Pointer sentinel mixture models",
+      "paper_id": "1609.07843v1"
+    },
+    {
+      "index": 50,
+      "title": "Adaptive subgradient methods for online learning and stochastic optimization.",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of machine learning research",
+      "authors": "J. Duchi, E. Hazan, and Y. Singer"
+    },
+    {
+      "index": 51,
+      "title": "Visualizing Data using GTSNE",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of machine learning research",
+      "authors": "L. Van der Maaten and G. Hinton",
+      "orig_title": "Visualizing data using t-sne.",
+      "paper_id": "2108.01301v1"
+    },
+    {
+      "index": 52,
+      "title": "Improving language understanding by generative pre-training",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Technical report",
+      "authors": "A. Radford, K. Narasimhan, T. Salimans, I. Sutskever et al."
+    }
+  ]
+}

@@ -1,0 +1,321 @@
+{
+  "paper_id": "2206.09381v2",
+  "title": "Graph Neural Network Aided MU-MIMO Detectors",
+  "sections": {
+    "i introduction": "Multiuser multiple-input multiple-output (MU-MIMO) technique is one of the key\ntechnologies to enable a high throughput in 5G and beyond networks  . The usage of a high number of multiple transmit and receive antennas ensures a high spectral efficiency  , and therefore a high throughput.\nOne of the challenging problems in uplink MU-MIMO systems\nis to design a practical base station detector that can achieve a high reliability performance in the presence of a strong multi-user interference (MUI). The MUI is caused by multiple user antennas simultaneously sending information to multiple base station antennas. The state-of-the-art practical high performance MU-MIMO detectors can be classified into three categories : the linear, non-linear, and neural network (NN) based detectors. The linear detectors (e.g., minimum-mean-square-error (MMSE) detector) are attractive due to their low complexity, however, their performance is far from the near maximum likelihood (ML) performance demonstrated by the sphere decoding   , whose usage is restricted to the systems with a small number of users due to the computational complexity issue.\nThe non-linear detectors can be classified as interference cancellation (IC), tree search and message passing (MP) detectors .\nThe MP detectors   [ref]12  can achieve an excellent performance with a reasonable complexity. They use Gaussian distributions to approximate the posterior probability distribution of the transmitted symbols conditioned on the received signal. For simplicity, the latter distribution is further referred to as the posterior distribution. The performance of these detectors was shown to degrade away from the ML performance in the presence of ill-conditioned channel matrices and/or when the number of user transmit antennas (users) is equal to the number of the base station receive antennas. The latter case is referred to as a high MUI scenario.\nFor instance, the approximate message passing (AMP)  and the Bayesian parallel interference cancellation (BPIC)  detectors perform very poorly in the presence of ill-conditioned channel matrices and high MUI.\nThe problem of ill-conditioned channel matrices has been partially resolved by the orthogonal AMP (OAMP) detector [ref]12 that integrates the AMP with the linear MMSE filtering.\nThe best MP detector, the expectation propagation (EP) detector , significantly outperforms the OAMP detector by introducing regularization parameters in the MMSE filter that are iteratively adjusted according to the channel matrix and MUI level.\nHowever, there is still a significant gap to the ML performance exceeding 2 dB at the symbol error rate (SER) of 10−4superscript10410^{-4} for a 16×16161616\\times 16 MU-MIMO configuration. The NN based detectors have recently been proposed in  [ref]16    0 1 to address the performance limitation of the MP detectors in the case of ill-conditioned channel matrices and/or high MUI. This is done by unfolding the iteration process of the MP detectors into NN layers and optimizing NN parameters.\nFor example, the OAMPNet detector [ref]16  combines the OAMP and NN to deal with the ill-conditioned channel matrices. This results in a significant performance improvement compared to the conventional OAMP detector.\nAnother example of an NN based detector is the high performance recurrent equivariant (RE)-MIMO detector 0. The RE-MIMO detector unfolds the AMP detector and integrates it with a self-attention NN to significantly improve the performance of the conventional AMP detector.\nUnfortunately, the RE-MIMO requires a large number\nof NN parameters, which are difficult to optimize. Different from the RE-MIMO, the graph neural network (GNN) detector 1 is based on the belief propagation algorithm and utilizes a pair-wise Markov random field (MRF) model. The use of pair-wise model results in significant reduction of the number of NN parameters.\nNevertheless, a significant performance gap remains between the state-of-the-art practical detectors and the ML detector in the presence of ill-conditioned channel matrices and/or high MUI. As will be shown in this paper, the gap is due to the inaccuracy of the Gaussian approximation of the posterior distribution in practical detectors.\nTo the best of the authors’ knowledge, the inaccuracy of the Gaussian approximation in the state-of-the-art detectors has not been addressed in prior work. In this paper, we first analyse the state-of-the-art MP detectors, specifically, the EP, OAMP and BPIC\ndetectors, which use the posterior distribution approximation based on the independent Gaussian approximation and the Gaussian cavity distribution in the detection process. We show that the use of this posterior distribution approximation leads to the loss of some MUI information in these detectors, and therefore to a severe performance degradation in a high MUI scenario. Guided by this analysis, we propose a GNN based framework to improve the detection performance by fine-tuning the cavity distribution. Compared to the conventional Gaussian cavity function parameterized only by mean and variance, the GNN based framework incorporates additional parameters into the cavity function to capture the MUI information.\nThe framework is first used to improve the\nposterior distribution approximation in the EP detector . We refer to the newly developed detector as the graph EP network (GEPNet) detector.\nWe then demonstrate how the proposed GNN-based framework can also be used to improve the recently proposed low-complexity BPIC detector . We refer to this detector as graph parallel interference cancellation network (GPICNet) detector. The choice of the BPIC detector is motivated by its low computational complexity as it does not need to perform any matrix inversion operation in contrast to the EP detector.\nA mathematical proof of the permutation equivariance for both GEPNet and GPICNet detectors is then provided. The permutation equivariance paves a way to the robustness to the changes in the number of users, which allows the proposed detectors to be trained only once even in the systems with dynamic changes of the number of users.\nSimulation results show that the GEPNet detector is able to significantly outperform the EP , RE-MIMO 0, OAMPNet [ref]16, GNN 1, OAMP [ref]12, AMP , BPIC  detectors by more than 444 dB at the SER of 10−4superscript10410^{-4} for 64×64646464\\times 64 MU-MIMO configuration and achieve a near ML performance for various system configurations. The GPICNet detector substantially improves the performance and doubles the multiplexing gain of its predecessor BPIC detector. The main contributions of this paper: We analyse the MP detectors by evaluating the accuracy of the joint posterior distribution approximation and investigating the connection between the accuracy of the posterior distribution approximation and the cavity distribution, used to calculate the symbol estimates in the MP detectors. We show that the state-of-the-art posterior distribution approximation is inaccurate in high MUI scenarios, which leads to inaccurate symbol estimates. We develop a GNN-based framework that can be used to improve the posterior distribution approximation by fine-tuning the cavity distributions in the MP detectors   [ref]12 .\nIn contrast to 1, the proposed GNN-based framework is designed to allow processing of prior knowledge generated by the MP detectors. We propose two novel NN based detectors that use the developed GNN-based framework to improve the posterior distribution approximations in the EP and BPIC. The first detector, named GEPNet, is proposed to ensure an excellent detection performance, while the second detector, named GPICNet, is proposed to balance the performance and complexity, since it does not need to perform matrix inversion as opposed to the GEPNet detector. We show that it suffices to train the proposed detector only once with two different numbers of users by mathematically proving that the proposed detectors are equivariant to the user permutations and experimentally demonstrating that the proposed detectors are robust to the changes in the number of users. This is in contrast to the GNN 1 and OAMPNet [ref]16, which need to be trained individually for each number of users according to 1 [ref]16, and the RE-MIMO detector 0, which need to be trained with all possible numbers of users according to 0. This paper is organized as follows. A system model for an MU-MIMO system is introduced in Section II. It is followed by a brief overview of the EP detector in Section III. The analysis of the posterior distribution approximation in the EP and other MP detectors is given in Section IV. In Section V, we present the proposed GNN-based framework with the GEPNet and GPICNet detectors, prove that the proposed detectors are permutation equivariant, and analyse the computational complexity of the MU-MIMO detectors.\nIn Section VI, we discuss the training method and robustness of the proposed detectors. In Section VII, we show the simulation results. Finally, Section VIII concludes the paper. Notations: 𝐈nsubscript𝐈𝑛{\\bf I}_{n} denotes an identity matrix of size n𝑛n. For any matrix 𝐀𝐀\\mathbf{A}, the notations 𝐀Tsuperscript𝐀𝑇\\mathbf{A}^{T} and 𝐀†superscript𝐀†\\mathbf{A}^{\\dagger} stand for transpose and pseudo-inverse of 𝐀𝐀\\mathbf{A}, respectively. ∥⋅∥\\|\\cdot\\| denotes the Frobenius norm of a vector or a matrix. q∗superscript𝑞q^{*} denotes the complex conjugate of a complex number q𝑞q. Let 𝐱=[x1,⋯,xK]T𝐱superscriptsubscript𝑥1⋯subscript𝑥𝐾𝑇{\\bf x}=[x_{1},\\cdots,x_{K}]^{T} and 𝐜=[c1,⋯,cK]T𝐜superscriptsubscript𝑐1⋯subscript𝑐𝐾𝑇{\\bf c}=[c_{1},\\cdots,c_{K}]^{T}.\n𝖤​[𝐱]𝖤delimited-[]𝐱{{\\sf E}}[{\\bf x}] is the mean of random vector 𝐱𝐱{\\bf x}, and Var​[𝐱]=𝖤​[(𝐱−𝖤​[𝐱])2]Vardelimited-[]𝐱𝖤delimited-[]superscript𝐱𝖤delimited-[]𝐱2{\\mathrm{Var}}[{\\bf x}]={{\\sf E}}\\big{[}\\left({\\bf x}-{{\\sf E}}[{\\bf x}]\\right)^{2}\\big{]} is its variance. 𝒩(xk:ck,vk){\\mathcal{N}}(x_{k}:c_{k},v_{k}) represents a single variate Gaussian distribution for a random variable xksubscript𝑥𝑘x_{k} with mean cksubscript𝑐𝑘c_{k} and variance vksubscript𝑣𝑘v_{k}. [K]={1,2,…,K}delimited-[]𝐾12…𝐾[K]=\\{1,2,\\dots,K\\} is the set of all natural numbers up to K𝐾K."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "V. Miloslavskaya",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Graph neural network aided expectation propagation detector for MU-MIMO systems",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Wireless Commun. and Netw. Conf.",
+      "authors": "A. Kosasih, V. Onasis, W. Hardjawana, V. Miloslavskaya, V. Andrean, J. S. Leuy, and B. Vucetic"
+    },
+    {
+      "index": 2,
+      "title": "Prospective multiple antenna technologies for beyond 5G",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE J. Sel. Areas Commun.",
+      "authors": "J. Zhang, E. Björnson, M. Matthaiou, D. W. K. Ng, H. Yang and D. J. Love"
+    },
+    {
+      "index": 3,
+      "title": "Massive mimo techniques for 5g and beyond—opportunities and challenges",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Electronics",
+      "authors": "D. Borges, P. Montezuma, R. Dinis, and M. Beko"
+    },
+    {
+      "index": 4,
+      "title": "On limits of wireless communications in a fading environment when using multiple antennas",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Wireless Pers. Commun.",
+      "authors": "G. J. Foschini and M. J. Gans"
+    },
+    {
+      "index": 5,
+      "title": "Massive MIMO networks: Spectral, energy, and hardware efficiency",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Found. Trends Mach. Learn.",
+      "authors": "E. Björnson, J. Hoydis, and L. Sanguinetti"
+    },
+    {
+      "index": 6,
+      "title": "Artificial intelligence for 5G and beyond 5G: Implementations, algorithms, and optimizations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE J. Emerg. Sel. Top. Circuits Syst.",
+      "authors": "C. Zhang, Y. -L. Ueng, C. Studer and A. Burg"
+    },
+    {
+      "index": 7,
+      "title": "Closest point search in lattices",
+      "abstract": "",
+      "year": "2002",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "E. Agrell, T. Eriksson, A. Vardy, and K. Zeger"
+    },
+    {
+      "index": 8,
+      "title": "Sphere decoder for massive MIMO systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Nordic Circuits and Syst. Conf. (NORCAS): NORCHIP and Int. Symp. of Syst.-on-Chip (SoC)",
+      "authors": "D. Vordonis and V. Paliouras"
+    },
+    {
+      "index": 9,
+      "title": "On the sphere-decoding algorithm I. Expected complexity",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Trans. on Sig. Process.",
+      "authors": "B. Hassibi and H. Vikalo"
+    },
+    {
+      "index": 10,
+      "title": "Message passing algorithms for compressed sensing",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Nat. Acad. Sci.",
+      "authors": "D. L. Donoho, A. Maleki, and A. Montanari"
+    },
+    {
+      "index": 11,
+      "title": "MIMO detection for high-order QAM based on a Gaussian tree approximation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "J. Goldberger and A. Leshem"
+    },
+    {
+      "index": 12,
+      "title": "Orthogonal AMP",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Access",
+      "authors": "J. Ma and L. Ping",
+      "orig_title": "Orthogonal AMP",
+      "paper_id": "1602.06509v3"
+    },
+    {
+      "index": 13,
+      "title": "Expectation propagation detection for high-order high-dimensional MIMO systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Trans. Commun.",
+      "authors": "J. Céspedes, P. M. Olmos, M. Sánchez-Fernández, and F. Pérez-Cruz"
+    },
+    {
+      "index": 14,
+      "title": "A Bayesian Receiver with Improved Complexity-Reliability Trade-off in Massive MIMO Systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Commun.",
+      "authors": "A. Kosasih, V. Miloslavskaya, W. Hardjawana, C. She, C. K. Wen, and B. Vucetic",
+      "orig_title": "A Bayesian receiver with improved complexity-reliability trade-off in massive MIMO systems",
+      "paper_id": "2110.14112v1"
+    },
+    {
+      "index": 15,
+      "title": "Multilevel MIMO Detection with Deep Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv",
+      "authors": "V. Corlay, J. J. Boutros, P. Ciblat, and L. Brunel",
+      "orig_title": "Multilevel MIMO detection with deep learning",
+      "paper_id": "1812.01571v2"
+    },
+    {
+      "index": 16,
+      "title": "A Model-Driven Deep Learning Network for MIMO Detection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Glob. Conf. on Signal and Inf. Process. (GlobalSIP)",
+      "authors": "H. He, C. Wen, S. Jin, and G. Y. Li",
+      "orig_title": "A model-driven deep learning network for MIMO detection",
+      "paper_id": "1809.09336v1"
+    },
+    {
+      "index": 17,
+      "title": "Model-Driven deep learning for MIMO detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Signal Process.",
+      "authors": "H. He, C.-K. Wen, S. Jin, and G. Y. Li"
+    },
+    {
+      "index": 18,
+      "title": "Model-Driven Deep Learning for Physical Layer Communications",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Commun.",
+      "authors": "H. He, S. Jin, C.-K. Wen, F. Gao, G. Y. Li, and Z. Xu",
+      "orig_title": "Model-driven deep learning for physical layer communications",
+      "paper_id": "1809.06059v2"
+    },
+    {
+      "index": 19,
+      "title": "Learning to Detect",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Signal Process.",
+      "authors": "N. Samuel, T. Diskin, and A. Wiesel",
+      "orig_title": "Learning to detect",
+      "paper_id": "1805.07631v1"
+    },
+    {
+      "index": 20,
+      "title": "RE-MIMO: Recurrent and permutation equivariant neural MIMO detection",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Signal Process.",
+      "authors": "K. Pratik, B. D. Rao, and M. Welling"
+    },
+    {
+      "index": 21,
+      "title": "Graph Neural Networks for Massive MIMO Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv",
+      "authors": "A. Scotti, N. N. Moghadam, D. Liu, K. Gafvert, and J. Huang",
+      "orig_title": "Graph neural networks for massive MIMO detection",
+      "paper_id": "2007.05703v1"
+    },
+    {
+      "index": 22,
+      "title": "Gaussian processes for machine learning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "MIT Press",
+      "authors": "C. E. Rasmussen and C. K. I. Williams"
+    },
+    {
+      "index": 23,
+      "title": "Improving MIMO systems performances by concatenating LDPC decoder to the STBC and MRC receivers",
+      "abstract": "",
+      "year": "2015",
+      "venue": "World Symp. Comput. Networks and Inf. Secur.",
+      "authors": "E. Ghayoula, M. H. Taieb, J. Chouinard, R. Ghayoula, and A. Bouallegue"
+    },
+    {
+      "index": 24,
+      "title": "Space-time coding",
+      "abstract": "",
+      "year": "2003",
+      "venue": "John Wiley and Sons, Inc.",
+      "authors": "B. Vucetic and J. Yuan"
+    },
+    {
+      "index": 25,
+      "title": "Energy spreading transform based MIMO systems: iterative equalization, evolution analysis, and precoder optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Trans. Wireless Commun.",
+      "authors": "X. Yuan, J. Ma, and L. Ping"
+    },
+    {
+      "index": 26,
+      "title": "Adaptive neural signal detection for massive MIMO",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Wireless Commun.",
+      "authors": "M. Khani, M. Alizadeh, J. Hoydis and P. Fleming"
+    },
+    {
+      "index": 27,
+      "title": "Gated Graph Sequence Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv",
+      "authors": "Y. Li, D. Tarlow, M. Brockschmidt, and R. Zemel",
+      "orig_title": "Gated graph sequence neural networks",
+      "paper_id": "1511.05493v4"
+    },
+    {
+      "index": 28,
+      "title": "Inference in Probabilistic Graphical Models by Graph Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv",
+      "authors": "K. Yoon, R. Liao, Y. Xiong, L. Zhang, E. Fetaya, R. Urtasun, R. Zemel, and X. Pitkow",
+      "orig_title": "Inference in probabilistic graphical models by graph neural networks",
+      "paper_id": "1803.07710v5"
+    },
+    {
+      "index": 29,
+      "title": "Markov random fields and their applications)",
+      "abstract": "",
+      "year": "1980",
+      "venue": "American Math. Soc.",
+      "authors": "R. Kindermann and J. L. Snell"
+    },
+    {
+      "index": 30,
+      "title": "Group Equivariant Convolutional Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Int. Conf. on Machine Learning",
+      "authors": "T. Cohen and M. Welling",
+      "orig_title": "Group equivariant convolutional networks",
+      "paper_id": "1602.07576v3"
+    },
+    {
+      "index": 31,
+      "title": "Iterative multiuser joint decoding: Optimal power allocation and low-complexity implementation",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "G. Caire, R. Muller, and T. Tanaka"
+    },
+    {
+      "index": 32,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Adv. Neural Inf. Process. Syst.",
+      "authors": "A. Paszke et al.",
+      "orig_title": "PyTorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 33,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MIT Press",
+      "authors": "I. Goodfellow, Y. Bengio, and A. Courville",
+      "orig_title": "Deep learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 34,
+      "title": "Gurobi optimizer reference manual",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Gurobi",
+      "authors": "L. Gurobi Optimization"
+    },
+    {
+      "index": 35,
+      "title": "Branch and cut — Wikipedia, the free encyclopedia",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Wikipedia",
+      "authors": "Wikipedia contributors"
+    }
+  ]
+}

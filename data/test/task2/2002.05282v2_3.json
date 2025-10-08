@@ -1,0 +1,433 @@
+{
+  "paper_id": "2002.05282v2",
+  "title": "A Bounded Measure for Estimating the Benefit of Visualization",
+  "sections": {
+    "overview, motivation, and problem statement": "Visualization is useful in most data intelligence workflows, but the usefulness is not universally true because the effectiveness of visualization is usually data-, user-, and task-dependent.\nThe cost-benefit ratio proposed by Chen and Golan  captures the essence of such dependency.\nBelow is the qualitative expression of the measure: Consider the scenario of viewing some data through a particular visual representation.\nThe term Alphabet Compression (AC) measures the amount of information loss due to visual abstraction .\nSince the visual representation is fixed in the scenario, AC is thus largely data-dependent.\nAC is a positive measure reflecting the fact that visual abstraction must be useful in many cases though it may result in information loss.\nThis apparently counter-intuitive term is essential for asserting why visualization is useful. (Note that the term also helps assert the usefulness of statistics, algorithms, and interaction since they all usually cause information loss . See also Appendix A.) The positive implication of the term AC is counterbalanced by the term Potential Distortion, while both being moderated by the term Cost.\nThe term Cost encompasses all costs of the visualization process, including computational costs (e.g., visual mapping and rendering), cognitive costs (e.g., cognitive load), and consequential costs (e.g., impact of errors).\nAs illustrated in Fig. 1, increasing AC typically enables the reduction of cost (e.g., in terms of energy, time, or money). The term Potential Distortion (PD) measures the informative divergence between viewing the data through visualization with information loss and reading the data without any information loss. The latter might be ideal but is usually at an unattainable cost except for values in a very small data space (i.e., in a small alphabet as discussed in ).\nAs shown in Fig. 1, increasing AC typically causes more PD.\nPD is data-dependent or user-dependent.\nGiven the same data visualization with the same amount of information loss, one can postulate that a user with more knowledge about the data or visual representation usually suffers less distortion.\nThis postulation is a focus of this paper. Consider the visual representation of a network of arteries in Fig. 2.\nThe image was generated from a volume dataset using the maximum intensity projection (MIP) method.\nWhile it is known that MIP cannot convey depth information well, it has been widely used for observing some classes of medical imaging data, such as arteries.\nThe highlighted area in Fig. 2 shows an apparently flat area, which is a distortion from the actuality of a tubular surface likely with some small wrinkles and bumps.\nThe doctors who deal with such medical data are expected to have sufficient knowledge to reconstruct the reality adequately from the “distorted” visualization, while being able to focus on the more important task of making diagnostic decisions, e.g., about aneurysm. As shown in some recent works, it is possible for visualization designers to estimate AC, PD, and Cost qualitatively [ref]10  and quantitatively  .\nIt is highly desirable to advance the scientific methods for quantitative estimation, towards the eventual realization of computer-assisted analysis and optimization in designing visual representations.\nThis work focuses on one challenge of quantitative estimation, i.e., how to estimate the benefit of visualization to human users with different knowledge about the depicted data and visual encoding. Building on the methods of observational estimation in  and controlled experiment in , one may reasonably anticipate a systematic method based on a short interview by asking potential viewers a few questions.\nFor example, one may use the question in Fig. 2 to estimate the knowledge of doctors, patients, and any other people who may view such a visualization.\nThe question is intended to tease out two pieces of knowledge that may help reduce the potential distortion due to the “flat area” depiction.\nOne piece is about the general knowledge that associates arteries with tube-like shapes.\nAnother, which is more advanced, is about the surface texture of arteries and the limitations of the MIP method. Let the binary options about whether the “flat area” is actually flat or curved be an alphabet 𝔸={curved,flat}𝔸curvedflat\\mathbb{A}=\\{\\textit{curved},\\textit{flat}\\}.\nThe likelihood of the two options is represented by a probability distribution or probability mass function (PMF) P​(𝔸)={1−ϵ,0+ϵ}𝑃𝔸1italic-ϵ0italic-ϵP(\\mathbb{A})=\\{1-\\epsilon,0+\\epsilon\\}, where 0<ϵ<10italic-ϵ10<\\epsilon<1.\nSince most arteries in the real world are of tubular shapes, one can imagine that a ground truth alphabet 𝔸G.T.subscript𝔸G.T.\\mathbb{A}_{\\text{G.T.}} might have a PMF P​(𝔸G.T.)𝑃subscript𝔸G.T.P(\\mathbb{A}_{\\text{G.T.}}) strongly in favor of the curved option.\nHowever, the visualization seems to suggest the opposite, implying a PMF P​(𝔸MIP)𝑃subscript𝔸MIPP(\\mathbb{A}_{\\text{MIP}}) strongly in favor of the flat option.\nIt is not difficult to interview some potential viewers, enquiring how they would answer the question.\nOne may estimate a PMF P​(𝔸doctors)𝑃subscript𝔸doctorsP(\\mathbb{A}_{\\text{doctors}}) from doctors’ answers, and another P​(𝔸patients)𝑃subscript𝔸patientsP(\\mathbb{A}_{\\text{patients}}) from patients’ answers. Table 1 shows two scenarios where different probability data is obtained. The values of PD are computed using the most well-known divergence measure, KL-divergence , and are of unit bit.\nIn Scenario 1, without any knowledge, the visualization process would suffer 6.50 bits of PD.\nAs doctors are not fooled by the “flat area” shown in the MIP visualization, their knowledge is worth 6.50 bits.\nMeanwhile, patients would suffer 1.12 bits of PD on average, their knowledge is worth 5.38=6.50−1.125.386.501.125.38=6.50-1.12 bits. In Scenario 2, the PMFs of P​(𝔸G.T.)𝑃subscript𝔸G.T.P(\\mathbb{A}_{\\text{G.T.}}) and P​(𝔸MIP)𝑃subscript𝔸MIPP(\\mathbb{A}_{\\text{MIP}}) depart further away, while P​(𝔸doctors)𝑃subscript𝔸doctorsP(\\mathbb{A}_{\\text{doctors}}) and P​(𝔸patients)𝑃subscript𝔸patientsP(\\mathbb{A}_{\\text{patients}}) remain the same.\nAlthough doctors and patients would suffer more PD, their knowledge is worth more than that in Scenario 1 (i.e., 13.28−0.05=13.2313.280.0513.2313.28-0.05=13.23 bits and 13.28−3.11=10.1713.283.1110.1713.28-3.11=10.17 bits respectively). Similarly, the binary options about whether the “flat area” is actually smooth or not can be defined by an alphabet\n𝔸={wrinkles-and-bumps,smooth}𝔸wrinkles-and-bumpssmooth\\mathbb{A}=\\{\\textit{wrinkles-and-bumps},\\,\\textit{smooth}\\}.\nTable 2 shows two scenarios about collected probability data.\nIn these two scenarios, doctors exhibit much more knowledge than patients, indicating that the surface texture of arteries is a piece of specialized knowledge. The above example demonstrates that using the KL-divergence to estimate PD can differentiate the knowledge variation between doctors and patients regarding the two pieces of knowledge that may reduce the distortion due to the “flat area”.\nWhen it is used in Eq.  1 in a relative or qualitative context (e.g., [ref]10 ), the unboundedness of the KL-divergence does not pose an issue. However, this does become an issue when the KL-divergence is used to measure PD in an absolute and quantitative context.\nFrom the two diverging PMFs P​(𝔸G.T.)𝑃subscript𝔸G.T.P(\\mathbb{A}_{\\text{G.T.}}) and P​(𝔸MIP)𝑃subscript𝔸MIPP(\\mathbb{A}_{\\text{MIP}}) in Table 1, or P​(𝔹G.T.)𝑃subscript𝔹G.T.P(\\mathbb{B}_{\\text{G.T.}}) and P​(𝔹MIP)𝑃subscript𝔹MIPP(\\mathbb{B}_{\\text{MIP}}) in Table 2, we can observe that the smaller ϵitalic-ϵ\\epsilon is, the more divergent the two PMFs become and the higher value the PD has.\nIndeed, consider an arbitrary alphabet ℤ={z1,z2}ℤsubscript𝑧1subscript𝑧2\\mathbb{Z}=\\{z_{1},z_{2}\\}, and two PMFs defined upon ℤℤ\\mathbb{Z}: P=[0+ϵ, 1−ϵ]𝑃0italic-ϵ1italic-ϵP=[0+\\epsilon,\\,1-\\epsilon] and Q=[1−ϵ, 0+ϵ]𝑄1italic-ϵ 0italic-ϵQ=[1-\\epsilon,\\,0+\\epsilon].\nWhen ϵ→0→italic-ϵ0\\epsilon\\rightarrow 0, we have the KL-divergence 𝒟KL(Q||P)→∞{\\mathcal{D}_{\\text{KL}}}(Q||P)\\rightarrow\\infty. Meanwhile, the Shannon entropy of ℤℤ\\mathbb{Z}, ℋ​(ℤ)ℋℤ\\mathcal{H}(\\mathbb{Z}), has an upper bound of 1 bit.\nIt is thus not intuitive or practical to relate the value of 𝒟KL(Q||P){\\mathcal{D}_{\\text{KL}}}(Q||P) to that of ℋ​(ℤ)ℋℤ\\mathcal{H}(\\mathbb{Z}).\nMany applications of information theory do not relate these two types of values explicitly.\nWhen reasoning such relations is required, the common approach is to impose a lower-bound threshold for ϵitalic-ϵ\\epsilon (e.g., ).\nHowever, there is yet a consistent method for defining such a threshold for various alphabets in different applications, while preventing a range of small or large values (i.e., [0,ϵ)0italic-ϵ[0,\\epsilon) or (1−ϵ,1]1italic-ϵ1(1-\\epsilon,1]) in a PMF is often inconvenient in practice.\nIn the following section, we discuss several approaches to defining a bounded measure for PD. Note: for an information-theoretic measure, we use an alphabet ℤℤ\\mathbb{Z} and its PMF P𝑃P interchangeably, e.g., ℋ​(P​(ℤ))=ℋ​(P)=ℋ​(ℤ)ℋ𝑃ℤℋ𝑃ℋℤ{\\mathcal{H}}(P(\\mathbb{Z}))={\\mathcal{H}}(P)={\\mathcal{H}}(\\mathbb{Z})."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "An information-aware framework for exploring multivariate data sets",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "A. Biswas, S. Dutta, H.-W. Shen, and J. Woodring"
+    },
+    {
+      "index": 1,
+      "title": "View selection for volume rendering",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Visualization",
+      "authors": "U. Bordoloi and H.-W. Shen"
+    },
+    {
+      "index": 2,
+      "title": "Multimodal data fusion based on mutual information",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "R. Bramon, I. Boada, A. Bardera, Q. Rodríguez, M. Feixas, J. Puig, and M. Sbert"
+    },
+    {
+      "index": 3,
+      "title": "An information-theoretic observation channel for volume visualization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Computer Graphics Forum",
+      "authors": "R. Bramon, M. Ruiz, A. Bardera, I. Boada, M. Feixas, and M. Sbert"
+    },
+    {
+      "index": 4,
+      "title": "Information theory-based automatic multimodal transfer function design",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Journal of Biomedical and Health Informatics",
+      "authors": "R. Bramon, M. Ruiz, A. Bardera, I. Boada, M. Feixas, and M. Sbert"
+    },
+    {
+      "index": 5,
+      "title": "Isosurface similarity maps",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Computer Graphics Forum",
+      "authors": "S. Bruckner and T. Möller"
+    },
+    {
+      "index": 6,
+      "title": "An ontological framework for supporting the design and evaluation of visual analytics systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Computer Graphics Forum",
+      "authors": "M. Chen and D. S. Ebert"
+    },
+    {
+      "index": 7,
+      "title": "‘isms’ in visualization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Foundations of Data Visualization. Springer",
+      "authors": "M. Chen and D. J. Edwards"
+    },
+    {
+      "index": 8,
+      "title": "Information Theory Tools for Visualization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "A K Peters",
+      "authors": "M. Chen, M. Feixas, I. Viola, A. Bardera, H.-W. Shen, and M. Sbert"
+    },
+    {
+      "index": 9,
+      "title": "Cost-benefit Analysis of Visualization in Virtual Environments",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "M. Chen, K. Gaither, N. W. John, and B. McCann",
+      "orig_title": "Cost-benefit analysis of visualization in virtual environments",
+      "paper_id": "1802.09012v2"
+    },
+    {
+      "index": 10,
+      "title": "What May Visualization Processes Optimize?",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "M. Chen and A. Golan",
+      "orig_title": "What may visualization processes optimize?",
+      "paper_id": "1506.02245v1"
+    },
+    {
+      "index": 11,
+      "title": "Pathways for theoretical advances in visualization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Computer Graphics and Applications",
+      "authors": "M. Chen, G. Grinstein, C. R. Johnson, J. Kennedy, and M. Tory"
+    },
+    {
+      "index": 12,
+      "title": "An information-theoretic framework for visualization",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "M. Chen and H. Jänicke"
+    },
+    {
+      "index": 13,
+      "title": "On the Upper Bound of the Kullback-Leibler Divergence and Cross Entropy",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv:1911.08334",
+      "authors": "M. Chen and M. Sbert",
+      "orig_title": "On the upper bound of the kullback-leibler divergence and cross entropy",
+      "paper_id": "1911.08334v1"
+    },
+    {
+      "index": 14,
+      "title": "Visual multiplexing",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computer Graphics Forum",
+      "authors": "M. Chen, S. Walton, K. Berger, J. Thiyagalingam, B. Duffy, H. Fang, C. Holloway, and A. E. Trefethen"
+    },
+    {
+      "index": 15,
+      "title": "Feature aligned volume manipulation for illustration and visualization",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "C. Correa, D. Silver, and M. Chen"
+    },
+    {
+      "index": 16,
+      "title": "Elements of Information Theory",
+      "abstract": "",
+      "year": "2006",
+      "venue": "John Wiley & Sons",
+      "authors": "T. M. Cover and J. A. Thomas"
+    },
+    {
+      "index": 17,
+      "title": "Conceptualizing visual uncertainty in parallel coordinates",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Computer Graphics Forum",
+      "authors": "A. Dasgupta, M. Chen, and R. Kosara"
+    },
+    {
+      "index": 18,
+      "title": "An information theory framework for the analysis of scene complexity",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Computer Graphics Forum",
+      "authors": "M. Feixas, E. del Acebo, P. Bekaert, and M. Sbert"
+    },
+    {
+      "index": 19,
+      "title": "A unified information-theoretic framework for viewpoint selection and mesh saliency",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ACM Transactions on Applied Perception",
+      "authors": "M. Feixas, M. Sbert, and F. González"
+    },
+    {
+      "index": 20,
+      "title": "Lecture 17: Huffman coding",
+      "abstract": "",
+      "year": "2020",
+      "venue": "http://home.cse.ust.hk/faculty/golin/COMP271Sp03/Notes/MyL17.pdf",
+      "authors": "M. J. Golin"
+    },
+    {
+      "index": 21,
+      "title": "Maximum entropy light source placement",
+      "abstract": "",
+      "year": "2002",
+      "venue": "IEEE Visualization",
+      "authors": "S. Gumhold"
+    },
+    {
+      "index": 22,
+      "title": "Base-criterion on multi-criteria decision-making method and its applications",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Journal of Management Science and Engineering Management",
+      "authors": "G. Haseli, R. Sheikh, and S. S. Sana"
+    },
+    {
+      "index": 23,
+      "title": "Multi-Criteria Decision Analysis: Methods and Software",
+      "abstract": "",
+      "year": "2013",
+      "venue": "John Wiley & Sons",
+      "authors": "A. Ishizaka and P. Nemery"
+    },
+    {
+      "index": 24,
+      "title": "Visual analysis of flow features using information theory",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Computer Graphics and Applications",
+      "authors": "H. Jänicke and G. Scheuermann"
+    },
+    {
+      "index": 25,
+      "title": "Multifield visualization using local statistical complexity",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "H. Jänicke, A. Wiebel, G. Scheuermann, and W. Kollmann"
+    },
+    {
+      "index": 26,
+      "title": "instantreality 1.0",
+      "abstract": "",
+      "year": "2019",
+      "venue": "https://doc.instantreality.org/tutorial/volume-rendering/",
+      "authors": "Y. Jung"
+    },
+    {
+      "index": 27,
+      "title": "Empirically measuring soft knowledge in visualization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Computer Graphics Forum",
+      "authors": "N. Kijmongkolchai, A. Abdul-Rahman, and M. Chen"
+    },
+    {
+      "index": 28,
+      "title": "On information and sufficiency",
+      "abstract": "",
+      "year": "1951",
+      "venue": "Annals of Mathematical Statistics",
+      "authors": "S. Kullback and R. A. Leibler"
+    },
+    {
+      "index": 29,
+      "title": "Divergence measures based on the shannon entropy",
+      "abstract": "",
+      "year": "1991",
+      "venue": "IEEE Transactions on Information Theory",
+      "authors": "J. Lin"
+    },
+    {
+      "index": 30,
+      "title": "Local and global illumination in the volume rendering integral",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Scientific Visualization: Advanced Concepts. Schloss Dagstuhl, Wadern, Germany",
+      "authors": "N. Max and M. Chen"
+    },
+    {
+      "index": 31,
+      "title": "A Student’s Guide to Coding and Information Theory",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Cambridge University Press",
+      "authors": "S. M. Moser"
+    },
+    {
+      "index": 32,
+      "title": "Interactive volume illustration",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Vision, Modeling and Visualization",
+      "authors": "Z. Nagy, J. Schneide, and R. Westerman"
+    },
+    {
+      "index": 33,
+      "title": "Automatic selection of attributes by importance in relevance feedback visualisation",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Information Visualisation",
+      "authors": "C. U. Ng and G. Martin"
+    },
+    {
+      "index": 34,
+      "title": "Theoretical foundations of information visualization",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Information Visualization: Human-Centered Issues and Perspectives, Springer LNCS 4950",
+      "authors": "H. C. Purchase, N. Andrienko, T. J. Jankun-Kelly, and M. Ward"
+    },
+    {
+      "index": 35,
+      "title": "Best-worst multi-criteria decision-making method",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Omega",
+      "authors": "J. Rezaei"
+    },
+    {
+      "index": 36,
+      "title": "Shape complexity based on mutual information",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Shape Modeling and Applications",
+      "authors": "J. Rigau, M. Feixas, and M. Sbert"
+    },
+    {
+      "index": 37,
+      "title": "The volume library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "http://schorsch.efi.fh-nuernberg.de/data/volume/",
+      "authors": "S. Roettger"
+    },
+    {
+      "index": 38,
+      "title": "Automatic transfer functions based on informational divergence",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "M. Ruiz, A. Bardera, I. Boada, I. Viola, M. Feixas, and M. Sbert"
+    },
+    {
+      "index": 39,
+      "title": "A mathematical theory of communication",
+      "abstract": "",
+      "year": "1948",
+      "venue": "Bell System Technical Journal",
+      "authors": "C. E. Shannon"
+    },
+    {
+      "index": 40,
+      "title": "Why visualize? untangling a large network of arguments",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "D. Streeb, M. El-Assady, D. Keim, and M. Chen"
+    },
+    {
+      "index": 41,
+      "title": "A feature-driven approach to locating optimal viewpoints for volume visualization",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Visualization",
+      "authors": "S. Takahashi and Y. Takeshima"
+    },
+    {
+      "index": 42,
+      "title": "An analysis of machine- and human-analytics in classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "G. K. L. Tam, V. Kothari, and M. Chen"
+    },
+    {
+      "index": 43,
+      "title": "Automatic view selection using viewpoint entropy and its application to image-based modelling",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Computer Graphics Forum",
+      "authors": "P.-P. Vázquez, M. Feixas, M. Sbert, and W. Heidrich"
+    },
+    {
+      "index": 44,
+      "title": "Visual Abstraction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Foundations of Data Visualization. Springer",
+      "authors": "I. Viola, M. Chen, and T. Isenberg",
+      "orig_title": "Visual abstraction",
+      "paper_id": "1910.03310v2"
+    },
+    {
+      "index": 45,
+      "title": "Importance-driven focus of attention",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "I. Viola, M. Feixas, M. Sbert, and M. E. Gröller"
+    },
+    {
+      "index": 46,
+      "title": "LOD Map - a visual interface for navigating multiresolution volume visualization",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "C. Wang and H.-W. Shen"
+    },
+    {
+      "index": 47,
+      "title": "Information theory in scientific visualization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Entropy",
+      "authors": "C. Wang and H.-W. Shen"
+    },
+    {
+      "index": 48,
+      "title": "Importance-driven time-varying data visualization",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "C. Wang, H. Yu, and K.-L. Ma"
+    },
+    {
+      "index": 49,
+      "title": "Evaluating isosurfaces with level-set-based information maps",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Computer Graphics Forum",
+      "authors": "T.-H. Wei, T.-Y. Lee, and H.-W. Shen"
+    },
+    {
+      "index": 50,
+      "title": "Interactive transfer function design based on editing direct volume rendered images",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "Y. Wu and H. Qu"
+    },
+    {
+      "index": 51,
+      "title": "An information-theoretic framework for flow visualization",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "L. Xu, T. Y. Lee, and H. W. Shen"
+    }
+  ]
+}

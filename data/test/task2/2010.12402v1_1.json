@@ -1,0 +1,539 @@
+{
+  "paper_id": "2010.12402v1",
+  "title": "On the Robustness of Noise-Blind Low-Rank Recovery from Rank-One Measurements",
+  "sections": {
+    "motivation and literature overview": "Initiated by the seminal works introducing the idea of compressive sensing   , the problem of recovering structured data from an underdetermined system random linear measurements has been subject of intensive study in mathematics, signal processing, and computer science in recent years. Two classes of structural models that have proven particularly useful are variants of sparsity, where the signal is assumed to have only few significant coefficients in an appropriate basis, and low-rank models, where a matrix-valued signal is assumed to be well-approximated by a matrix of rank much less than the dimension. In both cases, the measurements are of the form where 𝒜𝒜\\mathcal{A} is a (random) linear operator, which maps the unknown structured object X𝑋X to the observed measurements b𝑏b and w𝑤w is a noise. One typically assumes that the number of measurement is much smaller than the signal dimension, which is why such measurement scenarios (especially in combination with a sparsity assumption) are commonly referred to as compressive sensing. It is not difficult to show that for both the sparsity and the low-rank model, the object that is extremal with regards to the underlying structure, i.e., has fewest non-zero coefficients or smallest rank, respectively, is indeed the correct solution in many cases if there is no additive noise. That is, in case of sparse recovery with w=0𝑤0w=0 one can often recover X𝑋X by solving with ∥Z∥ℓ0subscriptdelimited-∥∥𝑍subscriptℓ0\\left\\lVert Z\\right\\rVert_{\\ell_{0}} denoting the number of non-zero entries of Z𝑍Z, and for noiseless low-rank matrix recovery X𝑋X can typically be recovered via the problem Both these problems, however, are non-convex optimization problems and, in general, NP-hard  . However, tractable reconstruction of X𝑋X via appropriate convex relaxations is provably possible  if 𝒜𝒜\\mathcal{A} possesses the null space property  or the restricted isometry property . If X𝑋X is sparse, one can reconstruct it in the noiseless case (w=0𝑤0w=0) as a minimizer of which can be efficiently solved numerically . If X𝑋X is of low rank, one can find it via the second order cone problem where the nuclear norm ∥⋅∥S1\\|\\cdot\\|_{S_{1}} of a matrix is defined to be the sum of its singular values. Subsequent works in the field gave an answer to the questions that followed: Will the reconstruction work if the assumption of sparsity or low rank is only approximately satisfied  ? Can X𝑋X be reconstructed robustly in the presence of noise with known strength as constraints in (2) or (3) are no longer valid  ? What if the strength is unknown or underestimated  ? Can one blindly apply (2) or (3) in the presence of noise and still obtain reasonable reconstruction   ? The answer the to the first two question is “yes”, if 𝒜𝒜\\mathcal{A} possesses the robust null space property , which is known to be fulfilled for many random matrices with high probability, mostly matrices with independent rows. The last two questions, however, cannot be answered affirmatively in general if 𝒜𝒜\\mathcal{A} fulfills only a suitable restricted isometry property   or robust null space property   with respect to the underlying structure. On the other hand, if in addition 𝒜𝒜\\mathcal{A} fulfills the so-called quotient property   (see Section 1.5 below), the last two questions can be answered with “yes” in the case of the sparse recovery problem, i.e., if X𝑋X is a sparse vector. For low-rank matrix recovery answers to question Q3 are only available in limited classes of scenarios and Q4 has hardly been studied in the literature. For sparse recovery, in contrast, these questions are much better understood, in parts also because the quotient property is closely related to well-studied questions in the field of high-dimensional geometry . As the null space property, the quotient property is typically established via random constructions, and the choice of the random distribution of 𝒜𝒜\\mathcal{A} is critical. In contrast to the null space property, however, these constructions often rely on the independence of the columns rather than the rows. The quotient property adapted for eq. 2 has been studied in a number of works over the recent years,\nextending the seminal results for Gaussian matrices  to matrices with i.i.d. subgaussian entries such as Bernoulli , Weibull matrices , log-concave distributions , and, more recently, even more heavy-tailed distributions including Cauchy random vectors . When the random matrix has independent entries (and, consequently, both independent rows to yield the quotient property and independent rows to yield the null space property), these results can be combined with results about the null space property to yield noise-blind recovery guarantees, e.g., for Gaussian  and subgaussian random matrices . As such bounds require a logarithmic number of finite moments , the resulting guarantees for noise-blind sparse recovery require slightly stronger conditions on the tail decay of the random matrix entries than the quotient property by itself. Similar results about null space and quotient properties hold for random measurement operators based on independent matrices with i.i.d. subgaussian entries and can be used to characterize the performance of eq. 3 for low-rank matrix recovery. For most application scenarios\nof sparse recovery,\nthe assumption of measurement operators with independent entries is too restrictive. In more realistic measurement scenarios, one encounters structural constraints imposed by the application. Examples for sparse recovery include Fourier structure [ref]58, combinations of Fourier and wavelet structure  3 as motivated, e.g., by magnetic resonance imaging \nand convolutional structure as motivated, e.g., by channel identification   . Such structured scenarios are also preferred for reasons of reduced computational complexity , but their theoretical analysis pose considerable challenges as compared to unstructured random ones 7 . Structural constraints are even more significant in the low-rank matrix recovery as the matrices that constitute the linear operator 𝒜𝒜\\mathcal{A} of eq. 1 are in many applications not modeled very accurately by random matrices with i.i.d. entries. For example, in recommender systems, it is common to model a user-product matrix as approximately low-rank , which is known only through a subset of its entries, often assumed to be revealed at random locations 1 7. This corresponds to a low-rank matrix recovery problem with an operator 𝒜𝒜\\mathcal{A} whose constituent matrices do not have i.i.d. entries, but are outer products of random standard basis vectors. Other relevant structured measurement scenarios for low-rank matrix recovery include symmetric rank-one measurements (see also Section 1.2 below), as related to phase retrieval , often in combination with additional structure such as coded diffraction patterns 0 or non-symmetric rank-one and low-rank measurements as encountered in blind deconvolution  and blind demixing [ref]38, and various structural models related to quantum state tomography  8 . Despite this large variety of relevant structured measurement scenarios, the study of the quotient property with structure is only in its beginnings. To our knowledge, there are two main contributions to mention here:  has provided such an estimate for sparse recovery with Fourier structure, and  observed for low-rank matrix recovery from Pauli measurements the quotient property directly follows from orthogonality. One should mention though that solving (2) is not the only way to attempt noise-blind recovery. For measurement systems satisfying the restricted isometry property, recovery guarantees have been established for various greedy and greedy-type methods such as orthogonal matching pursuit 2 and compressive sampling matching pursuit , which do not require a prior knowledge of the noise level, but instead require an upper bound on the sparsity level, which may also not be available in all cases. Furthermore, the square root lasso, a variant of (2) given by the minimization problem has been shown to yield recovery with a parameter λ𝜆\\lambda independent of the noise level under restricted eigenvalue conditions , and also under the robust null space property . For the low-rank matrix recovery problem, the restricted isometry property has mainly been established for unstructured measurement systems (with the notable exception of Pauli measurements as relevant in quantum information theory ), so the guarantees for greedy and greedy-type methods have limited applicability. While an approach analogous to the square root lasso also allows for noise-blind recovery when the noise is random  – for example for matrix completion – no analysis based on the robust null space property analogous to  is available yet.\nFor the phase retrieval problem, where the solution is known to be positive semidefinite (see below for more details), it has been shown that noise-blind recovery at near-optimal rate can be achieved by completely ignoring the nuclear norm objective of eq. 3 and just optimizing the data fidelity over the positive semidefinite cone 3  . Despite the availability of alternative approaches for a number of scenarios, however, we feel that understanding the quotient property of structured random measurement systems is of interest both from the mathematical point of view – given the fundamental role of algorithms (2) and (3) as a benchmark – and from the viewpoint of applications, given that these approaches form the basis of competitive solution approaches such as Iteratively Reweighted Least Squares 2 9 6 5, and hence their understanding sheds light on these methods as well."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Breaking the coherence barrier: A new theory for compressed sensing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Forum of Mathematics, Sigma",
+      "authors": "B. Adcock, A. C. Hansen, C. Poon, and B. Roman"
+    },
+    {
+      "index": 1,
+      "title": "Blind deconvolution using convex programming",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Trans. Inform. Theory",
+      "authors": "A. Ahmed, B. Recht, and J. Romberg"
+    },
+    {
+      "index": 2,
+      "title": "Compressive wideband power spectrum estimation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Trans. Signal Process.",
+      "authors": "D. D. Ariananda and G. Leus"
+    },
+    {
+      "index": 3,
+      "title": "Square-root lasso: pivotal recovery of sparse signals via conic programming",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Biometrika",
+      "authors": "A. Belloni, V. Chernozhukov, and L. Wang"
+    },
+    {
+      "index": 4,
+      "title": "Matrix Analysis, volume 169 of Graduate Texts in Mathematics",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Springer New York",
+      "authors": "R. Bhatia"
+    },
+    {
+      "index": 5,
+      "title": "Robustness to unknown error in sparse regularization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "S. Brugiapaglia and B. Adcock",
+      "orig_title": "Robustness to unknown error in sparse regularization",
+      "paper_id": "1705.10299v2"
+    },
+    {
+      "index": 6,
+      "title": "The restricted isometry property and its implications for compressed sensing",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Comptes Rendus Mathematique",
+      "authors": "E. J. Candès"
+    },
+    {
+      "index": 7,
+      "title": "Phase Retrieval via Matrix Completion",
+      "abstract": "",
+      "year": "2013",
+      "venue": "SIAM J. Imag. Sci.",
+      "authors": "E. J. Candès, Y. Eldar, T. Strohmer, and V. Voroninski"
+    },
+    {
+      "index": 8,
+      "title": "Solving quadratic equations via phaselift when there are about as many equations as unknowns",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Found. Comput. Math.",
+      "authors": "E. J. Candès and X. Li"
+    },
+    {
+      "index": 9,
+      "title": "Phase retrieval from coded diffraction patterns",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Appl. Comput. Harmon. Anal.",
+      "authors": "E. J. Candes, X. Li, and M. Soltanolkotabi"
+    },
+    {
+      "index": 10,
+      "title": "Matrix completion with noise",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE",
+      "authors": "E. J. Candès and Y. Plan"
+    },
+    {
+      "index": 11,
+      "title": "Tight oracle inequalities for low-rank matrix recovery from a minimal number of noisy random measurements",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Trans. Inform. Theory",
+      "authors": "E. J. Candès and Y. Plan"
+    },
+    {
+      "index": 12,
+      "title": "Robust uncertainty principles: exact signal reconstruction from highly incomplete frequency information",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "E. J. Candès, J. Romberg, and T. Tao"
+    },
+    {
+      "index": 13,
+      "title": "Stable signal recovery from incomplete and inaccurate measurements",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Comm. Pure Appl. Math.",
+      "authors": "E. J. Candès, J. Romberg, and T. Tao"
+    },
+    {
+      "index": 14,
+      "title": "Phaselift: Exact and stable signal recovery from magnitude measurements via convex programming",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Commun. Pure Appl. Math.",
+      "authors": "E. J. Candès, T. Strohmer, and V. Voroninski"
+    },
+    {
+      "index": 15,
+      "title": "Near-Optimal Signal Recovery From Random Projections: Universal Encoding Strategies?",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "E. J. Candès and T. Tao"
+    },
+    {
+      "index": 16,
+      "title": "The power of convex relaxation: Near-optimal matrix completion",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Trans. Inform. Theory",
+      "authors": "E. J. Candès and T. Tao"
+    },
+    {
+      "index": 17,
+      "title": "Exact and stable covariance estimation from quadratic sampling via convex programming",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Trans. Inform. Theory",
+      "authors": "Y. Chen, Y. Chi, and A. J. Goldsmith"
+    },
+    {
+      "index": 18,
+      "title": "The distribution of quadratic forms in a normal system, with applications to the analysis of covariance",
+      "abstract": "",
+      "year": "1934",
+      "venue": "Math. Proc. Cambridge Philos. Soc.",
+      "authors": "W. G. Cochran"
+    },
+    {
+      "index": 19,
+      "title": "Compressed sensing and best k-term approximation",
+      "abstract": "",
+      "year": "2009",
+      "venue": "J. Amer. Math. Soc",
+      "authors": "A. Cohen, W. Dahmen, and R. DeVore"
+    },
+    {
+      "index": 20,
+      "title": "Asymptotic shape of a random polytope in a convex body",
+      "abstract": "",
+      "year": "2009",
+      "venue": "J. Funct. Anal.",
+      "authors": "N. Dafnis, A. Giannopoulos, and A. Tsolomitis"
+    },
+    {
+      "index": 21,
+      "title": "Iteratively reweighted least squares minimization for sparse recovery",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Commun. Pure Appl. Math.",
+      "authors": "I. Daubechies, R. DeVore, M. Fornasier, and C. Güntürk"
+    },
+    {
+      "index": 22,
+      "title": "Stable optimizationless recovery from phaseless linear measurements",
+      "abstract": "",
+      "year": "2014",
+      "venue": "J. Fourier Anal. Appl.",
+      "authors": "L. Demanet and P. Hand"
+    },
+    {
+      "index": 23,
+      "title": "Instance-optimality in probability with an ℓ1subscriptℓ1\\ell_{1}-minimization decoder",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Appl. Comput. Harmon. Anal.",
+      "authors": "R. DeVore, G. Petrova, and P. Wojtaszczyk"
+    },
+    {
+      "index": 24,
+      "title": "Compressed sensing",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "D. L. Donoho"
+    },
+    {
+      "index": 25,
+      "title": "Optimally sparse representation in general (nonorthogonal) dictionaries via l1 minimization",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Proc. Natl. Acad. Sci. USA",
+      "authors": "D. L. Donoho and M. Elad"
+    },
+    {
+      "index": 26,
+      "title": "Matrix Rank Minimization with Applications",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": "M. Fazel"
+    },
+    {
+      "index": 27,
+      "title": "Quantum tomography via compressed sensing: error bounds, sample complexity and efficient estimators",
+      "abstract": "",
+      "year": "2012",
+      "venue": "New J. Phys.",
+      "authors": "S. T. Flammia, D. Gross, Y.-K. Liu, and J. Eisert"
+    },
+    {
+      "index": 28,
+      "title": "Low-rank matrix recovery via iteratively reweighted least squares minimization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "SIAM J. Optim.",
+      "authors": "M. Fornasier, H. Rauhut, and R. Ward"
+    },
+    {
+      "index": 29,
+      "title": "Stability and robustness of ℓ1subscriptℓ1\\ell_{1}-minimizations with weibull matrices and redundant dictionaries",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Linear Algebra Appl.",
+      "authors": "S. Foucart"
+    },
+    {
+      "index": 30,
+      "title": "A mathematical introduction to compressive sensing",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Applied and Numerical Harmonic Analysis. Birkhäuser",
+      "authors": "S. Foucart and H. Rauhut"
+    },
+    {
+      "index": 31,
+      "title": "High dimensional matrix estimation with unknown variance of the noise",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Statist. Sinica",
+      "authors": "S. Gaïffas and O. Klopp"
+    },
+    {
+      "index": 32,
+      "title": "Extremal Properties of Orthogonal Parallelepipeds and Their Applications to the Geometry of Banach Spaces",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Sb. Math.",
+      "authors": "E. D. Gluskin"
+    },
+    {
+      "index": 33,
+      "title": "CVX: Matlab Software for Disciplined Convex Programming, Version 2.2",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "M. Grant and S. Boyd"
+    },
+    {
+      "index": 34,
+      "title": "Quantum state tomography via compressed sensing",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Phys. Rev. Lett.",
+      "authors": "D. Gross, Y.-K. Liu, S. T. Flammia, S. Becker, and J. Eisert"
+    },
+    {
+      "index": 35,
+      "title": "On the geometry of polytopes generated by heavy-tailed random vectors",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.07258",
+      "authors": "O. Guédon, F. Krahmer, C. Kümmerle, S. Mendelson, and H. Rauhut",
+      "orig_title": "On the geometry of polytopes generated by heavy-tailed random vectors",
+      "paper_id": "1907.07258v1"
+    },
+    {
+      "index": 36,
+      "title": "Toeplitz compressed sensing matrices with applications to sparse channel estimation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "J. Haupt, W. U. Bajwa, G. Raz, and R. Nowak"
+    },
+    {
+      "index": 37,
+      "title": "Blind demixing and deconvolution at near-optimal rate",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Inform. Theory",
+      "authors": "P. Jung, F. Krahmer, and D. St ger"
+    },
+    {
+      "index": 38,
+      "title": "Stable low-rank matrix recovery via null space properties",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Inf. Inference",
+      "authors": "M. Kabanava, R. Kueng, H. Rauhut, and U. Terstiege",
+      "orig_title": "Stable low-rank matrix recovery via null space properties",
+      "paper_id": "1507.07184v1"
+    },
+    {
+      "index": 39,
+      "title": "Matrix Factorization Techniques for Recommender Systems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Computer",
+      "authors": "Y. Koren, R. Bell, and C. Volinsky"
+    },
+    {
+      "index": 40,
+      "title": "Suprema of chaos processes and the restricted isometry property",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Commun. Pure Appl. Math.",
+      "authors": "F. Krahmer, S. Mendelson, and H. Rauhut"
+    },
+    {
+      "index": 41,
+      "title": "On the convex geometry of blind deconvolution and matrix completion",
+      "abstract": "",
+      "year": "",
+      "venue": "Comm. Pure Appl. Math.",
+      "authors": "F. Krahmer and D. St ger"
+    },
+    {
+      "index": 42,
+      "title": "Stable and robust sampling strategies for compressive imaging",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Trans. Image Process.",
+      "authors": "F. Krahmer and R. Ward"
+    },
+    {
+      "index": 43,
+      "title": "Low rank matrix recovery from rank one measurements",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Appl. Comput. Harmon. Anal.",
+      "authors": "R. Kueng, H. Rauhut, and U. Terstiege",
+      "orig_title": "Low rank matrix recovery from rank one measurements",
+      "paper_id": "1410.6913v1"
+    },
+    {
+      "index": 44,
+      "title": "Harmonic Mean Iteratively Reweighted Least Squares for Low-Rank Matrix Recovery",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "C. Kümmerle and J. Sigl"
+    },
+    {
+      "index": 45,
+      "title": "Improved iteratively reweighted least squares for unconstrained smoothed ℓqsubscriptℓ𝑞\\ell_{q} minimization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "SIAM J. Numer. Anal",
+      "authors": "M. Lai, Y. Xu, and W. Yin"
+    },
+    {
+      "index": 46,
+      "title": "Recovering second-order statistics from compressive measurements",
+      "abstract": "",
+      "year": "2011",
+      "venue": "2011 4th IEEE International Workshop on Computational Advances in Multi-Sensor Adaptive Processing (CAMSAP)",
+      "authors": "G. Leus and Z. Tian"
+    },
+    {
+      "index": 47,
+      "title": "Smallest singular value of random matrices and geometry of random polytopes",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Adv. Math.",
+      "authors": "A. Litvak, A. Pajor, M. Rudelson, and N. Tomczak-Jaegermann"
+    },
+    {
+      "index": 48,
+      "title": "Universal low-rank matrix recovery from Pauli measurements",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Advances in Neural Information Processing Systems (NIPS)",
+      "authors": "Y.-K. Liu"
+    },
+    {
+      "index": 49,
+      "title": "Compressed sensing mri",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Signal Processing Magazine",
+      "authors": "M. Lustig, D. L. Donoho, J. M. Santos, and J. M. Pauly"
+    },
+    {
+      "index": 50,
+      "title": "Sparse recovery under weak moment assumptions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. Eur. Math. Soc.",
+      "authors": "S. Mendelson and G. Lecué"
+    },
+    {
+      "index": 51,
+      "title": "Sparse approximate solutions to linear systems",
+      "abstract": "",
+      "year": "1995",
+      "venue": "SIAM J. Comput.",
+      "authors": "B. Natarajan"
+    },
+    {
+      "index": 52,
+      "title": "CoSaMP: Iterative signal recovery from incomplete and inaccurate samples",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Appl. Comput. Harmon. Anal.",
+      "authors": "D. Needell and J. A. Tropp"
+    },
+    {
+      "index": 53,
+      "title": "Robust instance-optimal recovery of sparse signals at unknown noise levels",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2008.08385",
+      "authors": "H. B. Petersen and P. Jung"
+    },
+    {
+      "index": 54,
+      "title": "Compressive sensing and structured random matrices",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Theoretical Foundations and Numerical Methods for Sparse Recovery, Radon Series on Computational and Applied Mathematics",
+      "authors": "H. Rauhut"
+    },
+    {
+      "index": 55,
+      "title": "Restricted isometries for partial random circulant matrices",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Appl. Comput. Harmon. Anal.",
+      "authors": "H. Rauhut, J. Romberg, and J. A. Tropp"
+    },
+    {
+      "index": 56,
+      "title": "Guaranteed minimum-rank solutions of linear matrix equations via nuclear norm minimization",
+      "abstract": "",
+      "year": "2010",
+      "venue": "SIAM Rev.",
+      "authors": "B. Recht, M. Fazel, and P. A. Parrilo"
+    },
+    {
+      "index": 57,
+      "title": "On sparse reconstruction from Fourier and Gaussian measurements",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Comm. Pure Appl. Math.",
+      "authors": "M. Rudelson and R. Vershynin"
+    },
+    {
+      "index": 58,
+      "title": "Regularization-free estimation in trace regressionwith symmetric positive semidefinite matrices",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems (NIPS)",
+      "authors": "M. Slawski, P. Li, and M. Hein",
+      "orig_title": "Regularization-free estimation in trace regression with symmetric positive semidefinite matrices",
+      "paper_id": "1504.06305v1"
+    },
+    {
+      "index": 59,
+      "title": "Multiplexed coded illumination for fourier ptychography with an led array microscope",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Biomed. Opt. Express",
+      "authors": "L. Tian, X. Li, K. Ramchandran, and L. Waller"
+    },
+    {
+      "index": 60,
+      "title": "Regression shrinkage and selection via the lasso",
+      "abstract": "",
+      "year": "1996",
+      "venue": "J. R. Stat. Soc. Ser. B Stat. Methodol.",
+      "authors": "R. Tibshirani"
+    },
+    {
+      "index": 61,
+      "title": "Signal recovery from random measurements via orthogonal matching pursuit",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE Trans. Inform. Theory",
+      "authors": "J. A. Tropp and A. C. Gilbert"
+    },
+    {
+      "index": 62,
+      "title": "Solving semidefinite-quadratic-linear programs using sdpt3",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Math. Program.",
+      "authors": "R. H. Tütüncü, K.-C. Toh, and M. J. Todd"
+    },
+    {
+      "index": 63,
+      "title": "High-Dimensional Probability",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Cambridge University Press",
+      "authors": "R. Vershynin"
+    },
+    {
+      "index": 64,
+      "title": "Stability and instance optimality for Gaussian measurements in compressed sensing",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Found. Comput. Math.",
+      "authors": "P. Wojtaszczyk"
+    }
+  ]
+}

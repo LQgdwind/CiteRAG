@@ -1,0 +1,481 @@
+{
+  "paper_id": "2104.07454v3",
+  "title": "Memory Capacity of Recurrent Neural Networks with Matrix Representation",
+  "sections": {
+    "discussion and future work": "We studied the memory capacity of a new class of RNNs introduced by Gao et. al  for incorporating matrix representations using a bilinear map. We discussed various existing definitions of memory capacity and how most of the definitions prove to be not easily generalizable to matrix representations. We hence use a probabilistic model of the memory capacity using Fisher information as introduced by Ganguli et. al . We investigated how the memory capacity for matrix representation networks is limited under various constraints, and in general, without any constraints. In the case of memory capacity without any constraints, we found that the upper bound on memory capacity is N2superscript𝑁2N^{2} for N×N𝑁𝑁N\\times N state matrix. This seems to generalize the similar upper bound for vector representation RNNs (N𝑁N for state vector of length N𝑁N). Moreover, we demonstrated that the inclusion of saturating non-linearities over the state transition may further bind the total memory capacity even tighter. We note that the proposed method is based on a Gaussian assumption. The main equation (Eq. 5) is based solely on the assumption that the noise channel is a Gaussian matrix with zero mean matrix and covariance matrices (for rows and columns) which are diagonal with all eigenvalues equal (introduction of Sec. 3). The main reason of taking Gaussian distribution is due to the literature (Ganguli et. al. ) which uses the Gaussian assumption on the noise. Corollary 10 shows that the relative memory capacity of Eq. 5 is lower than 1 which is based on the same assumptions as that of Ganguli et. al  which used the vector representation rather than matrix representation. The main theorem from which our analysis of Section 3 begins would not be possible without the Gaussian assumption. The FMM of Eq. 5, as calculated in Theorem 2, would not have been possible without the Gaussian distribution. Even in that case, we had to compute the KL-divergence of a Gaussian random matrix distribution (Lemma 3) and as the proof shows, it is not at all clear how we can do the same for any other distribution. In Figures 5 and 7, we find that the values of MatNTM fluctuate more largely than those of Matrix RNNs. Although we don’t have a definite answer to explain the main reason behind the difference, some of the reasons could be as follows. It was our general observation that we had to take an unusually small learning rate during backpropagation for MatNTM in order to avoid not a number (NaN). We had to fine-tune our settings too much, for we saw that under certain random seeds, we were not able to converge to a minimum. Even then, as is visible in Figure 5 and 7, the loss fluctuates a lot. This indicates that the loss landscape is quite chaotic for matrix representations with memory and is very sensitive to starting conditions. This is to be expected since Eq. 5 introduces a quadratic form in the recurrent system (as compared to vector representation networks) which is expected to make the loss landscape quite a lot more sensitive to fine differences in initial conditions. Memory networks in general have a rather chaotic loss curve due to the increase in complexity of the model that comes from having a differentiable memory which is visible in the literature (Graves et. al ). The theoretical study and subsequent simulations hence reveal the fundamental bounds on memory capacity as revealed by the proposed definition and the striking increase in memory capacity induced by external memory, which is in line with basic intuition, but quantitatively has been a difficult task to ascertain. Moreover, we used a notion of memory capacity based only on Fisher Information, whereas much of the recent work is focused on functional & probabilistic definitions . Counter-acting the difficulty of extending such notions to the domain of matrix representations would be the obvious next step. One of the recent developments in the class of neural network architectures has been memory-augmented neural networks. However, quantifying the increase in actual memory capacity induced by such an external memory hasn’t been discussed yet. Given this motivation, we derived the memory trace of a linear matrix recurrent network with queue-like state memory, which provides the current state with the information of not just the state at t−1𝑡1t-1 timestep, but states at t−p𝑡𝑝t-p timesteps for a fixed p≥1𝑝1p\\geq 1. We note that this is very similar to the work of Soltani and Jiang [ref]50 dubbed as Higher Order RNNs, which also provide the current state with a fixed number of past states, though in vector-based representation. In terms of mathematical limitations, we note that the focus of our study was a linearized version of Eq. 5 which is not suited to understand the general behavior of such networks under non-linearities. The notion of memory capacity used in our study is not explicit, and in literature, there are various other notions of memory capacity that include analytic definitions as well, which in some sense is more explicit (see Section 2). We chose to work with a probabilistic definition, as we were able to develop the tools required for the analysis of matrix representations under such a definition in a rather straightforward manner. We along with others who studied matrix neural networks  [ref]22 argue that it prevents the loss of spatial coherence introduced by vectorizing two-dimensional data. Unfortunately, as of now, we don’t have any way of proving/disproving this mathematically. The major experimental limitation we faced was the extreme sensitivity of MatNTM to starting conditions and hyperparameters. This greatly inhibits our potential to carry out a diverse set of experiments on MatNTM, as is done by others in the field of memory networks. We note that memory networks such as NTMs already are quite difficult to train, and the addition of more complicated representations makes the training process much harder. There is a high increase in the complexity of our model by the introduction of matrix representation when compared to conventional vector representation. In particular, for Eq. 5, we see that one can view that matrix recurrent system as a stacked version of feedforward neural networks, one for rows of X𝑋X and the other for columns of X𝑋X. Let us explain. The main part of the equation that affects the state is X​(n)=UT​X​(n−1)​V𝑋𝑛superscript𝑈𝑇𝑋𝑛1𝑉X(n)=U^{TX(n-1)V}. One can view UT​X​(n−1)superscript𝑈𝑇𝑋𝑛1U^{TX(n-1)} as a simple neural network with a weight matrix UTsuperscript𝑈𝑇U^{T} which acts on each column of X​(n−1)𝑋𝑛1X(n-1). The effect of V as in UT​X​(n−1)superscript𝑈𝑇𝑋𝑛1U^{TX(n-1)}, V𝑉V is simply as another feed-forward network with weight matrix VTsuperscript𝑉𝑇V^{T} which acts on the rows of the resultant matrix UT​X​(n−1)superscript𝑈𝑇𝑋𝑛1U^{TX(n-1)}. It is in this manner that matrix networks can be thought of as classical feed-forward networks stacked both row-wise and column-wise. It clearly appears that even a simple matrix network has more complexity than its vector-based simple neural network counterpart. Adding to this external memory, one can expect that the complexity of the model increases substantially. Another way of looking at this could be as follows. In Table 1, we see that both Matrix RNNs and MatNTMs do not require too many parameters (compare this to vector counterparts, where NTM with feedforward controller requires 17162 parameters to learn basic copy task  . This indicates that, in particular, MatNTM learns the same task in a much smaller number of parameters than its vector counterpart (NTM). This is only possible when the complexity of the model itself is such that it allows the model training even under such constraints posed by a low number of parameters. Hence, one can conclude that the complexity of any model which is learning a task with fewer parameters than some other one is bound to be more complicated. But it is important to keep in mind that this is not for free as we suffer greatly while finding the right hyperparameters to train a complex model such as MatNTM. Extending the memory networks to different types of representations has been proposed in recent times [ref]46 . We extend this line of work by extending the NTM with matrix representations whose preliminary results on two synthetic tasks show its advantage over the simple Matrix RNN. Due to our theory for the memory of matrix networks in Sections (2.1-3), it was developed only with basic recurrent dynamics in mind, not for the widely used LSTMs due to obvious difficulties for the first study of such kind; hence, we refrained from using LSTM controller in MatNTM for the experiments. However, our experiments revealed that MatNTM with Matrix LSTM performs far better than that of the MatNTM with Matrix RNN controller presented in this work. We hope to extend this study to Matrix LSTM models in the future. It is usually the case that memory networks are trained on algorithmic tasks as given in earlier works ( ). Furthermore, there is scope for the extension of Matrix RNN to explore its potential for prediction and decision-making using time series data. Our work introduced matrix representations as a natural next step from the vector representations as envisioned earlier  and subsequently expanded . Several such extensions have been made ever since, which go one step further and generalize\nthe notion of neural networks to higher-order tensors as the inputs. Clearly, such extensions are heavily non-trivial to work with from any, functional or probabilistic, point of view. Perhaps that is where an information geometric point of view might be helpful for any future work in this line of study. Another way ahead is to develop a robust uncertainty quantification framework via Bayesian inference for Bayesian Matrix NTMs. We note that the copy tasks by NTMs are computationally expensive and Bayesian inference via Markov Chain Monte Carlo Methods (MCMC) requires thousands of samples or model realizations for sampling the posterior distribution of neural weights and biases. We can incorporate recent frameworks that used MCMC with gradient methods and parallel computing  to overcome computational challenges. Moreover, surrogate-based MCMC methods for computationally expensive models can also be used  along with variational inference methods ."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Neural Tangent Kernel: Convergence and Generalization in Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems 31",
+      "authors": "A. Jacot, F. Gabriel, C. Hongler",
+      "orig_title": "Neural tangent kernel: Convergence and generalization in neural networks",
+      "paper_id": "1806.07572v4"
+    },
+    {
+      "index": 1,
+      "title": "Training second-order recurrent neural networks using hints",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Ninth International Conference on Machine Learning",
+      "authors": "C. W. Omlin, C. L. Giles"
+    },
+    {
+      "index": 2,
+      "title": "Fuzzy finite state automata can be deterministically encoded into recurrent neural networks",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE Trans. Fuzzy Syst.",
+      "authors": "C. W. Omlin, K. K. Thornber, C. L. Giles"
+    },
+    {
+      "index": 3,
+      "title": "AntisymmetricRNN: A Dynamical System View on Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "B. Chang, M. Chen, E. Haber, E. H. Chi",
+      "orig_title": "AntisymmetricRNN: A dynamical system view on recurrent neural networks",
+      "paper_id": "1902.09689v1"
+    },
+    {
+      "index": 4,
+      "title": "Iemocap: interactive emotional dyadic motion capture database",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Language Resources and Evaluation",
+      "authors": "C. Busso, M. Bulut, C.-C. Lee, A. Kazemzadeh, E. Mower, S. Kim, J. N. Chang, S. Lee, S. S. Narayanan"
+    },
+    {
+      "index": 5,
+      "title": "Introducing the recola multimodal corpus of remote collaborative and affective interactions",
+      "abstract": "",
+      "year": "2013",
+      "venue": "2013 10th IEEE International Conference and Workshops on Automatic Face and Gesture Recognition (FG)",
+      "authors": "F. Ringeval, A. Sonderegger, J. Sauer, D. Lalanne"
+    },
+    {
+      "index": 6,
+      "title": "The need for biases in learning generalizations",
+      "abstract": "",
+      "year": "1980",
+      "venue": "",
+      "authors": "T. M. Mitchell"
+    },
+    {
+      "index": 7,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Krizhevsky, I. Sutskever, G. E. Hinton"
+    },
+    {
+      "index": 8,
+      "title": "Graph-Structured Representations for Visual Question Answering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "D. Teney, L. Liu, A. Van Den Hengel",
+      "orig_title": "Graph-structured representations for visual question answering",
+      "paper_id": "1609.05600v2"
+    },
+    {
+      "index": 9,
+      "title": "Contrastive Learning of Structured World Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "T. Kipf, E. van der Pol, M. Welling",
+      "orig_title": "Contrastive learning of structured world models",
+      "paper_id": "1911.12247v2"
+    },
+    {
+      "index": 10,
+      "title": "Ordered Neurons: Integrating Tree Structures into Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Y. Shen, S. Tan, A. Sordoni, A. Courville",
+      "orig_title": "Ordered neurons: Integrating tree structures into recurrent neural networks",
+      "paper_id": "1810.09536v6"
+    },
+    {
+      "index": 11,
+      "title": "Relational inductive biases, deep learning, and graph networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "P. W. Battaglia, J. B. Hamrick, et. al.",
+      "orig_title": "Relational inductive biases, deep learning, and graph networks",
+      "paper_id": "1806.01261v3"
+    },
+    {
+      "index": 12,
+      "title": "Tensorial neural networks and its application in longitudinal network data analysis",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Neural Information Processing",
+      "authors": "M. Bai, B. Zhang, J. Gao"
+    },
+    {
+      "index": 13,
+      "title": "Tensorial Neural Networks: Generalization of Neural Networks and Application to Model Compression",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv e-prints",
+      "authors": "J. Su, J. Li, B. Bhattacharjee, F. Huang",
+      "orig_title": "Tensorial Neural Networks: Generalization of Neural Networks and Application to Model Compression",
+      "paper_id": "1805.10352v3"
+    },
+    {
+      "index": 14,
+      "title": "Tensor-variate restricted boltzmann machines",
+      "abstract": "",
+      "year": "2015",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "T. Nguyen, T. Tran, D. Phung, S. Venkatesh"
+    },
+    {
+      "index": 15,
+      "title": "Representation learning: A review and new perspectives",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "Y. Bengio, A. Courville, P. Vincent"
+    },
+    {
+      "index": 16,
+      "title": "Estimation of heteroscedasticity in regression analysis",
+      "abstract": "",
+      "year": "1987",
+      "venue": "The Annals of Statistics",
+      "authors": "H.-G. Muller, U. Stadtmuller, et al."
+    },
+    {
+      "index": 17,
+      "title": "Constructing the matrix multilayer perceptron and its application to the vae",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "J. Taghia, M. Bånkestad, F. Lindsten, T. B. Schön"
+    },
+    {
+      "index": 18,
+      "title": "A Riemannian Network for SPD Matrix Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Z. Huang, L. Van Gool",
+      "orig_title": "A riemannian network for spd matrix learning",
+      "paper_id": "1608.04233v2"
+    },
+    {
+      "index": 19,
+      "title": "Matrix Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Working Papers, University of Sydney Business School, Discipline of Business Analytics",
+      "authors": "J. Gao, Y. Guo, Z. Wang",
+      "orig_title": "Matrix neural networks",
+      "paper_id": "1601.03805v2"
+    },
+    {
+      "index": 20,
+      "title": "Learning deep matrix representations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "K. Do, T. Tran, S. Venkatesh"
+    },
+    {
+      "index": 21,
+      "title": "Cyclone track prediction with matrix neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 International Joint Conference on Neural Networks (IJCNN)",
+      "authors": "Y. Zhang, R. Chandra, J. Gao"
+    },
+    {
+      "index": 22,
+      "title": "Temporal Attention augmented Bilinear Network for Financial Time-Series Data Analysis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "D. T. Tran, A. Iosifidis, J. Kanniainen, M. Gabbouj",
+      "orig_title": "Temporal attention-augmented bilinear network for financial time-series data analysis",
+      "paper_id": "1712.00975v1"
+    },
+    {
+      "index": 23,
+      "title": "Neural turing machines",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "A. Graves, G. Wayne, I. Danihelka"
+    },
+    {
+      "index": 24,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural computation",
+      "authors": "S. Hochreiter, J. Schmidhuber"
+    },
+    {
+      "index": 25,
+      "title": "Memory traces in dynamical systems",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Proceedings of the National Academy of Sciences",
+      "authors": "S. Ganguli, D. Huh, H. Sompolinsky"
+    },
+    {
+      "index": 26,
+      "title": "Hybrid computing using a neural network with dynamic external memory",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Nature",
+      "authors": "A. Graves, G. Wayne, M. Reynolds, T. Harley, I. Danihelka, A. Grabska-Barwińska, S. G. Colmenarejo, E. Grefenstette, T. Ramalho, J. Agapiou, et al."
+    },
+    {
+      "index": 27,
+      "title": "Meta-learning with memory-augmented neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International conference on machine learning",
+      "authors": "A. Santoro, S. Bartunov, M. Botvinick, D. Wierstra, T. Lillicrap"
+    },
+    {
+      "index": 28,
+      "title": "Memory Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations",
+      "authors": "J. Weston, S. Chopra, A. Bordes",
+      "orig_title": "Memory networks",
+      "paper_id": "1410.3916v11"
+    },
+    {
+      "index": 29,
+      "title": "On neuronal capacity",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems 31",
+      "authors": "P. Baldi, R. Vershynin"
+    },
+    {
+      "index": 30,
+      "title": "The Capacity of feedforward neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "P. Baldi, R. Vershynin",
+      "orig_title": "The capacity of feedforward neural networks",
+      "paper_id": "1901.00434v2"
+    },
+    {
+      "index": 31,
+      "title": "Memory capacity of neural networks with threshold and rectified linear unit activations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIAM Journal on Mathematics of Data Science",
+      "authors": "R. Vershynin"
+    },
+    {
+      "index": 32,
+      "title": "Short-term memory in orthogonal neural networks",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Physical Review Letters",
+      "authors": "O. L. White, D. D. Lee, H. Sompolinsky"
+    },
+    {
+      "index": 33,
+      "title": "Matrix Variate Distributions",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Monographs and Surveys in Pure and Applied Mathematics, Taylor & Francis",
+      "authors": "A. Gupta, D. Nagar"
+    },
+    {
+      "index": 34,
+      "title": "Sequence to sequence learning with neural networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in neural information processing systems",
+      "authors": "I. Sutskever, O. Vinyals, Q. V. Le"
+    },
+    {
+      "index": 35,
+      "title": "On information and sufficiency",
+      "abstract": "",
+      "year": "1951",
+      "venue": "The annals of mathematical statistics",
+      "authors": "S. Kullback, R. A. Leibler"
+    },
+    {
+      "index": 36,
+      "title": "Information theory and statistics",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Courier Corporation",
+      "authors": "S. Kullback"
+    },
+    {
+      "index": 37,
+      "title": "Information theory and statistics: A tutorial",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Foundations and Trends® in Communications and Information Theory",
+      "authors": "I. Csiszár, P. C. Shields, et al."
+    },
+    {
+      "index": 38,
+      "title": "New Insights and Perspectives on the Natural Gradient Method",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "J. Martens",
+      "orig_title": "New insights and perspectives on the natural gradient method",
+      "paper_id": "1412.1193v11"
+    },
+    {
+      "index": 39,
+      "title": "Fisher memory of linear wigner echo state networks.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ESANN",
+      "authors": "P. Tino"
+    },
+    {
+      "index": 40,
+      "title": "Inverting modified matrices",
+      "abstract": "",
+      "year": "1950",
+      "venue": "Memorandum report",
+      "authors": "M. A. Woodbury"
+    },
+    {
+      "index": 41,
+      "title": "On the properties of neural machine translation: Encoder–decoder approaches",
+      "abstract": "",
+      "year": "2014",
+      "venue": "SSST-8, Eighth Workshop on Syntax, Semantics and Structure in Statistical Translation, Association for Computational Linguistics",
+      "authors": "K. Cho, B. van Merriënboer, D. Bahdanau, Y. Bengio"
+    },
+    {
+      "index": 42,
+      "title": "Memory Augmented Neural Networks with Wormhole Connections",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "C. Gulcehre, S. Chandar, Y. Bengio",
+      "orig_title": "Memory augmented neural networks with wormhole connections",
+      "paper_id": "1701.08718v1"
+    },
+    {
+      "index": 43,
+      "title": "Neural Stored-program Memory",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "H. Le, T. Tran, S. Venkatesh",
+      "orig_title": "Neural stored-program memory",
+      "paper_id": "1906.08862v2"
+    },
+    {
+      "index": 44,
+      "title": "Learning context-free grammars: Capabilities and limitations of a recurrent neural network with an external stack memory",
+      "abstract": "",
+      "year": "1992",
+      "venue": "The Fourteenth Annual Conference of Cognitive Science Society. Indiana University",
+      "authors": "S. Das, C. L. Giles, G.-Z. Sun"
+    },
+    {
+      "index": 45,
+      "title": "Graph Memory Networks for Molecular Activity Prediction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 24th International Conference on Pattern Recognition (ICPR)",
+      "authors": "T. Pham, T. Tran, S. Venkatesh",
+      "orig_title": "Graph memory networks for molecular activity prediction",
+      "paper_id": "1801.02622v2"
+    },
+    {
+      "index": 46,
+      "title": "Memory-Based Graph Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "A. H. Khasahmadi, K. Hassani, P. Moradi, L. Lee, Q. Morris",
+      "orig_title": "Memory-based graph networks",
+      "paper_id": "2002.09518v2"
+    },
+    {
+      "index": 47,
+      "title": "Lecture 6.5—RmsProp: Divide the gradient by a running average of its recent magnitude",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": "T. Tieleman, G. Hinton"
+    },
+    {
+      "index": 48,
+      "title": "On the difficulty of training recurrent neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Machine Learning Research, PMLR",
+      "authors": "R. Pascanu, T. Mikolov, Y. Bengio"
+    },
+    {
+      "index": 49,
+      "title": "Higher Order Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "R. Soltani, H. Jiang",
+      "orig_title": "Higher order recurrent neural networks",
+      "paper_id": "1605.00064v1"
+    },
+    {
+      "index": 50,
+      "title": "Matrix Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Networks-ISNN 2017: 14th International Symposium, ISNN 2017, Sapporo, Hakodate, and Muroran, Hokkaido, Japan, June 21–26, 2017, Proceedings, Part I 14, Springer",
+      "authors": "J. Gao, Y. Guo, Z. Wang",
+      "orig_title": "Matrix neural networks",
+      "paper_id": "1601.03805v2"
+    },
+    {
+      "index": 51,
+      "title": "Langevin-gradient parallel tempering for bayesian neural learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neurocomputing",
+      "authors": "R. Chandra, K. Jain, R. V. Deo, S. Cripps"
+    },
+    {
+      "index": 52,
+      "title": "Surrogate-assisted parallel tempering for Bayesian neural learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Engineering Applications of Artificial Intelligence",
+      "authors": "R. Chandra, K. Jain, A. Kapoor, A. Aman",
+      "orig_title": "Surrogate-assisted parallel tempering for bayesian neural learning",
+      "paper_id": "1811.08687v3"
+    },
+    {
+      "index": 53,
+      "title": "Weight uncertainty in neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "32nd International Conference on Machine Learning-Volume 37",
+      "authors": "C. Blundell, J. Cornebise, K. Kavukcuoglu, D. Wierstra"
+    }
+  ]
+}

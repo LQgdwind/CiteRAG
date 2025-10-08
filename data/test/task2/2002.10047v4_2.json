@@ -1,0 +1,507 @@
+{
+  "paper_id": "2002.10047v4",
+  "title": "Parallel Clique Counting and Peeling Algorithms",
+  "sections": {
+    "introduction": "Finding k𝑘k-cliques in a graph is a fundamental\ngraph-theoretic problem with a long history of study both in theory\nand practice. In recent years, k𝑘k-clique counting and listing have\nbeen widely applied in practice due to their many applications,\nincluding in learning network embeddings ,\nunderstanding the structure and formation of\nnetworks  , identifying dense subgraphs for\ncommunity detection  8  , and\ngraph partitioning and compression . For sparse graphs, the best known sequential algorithm is by Chiba and\nNishizeki , and requires O​(m​αk−2)𝑂𝑚superscript𝛼𝑘2O(m\\alpha^{k-2}) work\n(number of operations), where α𝛼\\alpha is the arboricity of the\ngraph.111A graph has arboricity α𝛼\\alpha if the minimum number of spanning forests needed to cover the graph is α𝛼\\alpha. The state-of-the-art clique parallel k𝑘k-clique counting algorithm is\nkClist , which achieves the same work bound,\nbut does not have a strong theoretical bound on the\nspan (parallel time). Furthermore, kClist as well as existing parallel k𝑘k-clique counting\nalgorithms have limited scalability for graphs with more than a few\nhundred million edges, but real-world graphs today frequently contain\nbillions to hundreds of billions of edges [ref]34. k𝑘k-clique Counting.\nIn this paper, we design a new parallel k𝑘k-clique counting algorithm,\narb-count that matches the work of Chiba-Nishezeki, has\npolylogarithmic span, and has improved space complexity compared to\nkClist. Our algorithm is able to significantly outperform kClist and\nother competitors, and scale to larger graphs than prior work.\narb-count is based on using low out-degree orientations of the graph\nto reduce the total work.\nAssuming that we have a low out-degree ranking of the graph, we show\nthat for a constant k𝑘k we can count or list all k𝑘k-cliques in\nO​(m​αk−2)𝑂𝑚superscript𝛼𝑘2O(m\\alpha^{k-2}) work, and O​(k​log⁡n+log2⁡n)𝑂𝑘𝑛superscript2𝑛O(k\\log n+\\log^{2}n) span with high probability (whp),222We say O​(f​(n))𝑂𝑓𝑛O(f(n)) with\nhigh probability (whp) to indicate O​(c​f​(n))𝑂𝑐𝑓𝑛O(cf(n)) with probability\nat least 1−n−c1superscript𝑛𝑐1-n^{-c} for c≥1𝑐1c\\geq 1, where n𝑛n is the input size.\nwhere m𝑚m is the number of edges in the graph and α𝛼\\alpha is the\narboricity of the graph. Having work bounds parameterized by α𝛼\\alpha is\ndesirable since most real-world graphs have low\narboricity [ref]17. Theoretically, arb-count requires\nO​(α)𝑂𝛼O(\\alpha) extra space per processor; in contrast, the kClist algorithm requires O​(α2)𝑂superscript𝛼2O(\\alpha^{2}) extra space per processor. Furthermore, kClist does not achieve polylogarithmic span. We also design an approximate k𝑘k-clique counting algorithm\nbased on counting on a sparsified graph. We show in the appendix that our approximate algorithm\nproduces unbiased estimates and runs in O​(p​m​αk−2+m)𝑂𝑝𝑚superscript𝛼𝑘2𝑚O(pm\\alpha^{k-2}+m)\nwork and O​(k​log⁡n+log2⁡n)𝑂𝑘𝑛superscript2𝑛O(k\\log n+\\log^{2}n) span whp for a sampling\nprobability of p𝑝p. Parallel Ranking Algorithms.\nWe present two new parallel algorithms\nfor efficiently ranking the vertices, which we use for k𝑘k-clique counting. We show that a distributed\nalgorithm by Barenboim and Elkin  can be implemented\nin linear work and polylogarithmic span. We also parallelize an\nexternal-memory algorithm by Goodrich and Pszona  and\nobtain the same complexity bounds.\nWe believe that our parallel ranking algorithms may be of\nindependent interest, as many other subgraph finding algorithms use\nlow out-degree orderings\n(e.g.,   ). Peeling and k𝑘k-Clique Densest Subgraph.\nWe also present new parallel algorithms for the\nk𝑘k-clique densest subgraph problem, a generalization of the densest subgraph problem\nthat was first introduced by Tsourakakis . This\nproblem admits a natural 1/k1𝑘1/k-approximation by peeling vertices in\norder of their incident k𝑘k-clique counts. We present a parallel peeling\nalgorithm, arb-peel, that peels all vertices with the\nlowest k𝑘k-clique count on each round and uses arb-count as a subroutine.\nThe expected amortized work of arb-peel is O​(m​αk−2+ρk​(G)​log⁡n)𝑂𝑚superscript𝛼𝑘2subscript𝜌𝑘𝐺𝑛O(m\\alpha^{k-2}+\\rho_{k}(G)\\log n) and\nthe span is O​(ρk​(G)​k​log⁡n+log2⁡n)𝑂subscript𝜌𝑘𝐺𝑘𝑛superscript2𝑛O(\\rho_{k}(G)k\\log n+\\log^{2}n) whp, where ρk​(G)subscript𝜌𝑘𝐺\\rho_{k}(G) is the\nnumber of rounds needed to completely peel the graph.\nWe also prove in the appendix that the problem of obtaining the hierarchy given by\nthis process is 𝖯𝖯\\mathsf{P}-complete for k>2𝑘2k>2, indicating that a polylogarithmic-span\nsolution is unlikely. Tsourakakis also shows that naturally extending the Bahmani et\nal.  algorithm for approximate densest subgraph gives\nan 1/(k​(1+ϵ))1𝑘1italic-ϵ1/(k(1+\\epsilon))-approximation in O​(log⁡n)𝑂𝑛O(\\log n) parallel\nrounds, although they were not concerned about work.\nWe present\nan O​(m​αk−2)𝑂𝑚superscript𝛼𝑘2O(m\\alpha^{k-2}) work and polylogarithmic-span algorithm,\narb-approx-peel, for obtaining a 1/(k​(1+ϵ))1𝑘1italic-ϵ1/(k(1+\\epsilon))-approximation to\nthe k𝑘k-clique densest subgraph problem. We obtain this work bound using our k𝑘k-clique algorithm as a subroutine.\nDanisch et al.  use their k𝑘k-clique counting\nalgorithm as a subroutine to implement these two approximation\nalgorithms for k𝑘k-clique densest subgraph, but their implementations do not have\nprovably-efficient bounds. Experimental Evaluation.\nWe present implementations of our algorithms that use various\noptimizations to achieve good practical performance. We\nperform a thorough experimental study on a 30-core\nmachine with two-way hyper-threading and compare to prior work.\nWe show that on a variety of real-world graphs and different\nk𝑘k, our k𝑘k-clique counting algorithm achieves 1.31–9.88x speedup over the\nstate-of-the-art parallel kClist algorithm  and\nself-relative speedups of 13.23–38.99x.\nWe also compared our k𝑘k-clique counting algorithm to other\nparallel k𝑘k-clique counting implementations including Jain and Seshadhri’s\nPivoter , Mhedhbi and Salihoglu’s worst-case optimal\njoin algorithm (WCO) , Lai et al.’s\nimplementation of a binary join algorithm (BinaryJoin)\n, and Pinar et al.’s ESCAPE\n, and demonstrate speedups of up to several orders of\nmagnitude. Furthermore, by integrating state-of-the-art parallel graph\ncompression techniques, we can process graphs\nwith tens to hundreds of billions of edges, significantly\nimproving on the capabilities of existing implementations. As\nfar as we know, we are the first to report 444-clique counts for\nHyperlink2012, the largest publicly-available graph, with over\ntwo hundred billion undirected edges. We study the accuracy-time tradeoff of our sampling algorithm, and\nshow that is able to approximate the clique counts with 5.05% error\n5.32–6573.63 times more quickly than running our exact counting\nalgorithm on the same graph. We compare our sampling algorithm to\nBressan et al.’s serial MOTIVO ,\nand demonstrate 92.71–177.29x speedups. Finally, we study our two\nparallel approximation algorithms for k𝑘k-clique densest subgraph and show that our we are\nable to outperform kClist by up to 29.59x and achieve 1.19–13.76x\nself-relative speedup. We demonstrate up to 53.53x speedup over Fang\net al.’s serial CoreApp  as well. The contributions of this paper are as follows: A parallel algorithm with O​(m​αk−2)𝑂𝑚superscript𝛼𝑘2O(m\\alpha^{k-2}) and polylogarithmic\nspan whp for k𝑘k-clique counting. Parallel algorithms for low out-degree\norientations with O​(m)𝑂𝑚O(m) work and O​(log2⁡n)𝑂superscript2𝑛O(\\log^{2}n) span whp. An O​(m​αk−2)𝑂𝑚superscript𝛼𝑘2O(m\\alpha^{k-2}) amortized expected work parallel algorithm for\ncomputing a 1/k1𝑘1/k-approximation to the k𝑘k-clique densest subgraph problem, and an O​(m​αk−2)𝑂𝑚superscript𝛼𝑘2O(m\\alpha^{k-2}) work and polylogarithmic-span whp\nalgorithm for computing a 1/(k​(1+ϵ))1𝑘1italic-ϵ1/(k(1+\\epsilon))-approximation. Optimized implementations of our algorithms that achieve\nsignificant speedups over existing state-of-the-art methods, and\nscale to the largest publicly-available graphs. Our code is publicly available at: https://github.com/ParAlg/gbbs/tree/master/benchmarks/CliqueCounting."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "EmptyHeaded: A Relational Engine for Graph Processing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Trans. Database Syst.",
+      "authors": "C. R. Aberger, A. Lamb, S. Tu, A. Nötzli, K. Olukotun, and C. Ré",
+      "orig_title": "EmptyHeaded: A relational engine for graph processing",
+      "paper_id": "1503.02368v7"
+    },
+    {
+      "index": 1,
+      "title": "Graphlet Decomposition: Framework, Algorithms, and Applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Knowl. Inf. Syst.",
+      "authors": "N. K. Ahmed, J. Neville, R. A. Rossi, N. G. Duffield, and T. L. Willke",
+      "orig_title": "Graphlet decomposition: framework, algorithms, and applications",
+      "paper_id": "1506.04322v2"
+    },
+    {
+      "index": 2,
+      "title": "A 𝖯𝖯\\mathsf{P}-complete problem and approximations to it",
+      "abstract": "",
+      "year": "1984",
+      "venue": "",
+      "authors": "R. Anderson and E. W. Mayr"
+    },
+    {
+      "index": 3,
+      "title": "Densest subgraph in streaming and MapReduce",
+      "abstract": "",
+      "year": "2012",
+      "venue": "VLDB Endow.",
+      "authors": "B. Bahmani, R. Kumar, and S. Vassilvitskii"
+    },
+    {
+      "index": 4,
+      "title": "Sublogarithmic distributed MIS algorithm for sparse graphs using Nash-Williams decomposition",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Distributed Computing",
+      "authors": "L. Barenboim and M. Elkin"
+    },
+    {
+      "index": 5,
+      "title": "High-performance parallel graph coloring with strong guarantees on work, depth, and quality",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM/IEEE International Conference for High Performance Computing, Networking, Storage and Analysis",
+      "authors": "M. Besta, A. Carigiet, K. Janda, Z. Vonarburg-Shmaria, L. Gianinazzi, and T. Hoefler"
+    },
+    {
+      "index": 6,
+      "title": "Brief announcement: ParlayLib – a toolkit for parallel algorithms on shared-memory multicore machines",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Symposium on Parallelism in Algorithms and Architectures",
+      "authors": "G. E. Blelloch, D. Anderson, and L. Dhulipala"
+    },
+    {
+      "index": 7,
+      "title": "Space-efficient scheduling of multithreaded computations",
+      "abstract": "",
+      "year": "1998",
+      "venue": "SIAM J. Comput.",
+      "authors": "R. D. Blumofe and C. E. Leiserson"
+    },
+    {
+      "index": 8,
+      "title": "The parallel evaluation of general arithmetic expressions",
+      "abstract": "",
+      "year": "1974",
+      "venue": "J. ACM",
+      "authors": "R. P. Brent"
+    },
+    {
+      "index": 9,
+      "title": "Motif counting beyond five nodes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Trans. Knowl. Discov. Data",
+      "authors": "M. Bressan, F. Chierichetti, R. Kumar, S. Leucci, and A. Panconesi"
+    },
+    {
+      "index": 10,
+      "title": "Motivo: fast motif counting via succinct color coding and adaptive sampling",
+      "abstract": "",
+      "year": "2019",
+      "venue": "VLDB Endow.",
+      "authors": "M. Bressan, S. Leucci, and A. Panconesi",
+      "orig_title": "Motivo: Fast motif counting via succinct color coding and adaptive sampling",
+      "paper_id": "1906.01599v1"
+    },
+    {
+      "index": 11,
+      "title": "Arboricity and subgraph listing algorithms",
+      "abstract": "",
+      "year": "1985",
+      "venue": "SIAM J. Comput.",
+      "authors": "N. Chiba and T. Nishizeki"
+    },
+    {
+      "index": 12,
+      "title": "Introduction to Algorithms (3. ed.)",
+      "abstract": "",
+      "year": "2009",
+      "venue": "MIT Press",
+      "authors": "T. H. Cormen, C. E. Leiserson, R. L. Rivest, and C. Stein"
+    },
+    {
+      "index": 13,
+      "title": "The Lemur project",
+      "abstract": "",
+      "year": "2016",
+      "venue": "https://www.lemurproject.org/",
+      "authors": "B. Croft and J. Callan"
+    },
+    {
+      "index": 14,
+      "title": "Listing k𝑘k-cliques in sparse real-world graphs*",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on World Wide Web",
+      "authors": "M. Danisch, O. Balalau, and M. Sozio"
+    },
+    {
+      "index": 15,
+      "title": "Julienne: A framework for parallel graph algorithms using work-efficient bucketing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Symposium on Parallelism in Algorithms and Architectures",
+      "authors": "L. Dhulipala, G. Blelloch, and J. Shun"
+    },
+    {
+      "index": 16,
+      "title": "Theoretically Efficient Parallel Graph Algorithms Can Be Fast and Scalable",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Symposium on Parallelism in Algorithms and Architectures",
+      "authors": "L. Dhulipala, G. E. Blelloch, and J. Shun",
+      "orig_title": "Theoretically efficient parallel graph algorithms can be fast and scalable",
+      "paper_id": "1805.05208v4"
+    },
+    {
+      "index": 17,
+      "title": "Parallel Batch-Dynamic 𝑘-Clique Counting",
+      "abstract": "",
+      "year": "2021",
+      "venue": "SIAM Symposium on Algorithmic Principles of Computer Systems",
+      "authors": "L. Dhulipala, Q. C. Liu, J. Shun, and S. Yu",
+      "orig_title": "Parallel batch-dynamic k𝑘k-clique counting",
+      "paper_id": "2003.13585v2"
+    },
+    {
+      "index": 18,
+      "title": "Fixed-parameter tractability and completeness I: Basic results",
+      "abstract": "",
+      "year": "1995",
+      "venue": "SIAM J. Comput.",
+      "authors": "R. G. Downey and M. R. Fellows"
+    },
+    {
+      "index": 19,
+      "title": "Listing all maximal cliques in sparse graphs in near-optimal time",
+      "abstract": "",
+      "year": "2010",
+      "venue": "International Symposium on Algorithms and Computation",
+      "authors": "D. Eppstein, M. Löffler, and D. Strash"
+    },
+    {
+      "index": 20,
+      "title": "Efficient Algorithms for Densest Subgraph Discovery",
+      "abstract": "",
+      "year": "2019",
+      "venue": "VLDB Endow.",
+      "authors": "Y. Fang, K. Yu, R. Cheng, L. V. S. Lakshmanan, and X. Lin",
+      "orig_title": "Efficient algorithms for densest subgraph discovery",
+      "paper_id": "1906.00341v2"
+    },
+    {
+      "index": 21,
+      "title": "Clique partitions, graph compression and speeding-up algorithms",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Journal of Computer and System Sciences",
+      "authors": "T. Feder and R. Motwani"
+    },
+    {
+      "index": 22,
+      "title": "Clique counting in MapReduce: Algorithms and experiments",
+      "abstract": "",
+      "year": "2015",
+      "venue": "J. Exp. Algorithmics",
+      "authors": "I. Finocchi, M. Finocchi, and E. G. Fusco"
+    },
+    {
+      "index": 23,
+      "title": "Towards a theory of nearly constant time parallel algorithms",
+      "abstract": "",
+      "year": "1991",
+      "venue": "IEEE Symposium on Foundations of Computer Science",
+      "authors": "J. Gil, Y. Matias, and U. Vishkin"
+    },
+    {
+      "index": 24,
+      "title": "External-memory network analysis algorithms for naturally sparse graphs",
+      "abstract": "",
+      "year": "2011",
+      "venue": "European Symposium on Algorithms",
+      "authors": "M. T. Goodrich and P. Pszona"
+    },
+    {
+      "index": 25,
+      "title": "Parallel k𝑘k-clique community detection on large-scale networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Trans. Parallel Distrib. Syst.",
+      "authors": "E. Gregori, L. Lenzini, and S. Mainardi"
+    },
+    {
+      "index": 26,
+      "title": "A fast and provable method for estimating clique counts using Turán’s theorem",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on World Wide Web",
+      "authors": "S. Jain and C. Seshadhri"
+    },
+    {
+      "index": 27,
+      "title": "The Power of Pivoting for Exact Clique Counting",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM International Conference on Web Search and Data Mining",
+      "authors": "S. Jain and C. Seshadhri",
+      "orig_title": "The power of pivoting for exact clique counting",
+      "paper_id": "2001.06784v1"
+    },
+    {
+      "index": 28,
+      "title": "Introduction to Parallel Algorithms",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Addison-Wesley Professional",
+      "authors": "J. Jaja"
+    },
+    {
+      "index": 29,
+      "title": "Distributed subgraph matching on timely dataflow",
+      "abstract": "",
+      "year": "2019",
+      "venue": "VLDB Endow.",
+      "authors": "L. Lai, Z. Qing, Z. Yang, X. Jin, Z. Lai, R. Wang, K. Hao, X. Lin, L. Qin, W. Zhang, Y. Zhang, Z. Qian, and J. Zhou"
+    },
+    {
+      "index": 30,
+      "title": "SNAP Datasets: Stanford large network dataset collection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "http://snap.stanford.edu/data",
+      "authors": "J. Leskovec and A. Krevl"
+    },
+    {
+      "index": 31,
+      "title": "Ordering heuristics for k𝑘k-clique listing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "VLDB Endow.",
+      "authors": "R.-H. Li, S. Gao, L. Qin, G. Wang, W. Yang, and J. X. Yu"
+    },
+    {
+      "index": 32,
+      "title": "Smallest-last ordering and clustering and graph coloring algorithms",
+      "abstract": "",
+      "year": "1983",
+      "venue": "J. ACM",
+      "authors": "D. W. Matula and L. L. Beck"
+    },
+    {
+      "index": 33,
+      "title": "The graph structure in the web–analyzed on different aggregation levels",
+      "abstract": "",
+      "year": "2015",
+      "venue": "J. Web Sci.",
+      "authors": "R. Meusel, S. Vigna, O. Lehmberg, and C. Bizer"
+    },
+    {
+      "index": 34,
+      "title": "Optimizing Subgraph Queries by Combining Binary and Worst-Case Optimal Joins",
+      "abstract": "",
+      "year": "2019",
+      "venue": "VLDB Endow.",
+      "authors": "A. Mhedhbi and S. Salihoglu",
+      "orig_title": "Optimizing subgraph queries by combining binary and worst-case optimal joins",
+      "paper_id": "1903.02076v2"
+    },
+    {
+      "index": 35,
+      "title": "Edge-disjoint spanning trees of finite graphs",
+      "abstract": "",
+      "year": "1961",
+      "venue": "Journal of the London Mathematical Society",
+      "authors": "C. S. J. Nash-Williams"
+    },
+    {
+      "index": 36,
+      "title": "On the complexity of the subgraph problem",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Commentationes Mathematicae Universitatis Carolinae",
+      "authors": "J. Nešetřil and S. Poljak"
+    },
+    {
+      "index": 37,
+      "title": "Worst-case optimal join algorithms",
+      "abstract": "",
+      "year": "2018",
+      "venue": "J. ACM",
+      "authors": "H. Q. Ngo, E. Porat, C. Ré, and A. Rudra"
+    },
+    {
+      "index": 38,
+      "title": "Colorful triangle counting and a MapReduce implementation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Inf. Process. Lett.",
+      "authors": "R. Pagh and C. E. Tsourakakis"
+    },
+    {
+      "index": 39,
+      "title": "Enumerating trillion subgraphs on distributed systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Trans. Knowl. Discov. Data",
+      "authors": "H.-M. Park, F. Silvestri, R. Pagh, C.-W. Chung, S.-H. Myaeng, and U. Kang"
+    },
+    {
+      "index": 40,
+      "title": "ESCAPE: Efficiently Counting All 5-Vertex Subgraphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on World Wide Web",
+      "authors": "A. Pinar, C. Seshadhri, and V. Vishal",
+      "orig_title": "ESCAPE: Efficiently counting all 5-vertex subgraphs",
+      "paper_id": "1610.09411v1"
+    },
+    {
+      "index": 41,
+      "title": "Optimal and sublogarithmic time randomized parallel sorting algorithms",
+      "abstract": "",
+      "year": "1989",
+      "venue": "SIAM J. Comput.",
+      "authors": "S. Rajasekaran and J. H. Reif"
+    },
+    {
+      "index": 42,
+      "title": "Higher-order network representation learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on World Wide Web",
+      "authors": "R. A. Rossi, N. K. Ahmed, and E. Koh"
+    },
+    {
+      "index": 43,
+      "title": "Estimation of graphlet counts in massive networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Neural Netw. Learning Syst.",
+      "authors": "R. A. Rossi, R. Zhou, and N. K. Ahmed"
+    },
+    {
+      "index": 44,
+      "title": "Butterfly counting in bipartite networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+      "authors": "S.-V. Sanei-Mehri, A. E. Sariyuce, and S. Tirthapura"
+    },
+    {
+      "index": 45,
+      "title": "Peeling bipartite networks for dense subgraph discovery",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM International Conference on Web Search and Data Mining",
+      "authors": "A. E. Sariyüce and A. Pinar"
+    },
+    {
+      "index": 46,
+      "title": "Local Algorithms for Hierarchical Dense Subgraph Discovery",
+      "abstract": "",
+      "year": "2018",
+      "venue": "VLDB Endow.",
+      "authors": "A. E. Sariyüce, C. Seshadhri, and A. Pinar",
+      "orig_title": "Local algorithms for hierarchical dense subgraph discovery",
+      "paper_id": "1704.00386v2"
+    },
+    {
+      "index": 47,
+      "title": "Nucleus decompositions for identifying hierarchy of dense subgraphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Trans. Web",
+      "authors": "A. E. Sariyüce, C. Seshadhri, A. Pinar, and U. V. Çatalyürek"
+    },
+    {
+      "index": 48,
+      "title": "Parallel Algorithms for Butterfly Computations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIAM Symposium on Algorithmic Principles of Computer Systems",
+      "authors": "J. Shi and J. Shun",
+      "orig_title": "Parallel algorithms for butterfly computations",
+      "paper_id": "1907.08607v3"
+    },
+    {
+      "index": 49,
+      "title": "Smaller and faster: Parallel processing of compressed graphs with Ligra+",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Data Compression Conference",
+      "authors": "J. Shun, L. Dhulipala, and G. E. Blelloch"
+    },
+    {
+      "index": 50,
+      "title": "Multicore triangle computations without tuning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Data Engineering",
+      "authors": "J. Shun and K. Tangwongsan"
+    },
+    {
+      "index": 51,
+      "title": "KClist++: A simple algorithm for finding k-clique densest subgraphs in large graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "VLDB Endow.",
+      "authors": "B. Sun, M. Danisch, T.-H. H. Chan, and M. Sozio"
+    },
+    {
+      "index": 52,
+      "title": "The k𝑘k-clique densest subgraph problem",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on World Wide Web",
+      "authors": "C. Tsourakakis"
+    },
+    {
+      "index": 53,
+      "title": "Counting triangles in real-world networks using projections",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Knowl. Inf. Syst.",
+      "authors": "C. E. Tsourakakis"
+    },
+    {
+      "index": 54,
+      "title": "Spectral counting of triangles via element-wise sparsification and triangle-based link recommendation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Social Network Analysis and Mining",
+      "authors": "C. E. Tsourakakis, P. Drineas, E. Michelakis, I. Koutis, and C. Faloutsos"
+    },
+    {
+      "index": 55,
+      "title": "Scalable motif-aware graph clustering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on World Wide Web",
+      "authors": "C. E. Tsourakakis, J. Pachocki, and M. Mitzenmacher",
+      "orig_title": "Scalable motif-aware graph clustering",
+      "paper_id": "1606.06235v2"
+    },
+    {
+      "index": 56,
+      "title": "Efficient algorithms for clique problems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Inf. Process. Lett.",
+      "authors": "V. Vassilevska"
+    },
+    {
+      "index": 57,
+      "title": "MOSS-5: A fast method of approximating counts of 5-node graphlets in large graphs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Knowl. Data Eng.",
+      "authors": "P. Wang, J. Zhao, X. Zhang, Z. Li, J. Cheng, J. C. S. Lui, D. Towsley, J. Tao, and X. Guan"
+    },
+    {
+      "index": 58,
+      "title": "Higher-order clustering in networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Physical Review E",
+      "authors": "H. Yin, A. R. Benson, and J. Leskovec",
+      "orig_title": "Higher-order clustering in networks",
+      "paper_id": "1704.03913v2"
+    }
+  ]
+}

@@ -1,0 +1,483 @@
+{
+  "paper_id": "2005.03230v2",
+  "title": "Hierarchical Predictive Coding Models in a Deep-Learning Framework",
+  "sections": {
+    "predictive coding and divisive input modulation": "Spratling\n  used non-negative matrix factorization (NMF) to reformulate the  model of predictive coding\nto make it compatible with biased competition models of the brain.\nA related technique, known as\ndivisive input modulation, offers promise of creating useful representations\nof subparts and is related to non-negative matrix factorization.\n showed that NMF\ncould create a useful object representation of, say faces,\nthat consisted of local subparts resembling eyes, nose, and mouth. More formally,\nconsider a set of images represented as an n×m𝑛𝑚n\\times m matrix, named 𝐼𝑚𝑎𝑔𝑒𝑠𝐼𝑚𝑎𝑔𝑒𝑠\\mathit{Images},\nwhose entries are all non-negative values.\nThe matrix\n𝐼𝑚𝑎𝑔𝑒𝑠𝐼𝑚𝑎𝑔𝑒𝑠\\mathit{Images} contains m𝑚m images, 𝑰1​…​𝑰msubscript𝑰1…subscript𝑰𝑚\\boldsymbol{I}_{1}\\ldots\\boldsymbol{I}_{m}.\nEach 𝑰msubscript𝑰𝑚\\boldsymbol{I}_{m}\nholds the\nset of N𝑁N non-negative pixel values\nfor one image.\nThe goal is to learn representations for the images by refactoring\nthe 𝐼𝑚𝑎𝑔𝑒𝑠𝐼𝑚𝑎𝑔𝑒𝑠\\mathit{Images} matrix according\nto the constraint that all entries in the factors are non-negative.\nThe refactoring takes the form below. WTsuperscript𝑊𝑇W^{T} has dimension n×r𝑛𝑟n\\times r and R𝑅R has dimension r×m𝑟𝑚r\\times m.\nThink of WTsuperscript𝑊𝑇W^{T} as holding the feedback weights in a neural network and of R𝑅R\nas holding the transformed representation of each image within its columns.\nIts non-negativity constraints cause the matrix to be refactored into a parts-based\nrepresentation.\nThis is because the factorization only allows additive combinations .\nEach column of R𝑅R is an internal representation of the corresponding image in Images.\nr𝑟r is the number of rows of R𝑅R and this determines the size of the representation.\nFor instance, if using the example given in Fig. 2,\nn𝑛n would be 256 and r𝑟r would be 32.  has shown that by changing the operators used in the\npredictive coding formulas,\na method related to NMF\nknown as divisive input modulation\ncan be used\nwhich leads to some possible advantages over the  approach.\nConsider the revised\npredictive update equations shown below . Eqn. 7a matches Eqn. 1a, except that it obeys the NMF constraint.\nEqns. 7b and 7c match Eqns. 1b\nand 1c, except that they use different operators.\nSpecifically, predictive error in\nEqn. 7b is calculated using divisive input modulation,\nimplemented by element-wise division (⊘⊘\\oslash), instead\nof subtractive inhibition.\nFor divisive input modulation, perfect reconstruction yields a value of one instead of zero.\nFor Eqn. 7c, elementwise multiplication (⊙direct-product\\odot) is used instead of addition\nand this is an example of a multiplicative update rule .\nExpressions of the form “max⁡(ϵ,Matrix)italic-ϵMatrix\\max\\left(\\epsilon,\\mathrm{Matrix}\\right)” mean replace any values in MatrixMatrix\\mathrm{Matrix}\nthat are smaller than ϵitalic-ϵ\\epsilon with ϵitalic-ϵ\\epsilon.\nFor Eqn. 7b, this prevents division by zero\nand for Eqn. 7c this prevents any of the 𝒓𝒓\\boldsymbol{r} neurons\nfrom becoming permanently non-responsive.\nϵ1subscriptitalic-ϵ1\\epsilon_{1} and ϵ2subscriptitalic-ϵ2\\epsilon_{2} are small positive numbers and example values to use\nin simulations can be found in . The weight update rule uses multiplicative update and is shown below . Recall that when there is no prediction error, 𝒆T−1superscript𝒆𝑇1\\boldsymbol{e}^{T}-1 is zero and the right side\nof the operator ⊙direct-product\\odot simplifies to one.\nβ𝛽\\beta is a rate parameter.  provide batch-based algorithms for NMF, one of which minimizes\nthe Kulback-Leibler (KL) divergence between the training and reconstructed images (WT​𝒓superscript𝑊𝑇𝒓W^{T}\\boldsymbol{r}).\nWhereas, the equations of Rao/Ballard are obtained by minimizing sum of squared error,\nthe equations above minimize KL divergence.  argues that his model has a number of advantages over\nthe original  model.\nFirst, it can be implemented using only non-negative neural firing rates which makes it much easier to\ncreate bio-plausible implementations.\nSecond, it is broadly compatible biased competition models [ref]12 which also\nmakes it easier to create bio-plausible implementations.\nThird, it has been argued that the proposed feedback connections of the Spratling model\nare more biologically plausible than those in the  model."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "With or without you: predictive coding and Bayesian inference in the brain",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Curr Opin Neurobio.",
+      "authors": "L. Aitchison and M. Lengyel"
+    },
+    {
+      "index": 1,
+      "title": "Hierarchical error representation: A computational model of anterior cingulate and dorsolateral prefrontal cortex",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Neural Computation",
+      "authors": "W. H. Alexander and J. W. Brown"
+    },
+    {
+      "index": 2,
+      "title": "Frontal cortex function as derived from hierarchical predictive coding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Scientific Reports",
+      "authors": "W. H. Alexander and J. W. Brown"
+    },
+    {
+      "index": 3,
+      "title": "Canonical microcircuits for predictive coding",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Neuron",
+      "authors": "A. M. Bastos, W. M. Usrey, R. A. Adams, G. R. Mangun, P. Fries, and K. J. Friston"
+    },
+    {
+      "index": 4,
+      "title": "Representation learning: A review and new perspectives",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CoRR",
+      "authors": "Y. Bengio, A. C. Courville, and P. Vincent"
+    },
+    {
+      "index": 5,
+      "title": "A tutorial on the free-energy framework for modelling perception and learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Mathematical Psychology",
+      "authors": "R. Bogacz"
+    },
+    {
+      "index": 6,
+      "title": "Generation of end-inibition in the visual cortex via interlaminar connections",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Nature",
+      "authors": "J. Bolz and C. D. Gilbert"
+    },
+    {
+      "index": 7,
+      "title": "Deep predictive coding networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "R. Chalasani and J. C. Príncipe"
+    },
+    {
+      "index": 8,
+      "title": "Surfing Uncertainty: Prediction, Action, and the Embodied Mind",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Oxford University Press",
+      "authors": "A. Clark"
+    },
+    {
+      "index": 9,
+      "title": "Cortical microcircuits as gated-recurrent neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "R. Costa, Y. Assael, B. Shillingford, N. de Freitas, and T. P. Vogels",
+      "orig_title": "Cortical microcircuits as gated-recurrent neural networks",
+      "paper_id": "1711.02448v2"
+    },
+    {
+      "index": 10,
+      "title": "Theoretical Neuroscience: Computational and Mathematical Modeling of Neural Systems",
+      "abstract": "",
+      "year": "2001",
+      "venue": "MIT Press",
+      "authors": "P. Dayan and L. F. Abbott"
+    },
+    {
+      "index": 11,
+      "title": "Neural mechanisms of selective visual attention",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Annual Review of Neuroscience",
+      "authors": "R. Desimone and J. Duncan"
+    },
+    {
+      "index": 12,
+      "title": "Reduced-Gate Convolutional LSTM Using Predictive Coding for Spatiotemporal Prediction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "N. Elsayed, A. S. Maida, and M. Bayoumi",
+      "orig_title": "Reduced-gate convolutional LSTM using predictive coding for spatiotemporal prediction",
+      "paper_id": "1810.07251v11"
+    },
+    {
+      "index": 13,
+      "title": "Distributed hierarchical processing in the primate cerebral cortex",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Cerebral Cortex",
+      "authors": "D. J. Felleman and D. C. V. Essen"
+    },
+    {
+      "index": 14,
+      "title": "Learning and inference in the brain",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Neural Networks",
+      "authors": "K. Friston"
+    },
+    {
+      "index": 15,
+      "title": "A theory of cortical responses",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Phil. Trans. R. Soc. B",
+      "authors": "K. Friston"
+    },
+    {
+      "index": 16,
+      "title": "The free-energy principle: a rough guide to the brain?",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Trends in Cognitive Sciences",
+      "authors": "K. Friston"
+    },
+    {
+      "index": 17,
+      "title": "The free-energy principle: A unified brain theory?",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Nature Reviews Neuroscience",
+      "authors": "K. Friston"
+    },
+    {
+      "index": 18,
+      "title": "Does predictive coding have a future?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Nature Neuroscience",
+      "authors": "K. Friston"
+    },
+    {
+      "index": 19,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MIT Press",
+      "authors": "I. Goodfellow, Y. Bengio, and A. C. Courville",
+      "orig_title": "Deep Learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 20,
+      "title": "Early temporal characteristics of elderly patient cognitive impairment in electronic health records",
+      "abstract": "",
+      "year": "2019",
+      "venue": "BMC medical informatics and decision making",
+      "authors": "S. Goudarzvand, J. S. Sauver, M. M. Mielke, P. Y. Takahashi, Y. Lee, and S. Sohn"
+    },
+    {
+      "index": 21,
+      "title": "LSTM: A Search Space Odyssey",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "K. Greff, R. K. Srivastava, J. Koutník, B. R. Steunebrink, and J. Schmidthuber",
+      "orig_title": "LSTM: A search space odyssey",
+      "paper_id": "1503.04069v2"
+    },
+    {
+      "index": 22,
+      "title": "Deep Predictive Coding Network with Local Recurrent Processing for Object Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing (NIPS)",
+      "authors": "K. Han, H. Wen, Y. Zhang, D. Fu, E. Culurciello, and Z. Liu",
+      "orig_title": "Deep predictive coding network with local recurrent processing for object recognition",
+      "paper_id": "1805.07526v2"
+    },
+    {
+      "index": 23,
+      "title": "Introduction to the Theory of Neural Computation",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Addison-Wesley",
+      "authors": "J. Hertz, A. Krogh, and R. G. Palmer"
+    },
+    {
+      "index": 24,
+      "title": "Neural networks and physical systems with emergent collective computational abilities",
+      "abstract": "",
+      "year": "1982",
+      "venue": "National Academy of Sciences",
+      "authors": "J. J. Hopfield"
+    },
+    {
+      "index": 25,
+      "title": "Inception lstm for next-frame video prediction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "M. Hosseini, A. S. Maida, M. Hosseini, and G. Raju"
+    },
+    {
+      "index": 26,
+      "title": "Predictive processing: A canonical cortical computation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Neuron",
+      "authors": "G. B. Keller and T. D. Mrsic-Flogel"
+    },
+    {
+      "index": 27,
+      "title": "ImageNet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advances in Neural Information Processing (NIPS)",
+      "authors": "A. Krizhevsky, I. Sutskever, and G. Hinton"
+    },
+    {
+      "index": 28,
+      "title": "Learning the parts of objects by non-negative matrix factorization",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Nature",
+      "authors": "D. D. Lee and H. S. Seung"
+    },
+    {
+      "index": 29,
+      "title": "Algorithms for non-negative matrix factorization",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Advances in Neural Information Processing Systems (NIPS)",
+      "authors": "D. D. Lee and H. S. Seung"
+    },
+    {
+      "index": 30,
+      "title": "Hierarchical Bayesian inference in the visual cortex",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Journal of the Optical Society of America",
+      "authors": "T. S. Lee and D. Mumford"
+    },
+    {
+      "index": 31,
+      "title": "Bridging the Gaps Between Residual Learning, Recurrent Neural Networks and Visual Cortex",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "Q. Liao and T. Poggio",
+      "orig_title": "Bridging the gaps between residual learning, recurrent neural networks and visual cortex",
+      "paper_id": "1604.03640v2"
+    },
+    {
+      "index": 32,
+      "title": "Network in network",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "M. Lin, Q. Chen, and S. Yan"
+    },
+    {
+      "index": 33,
+      "title": "Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations. Computational and Biological Learning Society",
+      "authors": "W. Lotter, G. Kreiman, and D. Cox",
+      "orig_title": "Deep predictive coding networks for video prediction and unsupervised learning",
+      "paper_id": "1605.08104v5"
+    },
+    {
+      "index": 34,
+      "title": "A neural network trained to predict future video frames mimics critical properties of biological neuronal responses and perception",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "W. Lotter, G. Kreiman, and D. Cox",
+      "orig_title": "A neural network trained to predict future video frames mimics critical properties of biological neuronal responses and perception",
+      "paper_id": "1805.10734v2"
+    },
+    {
+      "index": 35,
+      "title": "An iterative image registration technique with an application to stereo vision",
+      "abstract": "",
+      "year": "1981",
+      "venue": "Image Understanding Workshop (Vancouver)",
+      "authors": "B. D. Lucas and T. Kanada"
+    },
+    {
+      "index": 36,
+      "title": "On the computational architecture of the neocortex. II. The role of cortico-cortico loops",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Biological Cybernetics",
+      "authors": "D. Mumford"
+    },
+    {
+      "index": 37,
+      "title": "What visual illusions teach us about schizophrenia",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Frontiers in Integrative Neuroscience",
+      "authors": "C. E. Notredame, D. Pins, S. Deneve, and R. Jardri"
+    },
+    {
+      "index": 38,
+      "title": "Perception, illusions and Bayesian inference",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Psychopathology",
+      "authors": "M. M. Nour and J. M. Nour"
+    },
+    {
+      "index": 39,
+      "title": "Dynamic model of visual recognition predicts neural response properties in the visual cortex",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural Computation",
+      "authors": "R. P. Rao and D. H. Ballard"
+    },
+    {
+      "index": 40,
+      "title": "Predictive coding in the visual cortex: a functional interpretation of some extra-classical receptive-field effects",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Nature Neuroscience",
+      "authors": "R. P. Rao and D. H. Ballard"
+    },
+    {
+      "index": 41,
+      "title": "Convolutional LSTM network: A machine learning approach for precipitation nowcasing",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "X. Shi, Z. Chen, H. Wang, D. Yueng, W. Wong, and W. Woo"
+    },
+    {
+      "index": 42,
+      "title": "Neural elements for predictive coding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Frontiers in Psychology",
+      "authors": "S. Shipp"
+    },
+    {
+      "index": 43,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 44,
+      "title": "Reconciling predictive coding and biased competition models of cortical function",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Frontiers in Computational Neuroscience",
+      "authors": "M. W. Spratling"
+    },
+    {
+      "index": 45,
+      "title": "Unsupervised learning of overlapping image components using divisive input modulation",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Computational Intelligence and Neuroscience",
+      "authors": "M. W. Spratling"
+    },
+    {
+      "index": 46,
+      "title": "Predictive coding as a model of response properties in cortical area V1",
+      "abstract": "",
+      "year": "2010",
+      "venue": "The Journal of Neuroscience",
+      "authors": "M. W. Spratling"
+    },
+    {
+      "index": 47,
+      "title": "A hierarchical predictive coding model of object recognition in natural images",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Cognitive Computation",
+      "authors": "M. W. Spratling"
+    },
+    {
+      "index": 48,
+      "title": "A review of predictive coding algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Brain and Cognition",
+      "authors": "M. W. Spratling"
+    },
+    {
+      "index": 49,
+      "title": "Unsupervised learning of video representations using LSTMs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "N. Srivastava, E. Mansimov, and R. Salakhutdinov"
+    },
+    {
+      "index": 50,
+      "title": "Recurrent computations for visual pattern completion",
+      "abstract": "",
+      "year": "2018",
+      "venue": "National Academy of Sciences",
+      "authors": "H. Tang, M. Schrimpf, W. Lotter, C. Moerman, A. Paredes, J. Ortega Caro, W. Hardesty, D. Cox, and G. Kreiman"
+    },
+    {
+      "index": 51,
+      "title": "Image quality assessment: From error visibility to structural similarity",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "Z. Wang, A. C. Bovik, H. R. Sheigh, and E. P. Simoncelli"
+    },
+    {
+      "index": 52,
+      "title": "Illusory motion reproduced by deep neural networks trained for prediction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Fronties in Psychology",
+      "authors": "E. Watanabe, A. Kitaoka, K. Sakamoto, M. Yasugi, and K. Tanaka"
+    },
+    {
+      "index": 53,
+      "title": "Deep predictive coding network for object recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Machine Learning Research",
+      "authors": "H. Wen, K. Han, J. Shi, Y. Zhang, E. Culurciello, and Z. Liu"
+    },
+    {
+      "index": 54,
+      "title": "An approximation of the error backpropagation algorithm in a predictive coding network with local Hebbian plasticity",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Neural Computing",
+      "authors": "J. Whittington and R. Bogacz"
+    },
+    {
+      "index": 55,
+      "title": "Video anomaly detection with deep predictive coding networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Wopauli"
+    },
+    {
+      "index": 56,
+      "title": "Mining news media for understanding public health concerns",
+      "abstract": "",
+      "year": "",
+      "venue": "Journal of Clinical and Translational Science",
+      "authors": "M. Zolnoori, M. Huang, C. A. Patten, J. E. Balls-Berry, S. Goudarzvand, T. A. Brockman, E. Sagheb, and L. Yao"
+    }
+  ]
+}

@@ -1,0 +1,367 @@
+{
+  "paper_id": "2009.11939v2",
+  "title": "Deep Multi-Scale Feature Learning for Defocus Blur Estimation",
+  "sections": {
+    "ii related work": "Defocus blur estimation methods can be divided into two main groups: edge- and region-based methods. Also, deep learning strategies have been developed for this task in recent years. Edge-based methods generally follow a common strategy: estimating the unknown defocus blur amount along image edges, obtaining a sparse blur map, and then (optionally) propagating these blur estimates to the whole image via some interpolation/extrapolation methods to obtain a dense blur map (full blur map).\nPentland , one of the pioneers of blur research, modeled a blurry edge by convolving a sharp edge with a Gaussian kernel. The standard deviation of the Gaussian kernel (i.e., the unknown blur scale) is then calculated using the intensity change rate along the edges.\nElder and Zucker  proposed a simultaneous edge detection and blur estimation method. The method computes the blur scales measuring the zero-crossing of the third-order Gaussian derivatives along the gradient direction (using steerable filters). Both methods opted not to interpolate the blur estimates (e.g., estimated sparse blur maps only). Later on, Zhuo and Sim  used the gradient magnitude ratio between the original and a re-blurred version (of the original image) to estimate the local blur amount at edge points. A bilateral filter was employed to smooth the sparse blur map, and alpha Laplacian Matting  was chosen to propagate the estimated blur amounts to the rest of the image. The promising results of gradient magnitude usage (introduced in ) inspired many other researchers. For example, the use of more than one re-blurring parameter was proposed in   to deal with noise, while a multi-scale approach was explored by Karaali and Jung  to deal with edge-scale ambiguity. On the other hand, Chen et al.  proposed a very fast full blur map estimation method, using the same sparse estimation scheme as in  with a novel propagation scheme. They first over-segmented the image using superpixels  and then computed an affinity matrix that measures the similarity between adjacent superpixels to assign a blur value to superpixels that do not overlap with image edges. Their method tends to produce piece-wise constant full blur maps. Region-based methods typically examine local image patches in order to estimate the unknown blur amount and they mostly employ a post-regularization scheme to produce visually coherent results.\nIn the pioneering work of Chakrabarti et al. , the blur identification problem (both defocus and motion) was tackled in the frequency domain by exploring the convolution theorem. They computed a likelihood function for a given candidate Point Spread Function (PSF), formulating a sub-band decomposition and Gaussian Scale Mixtures. This method later inspired Zhu et al. , who explored a continuous probability function to assess the unknown blur scale at each pixel location, analyzing the localized Fourier spectrum. Additionally, they incorporated color edge information and smoothness constraints to produce a coherent defocus blur map. Similar to , D’Andrès et al.  proposed the use of the localized Fourier spectrum, but they modeled the defocus blur estimation problem as image labeling. More specifically, they proposed labeling each image pixel with a discrete defocus blur scale using a machine learning method (regression tree fields – RTFs), which provides a global consistency in the estimated defocus map. Moreover, D’Andrès et al. in  created a naturally defocused image dataset with known (disk) defocus blur scales using a Lytro camera. Liu and colleagues [ref]22 recently presented an extension of the RTF model by including edge information, which improved the results. Deep learning research has shown promising results in many areas ranging from image classification [ref]23,\nto super-resolution  and image deblurring , to mention just a few\napplications. In recent years, interesting deep strategies have also been developed for defocus blur estimation.\nZeng et al.  proposed a CNN architecture to learn meaningful local features in a superpixel level for blurry region estimation, and Zhang et al.  explored the blur “desirability” in terms of image quality (at three levels – Good, OK and Bad) using a huge manually labeled dataset, which is not currently publicly available. On the other hand, Park et al.  proposed combining hand-crafted features with deep features to boost the performance following a similar strategy to edge-based methods (e.g., sparse blur map estimation along edges followed by an interpolation). Lee et al. [ref]28 recently presented an end-to-end CNN architecture for the defocus blur estimation problem, which uses an additional Domain Adaptation  technique to transfer features from naturally defocused images to synthetically defocused images. Tang and colleagues 0 also presented an end-to-end network based on a series of residual refinements, but focusing on blur detection (i.e., separating in-focus from out-of-focus regions).\nIn particular, end-to-end methods (such as [ref]28 0) can produce dense blur maps (as traditional region-based methods) while exploring tensor-based parallelism for fast execution, particularly when high-end GPUs are available. However, the performance tends to degrade as larger input images are used, as they might not fit entirely into the GPU memory. In general, region-based approaches are costlier and more accurate than edge-based methods. In this paper, we present an edge-based method that outperforms existing edge- or region-based methods in terms of accuracy. The core idea of our method is to use only pattern edge patches for defocus blur estimation to avoid CoC ambiguities at depth edge points.\nFor this purpose, our solution explores deep architectures that first distinguish pattern from depth edges using multi-scale image patches (edge classification task), then estimate the blur values along pattern edges (blur estimation task), and finally generates a full blur map by using a fast propagation scheme that respects depth edges. To the best of our knowledge, the issue of CoC ambiguity at depth edge points has only been dealt with by Liu et al. 1, who model an edge point with two parameters (one parameter for each side of the edge). Although their method produces visually plausible results, using a two-sided blur model for depth edges is an oversimplification of the thin lens model since an edge point on a depth edge might contain a mixture of different Circle of Confusion (CoC) 2 [ref]28. Instead, we only use depth edges to prevent blur propagation across different objects."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Single image depth estimation trained via depth from defocus cues",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "S. Gur and L. Wolf"
+    },
+    {
+      "index": 1,
+      "title": "A local metric for defocus blur detection based on cnn feature learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "K. Zeng, Y. Wang, J. Mao, J. Liu, W. Peng, and N. Chen"
+    },
+    {
+      "index": 2,
+      "title": "A Unified Approach of Multi-scale Deep and Hand-crafted Features for Defocus Estimation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "J. Park, Y.-W. Tai, D. Cho, and I. S. Kweon",
+      "orig_title": "A unified approach of multi-scale deep and hand-crafted features for defocus estimation",
+      "paper_id": "1704.08992v1"
+    },
+    {
+      "index": 3,
+      "title": "Salient region detection by ufo: Uniqueness, focusness and objectness",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE International Conference on Computer Vision (ICCV)",
+      "authors": "P. Jiang, H. Ling, J. Yu, and J. Peng"
+    },
+    {
+      "index": 4,
+      "title": "Image retargeting based on spatially varying defocus blur map",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE International Conference on Image Processing (ICIP)",
+      "authors": "A. Karaali and C. R. Jung"
+    },
+    {
+      "index": 5,
+      "title": "Fast high-quality non-blind deconvolution using sparse adaptive priors",
+      "abstract": "",
+      "year": "2014",
+      "venue": "The Visual Computer",
+      "authors": "H. E. Fortunato and M. M. Oliveira"
+    },
+    {
+      "index": 6,
+      "title": "Edge-based defocus blur estimation with adaptive scale selection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "A. Karaali and C. R. Jung"
+    },
+    {
+      "index": 7,
+      "title": "Spatially varying defocus blur estimation and applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "A. Karaali"
+    },
+    {
+      "index": 8,
+      "title": "Defocus map estimation from a single image",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Pattern Recognition",
+      "authors": "S. Zhuo and T. Sim"
+    },
+    {
+      "index": 9,
+      "title": "Single-image refocusing and defocusing",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "W. Zhang and W. K. Cham"
+    },
+    {
+      "index": 10,
+      "title": "Spatially variant defocus blur map estimation and deblurring from a single image",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Journal of Visual Communication and Image Representation",
+      "authors": "X. Zhang, R. Wang, X. Jiang, W. Wang, and W. Gao"
+    },
+    {
+      "index": 11,
+      "title": "A new sense for depth of field",
+      "abstract": "",
+      "year": "1987",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "A. P. Pentland"
+    },
+    {
+      "index": 12,
+      "title": "Local scale control for edge detection and blur estimation",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "J. H. Elder and S. W. Zucker"
+    },
+    {
+      "index": 13,
+      "title": "A closed-form solution to natural image matting",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "A. Levin, D. Lischinski, and Y. Weiss"
+    },
+    {
+      "index": 14,
+      "title": "Digital multi-focusing from a single photograph taken with an uncalibrated conventional camera",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "Y. Cao, S. Fang, and Z. Wang"
+    },
+    {
+      "index": 15,
+      "title": "Adaptive scale selection for multiresolution defocus blur estimation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE International Conference on Image Processing (ICIP)",
+      "authors": "A. Karaali and C. R. Jung"
+    },
+    {
+      "index": 16,
+      "title": "Fast defocus map estimation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE International Conference on Image Processing (ICIP)",
+      "authors": "D. J. Chen, H. T. Chen, and L. W. Chang"
+    },
+    {
+      "index": 17,
+      "title": "Slic superpixels compared to state-of-the-art superpixel methods",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "R. Achanta, A. Shaji, K. Smith, A. Lucchi, P. Fua, and S. Süsstrunk"
+    },
+    {
+      "index": 18,
+      "title": "Analyzing spatially-varying blur",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "A. Chakrabarti, T. Zickler, and W. T. Freeman"
+    },
+    {
+      "index": 19,
+      "title": "Estimating spatially varying defocus blur from a single image",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "X. Zhu, S. Cohen, S. Schiller, and P. Milanfar"
+    },
+    {
+      "index": 20,
+      "title": "Non-parametric blur map regression for depth of field extension",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "L. D’Andrès, J. Salvador, A. Kochale, and S. Süsstrunk"
+    },
+    {
+      "index": 21,
+      "title": "Defocus map estimation from a single image using improved likelihood feature and edge-based basis",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Pattern Recognition",
+      "authors": "S. Liu, Q. Liao, J.-H. Xue, and F. Zhou"
+    },
+    {
+      "index": 22,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Journal of Computer Vision (IJCV)",
+      "authors": "O. Russakovsky, J. Deng, H. Su, J. Krause, S. Satheesh, S. Ma, Z. Huang, A. Karpathy, A. Khosla, M. Bernstein, A. C. Berg, and L. Fei-Fei",
+      "orig_title": "ImageNet Large Scale Visual Recognition Challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 23,
+      "title": "Fast Spatio-Temporal Residual Network for Video Super-Resolution",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "S. Li, F. He, B. Du, L. Zhang, Y. Xu, and D. Tao",
+      "orig_title": "Fast spatio-temporal residual network for video super-resolution",
+      "paper_id": "1904.02870v1"
+    },
+    {
+      "index": 24,
+      "title": "Dynamic scene deblurring with parameter selective sharing and nested skip connections",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "H. Gao, X. Tao, X. Shen, and J. Jia"
+    },
+    {
+      "index": 25,
+      "title": "A local metric for defocus blur detection based on cnn feature learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "K. Zeng, Y. Wang, J. Mao, J. Liu, W. Peng, and N. Chen"
+    },
+    {
+      "index": 26,
+      "title": "Learning to understand image blur",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "S. Zhang, X. Shen, Z. Lin, R. Měch, J. P. Costeira, and J. M. F. Moura"
+    },
+    {
+      "index": 27,
+      "title": "Deep defocus map estimation using domain adaptation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "J. Lee, S. Lee, S. Cho, and S. Lee"
+    },
+    {
+      "index": 28,
+      "title": "Unsupervised Domain Adaptation by Backpropagation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Y. Ganin and V. Lempitsky",
+      "orig_title": "Unsupervised domain adaptation by backpropagation",
+      "paper_id": "1409.7495v2"
+    },
+    {
+      "index": 29,
+      "title": "R2mrf: Defocus blur detection via recurrently refining multi-scale residual features",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "C. Tang, X. Liu, X. Zhu, E. Zhu, K. Sun, P. Wang, L. Wang, and A. Zomaya"
+    },
+    {
+      "index": 30,
+      "title": "Defocus map estimation from a single image based on two-parameter defocus model",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "S. Liu, F. Zhou, and Q. Liao"
+    },
+    {
+      "index": 31,
+      "title": "Real-time lens blur effects and focus control",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ACM Trans. Graph.",
+      "authors": "S. Lee, E. Eisemann, and H.-P. Seidel"
+    },
+    {
+      "index": 32,
+      "title": "A computational approach to edge detection",
+      "abstract": "",
+      "year": "1986",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "J. Canny"
+    },
+    {
+      "index": 33,
+      "title": "Depth Map Prediction from a Single Image using a Multi-Scale Deep Network",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in neural information processing systems",
+      "authors": "D. Eigen, C. Puhrsch, and R. Fergus",
+      "orig_title": "Depth map prediction from a single image using a multi-scale deep network",
+      "paper_id": "1406.2283v1"
+    },
+    {
+      "index": 34,
+      "title": "Hierarchical saliency detection",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Q. Yan, L. Xu, J. Shi, and J. Jia"
+    },
+    {
+      "index": 35,
+      "title": "Domain transform for edge-aware image and video processing",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ACM TOG",
+      "authors": "E. S. L. Gastal and M. M. Oliveira"
+    },
+    {
+      "index": 36,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "T.-Y. Lin, M. Maire, S. Belongie, J. Hays, P. Perona, D. Ramanan, P. Dollár, and C. L. Zitnick",
+      "orig_title": "Microsoft coco: Common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 37,
+      "title": "Visual Saliency Based on Multiscale Deep Features",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Guanbin Li and Y. Yu",
+      "orig_title": "Visual saliency based on multiscale deep features",
+      "paper_id": "1503.08663v3"
+    },
+    {
+      "index": 38,
+      "title": "Flickr",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "riesebusch"
+    },
+    {
+      "index": 39,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 40,
+      "title": "Fast image deconvolution using hyper-laplacian priors",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Neural Information Processing Systems (NIPS)",
+      "authors": "D. Krishnan and R. Fergus"
+    },
+    {
+      "index": 41,
+      "title": "Image and depth from a conventional camera with a coded aperture",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM transactions on graphics (TOG)",
+      "authors": "A. Levin, R. Fergus, F. Durand, and W. T. Freeman"
+    },
+    {
+      "index": 42,
+      "title": "Discriminative blur detection features",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "J. Shi, L. Xu, and J. Jia"
+    }
+  ]
+}

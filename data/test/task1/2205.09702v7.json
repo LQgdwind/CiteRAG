@@ -1,0 +1,2429 @@
+{
+  "paper_id": "2205.09702v7",
+  "title": "Parallel and Distributed Graph Neural Networks: An In-Depth Concurrency Analysis",
+  "abstract": "Abstract\nGraph neural networks (GNNs) are among the most powerful tools in deep\nlearning. They routinely solve complex problems on unstructured\nnetworks, such as node classification, graph classification, or link\nprediction, with high accuracy. However, both inference and training of GNNs are\ncomplex, and they uniquely combine the features of irregular graph processing\nwith dense and regular computations.\nThis complexity makes it very challenging to execute GNNs efficiently on modern\nmassively parallel architectures.\nTo alleviate this, we first design a taxonomy of parallelism in GNNs,\nconsidering data and model parallelism, and different forms of pipelining.\nThen, we use this taxonomy to investigate the amount of parallelism in numerous\nGNN models, GNN-driven machine learning tasks, software frameworks, or hardware\naccelerators. We use the work-depth model, and we also assess\ncommunication volume and synchronization.\nWe specifically focus on the sparsity/density of the associated tensors, in\norder to understand how to effectively apply techniques such as vectorization.\nWe also formally analyze GNN pipelining, and we generalize the established\nMessage-Passing class of GNN models to cover arbitrary pipeline depths,\nfacilitating future optimizations. Finally, we investigate different forms of\nasynchronicity, navigating the path for future asynchronous parallel GNN\npipelines.\nThe outcomes of our analysis are synthesized in a set of insights that help to\nmaximize GNN performance, and a comprehensive list of challenges and\nopportunities for further research into efficient GNN computations.\nOur work will help to advance the design of future GNNs.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Computing Graph Neural Networks: A Survey from Algorithms to Accelerators",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM CSUR",
+      "authors": "S. Abadal, A. Jain, R. Guirado, J. López-Alonso, and E. Alarcón",
+      "orig_title": "Computing graph neural networks: A survey from algorithms to accelerators",
+      "paper_id": "2010.00130v3"
+    },
+    {
+      "index": 1,
+      "title": "MixHop: Higher-Order Graph Convolutional Architectures via Sparsified Neighborhood Mixing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "international conference on machine learning",
+      "authors": "S. Abu-El-Haija, B. Perozzi, A. Kapoor, N. Alipourfard, K. Lerman, H. Harutyunyan, G. Ver Steeg, and A. Galstyan",
+      "orig_title": "Mixhop: Higher-order graph convolutional architectures via sparsified neighborhood mixing",
+      "paper_id": "1905.00067v3"
+    },
+    {
+      "index": 2,
+      "title": "Graph convolutional neural network for action recognition: A comprehensive survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE TAI",
+      "authors": "T. Ahmad, L. Jin, X. Zhang, L. Lin, and G. Tang"
+    },
+    {
+      "index": 3,
+      "title": "A scalable processing-in-memory accelerator for parallel graph processing",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISCA",
+      "authors": "J. Ahn, S. Hong, S. Yoo, O. Mutlu, and K. Choi"
+    },
+    {
+      "index": 4,
+      "title": "A Survey on Graph Neural Networks for Knowledge Graph Completion",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2007.12374",
+      "authors": "S. Arora",
+      "orig_title": "A survey on graph neural networks for knowledge graph completion",
+      "paper_id": "2007.12374v1"
+    },
+    {
+      "index": 5,
+      "title": "Diffusion-Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in neural information processing systems",
+      "authors": "J. Atwood and D. Towsley",
+      "orig_title": "Diffusion-convolutional neural networks",
+      "paper_id": "1511.02136v6"
+    },
+    {
+      "index": 6,
+      "title": "Hardware acceleration of graph neural networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM/IEEE DAC",
+      "authors": "A. Auten, M. Tomei, and R. Kumar"
+    },
+    {
+      "index": 7,
+      "title": "Approximating betweenness centrality",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Algorithms and Models for the Web-Graph",
+      "authors": "D. A. Bader et al."
+    },
+    {
+      "index": 8,
+      "title": "Graph partitioning and graph clustering, volume 588",
+      "abstract": "",
+      "year": "2013",
+      "venue": "American Mathematical Society Providence, RI",
+      "authors": "D. A. Bader, H. Meyerhenke, P. Sanders, and D. Wagner"
+    },
+    {
+      "index": 9,
+      "title": "Efficient data loader for fast sampling-based gnn training on large graphs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE TPDS",
+      "authors": "Y. Bai, C. Li, Z. Lin, Y. Wu, Y. Miao, Y. Liu, and Y. Xu"
+    },
+    {
+      "index": 10,
+      "title": "Bridging the Gap Between Spectral and Spatial Domains in Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.11702",
+      "authors": "M. Balcilar, G. Renton, P. Héroux, B. Gauzere, S. Adam, and P. Honeine",
+      "orig_title": "Bridging the gap between spectral and spatial domains in graph neural networks",
+      "paper_id": "2003.11702v1"
+    },
+    {
+      "index": 11,
+      "title": "MG-GCN: Scalable Multi-GPU GCN Training Framework",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2110.08688",
+      "authors": "M. F. Balın et al.",
+      "orig_title": "Mg-gcn: Scalable multi-gpu gcn training framework",
+      "paper_id": "2110.08688v1"
+    },
+    {
+      "index": 12,
+      "title": "Gnnmark: A benchmark suite to characterize graph neural network training on gpus",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE ISPASS",
+      "authors": "T. Baruah, K. Shivdikar, S. Dong, Y. Sun, S. A. Mojumder, K. Jung, J. L. Abellán, Y. Ukidave, A. Joshi, J. Kim, et al."
+    },
+    {
+      "index": 13,
+      "title": "Relational inductive biases, deep learning, and graph networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1806.01261",
+      "authors": "P. W. Battaglia, J. B. Hamrick, V. Bapst, A. Sanchez-Gonzalez, V. Zambaldi, M. Malinowski, A. Tacchetti, D. Raposo, A. Santoro, R. Faulkner, et al.",
+      "orig_title": "Relational inductive biases, deep learning, and graph networks",
+      "paper_id": "1806.01261v3"
+    },
+    {
+      "index": 14,
+      "title": "A Modular Benchmarking Infrastructure for High-Performance and Reproducible Deep Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1901.10183",
+      "authors": "T. Ben-Nun, M. Besta, S. Huber, A. N. Ziogas, D. Peter, and T. Hoefler",
+      "orig_title": "A modular benchmarking infrastructure for high-performance and reproducible deep learning",
+      "paper_id": "1901.10183v2"
+    },
+    {
+      "index": 15,
+      "title": "Demystifying Parallel and Distributed Deep Learning: An In-Depth Concurrency Analysis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM CSUR",
+      "authors": "T. Ben-Nun and T. Hoefler",
+      "orig_title": "Demystifying parallel and distributed deep learning: An in-depth concurrency analysis",
+      "paper_id": "1802.09941v2"
+    },
+    {
+      "index": 16,
+      "title": "11 label propagation and quadratic criterion",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "Y. Bengio, O. Delalleau, and N. Le Roux"
+    },
+    {
+      "index": 17,
+      "title": "Enabling High-Performance Large-Scale Irregular Computations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "PhD thesis, ETH Zurich",
+      "authors": "M. Besta"
+    },
+    {
+      "index": 18,
+      "title": "High-performance parallel graph coloring with strong guarantees on work, depth, and quality",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "M. Besta, A. Carigiet, K. Janda, Z. Vonarburg-Shmaria, L. Gianinazzi, and T. Hoefler"
+    },
+    {
+      "index": 19,
+      "title": "High-Performance Routing with Multipathing and Path Diversity in Ethernet and HPC Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "M. Besta, J. Domke, M. Schneider, M. Konieczny, S. Di Girolamo, T. Schneider, A. Singla, and T. Hoefler",
+      "orig_title": "High-performance routing with multipathing and path diversity in ethernet and hpc networks",
+      "paper_id": "2007.03776v3"
+    },
+    {
+      "index": 20,
+      "title": "Slim graph: Practical lossy graph compression for approximate graph processing, storage, and analytics",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "M. Besta et al."
+    },
+    {
+      "index": 21,
+      "title": "Communication-Efficient Jaccard similarity for High-Performance Distributed Genome Comparisons",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE IPDPS",
+      "authors": "M. Besta et al.",
+      "orig_title": "Communication-efficient jaccard similarity for high-performance distributed genome comparisons",
+      "paper_id": "1911.04200v3"
+    },
+    {
+      "index": 22,
+      "title": "Graphminesuite: Enabling high-performance and programmable graph mining algorithms with set algebra",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.03653",
+      "authors": "M. Besta et al."
+    },
+    {
+      "index": 23,
+      "title": "Sisa: Set-centric instruction set architecture for graph mining on processing-in-memory systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.07582",
+      "authors": "M. Besta et al."
+    },
+    {
+      "index": 24,
+      "title": "Practice of Streaming Processing of Dynamic Graphs: Concepts, Models, and Systems",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE TPDS",
+      "authors": "M. Besta et al.",
+      "orig_title": "Practice of streaming processing of dynamic graphs: Concepts, models, and systems",
+      "paper_id": "1912.12740v4"
+    },
+    {
+      "index": 25,
+      "title": "Substream-Centric Maximum Matchings on FPGA",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM TRETS",
+      "authors": "M. Besta, M. Fischer, T. Ben-Nun, D. Stanojevic, J. D. F. Licht, and T. Hoefler",
+      "orig_title": "Substream-centric maximum matchings on fpga",
+      "paper_id": "2010.14684v1"
+    },
+    {
+      "index": 26,
+      "title": "Motif Prediction with Graph Neural Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM KDD",
+      "authors": "M. Besta, R. Grob, C. Miglioli, N. Bernold, G. Kwasniewski, G. Gjini, R. Kanakagiri, S. Ashkboos, L. Gianinazzi, N. Dryden, et al.",
+      "orig_title": "Motif prediction with graph neural networks",
+      "paper_id": "2106.00761v4"
+    },
+    {
+      "index": 27,
+      "title": "Slim NoC: A Low-Diameter On-Chip Network Topology for High Energy Efficiency and Scalability",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM SIGPLAN Notices",
+      "authors": "M. Besta, S. M. Hassan, S. Yalamanchili, R. Ausavarungnirun, O. Mutlu, and T. Hoefler",
+      "orig_title": "Slim noc: A low-diameter on-chip network topology for high energy efficiency and scalability",
+      "paper_id": "2010.10683v1"
+    },
+    {
+      "index": 28,
+      "title": "Fault Tolerance for Remote Memory Access Programming Models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM HPDC",
+      "authors": "M. Besta and T. Hoefler",
+      "orig_title": "Fault tolerance for remote memory access programming models",
+      "paper_id": "2010.09025v1"
+    },
+    {
+      "index": 29,
+      "title": "Slim Fly: A Cost Effective Low-Diameter Network Topology",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "M. Besta and T. Hoefler",
+      "orig_title": "Slim fly: A cost effective low-diameter network topology",
+      "paper_id": "1912.08968v2"
+    },
+    {
+      "index": 30,
+      "title": "Accelerating Irregular Computations with Hardware Transactional Memory and Active Messages",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM HPDC",
+      "authors": "M. Besta and T. Hoefler",
+      "orig_title": "Accelerating irregular computations with hardware transactional memory and active messages",
+      "paper_id": "2010.09135v2"
+    },
+    {
+      "index": 31,
+      "title": "Active access: A mechanism for high-performance distributed data-centric computations",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM ICS",
+      "authors": "M. Besta and T. Hoefler"
+    },
+    {
+      "index": 32,
+      "title": "SlimSell: A Vectorizable Graph Representation for Breadth-First Search",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE IPDPS",
+      "authors": "M. Besta, F. Marending, E. Solomonik, and T. Hoefler",
+      "orig_title": "Slimsell: A vectorizable graph representation for breadth-first search",
+      "paper_id": "2010.09913v2"
+    },
+    {
+      "index": 33,
+      "title": "Demystifying Graph Databases: Analysis and Taxonomy of Data Organization, System Designs, and Graph Queries",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.09017",
+      "authors": "M. Besta, E. Peter, R. Gerstenberger, M. Fischer, M. Podstawski, C. Barthels, G. Alonso, and T. Hoefler",
+      "orig_title": "Demystifying graph databases: Analysis and taxonomy of data organization, system designs, and graph queries",
+      "paper_id": "1910.09017v8"
+    },
+    {
+      "index": 34,
+      "title": "To Push or To Pull: On Reducing Communication and Synchronization in Graph Computations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM HPDC",
+      "authors": "M. Besta, M. Podstawski, L. Groner, E. Solomonik, and T. Hoefler",
+      "orig_title": "To push or to pull: On reducing communication and synchronization in graph computations",
+      "paper_id": "2010.16012v1"
+    },
+    {
+      "index": 35,
+      "title": "FatPaths: Routing in Supercomputers and Data Centers when Shortest Paths Fall Short",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "M. Besta, M. Schneider, K. Cynk, M. Konieczny, E. Henriksson, S. Di Girolamo, A. Singla, and T. Hoefler",
+      "orig_title": "Fatpaths: Routing in supercomputers and data centers when shortest paths fall short",
+      "paper_id": "1906.10885v2"
+    },
+    {
+      "index": 36,
+      "title": "Graph Processing on FPGAs: Taxonomy, Survey, Challenges",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1903.06697",
+      "authors": "M. Besta, D. Stanojevic, J. D. F. Licht, T. Ben-Nun, and T. Hoefler",
+      "orig_title": "Graph processing on fpgas: Taxonomy, survey, challenges",
+      "paper_id": "1903.06697v3"
+    },
+    {
+      "index": 37,
+      "title": "Graph Neural Networks with Convolutional ARMA Filters",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE TPAMI",
+      "authors": "F. M. Bianchi, D. Grattarola, L. Livi, and C. Alippi",
+      "orig_title": "Graph neural networks with convolutional arma filters",
+      "paper_id": "1901.01343v7"
+    },
+    {
+      "index": 38,
+      "title": "Models of Computation, Theoretical, pages 1150–1158",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Springer US, Boston, MA",
+      "authors": "G. Bilardi and A. Pietracaprina"
+    },
+    {
+      "index": 39,
+      "title": "Pre x sums and their applications",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Technical report, Citeseer",
+      "authors": "G. E. Blelloch"
+    },
+    {
+      "index": 40,
+      "title": "Programming parallel algorithms",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Communications of the ACM",
+      "authors": "G. E. Blelloch"
+    },
+    {
+      "index": 41,
+      "title": "Parallel Algorithms",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Chapman & Hall/CRC",
+      "authors": "G. E. Blelloch and B. M. Maggs"
+    },
+    {
+      "index": 42,
+      "title": "Scaling Graph Neural Networks with Approximate PageRank",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM KDD",
+      "authors": "A. Bojchevski, J. Klicpera, B. Perozzi, A. Kapoor, M. Blais, B. Rózemberczki, M. Lukasik, and S. Günnemann",
+      "orig_title": "Scaling graph neural networks with approximate pagerank",
+      "paper_id": "2007.01570v2"
+    },
+    {
+      "index": 43,
+      "title": "Hyperanf: Approximating the neighbourhood function of very large graphs on a budget",
+      "abstract": "",
+      "year": "2011",
+      "venue": "20th international conference on World wide web",
+      "authors": "P. Boldi, M. Rosa, and S. Vigna"
+    },
+    {
+      "index": 44,
+      "title": "Kadabra is an adaptive algorithm for betweenness via random approximation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1604.08553",
+      "authors": "M. Borassi and E. Natale"
+    },
+    {
+      "index": 45,
+      "title": "Graph kernels",
+      "abstract": "",
+      "year": "2007",
+      "venue": "PhD thesis, lmu",
+      "authors": "K. M. Borgwardt"
+    },
+    {
+      "index": 46,
+      "title": "Residual Gated Graph ConvNets",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.07553",
+      "authors": "X. Bresson and T. Laurent",
+      "orig_title": "Residual gated graph convnets",
+      "paper_id": "1711.07553v2"
+    },
+    {
+      "index": 47,
+      "title": "Geometric deep learning: Grids, groups, graphs, geodesics, and gauges",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.13478",
+      "authors": "M. M. Bronstein, J. Bruna, T. Cohen, and P. Veličković"
+    },
+    {
+      "index": 48,
+      "title": "Geometric deep learning: going beyond euclidean data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Signal Processing Magazine",
+      "authors": "M. M. Bronstein, J. Bruna, Y. LeCun, A. Szlam, and P. Vandergheynst"
+    },
+    {
+      "index": 49,
+      "title": "Towards scalable parallel hypergraph partitioning",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": "A. Buluç and E. G. Boman"
+    },
+    {
+      "index": 50,
+      "title": "Recent advances in graph partitioning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Algorithm Engineering",
+      "authors": "A. Buluç et al."
+    },
+    {
+      "index": 51,
+      "title": "Graph partitioning for scalable distributed graph computations",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Graph Partitioning and Graph Clustering, 588:83",
+      "authors": "A. Buluc and K. Madduri."
+    },
+    {
+      "index": 52,
+      "title": "A Comprehensive Survey of Graph Embedding: Problems, Techniques and Applications",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering,\n30(9):",
+      "authors": "H. Cai, V. W. Zheng, and K. C.-C. Chang.",
+      "orig_title": "A comprehensive survey of graph embedding: Problems, techniques, and applications",
+      "paper_id": "1709.07604v3"
+    },
+    {
+      "index": 53,
+      "title": "Dgcl: an efficient communication library for distributed gnn training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "EuroSys",
+      "authors": "Z. Cai, X. Yan, Y. Wu, K. Ma, J. Cheng, and F. Yu."
+    },
+    {
+      "index": 54,
+      "title": "A fine-grain hypergraph model for 2d decomposition of sparse matrices",
+      "abstract": "",
+      "year": "2001",
+      "venue": "IPDPS",
+      "authors": "Ü. V. Çatalyürek and C. Aykanat."
+    },
+    {
+      "index": 55,
+      "title": "Efficient scaling of dynamic graph neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "V. T. Chakaravarthy, S. S. Pandian, S. Raje, Y. Sabharwal, T. Suzumura, and\nS. Ubaru."
+    },
+    {
+      "index": 56,
+      "title": "Graph mining: Laws, generators, and algorithms",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ACM computing surveys (CSUR), 38(1):2",
+      "authors": "D. Chakrabarti and C. Faloutsos."
+    },
+    {
+      "index": 57,
+      "title": "Machine Learning on Graphs: A Model and Comprehensive Taxonomy",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "I. Chami, S. Abu-El-Haija, B. Perozzi, C. Ré, and K. Murphy.",
+      "orig_title": "Machine learning on graphs: A model and comprehensive taxonomy",
+      "paper_id": "2005.03675v3"
+    },
+    {
+      "index": 58,
+      "title": "Approximating the minimum spanning tree weight in sublinear time",
+      "abstract": "",
+      "year": "2005",
+      "venue": "SIAM Journal on computing, 34(6):",
+      "authors": "B. Chazelle, R. Rubinfeld, and L. Trevisan."
+    },
+    {
+      "index": 59,
+      "title": "Stochastic training of graph convolutional networks with variance reduction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "J. Chen et al."
+    },
+    {
+      "index": 60,
+      "title": "FastGCN: Fast Learning with Graph Convolutional Networks via Importance Sampling",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv:",
+      "authors": "J. Chen et al.",
+      "orig_title": "Fastgcn: fast learning with graph convolutional networks via importance sampling",
+      "paper_id": "1801.10247v1"
+    },
+    {
+      "index": 61,
+      "title": "Rubik: A hierarchical architecture for efficient graph neural network training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE TCAD",
+      "authors": "X. Chen, Y. Wang, X. Xie, X. Hu, A. Basak, L. Liang, M. Yan, L. Deng, Y. Ding,\nZ. Du, et al."
+    },
+    {
+      "index": 62,
+      "title": "Bridging the Gap between Spatial and Spectral Domains: A Unified Framework for Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Z. Chen, F. Chen, L. Zhang, T. Ji, K. Fu, L. Zhao, F. Chen, L. Wu, C. Aggarwal,\nand C.-T. Lu.",
+      "orig_title": "Bridging the gap between spatial and spectral domains: A unified framework for graph neural networks",
+      "paper_id": "2107.10234v5"
+    },
+    {
+      "index": 63,
+      "title": "fusegnn: accelerating graph convolutional neural network training on gpgpu",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/ACM ICCAD",
+      "authors": "Z. Chen, M. Yan, M. Zhu, L. Deng, G. Li, S. Li, and Y. Xie."
+    },
+    {
+      "index": 64,
+      "title": "Cluster-gcn: An efficient algorithm for training deep and large graph convolutional networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM KDD",
+      "authors": "W.-L. Chiang, X. Liu, S. Si, Y. Li, S. Bengio, and C.-J. Hsieh."
+    },
+    {
+      "index": 65,
+      "title": "Mining graph data",
+      "abstract": "",
+      "year": "2006",
+      "venue": "John Wiley & Sons",
+      "authors": "D. J. Cook and L. B. Holder."
+    },
+    {
+      "index": 66,
+      "title": "SeBS: A Serverless Benchmark Suite for Function-as-a-Service Computing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "M. Copik, G. Kwasniewski, M. Besta, M. Podstawski, and T. Hoefler.",
+      "orig_title": "Sebs: A serverless benchmark suite for function-as-a-service computing",
+      "paper_id": "2012.14132v2"
+    },
+    {
+      "index": 67,
+      "title": "A Survey on Network Embedding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering,\n31(5):833–852",
+      "authors": "P. Cui, X. Wang, J. Pei, and W. Zhu.",
+      "orig_title": "A survey on network embedding",
+      "paper_id": "1711.08752v1"
+    },
+    {
+      "index": 68,
+      "title": "A survey on knowledge graph embedding: Approaches, applications and benchmarks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Electronics, 9(5):750",
+      "authors": "Y. Dai, S. Wang, N. N. Xiong, and W. Guo."
+    },
+    {
+      "index": 69,
+      "title": "Advancing mathematics by guiding human intuition with ai",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Nature, 600(",
+      "authors": "A. Davies, P. Veličković, L. Buesing, S. Blackwell, D. Zheng,\nN. Tomašev, R. Tanburn, P. Battaglia, C. Blundell, A. Juhász,\net al."
+    },
+    {
+      "index": 70,
+      "title": "Transformations of High-Level Synthesis Codes for High-Performance Computing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv:",
+      "authors": "J. de Fine Licht et al.",
+      "orig_title": "Transformations of high-level synthesis codes for high-performance computing",
+      "paper_id": "1805.08288v6"
+    },
+    {
+      "index": 71,
+      "title": "Convolutional neural networks on graphs with fast localized spectral filtering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NeurIPS",
+      "authors": "M. Defferrard et al."
+    },
+    {
+      "index": 72,
+      "title": "Parallel hypergraph partitioning for scientific computing",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE IPDPS",
+      "authors": "K. D. Devine, E. G. Boman, R. T. Heaphy, R. H. Bisseling, and U. V. Catalyurek."
+    },
+    {
+      "index": 73,
+      "title": "Network-Accelerated Non-Contiguous Memory Transfers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "S. Di Girolamo, K. Taranov, A. Kurth, M. Schaffner, T. Schneider,\nJ. Beránek, M. Besta, L. Benini, D. Roweth, and T. Hoefler.",
+      "orig_title": "Network-accelerated non-contiguous memory transfers",
+      "paper_id": "1908.08590v1"
+    },
+    {
+      "index": 74,
+      "title": "A min-max cut algorithm for graph partitioning and data clustering",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Proceedings 2001 IEEE international conference on data\nmining",
+      "authors": "C. H. Ding, X. He, H. Zha, M. Gu, and H. D. Simon."
+    },
+    {
+      "index": 75,
+      "title": "Approximate evaluation of label-constrained reachability queries",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "S. Dumbrava, A. Bonifati, A. N. R. Diaz, and R. Vuillemot."
+    },
+    {
+      "index": 76,
+      "title": "Benchmarking Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "V. P. Dwivedi, C. K. Joshi, T. Laurent, Y. Bengio, and X. Bresson.",
+      "orig_title": "Benchmarking graph neural networks",
+      "paper_id": "2003.00982v5"
+    },
+    {
+      "index": 77,
+      "title": "Lasas: an aggregated search based graph matching approach",
+      "abstract": "",
+      "year": "2017",
+      "venue": "The 29th International Conference on Software Engineering and\nKnowledge Engineering",
+      "authors": "G. ECHBARTHI and H. KHEDDOUCI."
+    },
+    {
+      "index": 78,
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "M. Fey and J. E. Lenssen.",
+      "orig_title": "Fast graph representation learning with pytorch geometric",
+      "paper_id": "1903.02428v3"
+    },
+    {
+      "index": 79,
+      "title": "SIGN: Scalable Inception Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "F. Frasca, E. Rossi, D. Eynard, B. Chamberlain, M. Bronstein, and F. Monti.",
+      "orig_title": "Sign: Scalable inception graph neural networks",
+      "paper_id": "2004.11198v3"
+    },
+    {
+      "index": 80,
+      "title": "P3: Distributed deep graph learning at scale",
+      "abstract": "",
+      "year": "2021",
+      "venue": "USENIX OSDI",
+      "authors": "S. Gandhi and A. P. Iyer."
+    },
+    {
+      "index": 81,
+      "title": "Understanding the design space of sparse/dense multiphase dataflows for mapping graph neural networks on spatial accelerators",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "R. Garg, E. Qin, F. Muñoz-Martínez, R. Guirado, A. Jain, S. Abadal,\nJ. L. Abellán, M. E. Acacio, E. Alarcón, S. Rajamanickam, et al."
+    },
+    {
+      "index": 82,
+      "title": "Gemnet: Universal directional graph neural networks for molecules",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems,\n34:",
+      "authors": "J. Gasteiger, F. Becker, and S. Günnemann."
+    },
+    {
+      "index": 83,
+      "title": "Better approximation of betweenness centrality",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Proceedings of the Meeting on Algorithm Engineering &\nExpermiments, pages 90–100. Society for Industrial and Applied Mathematics",
+      "authors": "R. Geisberger, P. Sanders, and D. Schultes."
+    },
+    {
+      "index": 84,
+      "title": "Parallel minimum cuts in near-linear work and low depth",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "B. Geissmann and L. Gianinazzi."
+    },
+    {
+      "index": 85,
+      "title": "I-GCN: A Graph Convolutional Network Accelerator with Runtime Locality Enhancement through Islandization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/ACM MICRO",
+      "authors": "T. Geng et al.",
+      "orig_title": "I-gcn: A graph convolutional network accelerator with runtime locality enhancement through islandization",
+      "paper_id": "2203.03606v1"
+    },
+    {
+      "index": 86,
+      "title": "AWB-GCN: A Graph Convolutional Network Accelerator with Runtime Workload Rebalancing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/ACM MICRO",
+      "authors": "T. Geng, A. Li, R. Shi, C. Wu, T. Wang, Y. Li, P. Haghi, A. Tumeo, S. Che,\nS. Reinhardt, et al.",
+      "orig_title": "Awb-gcn: A graph convolutional network accelerator with runtime workload rebalancing",
+      "paper_id": "1908.10834v10"
+    },
+    {
+      "index": 87,
+      "title": "Communication Avoiding and Overlapping for Numerical Linear Algebra",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "E. Georganas, J. Gonzalez-Dominguez, E. Solomonik, Y. Zheng, J. Tourino, and\nK. Yelick."
+    },
+    {
+      "index": 88,
+      "title": "Enabling Highly-Scalable Remote Memory Access Programming with MPI-3 One Sided",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "R. Gerstenberger et al.",
+      "orig_title": "Enabling highly-scalable remote memory access programming with mpi-3 one sided",
+      "paper_id": "2001.07747v2"
+    },
+    {
+      "index": 89,
+      "title": "The processing-in-memory paradigm: Mechanisms to enable adoption",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Beyond-CMOS Technologies for Next Generation Computer\nDesign",
+      "authors": "S. Ghose, K. Hsieh, A. Boroumand, R. Ausavarungnirun, and O. Mutlu."
+    },
+    {
+      "index": 90,
+      "title": "Learning Combinatorial Node Labeling Algorithms",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "L. Gianinazzi, M. Fries, N. Dryden, T. Ben-Nun, and T. Hoefler.",
+      "orig_title": "Learning combinatorial node labeling algorithms",
+      "paper_id": "2106.03594v3"
+    },
+    {
+      "index": 91,
+      "title": "Communication-avoiding parallel minimum cuts and connected components",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM SIGPLAN Notices",
+      "authors": "L. Gianinazzi, P. Kalvoda, A. De Palma, M. Besta, and T. Hoefler."
+    },
+    {
+      "index": 92,
+      "title": "Neural Message Passing for Quantum Chemistry",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "J. Gilmer, S. S. Schoenholz, P. F. Riley, O. Vinyals, and G. E. Dahl.",
+      "orig_title": "Neural message passing for quantum chemistry",
+      "paper_id": "1704.01212v2"
+    },
+    {
+      "index": 93,
+      "title": "I/o-optimal cache-oblivious sparse matrix-sparse matrix multiplication",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "N. Gleinig, M. Besta, and T. Hoefler."
+    },
+    {
+      "index": 94,
+      "title": "Benchmarking a New Paradigm: An Experimental Analysis of a Real Processing-in-Memory Architecture",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "J. Gómez-Luna, I. E. Hajj, I. Fernandez, C. Giannoula, G. F. Oliveira, and\nO. Mutlu.",
+      "orig_title": "Benchmarking a new paradigm: An experimental analysis of a real processing-in-memory architecture",
+      "paper_id": "2105.03814v7"
+    },
+    {
+      "index": 95,
+      "title": "Powergraph: distributed graph-parallel computation on natural graphs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "OSDI, volume 12",
+      "authors": "J. E. Gonzalez, Y. Low, H. Gu, D. Bickson, and C. Guestrin."
+    },
+    {
+      "index": 96,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MIT press",
+      "authors": "I. Goodfellow, Y. Bengio, and A. Courville.",
+      "orig_title": "Deep learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 97,
+      "title": "The parallel bgl: A generic library for distributed graph computations",
+      "abstract": "",
+      "year": "2005",
+      "venue": "POOSC",
+      "authors": "D. Gregor and A. Lumsdaine."
+    },
+    {
+      "index": 98,
+      "title": "node2vec: Scalable Feature Learning for Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "A. Grover and J. Leskovec.",
+      "orig_title": "node2vec: Scalable feature learning for networks",
+      "paper_id": "1607.00653v1"
+    },
+    {
+      "index": 99,
+      "title": "Simdram: a framework for bit-serial simd processing using dram",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Proceedings of the 26th ACM International Conference on\nArchitectural Support for Programming Languages and Operating Systems",
+      "authors": "N. Hajinazar, G. F. Oliveira, S. Gregorio, J. D. Ferreira, N. M. Ghiasi,\nM. Patel, M. Alser, S. Ghose, J. Gómez-Luna, and O. Mutlu."
+    },
+    {
+      "index": 100,
+      "title": "Graph representation learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Synthesis Lectures on Artifical Intelligence and Machine\nLearning, 14(3):1–159",
+      "authors": "W. L. Hamilton."
+    },
+    {
+      "index": 101,
+      "title": "Representation Learning on Graphs: Methods and Applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "W. L. Hamilton et al.",
+      "orig_title": "Representation learning on graphs: Methods and applications",
+      "paper_id": "1709.05584v3"
+    },
+    {
+      "index": 102,
+      "title": "Inductive Representation Learning on Large Graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "W. L. Hamilton, R. Ying, and J. Leskovec.",
+      "orig_title": "Inductive representation learning on large graphs",
+      "paper_id": "1706.02216v4"
+    },
+    {
+      "index": 103,
+      "title": "SpreadGNN: Serverless Multi-task Federated Learning for Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "C. He, E. Ceyani, K. Balasubramanian, M. Annavaram, and S. Avestimehr.",
+      "orig_title": "Spreadgnn: Serverless multi-task federated learning for graph neural networks",
+      "paper_id": "2106.02743v1"
+    },
+    {
+      "index": 104,
+      "title": "Tare: Task-adaptive in-situ reram computing for graph learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM/IEEE DAC",
+      "authors": "Y. He, Y. Wang, C. Liu, H. Li, and X. Li."
+    },
+    {
+      "index": 105,
+      "title": "An improved spectral graph partitioning algorithm for mapping parallel computations",
+      "abstract": "",
+      "year": "1995",
+      "venue": "SIAM Journal on Scientific Computing, 16(2):452–469",
+      "authors": "B. Hendrickson and R. Leland."
+    },
+    {
+      "index": 106,
+      "title": "Efficient distribution for deep learning on large graphs, 2021",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "L. Hoang, X. Chen, H. Lee, R. Dathathri, G. Gill, and K. Pingali."
+    },
+    {
+      "index": 107,
+      "title": "spin: High-performance streaming processing in the network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "T. Hoefler, S. Di Girolamo, K. Taranov, R. E. Grant, and R. Brightwell."
+    },
+    {
+      "index": 108,
+      "title": "Energy, memory, and runtime tradeoffs for implementing collective communication operations",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Supercomputing frontiers and innovations",
+      "authors": "T. Hoefler and D. Moor."
+    },
+    {
+      "index": 109,
+      "title": "Cyclic pattern kernels for predictive graph mining",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": "T. Horváth, T. Gärtner, and S. Wrobel."
+    },
+    {
+      "index": 110,
+      "title": "Graph Classification by Mixture of Diverse Experts",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "F. Hu, L. Wang, S. Wu, L. Wang, and T. Tan.",
+      "orig_title": "Graph classification by mixture of diverse experts",
+      "paper_id": "2103.15622v1"
+    },
+    {
+      "index": 111,
+      "title": "Open Graph Benchmark: Datasets for Machine Learning on Graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "W. Hu, M. Fey, M. Zitnik, Y. Dong, H. Ren, B. Liu, M. Catasta, and J. Leskovec.",
+      "orig_title": "Open graph benchmark: Datasets for machine learning on graphs",
+      "paper_id": "2005.00687v7"
+    },
+    {
+      "index": 112,
+      "title": "FeatGraph: A Flexible and Efficient Backend for Graph Neural Network Systems",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Y. Hu et al.",
+      "orig_title": "Featgraph: A flexible and efficient backend for graph neural network systems",
+      "paper_id": "2008.11359v2"
+    },
+    {
+      "index": 113,
+      "title": "Heterogeneous Graph Transformer",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Proceedings of The Web Conference 2020, pages 2704–2710",
+      "authors": "Z. Hu, Y. Dong, K. Wang, and Y. Sun.",
+      "orig_title": "Heterogeneous graph transformer",
+      "paper_id": "2003.01332v1"
+    },
+    {
+      "index": 114,
+      "title": "GE-SpMM: General-purpose Sparse Matrix-Matrix Multiplication on GPUs for Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "G. Huang, G. Dai, Y. Wang, and H. Yang.",
+      "orig_title": "Ge-spmm: General-purpose sparse matrix-matrix multiplication on gpus for graph neural networks",
+      "paper_id": "2007.03179v1"
+    },
+    {
+      "index": 115,
+      "title": "Understanding and bridging the gaps in current gnn performance optimizations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM PPoPP",
+      "authors": "K. Huang, J. Zhai, Z. Zheng, Y. Yi, and X. Shen."
+    },
+    {
+      "index": 116,
+      "title": "Text Level Graph Neural Network for Text Classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "L. Huang, D. Ma, S. Li, X. Zhang, and H. Wang.",
+      "orig_title": "Text level graph neural network for text classification",
+      "paper_id": "1910.02356v2"
+    },
+    {
+      "index": 117,
+      "title": "Gpipe: Efficient training of giant neural networks using pipeline parallelism",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Y. Huang, Y. Cheng, A. Bapna, O. Firat, D. Chen, M. Chen, H. Lee, J. Ngiam,\nQ. V. Le, Y. Wu, et al."
+    },
+    {
+      "index": 118,
+      "title": "Improving the accuracy, scalability, and performance of graph neural networks with roc",
+      "abstract": "",
+      "year": "2020",
+      "venue": "MLSys",
+      "authors": "Z. Jia et al."
+    },
+    {
+      "index": 119,
+      "title": "A survey of frequent subgraph mining algorithms",
+      "abstract": "",
+      "year": "2013",
+      "venue": "The Knowledge Engineering Review, 28(1):75–105",
+      "authors": "C. Jiang, F. Coenen, and M. Zito."
+    },
+    {
+      "index": 120,
+      "title": "Graph Neural Network for Traffic Forecasting: A Survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "W. Jiang and J. Luo.",
+      "orig_title": "Graph neural network for traffic forecasting: A survey",
+      "paper_id": "2101.11174v4"
+    },
+    {
+      "index": 121,
+      "title": "Highly accurate protein structure prediction with alphafold",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Nature, 596(",
+      "authors": "J. Jumper, R. Evans, A. Pritzel, T. Green, M. Figurnov, O. Ronneberger,\nK. Tunyasuvunakool, R. Bates, A. Žídek, A. Potapenko, et al."
+    },
+    {
+      "index": 122,
+      "title": "Global min-cuts in rnc, and other ramifications of a simple min-cut algorithm",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Soda, volume 93",
+      "authors": "D. R. Karger."
+    },
+    {
+      "index": 123,
+      "title": "Analysis of multilevel graph partitioning",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Supercomputing’95: Proceedings of the 1995 ACM/IEEE\nconference on Supercomputing",
+      "authors": "G. Karypis and V. Kumar."
+    },
+    {
+      "index": 124,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": "G. Karypis and V. Kumar.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 125,
+      "title": "Mathematical Foundations of the GraphBLAS",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 IEEE High Performance Extreme Computing Conference\n(HPEC)",
+      "authors": "J. Kepner, P. Aaltonen, D. Bader, A. Buluç, F. Franchetti, J. Gilbert,\nD. Hutchison, M. Kumar, A. Lumsdaine, H. Meyerhenke, et al.",
+      "orig_title": "Mathematical foundations of the graphblas",
+      "paper_id": "1606.05790v2"
+    },
+    {
+      "index": 126,
+      "title": "Sbv-cut: Vertex-cut based graph partitioning using structural balance vertices",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Data & Knowledge Engineering, 72:285–303",
+      "authors": "M. Kim and K. S. Candan."
+    },
+    {
+      "index": 127,
+      "title": "Accelerating gnn training with locality-aware partial execution",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM SIGOPS APSys",
+      "authors": "T. Kim, C. Hwang, K. Park, Z. Lin, P. Cheng, Y. Miao, L. Ma, and Y. Xiong."
+    },
+    {
+      "index": 128,
+      "title": "Greta: Hardware optimized graph processing for gnns",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ReCoML",
+      "authors": "K. Kiningham, P. Levis, and C. Ré."
+    },
+    {
+      "index": 129,
+      "title": "GRIP: A Graph Neural Network Accelerator Architecture",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "K. Kiningham, C. Re, and P. Levis.",
+      "orig_title": "Grip: a graph neural network accelerator architecture",
+      "paper_id": "2007.13828v2"
+    },
+    {
+      "index": 130,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "T. N. Kipf and M. Welling.",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 131,
+      "title": "Predict then propagate: Graph neural networks meet personalized pagerank",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "J. Klicpera et al."
+    },
+    {
+      "index": 132,
+      "title": "Diffusion Improves Graph Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "J. Klicpera, S. Weißenberger, and S. Günnemann.",
+      "orig_title": "Diffusion improves graph learning",
+      "paper_id": "1911.05485v6"
+    },
+    {
+      "index": 133,
+      "title": "A Survey on Graph Kernels",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Applied Network Science, 5(1):1–42",
+      "authors": "N. M. Kriege, F. D. Johansson, and C. Morris.",
+      "orig_title": "A survey on graph kernels",
+      "paper_id": "1903.11835v2"
+    },
+    {
+      "index": 134,
+      "title": "One weird trick for parallelizing convolutional neural networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "A. Krizhevsky.",
+      "orig_title": "One weird trick for parallelizing convolutional neural networks",
+      "paper_id": "1404.5997v2"
+    },
+    {
+      "index": 135,
+      "title": "Optimistic parallelism requires abstractions",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM SIGPLAN Notices, 42(6):211–222",
+      "authors": "M. Kulkarni, K. Pingali, B. Walter, G. Ramanarayanan, K. Bala, and L. P. Chew."
+    },
+    {
+      "index": 136,
+      "title": "Pebbles, Graphs, and a Pinch of Combinatorics: Towards Tight I/O Lower Bounds for Statically Analyzable Programs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM SPAA",
+      "authors": "G. Kwasniewski, T. Ben-Nun, L. Gianinazzi, A. Calotoiu, T. Schneider, A. N.\nZiogas, M. Besta, and T. Hoefler.",
+      "orig_title": "Pebbles, graphs, and a pinch of combinatorics: Towards tight i/o lower bounds for statically analyzable programs",
+      "paper_id": "2105.07203v1"
+    },
+    {
+      "index": 137,
+      "title": "On the Parallel I/O Optimality of Linear Algebra Kernels: Near-Optimal LU Factorization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM PPoPP",
+      "authors": "G. Kwasniewski, T. Ben-Nun, A. N. Ziogas, T. Schneider, M. Besta, and\nT. Hoefler.",
+      "orig_title": "On the parallel i/o optimality of linear algebra kernels: near-optimal lu factorization",
+      "paper_id": "2010.05975v1"
+    },
+    {
+      "index": 138,
+      "title": "Red-Blue Pebbling Revisited: Near Optimal Parallel Matrix-Matrix Multiplication",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "G. Kwasniewski, M. Kabić, M. Besta, J. VandeVondele, R. Solcà, and\nT. Hoefler.",
+      "orig_title": "Red-blue pebbling revisited: near optimal parallel matrix-matrix multiplication",
+      "paper_id": "1908.09606v3"
+    },
+    {
+      "index": 139,
+      "title": "Graph Neural Networks Meet Neural-Symbolic Computing: A Survey and Perspective",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "L. C. Lamb, A. Garcez, M. Gori, M. Prates, P. Avelar, and M. Vardi.",
+      "orig_title": "Graph neural networks meet neural-symbolic computing: A survey and perspective",
+      "paper_id": "2003.00330v7"
+    },
+    {
+      "index": 140,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "nature, 521(",
+      "authors": "Y. LeCun, Y. Bengio, and G. Hinton.",
+      "orig_title": "Deep learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 141,
+      "title": "Training Graph Neural Networks with 1000 Layers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International conference on machine learning",
+      "authors": "G. Li, M. Müller, B. Ghanem, and V. Koltun.",
+      "orig_title": "Training graph neural networks with 1000 layers",
+      "paper_id": "2106.07476v3"
+    },
+    {
+      "index": 142,
+      "title": "Hardware acceleration for gcns via bidirectional fusion",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Computer Architecture Letters, 20(1):66–4",
+      "authors": "H. Li, M. Yan, X. Yang, L. Deng, W. Li, X. Ye, D. Fan, and Y. Xie."
+    },
+    {
+      "index": 143,
+      "title": "Gcnax: A flexible and energy-efficient accelerator for graph convolutional neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE HPCA",
+      "authors": "J. Li, A. Louri, A. Karanth, and R. Bunescu."
+    },
+    {
+      "index": 144,
+      "title": "Semi-Supervised Graph Classification: A Hierarchical Graph Perspective",
+      "abstract": "",
+      "year": "2019",
+      "venue": "The World Wide Web Conference",
+      "authors": "J. Li, Y. Rong, H. Cheng, H. Meng, W. Huang, and J. Huang.",
+      "orig_title": "Semi-supervised graph classification: A hierarchical graph perspective",
+      "paper_id": "1904.05003v1"
+    },
+    {
+      "index": 145,
+      "title": "Taming unbalanced training workloads in deep learning with partial collective operations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM PPoPP",
+      "authors": "S. Li, T. Ben-Nun, S. D. Girolamo, D. Alistarh, and T. Hoefler."
+    },
+    {
+      "index": 146,
+      "title": "Chimera: Efficiently Training Large-Scale Neural Networks with Bidirectional Pipelines",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "S. Li and T. Hoefler.",
+      "orig_title": "Chimera: efficiently training large-scale neural networks with bidirectional pipelines",
+      "paper_id": "2107.06925v3"
+    },
+    {
+      "index": 147,
+      "title": "EnGN: A High-Throughput and Energy-Efficient Accelerator for Large Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE TOC",
+      "authors": "S. Liang, Y. Wang, C. Liu, L. He, L. Huawei, D. Xu, and X. Li.",
+      "orig_title": "Engn: A high-throughput and energy-efficient accelerator for large graph neural networks",
+      "paper_id": "1909.00155v3"
+    },
+    {
+      "index": 148,
+      "title": "Accelerating spmm kernel with cache-first edge sampling for gnn inference",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "C.-Y. Lin, L. Luo, and L. Ceze."
+    },
+    {
+      "index": 149,
+      "title": "Shentu: processing multi-trillion edge graphs on millions of cores in seconds",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "H. Lin, X. Zhu, B. Yu, X. Tang, W. Xue, W. Chen, L. Zhang, T. Hoefler, X. Ma,\nX. Liu, et al."
+    },
+    {
+      "index": 150,
+      "title": "Learning entity and relation embeddings for knowledge graph completion",
+      "abstract": "",
+      "year": "2015",
+      "venue": "AAAI",
+      "authors": "Y. Lin, Z. Liu, M. Sun, Y. Liu, and X. Zhu."
+    },
+    {
+      "index": 151,
+      "title": "Pagraph: Scaling gnn training on large graphs via computation-aware caching",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM SoCC",
+      "authors": "Z. Lin, C. Li, Y. Miao, Y. Liu, and Y. Xu."
+    },
+    {
+      "index": 152,
+      "title": "G3: when graph neural networks meet parallel graph processing systems on gpus",
+      "abstract": "",
+      "year": "2020",
+      "venue": "VLDB",
+      "authors": "H. Liu, S. Lu, X. Chen, and B. He."
+    },
+    {
+      "index": 153,
+      "title": "Bgl: Gpu-efficient gnn training by optimizing graph data i/o and preprocessing",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "T. Liu, Y. Chen, D. Li, C. Wu, Y. Zhu, J. He, Y. Peng, H. Chen, H. Chen, and\nC. Guo."
+    },
+    {
+      "index": 154,
+      "title": "Sampling methods for efficient training of graph convolutional networks: A survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CAA Journal of Automatica Sinica, 9(2):205–234",
+      "authors": "X. Liu, M. Yan, L. Deng, G. Li, X. Ye, and D. Fan.",
+      "orig_title": "Sampling methods for efficient training of graph convolutional networks: A survey",
+      "paper_id": "2103.05872v3"
+    },
+    {
+      "index": 155,
+      "title": "Challenges in parallel graph processing",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Parallel Processing Letters, 17(01):5–20",
+      "authors": "A. Lumsdaine, D. Gregor, B. Hendrickson, and J. Berry."
+    },
+    {
+      "index": 156,
+      "title": "Neugraph: parallel deep neural network computation on large graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "USENIX ATC",
+      "authors": "L. Ma, Z. Yang, Y. Miao, J. Xue, M. Wu, L. Zhou, and Y. Dai."
+    },
+    {
+      "index": 157,
+      "title": "Mixture of experts: a literature survey",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Artificial Intelligence Review, 42(2):275–293",
+      "authors": "S. Masoudnia and R. Ebrahimpour."
+    },
+    {
+      "index": 158,
+      "title": "DistGNN: Scalable Distributed Training for Large-Scale Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "V. Md, S. Misra, G. Ma, R. Mohanty, E. Georganas, A. Heinecke, D. Kalamkar,\nN. K. Ahmed, and S. Avancha.",
+      "orig_title": "Distgnn: Scalable distributed training for large-scale graph neural networks",
+      "paper_id": "2104.06700v3"
+    },
+    {
+      "index": 159,
+      "title": "Large graph convolutional network training with gpu-oriented data communication architecture",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "S. W. Min, K. Wu, S. Huang, M. Hidayetoğlu, J. Xiong, E. Ebrahimi,\nD. Chen, and W.-m. Hwu."
+    },
+    {
+      "index": 160,
+      "title": "A graph placement methodology for fast chip design",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Nature, 594(",
+      "authors": "A. Mirhoseini, A. Goldie, M. Yazgan, J. W. Jiang, E. Songhori, S. Wang, Y.-J.\nLee, E. Johnson, O. Pathak, A. Nazi, et al."
+    },
+    {
+      "index": 161,
+      "title": "GNNIE: GNN Inference Engine with Load-balancing and Graph-Specific Caching",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM/IEEE DAC",
+      "authors": "S. Mondal et al.",
+      "orig_title": "Gnnie: Gnn inference engine with load-balancing and graph-specific caching",
+      "paper_id": "2105.10554v2"
+    },
+    {
+      "index": 162,
+      "title": "Geometric deep learning on graphs and manifolds using mixture model cnns",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE CVPR",
+      "authors": "F. Monti, D. Boscaini, J. Masci, E. Rodola, J. Svoboda, and M. M. Bronstein."
+    },
+    {
+      "index": 163,
+      "title": "Sequential aggregation and rematerialization: Distributed full-batch training of graph neural networks on large graphs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:",
+      "authors": "H. Mostafa."
+    },
+    {
+      "index": 164,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2012",
+      "venue": "available at: http://www.mpi-forum.org (Sep",
+      "authors": "MPI Forum.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 165,
+      "title": "A fast parallel algorithm to compute the rank of a matrix over an arbitrary field",
+      "abstract": "",
+      "year": "1986",
+      "venue": "ACM STOC",
+      "authors": "K. Mulmuley."
+    },
+    {
+      "index": 166,
+      "title": "Processing Data Where It Makes Sense: Enabling In-Memory Computation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "MicPro",
+      "authors": "O. Mutlu et al.",
+      "orig_title": "Processing Data Where It Makes Sense: Enabling In-Memory Computation",
+      "paper_id": "1903.03988v1"
+    },
+    {
+      "index": 167,
+      "title": "A Modern Primer on Processing in Memory",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "O. Mutlu, S. Ghose, J. Gómez-Luna, and R. Ausavarungnirun.",
+      "orig_title": "A modern primer on processing in memory",
+      "paper_id": "2012.03112v5"
+    },
+    {
+      "index": 168,
+      "title": "Pipedream: generalized pipeline parallelism for dnn training",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM SOSP",
+      "authors": "D. Narayanan, A. Harlap, A. Phanishayee, V. Seshadri, N. R. Devanur, G. R.\nGanger, P. B. Gibbons, and M. Zaharia."
+    },
+    {
+      "index": 169,
+      "title": "Learning Convolutional Neural Networks for Graphs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML",
+      "authors": "M. Niepert, M. Ahmed, and K. Kutzkov.",
+      "orig_title": "Learning convolutional neural networks for graphs",
+      "paper_id": "1605.05273v4"
+    },
+    {
+      "index": 170,
+      "title": "DAMOV: A New Methodology and Benchmark Suite for Evaluating Data Movement Bottlenecks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "G. F. Oliveira, J. Gómez-Luna, L. Orosa, S. Ghose, N. Vijaykumar,\nI. Fernandez, M. Sadrosadati, and O. Mutlu.",
+      "orig_title": "Damov: A new methodology and benchmark suite for evaluating data movement bottlenecks",
+      "paper_id": "2105.03725v6"
+    },
+    {
+      "index": 171,
+      "title": "Accelerating deep learning frameworks with micro-batches",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE CLUSTER",
+      "authors": "Y. Oyama, T. Ben-Nun, T. Hoefler, and S. Matsuoka."
+    },
+    {
+      "index": 172,
+      "title": "The pagerank citation ranking: Bringing order to the web",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Technical report, Stanford InfoLab",
+      "authors": "L. Page, S. Brin, R. Motwani, and T. Winograd."
+    },
+    {
+      "index": 173,
+      "title": "DeepWalk: Online Learning of Social Representations",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "B. Perozzi, R. Al-Rfou, and S. Skiena.",
+      "orig_title": "Deepwalk: Online learning of social representations",
+      "paper_id": "1403.6652v2"
+    },
+    {
+      "index": 174,
+      "title": "Theoretical foundations of graph neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "https://petar-v.com/talks/GNN-Wednesday.pdf",
+      "authors": "Petar Veličković."
+    },
+    {
+      "index": 175,
+      "title": "Learning Mesh-Based Simulation with Graph Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "T. Pfaff, M. Fortunato, A. Sanchez-Gonzalez, and P. W. Battaglia.",
+      "orig_title": "Learning mesh-based simulation with graph networks",
+      "paper_id": "2010.03409v4"
+    },
+    {
+      "index": 176,
+      "title": "Optimizing Sparse Matrix Multiplications for Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "S. Qiu, Y. Liang, and Z. Wang.",
+      "orig_title": "Optimizing sparse matrix multiplications for graph neural networks",
+      "paper_id": "2111.00352v1"
+    },
+    {
+      "index": 177,
+      "title": "FusedMM: A Unified SDDMM-SpMM Kernel for Graph Embedding and Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE IPDPS",
+      "authors": "M. K. Rahman, M. H. Sujon, and A. Azad.",
+      "orig_title": "Fusedmm: A unified sddmm-spmm kernel for graph embedding and graph neural networks",
+      "paper_id": "2011.06391v2"
+    },
+    {
+      "index": 178,
+      "title": "Fast approximation of betweenness centrality through sampling",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Data Mining and Knowledge Discovery, 30(2):438–475",
+      "authors": "M. Riondato and E. M. Kornaropoulos."
+    },
+    {
+      "index": 179,
+      "title": "Abra: Approximating betweenness centrality in static and dynamic graphs with rademacher averages",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM TKDD, 12(5):61",
+      "authors": "M. Riondato and E. Upfal."
+    },
+    {
+      "index": 180,
+      "title": "Fast approximation algorithms for the diameter and radius of sparse graphs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Proceedings of the forty-fifth annual ACM symposium on Theory\nof computing",
+      "authors": "L. Roditty and V. Vassilevska Williams."
+    },
+    {
+      "index": 181,
+      "title": "An interactive data repository with visual analytics",
+      "abstract": "",
+      "year": "2016",
+      "venue": "SIGKDD Explor., 17(2):37–41",
+      "authors": "R. A. Rossi and N. K. Ahmed."
+    },
+    {
+      "index": 182,
+      "title": "The future is big graphs: a community view on graph processing systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Communications of the ACM, 64(9):62–71",
+      "authors": "S. Sakr, A. Bonifati, H. Voigt, A. Iosup, K. Ammar, R. Angles, W. Aref,\nM. Arenas, M. Besta, P. A. Boncz, et al."
+    },
+    {
+      "index": 183,
+      "title": "Learning to Simulate Complex Physics with Graph Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "A. Sanchez-Gonzalez, J. Godwin, T. Pfaff, R. Ying, J. Leskovec, and\nP. Battaglia.",
+      "orig_title": "Learning to simulate complex physics with graph networks",
+      "paper_id": "2002.09405v2"
+    },
+    {
+      "index": 184,
+      "title": "A Survey on The Expressive Power of Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "R. Sato.",
+      "orig_title": "A survey on the expressive power of graph neural networks",
+      "paper_id": "2003.04078v4"
+    },
+    {
+      "index": 185,
+      "title": "High-Performance Distributed RMA Locks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM HPDC",
+      "authors": "P. Schmid, M. Besta, and T. Hoefler.",
+      "orig_title": "High-performance distributed rma locks",
+      "paper_id": "2010.09854v2"
+    },
+    {
+      "index": 186,
+      "title": "Evaluating the Cost of Atomic Operations on Modern Architectures",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE PACT",
+      "authors": "H. Schweizer, M. Besta, and T. Hoefler.",
+      "orig_title": "Evaluating the cost of atomic operations on modern architectures",
+      "paper_id": "2010.09852v1"
+    },
+    {
+      "index": 187,
+      "title": "Scalable Graph Neural Network Training: The Case for Sampling",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM SIGOPS Operating Systems Review, 55(1):68–76",
+      "authors": "M. Serafini and H. Guan.",
+      "orig_title": "Scalable graph neural network training: The case for sampling",
+      "paper_id": "2105.02315v1"
+    },
+    {
+      "index": 188,
+      "title": "Rowclone: fast and energy-efficient in-dram bulk data copy and initialization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Proceedings of the 46th Annual IEEE/ACM International\nSymposium on Microarchitecture",
+      "authors": "V. Seshadri, Y. Kim, C. Fallin, D. Lee, R. Ausavarungnirun, G. Pekhimenko,\nY. Luo, O. Mutlu, P. B. Gibbons, and M. A. Kozuch."
+    },
+    {
+      "index": 189,
+      "title": "Ambit: In-memory accelerator for bulk bitwise operations using commodity dram technology",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings of the 50th Annual IEEE/ACM International\nSymposium on Microarchitecture",
+      "authors": "V. Seshadri, D. Lee, T. Mullins, H. Hassan, A. Boroumand, J. Kim, M. A. Kozuch,\nO. Mutlu, P. B. Gibbons, and T. C. Mowry."
+    },
+    {
+      "index": 190,
+      "title": "A Survey of Heterogeneous Information Network Analysis",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering,\n29(1):17–37",
+      "authors": "C. Shi, Y. Li, J. Zhang, Y. Sun, and S. Y. Philip.",
+      "orig_title": "A survey of heterogeneous information network analysis",
+      "paper_id": "1511.04854v1"
+    },
+    {
+      "index": 191,
+      "title": "Graph processing on gpus: A survey",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Computing Surveys (CSUR)",
+      "authors": "X. Shi, Z. Zheng, Y. Zhou, H. Jin, L. He, B. Liu, and Q.-S. Hua."
+    },
+    {
+      "index": 192,
+      "title": "An o (logn) parallel connectivity algorithm",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Journal of Algorithms, 3(1):57–67",
+      "authors": "Y. Shiloach and U. Vishkin."
+    },
+    {
+      "index": 193,
+      "title": "Complex network analysis using parallel approximate motif counting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Parallel and Distributed Processing Symposium, 2014 IEEE 28th\nInternational",
+      "authors": "G. M. Slota and K. Madduri."
+    },
+    {
+      "index": 194,
+      "title": "Scaling Betweenness Centrality using Communication-Efficient Sparse Matrix Multiplication",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "E. Solomonik, M. Besta, F. Vella, and T. Hoefler.",
+      "orig_title": "Scaling betweenness centrality using communication-efficient sparse matrix multiplication",
+      "paper_id": "1609.07008v2"
+    },
+    {
+      "index": 195,
+      "title": "Tradeoffs between synchronization, communication, and work in parallel linear algebra computations",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Technical report",
+      "authors": "E. Solomonik, E. Carson, N. Knight, and J. Demmel."
+    },
+    {
+      "index": 196,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Euro-Par",
+      "authors": "E. Solomonik and J. Demmel.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 197,
+      "title": "Sparse Tensor Algebra as a Parallel Programming Model",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR, abs/",
+      "authors": "E. Solomonik and T. Hoefler.",
+      "orig_title": "Sparse Tensor Algebra as a Parallel Programming Model",
+      "paper_id": "1512.00066v1"
+    },
+    {
+      "index": 198,
+      "title": "Local SGD Converges Fast and Communicates Little",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "S. U. Stich.",
+      "orig_title": "Local sgd converges fast and communicates little",
+      "paper_id": "1805.09767v3"
+    },
+    {
+      "index": 199,
+      "title": "Asynchronous Distributed-Memory Triangle Counting and LCC with RMA Caching",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "A. Strausz, F. Vella, S. Di Girolamo, M. Besta, and T. Hoefler.",
+      "orig_title": "Asynchronous distributed-memory triangle counting and lcc with rma caching",
+      "paper_id": "2202.13976v2"
+    },
+    {
+      "index": 200,
+      "title": "Adaptive load balancing for parallel gnn training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Q. Su, M. Wang, D. Zheng, and Z. Zhang."
+    },
+    {
+      "index": 201,
+      "title": "Learning multiagent communication with backpropagation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NeurIPS",
+      "authors": "S. Sukhbaatar, R. Fergus, et al."
+    },
+    {
+      "index": 202,
+      "title": "Towards Efficient Point Cloud Graph Neural Networks Through Architectural Simplification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF ICCV",
+      "authors": "S. A. Tailor, R. de Jong, T. Azevedo, M. Mattina, and P. Maji.",
+      "orig_title": "Towards efficient point cloud graph neural networks through architectural simplification",
+      "paper_id": "2108.06317v1"
+    },
+    {
+      "index": 203,
+      "title": "Programming abstractions for data locality",
+      "abstract": "",
+      "year": "2014",
+      "venue": "PADAL Workshop. PADAL Workshop",
+      "authors": "A. Tate et al."
+    },
+    {
+      "index": 204,
+      "title": "A survey on modern deep neural network for traffic prediction: Trends, methods and challenges",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE TKDE",
+      "authors": "D. A. Tedjopurnomo, Z. Bao, B. Zheng, F. Choudhury, and A. Qin."
+    },
+    {
+      "index": 205,
+      "title": "Attention-based Graph Neural Network for Semi-supervised Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "K. K. Thekumparampil, C. Wang, S. Oh, and L.-J. Li.",
+      "orig_title": "Attention-based graph neural network for semi-supervised learning",
+      "paper_id": "1803.03735v1"
+    },
+    {
+      "index": 206,
+      "title": "Dorylus: Affordable, scalable, and accurate gnn training over billion-edge graphs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "J. Thorpe, Y. Qiao, J. Eyolfson, S. Teng, G. Hu, Z. Jia, J. Wei, K. Vora,\nR. Netravali, M. Kim, et al."
+    },
+    {
+      "index": 207,
+      "title": "Pcgcn: Partition-centric processing for accelerating graph convolutional network",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IPDPS",
+      "authors": "C. Tian, L. Ma, Z. Yang, and Y. Dai."
+    },
+    {
+      "index": 208,
+      "title": "Reducing Communication in Graph Neural Network Training",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM/IEEE Supercomputing",
+      "authors": "A. Tripathy, K. Yelick, and A. Buluç.",
+      "orig_title": "Reducing communication in graph neural network training",
+      "paper_id": "2005.03300v3"
+    },
+    {
+      "index": 209,
+      "title": "A bridging model for parallel computation",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Communications of the ACM, 33(8):103–111",
+      "authors": "L. G. Valiant."
+    },
+    {
+      "index": 210,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez,\nŁ. Kaiser, and I. Polosukhin.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 211,
+      "title": "Graph Attention Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "P. Veličković, G. Cucurull, A. Casanova, A. Romero, P. Lio, and\nY. Bengio.",
+      "orig_title": "Graph attention networks",
+      "paper_id": "1710.10903v3"
+    },
+    {
+      "index": 212,
+      "title": "Graph kernels",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Journal of Machine Learning Research, 11:",
+      "authors": "S. V. N. Vishwanathan, N. N. Schraudolph, R. Kondor, and K. M. Borgwardt."
+    },
+    {
+      "index": 213,
+      "title": "Marius++: Large-scale training of graph neural networks on a single machine",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "R. Waleffe, J. Mohoney, T. Rekatsinas, and S. Venkataraman."
+    },
+    {
+      "index": 214,
+      "title": "Bns-gcn: Efficient full-graph training of graph convolutional networks with partition-parallelism and random boundary node sampling sampling",
+      "abstract": "",
+      "year": "2022",
+      "venue": "MLSys",
+      "authors": "C. Wan, Y. Li, A. Li, N. S. Kim, and Y. Lin."
+    },
+    {
+      "index": 215,
+      "title": "PipeGCN: Efficient Full-Graph Training of Graph Convolutional Networks with Pipelined Feature Communication",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "C. Wan, Y. Li, C. R. Wolfe, A. Kyrillidis, N. S. Kim, and Y. Lin.",
+      "orig_title": "Pipegcn: Efficient full-graph training of graph convolutional networks with pipelined feature communication",
+      "paper_id": "2203.10428v1"
+    },
+    {
+      "index": 216,
+      "title": "Structural deep network embedding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM KDD",
+      "authors": "D. Wang, P. Cui, and W. Zhu."
+    },
+    {
+      "index": 217,
+      "title": "Flexgraph: a flexible and efficient distributed framework for gnn training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "EuroSys",
+      "authors": "L. Wang, Q. Yin, C. Tian, J. Yang, R. Chen, W. Yu, Z. Yao, and J. Zhou."
+    },
+    {
+      "index": 218,
+      "title": "Deep Graph Library: A Graph-Centric, Highly-Performant Package for Graph Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv:",
+      "authors": "M. Wang, D. Zheng, Z. Ye, Q. Gan, M. Li, X. Song, J. Zhou, C. Ma, L. Yu,\nY. Gai, et al.",
+      "orig_title": "Deep graph library: A graph-centric, highly-performant package for graph neural networks",
+      "paper_id": "1909.01315v2"
+    },
+    {
+      "index": 219,
+      "title": "Knowledge graph embedding: A survey of approaches and applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE TKDE",
+      "authors": "Q. Wang, Z. Mao, B. Wang, and L. Guo."
+    },
+    {
+      "index": 220,
+      "title": "A Survey on Heterogeneous Graph Embedding: Methods, Techniques, Applications and Sources",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv:",
+      "authors": "X. Wang, D. Bo, C. Shi, S. Fan, Y. Ye, and P. S. Yu.",
+      "orig_title": "A survey on heterogeneous graph embedding: methods, techniques, applications and sources",
+      "paper_id": "2011.14867v1"
+    },
+    {
+      "index": 221,
+      "title": "Heterogeneous Graph Attention Network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "The world wide web conference",
+      "authors": "X. Wang, H. Ji, C. Shi, B. Wang, Y. Ye, P. Cui, and P. S. Yu.",
+      "orig_title": "Heterogeneous graph attention network",
+      "paper_id": "1903.07293v2"
+    },
+    {
+      "index": 222,
+      "title": "Gunrock: A High-Performance Graph Processing Library on the GPU",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM PPoPP",
+      "authors": "Y. Wang et al.",
+      "orig_title": "Gunrock: A high-performance graph processing library on the GPU",
+      "paper_id": "1501.05387v6"
+    },
+    {
+      "index": 223,
+      "title": "Gnnadvisor: An efficient runtime system for gnn acceleration on gpus",
+      "abstract": "",
+      "year": "2021",
+      "venue": "OSDI",
+      "authors": "Y. Wang et al."
+    },
+    {
+      "index": 224,
+      "title": "Qgtc: Accelerating quantized gnn via gpu tensor core",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM PPoPP",
+      "authors": "Y. Wang, B. Feng, and Y. Ding."
+    },
+    {
+      "index": 225,
+      "title": "Dynamic Graph CNN for Learning on Point Clouds",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Acm Transactions On Graphics (tog), 38(5):1–12",
+      "authors": "Y. Wang, Y. Sun, Z. Liu, S. E. Sarma, M. M. Bronstein, and J. M. Solomon.",
+      "orig_title": "Dynamic graph cnn for learning on point clouds",
+      "paper_id": "1801.07829v2"
+    },
+    {
+      "index": 226,
+      "title": "Molecular contrastive learning of representations via graph neural networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Nature Machine Intelligence, 4(3):279–287",
+      "authors": "Y. Wang, J. Wang, Z. Cao, and A. Barati Farimani."
+    },
+    {
+      "index": 227,
+      "title": "Gnn-pim: A processing-in-memory architecture for graph neural networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Springer ACA",
+      "authors": "Z. Wang, Y. Guan, G. Sun, D. Niu, Y. Wang, H. Zheng, and Y. Han."
+    },
+    {
+      "index": 228,
+      "title": "Empirical analysis of performance bottlenecks in graph neural network training and inference with gpus",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Neurocomputing",
+      "authors": "Z. Wang, Y. Wang, C. Yuan, R. Gu, and Y. Huang."
+    },
+    {
+      "index": 229,
+      "title": "Simplifying Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International conference on machine learning",
+      "authors": "F. Wu, A. Souza, T. Zhang, C. Fifty, T. Yu, and K. Weinberger.",
+      "orig_title": "Simplifying graph convolutional networks",
+      "paper_id": "1902.07153v2"
+    },
+    {
+      "index": 230,
+      "title": "Graph Neural Networks in Recommender Systems: A Survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "S. Wu, F. Sun, W. Zhang, and B. Cui.",
+      "orig_title": "Graph neural networks in recommender systems: a survey",
+      "paper_id": "2011.02260v4"
+    },
+    {
+      "index": 231,
+      "title": "Learning with partially absorbing random walks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "NIPS, volume 25",
+      "authors": "X.-M. Wu, Z. Li, A. M.-C. So, J. Wright, and S.-F. Chang."
+    },
+    {
+      "index": 232,
+      "title": "Seastar: vertex-centric programming for graph neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "EuroSys",
+      "authors": "Y. Wu, K. Ma, Z. Cai, T. Jin, B. Li, C. Zheng, J. Cheng, and F. Yu."
+    },
+    {
+      "index": 233,
+      "title": "A Comprehensive Survey on Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "Z. Wu et al.",
+      "orig_title": "A comprehensive survey on graph neural networks",
+      "paper_id": "1901.00596v4"
+    },
+    {
+      "index": 234,
+      "title": "A survey on heterogeneous network representation learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Pattern Recognition, 116:",
+      "authors": "Y. Xie, B. Yu, S. Lv, C. Zhang, G. Wang, and M. Gong."
+    },
+    {
+      "index": 235,
+      "title": "Capsule graph neural network",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on learning representations",
+      "authors": "Z. Xinyi and L. Chen."
+    },
+    {
+      "index": 236,
+      "title": "How Powerful are Graph Neural Networks?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "K. Xu, W. Hu, J. Leskovec, and S. Jegelka.",
+      "orig_title": "How powerful are graph neural networks?",
+      "paper_id": "1810.00826v3"
+    },
+    {
+      "index": 237,
+      "title": "Characterizing and Understanding HGNNs on GPUs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Computer Architecture Letters, 19(1):22–25",
+      "authors": "M. Yan, Z. Chen, L. Deng, X. Ye, Z. Zhang, D. Fan, and Y. Xie.",
+      "orig_title": "Characterizing and understanding gcns on gpu",
+      "paper_id": "2208.04758v1"
+    },
+    {
+      "index": 238,
+      "title": "HyGCN: A GCN Accelerator with Hybrid Architecture",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE HPCA",
+      "authors": "M. Yan, L. Deng, X. Hu, L. Liang, Y. Feng, X. Ye, Z. Zhang, D. Fan, and Y. Xie.",
+      "orig_title": "Hygcn: A gcn accelerator with hybrid architecture",
+      "paper_id": "2001.02514v1"
+    },
+    {
+      "index": 239,
+      "title": "Heterogeneous Network Representation Learning: A Unified Framework with Survey and Benchmark",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE TKDE",
+      "authors": "C. Yang, Y. Xiao, Y. Zhang, Y. Sun, and J. Han.",
+      "orig_title": "Heterogeneous network representation learning: A unified framework with survey and benchmark",
+      "paper_id": "2004.00216v3"
+    },
+    {
+      "index": 240,
+      "title": "Graph Convolutional Neural Networks for Web-Scale Recommender Systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM KDD",
+      "authors": "R. Ying, R. He, K. Chen, P. Eksombatchai, W. L. Hamilton, and J. Leskovec.",
+      "orig_title": "Graph convolutional neural networks for web-scale recommender systems",
+      "paper_id": "1806.01973v1"
+    },
+    {
+      "index": 241,
+      "title": "Hierarchical Graph Representation Learning with Differentiable Pooling",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "R. Ying, J. You, C. Morris, X. Ren, W. L. Hamilton, and J. Leskovec.",
+      "orig_title": "Hierarchical graph representation learning with differentiable pooling",
+      "paper_id": "1806.08804v4"
+    },
+    {
+      "index": 242,
+      "title": "GCoD: Graph Convolutional Network Acceleration via Dedicated Algorithm and Accelerator Co-Design",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE HPCA",
+      "authors": "H. You et al.",
+      "orig_title": "Gcod: Graph convolutional network acceleration via dedicated algorithm and accelerator co-design",
+      "paper_id": "2112.11594v3"
+    },
+    {
+      "index": 243,
+      "title": "Explainability in graph neural networks: A taxonomic survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "H. Yuan, H. Yu, S. Gui, and S. Ji."
+    },
+    {
+      "index": 244,
+      "title": "Decoupling the Depth and Scope of Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "H. Zeng et al.",
+      "orig_title": "Decoupling the depth and scope of graph neural networks",
+      "paper_id": "2201.07858v1"
+    },
+    {
+      "index": 245,
+      "title": "Graphact: Accelerating gcn training on cpu-fpga heterogeneous platforms",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM/SIGDA FPGA",
+      "authors": "H. Zeng and V. Prasanna."
+    },
+    {
+      "index": 246,
+      "title": "Graphsaint: Graph sampling based inductive learning method",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "H. Zeng, H. Zhou, A. Srivastava, R. Kannan, and V. Prasanna."
+    },
+    {
+      "index": 247,
+      "title": "Hardware acceleration of large scale gcn inference",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE ASAP",
+      "authors": "B. Zhang, H. Zeng, and V. Prasanna."
+    },
+    {
+      "index": 248,
+      "title": "Heterogeneous graph neural network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "C. Zhang, D. Song, C. Huang, A. Swami, and N. V. Chawla."
+    },
+    {
+      "index": 249,
+      "title": "AGL: A Scalable System for Industrial-purpose Graph Machine Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "D. Zhang et al.",
+      "orig_title": "Agl: a scalable system for industrial-purpose graph machine learning",
+      "paper_id": "2003.02454v4"
+    },
+    {
+      "index": 250,
+      "title": "Understanding gnn computational graph: A coordinated computation, io, and memory perspective",
+      "abstract": "",
+      "year": "2023",
+      "venue": "MLSys",
+      "authors": "H. Zhang, Z. Yu, G. Dai, G. Huang, Y. Ding, Y. Xie, and Y. Wang."
+    },
+    {
+      "index": 251,
+      "title": "GaAN: Gated Attention Networks for Learning on Large and Spatiotemporal Graphs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "J. Zhang, X. Shi, J. Xie, H. Ma, I. King, and D.-Y. Yeung.",
+      "orig_title": "Gaan: Gated attention networks for learning on large and spatiotemporal graphs",
+      "paper_id": "1803.07294v1"
+    },
+    {
+      "index": 252,
+      "title": "Point-x: A spatial-locality-aware architecture for energy-efficient graph-based point-cloud deep learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/ACM MICRO",
+      "authors": "J.-F. Zhang and Z. Zhang."
+    },
+    {
+      "index": 253,
+      "title": "2pgraph: Accelerating gnn training over large graphs on gpu clusters",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE CLUSTER",
+      "authors": "L. Zhang, Z. Lai, S. Li, Y. Tang, F. Liu, and D. Li."
+    },
+    {
+      "index": 254,
+      "title": "Graph convolutional networks: a comprehensive review",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Computational Social Networks, 6(1):1–23",
+      "authors": "S. Zhang, H. Tong, J. Xu, and R. Maciejewski."
+    },
+    {
+      "index": 255,
+      "title": "GMLP: Building Scalable and Flexible Graph Neural Networks with Feature-Message Passing",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:",
+      "authors": "W. Zhang, Y. Shen, Z. Lin, Y. Li, X. Li, W. Ouyang, Y. Tao, Z. Yang, and\nB. Cui.",
+      "orig_title": "Gmlp: Building scalable and flexible graph neural networks with feature-message passing",
+      "paper_id": "2104.09880v1"
+    },
+    {
+      "index": 256,
+      "title": "PaSca: a Graph Neural Architecture Search System under the Scalable Paradigm",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM TheWebConf",
+      "authors": "W. Zhang, Y. Shen, Z. Lin, Y. Li, X. Li, W. Ouyang, Y. Tao, Z. Yang, and\nB. Cui.",
+      "orig_title": "Pasca: A graph neural architecture search system under the scalable paradigm",
+      "paper_id": "2203.00638v1"
+    },
+    {
+      "index": 257,
+      "title": "Deep Learning on Graphs: A Survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "Z. Zhang, P. Cui, and W. Zhu.",
+      "orig_title": "Deep learning on graphs: A survey",
+      "paper_id": "1812.04202v3"
+    },
+    {
+      "index": 258,
+      "title": "ZIPPER: Exploiting Tile- and Operator-level Parallelism for General and Scalable Graph Neural Network Acceleration",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:",
+      "authors": "Z. Zhang, J. Leng, S. Lu, Y. Miao, Y. Diao, M. Guo, C. Li, and Y. Zhu.",
+      "orig_title": "Zipper: Exploiting tile-and operator-level parallelism for general and scalable graph neural network acceleration",
+      "paper_id": "2107.08709v1"
+    },
+    {
+      "index": 259,
+      "title": "Architectural Implications of Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Computer architecture letters, 19(1):59–62",
+      "authors": "Z. Zhang, J. Leng, L. Ma, Y. Miao, C. Li, and M. Guo.",
+      "orig_title": "Architectural implications of graph neural networks",
+      "paper_id": "2009.00804v2"
+    },
+    {
+      "index": 260,
+      "title": "DistDGL: Distributed Graph Neural Network Training for Billion-Scale Graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/ACM IA3",
+      "authors": "D. Zheng, C. Ma, M. Wang, J. Zhou, Q. Su, X. Song, Q. Gan, Z. Zhang, and\nG. Karypis.",
+      "orig_title": "Distdgl: distributed graph neural network training for billion-scale graphs",
+      "paper_id": "2010.05337v3"
+    },
+    {
+      "index": 261,
+      "title": "Distributed hybrid cpu and gpu training for graph neural networks on billion-scale graphs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:",
+      "authors": "D. Zheng, X. Song, C. Yang, D. LaSalle, Q. Su, M. Wang, C. Ma, and G. Karypis."
+    },
+    {
+      "index": 262,
+      "title": "Optimizing Memory Efficiency of Graph Neural Networks on Edge Computing Platforms",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "A. Zhou, J. Yang, Y. Gao, T. Qiao, Y. Qi, X. Wang, Y. Chen, P. Dai, W. Zhao,\nand C. Hu.",
+      "orig_title": "Optimizing memory efficiency of graph neural networks on edge computing platforms",
+      "paper_id": "2104.03058v2"
+    },
+    {
+      "index": 263,
+      "title": "Learning with local and global consistency",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Advances in neural information processing systems",
+      "authors": "D. Zhou, O. Bousquet, T. N. Lal, J. Weston, and B. Schölkopf."
+    },
+    {
+      "index": 264,
+      "title": "Graph neural networks: A review of methods and applications",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AI Open, 1:57–81",
+      "authors": "J. Zhou et al."
+    },
+    {
+      "index": 265,
+      "title": "Explore mixture of experts in graph neural networks, 2019",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "X. Zhou and Y. Luo."
+    },
+    {
+      "index": 266,
+      "title": "Gcnear: A hybrid architecture for efficient gcn training with near-memory processing",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Z. Zhou, C. Li, X. Wei, and G. Sun."
+    },
+    {
+      "index": 267,
+      "title": "BlockGNN: Towards Efficient GNN Acceleration Using Block-Circulant Weight Matrices",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM/IEEE DAC",
+      "authors": "Z. Zhou, B. Shi, Z. Zhang, Y. Guan, G. Sun, and G. Luo.",
+      "orig_title": "Blockgnn: Towards efficient gnn acceleration using block-circulant weight matrices",
+      "paper_id": "2104.06214v2"
+    },
+    {
+      "index": 268,
+      "title": "Aligraph: A comprehensive graph neural network platform",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "R. Zhu et al."
+    },
+    {
+      "index": 269,
+      "title": "Semi-supervised learning using gaussian fields and harmonic functions",
+      "abstract": "",
+      "year": "2003",
+      "venue": "ICML",
+      "authors": "X. Zhu, Z. Ghahramani, and J. D. Lafferty."
+    },
+    {
+      "index": 270,
+      "title": "Layer-Dependent Importance Sampling for Training Deep and Large Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in neural information processing systems, 32",
+      "authors": "D. Zou, Z. Hu, Y. Wang, S. Jiang, Y. Sun, and Q. Gu.",
+      "orig_title": "Layer-dependent importance sampling for training deep and large graph convolutional networks",
+      "paper_id": "1911.07323v1"
+    }
+  ]
+}

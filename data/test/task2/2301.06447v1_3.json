@@ -1,0 +1,457 @@
+{
+  "paper_id": "2301.06447v1",
+  "title": "HiFlash: Communication-Efficient Hierarchical Federated Learning with Adaptive Staleness Control and Heterogeneity-aware Client-Edge Association",
+  "sections": {
+    "simulation settings": "In order to gauge the effectiveness of our proposed algorithm, we conduct extensive evaluations in a simulated environment with 100 clients, 10 edge nodes and a cloud server. We consider image classification as the FL task and evaluate the performance of HiFL and HiFlash with three real-world datasets: MNIST [ref]21, CIFAR10  and FEMNIST . As FEMNIST is a federated version of Extended MNIST dataset  whith 805,263 samples from 3,550 writers, we randomly select 100 writers as the clients to participate the model training of in our experiments. For the 10-class hand-written digit classification dataset MNIST, we use LeNet  as the model trained on the clients. For the CIFAR10 dataset, a standard ResNet-18  model is adopted. For the 62-class hand-written digit classification dataset FEMNIST, we design a convolutional neural network (CNN) with 214,590 learning parameters as the learning model. The datasets and the corresponding models are summarized in Table II. All the experiments are conducted on one Tesla P100 12GB GPU and the algorithms are implemented by Pytorch version 1.10.0. For the local computation of the training on each client, we employ mini-batch Stochastic Gradient Descent (SGD) with a batch size of 60 for MNIST and FEMNIST, and 50 for CIFAR10, respectively. The initial learning rates are 0.01 for MNIST and FEMNIST, and 0.1 for CIFAR10 as in , both of which decay exponentially at a rate of 0.99 every 100 epochs. The number of local updates c𝑐c for each client in one client-edge communication round is set to be 3 and the number of client-edge aggregations before pushing the edge model to the cloud server is set as H∈{1,2,3}𝐻123H\\in\\{1,2,3\\}.333The values of c𝑐c and H𝐻H depend on the computation budgets of the devices in practice. Due to the computing resource limitation of our research lab, we set small values for both c𝑐c and H𝐻H, but it is sufficient to evaluate the effectiveness of HiFlash. The hyperparameters α𝛼\\alpha and υ𝜐\\upsilon in coefficient ατsubscript𝛼𝜏\\alpha_{\\tau} can be determined by grid search in practice. For DRL training, we set different threshold bounds (τm​a​x=16subscript𝜏𝑚𝑎𝑥16\\tau_{max}=16 for MNIST and FEMNIST datasets, and τm​a​x=4subscript𝜏𝑚𝑎𝑥4\\tau_{max}=4 for CIFAR10 dataset) for the three datasets as a bigger staleness threshold will result in much longer training time for the complicated CIFAR10 dataset. Hence, according to different action size, the DDQN model in the DRL agent, which is implemented by two two-layer multi-layer perceptron (MLP) networks, has 4,607 and 4,235 trainable parameters for MNIST (and FEMNIST), and CIFAR10 datasets, respectively. The output of the MLP network passing through a softmax layer becomes the probability of selecting a staleness threshold. The DDQN is lightweighted and each training iteration takes seconds on GPU. Data Heterogeneity.\nFor MNIST and CIFAR10 datasets, to simulate the data heterogeneity of clients in real world, we generate three kinds of data distributions for clients as below: IID: Each client is randomly assigned a uniform data distribution over 10 classes. Non-IID(1): Each client possesses only one random class of images. Non-IID(2): The samples in each client are assigned from two randomly selected classes. While the FEMNIST dataset naturally falls in the following three data heterogeneity cases: Label distribution skew: The label distributions are totally different among the writers. Feature distribution skew: There is a natural feature distribution skew among different writers due to their different character features (e.g., stroke width, slant). Quantity skew: The samples in each client are ranging from   . The data distribution on an edge node can be obtained by calculating the weighted average of the data distributions of its associated clients. We can use JS divergence to measure the data heterogeneity of the edge nodes. Resource Heterogeneity.\nThe highly heterogeneous hardware resources (CPU, network connection) among clients can be reflected by the computing latency Cc​o​m​pi,ksuperscriptsubscript𝐶𝑐𝑜𝑚𝑝𝑖𝑘C_{comp}^{i,k} and communication latency Cc​o​m​mi,m,ksuperscriptsubscript𝐶𝑐𝑜𝑚𝑚𝑖𝑚𝑘C_{comm}^{i,m,k}. For the computation ability of each client k𝑘k, we assume fk∈[ref]1 [ref]2subscript𝑓𝑘12f_{k}\\in[ref]1 [ref]2 GHz as the CPU cycle frequency and ζk=20subscript𝜁𝑘20\\zeta_{k}=20 cycles/bit as the number of CPU cycles to execute one bit. For the communication ability, the bandwidth Bk,msubscript𝐵𝑘𝑚B_{k,m} is ranging from 1​ MHz1 MHz1\\text{ MHz} to 10​ MHz10 MHz10\\text{ MHz} when associated with different edge node m𝑚m."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Communication-efficient learning of deep networks from decentralized data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Artificial Intelligence and Statistics",
+      "authors": "Brendan McMahan, Eider Moore, Daniel Ramage, Seth Hampson, and Blaise Aguera y Arcas"
+    },
+    {
+      "index": 1,
+      "title": "Advances and Open Problems in Federated Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Foundations and Trends® in Machine Learning",
+      "authors": "Peter Kairouz, H Brendan McMahan, Brendan Avent, Aurélien Bellet, Mehdi Bennis, Arjun Nitin Bhagoji, Kallista Bonawitz, Zachary Charles, Graham Cormode, Rachel Cummings, et al.",
+      "orig_title": "Advances and open problems in federated learning",
+      "paper_id": "1912.04977v3"
+    },
+    {
+      "index": 2,
+      "title": "FedVision: An Online Visual Object Detection Platform Powered by Federated Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Yang Liu, Anbu Huang, Yun Luo, He Huang, Youzhi Liu, Yuanyuan Chen, Lican Feng, Tianjian Chen, Han Yu, and Qiang Yang",
+      "orig_title": "Fedvision: An online visual object detection platform powered by federated learning",
+      "paper_id": "2001.06202v1"
+    },
+    {
+      "index": 3,
+      "title": "Applied Federated Learning: Improving Google Keyboard Query Suggestions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1812.02903",
+      "authors": "Timothy Yang, Galen Andrew, Hubert Eichner, Haicheng Sun, Wei Li, Nicholas Kong, Daniel Ramage, and Françoise Beaufays",
+      "orig_title": "Applied federated learning: Improving google keyboard query suggestions",
+      "paper_id": "1812.02903v1"
+    },
+    {
+      "index": 4,
+      "title": "Communication-efficient federated deep learning with layerwise asynchronous model update and temporally weighted aggregation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE transactions on neural networks and learning systems",
+      "authors": "Yang Chen, Xiaoyan Sun, and Yaochu Jin"
+    },
+    {
+      "index": 5,
+      "title": "When edge meets learning: Adaptive control for resource-constrained distributed machine learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE INFOCOM 2018-IEEE Conference on Computer Communications",
+      "authors": "Shiqiang Wang, Tiffany Tuor, Theodoros Salonidis, Kin K Leung, Christian Makaya, Ting He, and Kevin Chan"
+    },
+    {
+      "index": 6,
+      "title": "On the convergence of federated optimization in heterogeneous networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1812.06127",
+      "authors": "Anit Kumar Sahu, Tian Li, Maziar Sanjabi, Manzil Zaheer, Ameet Talwalkar, and Virginia Smith"
+    },
+    {
+      "index": 7,
+      "title": "Asynchronous Federated Optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS Workshop on Optimization for Machine Learning (OPT)",
+      "authors": "Cong Xie, Sanmi Koyejo, and Indranil Gupta",
+      "orig_title": "Asynchronous federated optimization",
+      "paper_id": "1903.03934v5"
+    },
+    {
+      "index": 8,
+      "title": "Federated Learning in Mobile Edge Networks: A Comprehensive Survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Communications Surveys & Tutorials",
+      "authors": "Wei Yang Bryan Lim, Nguyen Cong Luong, Dinh Thai Hoang, Yutao Jiao, Ying-Chang Liang, Qiang Yang, Dusit Niyato, and Chunyan Miao",
+      "orig_title": "Federated learning in mobile edge networks: A comprehensive survey",
+      "paper_id": "1909.11875v2"
+    },
+    {
+      "index": 9,
+      "title": "Accelerating Federated Learning over Reliability-Agnostic Clients in Mobile Edge Computing Systems",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Parallel and Distributed Systems",
+      "authors": "Wentai Wu, Ligang He, Weiwei Lin, and Rui Mao",
+      "orig_title": "Accelerating federated learning over reliability-agnostic clients in mobile edge computing systems",
+      "paper_id": "2007.14374v3"
+    },
+    {
+      "index": 10,
+      "title": "From Cloud to Edge: A First Look at Public Edge Platforms",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IMC ’21: ACM Internet Measurement Conference",
+      "authors": "Mengwei Xu, Zhe Fu, Xiao Ma, Li Zhang, Yanan Li, Feng Qian, Shangguang Wang, Ke Li, Jingyu Yang, and Xuanzhe Liu",
+      "orig_title": "From cloud to edge: a first look at public edge platforms",
+      "paper_id": "2109.03395v2"
+    },
+    {
+      "index": 11,
+      "title": "Hierarchical federated learning through lan-wan orchestration",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2010.11612",
+      "authors": "Jinliang Yuan, Mengwei Xu, Xiao Ma, Ao Zhou, Xuanzhe Liu, and Shangguang Wang"
+    },
+    {
+      "index": 12,
+      "title": "FedHome: Cloud-Edge based Personalized Federated Learning for In-Home Health Monitoring",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Mobile Computing",
+      "authors": "Qiong Wu, Xu Chen, Zhi Zhou, and Junshan Zhang",
+      "orig_title": "Fedhome: Cloud-edge based personalized federated learning for in-home health monitoring",
+      "paper_id": "2012.07450v1"
+    },
+    {
+      "index": 13,
+      "title": "Client-Edge-Cloud Hierarchical Federated Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICC 2020-2020 IEEE International Conference on Communications",
+      "authors": "Lumin Liu, Jun Zhang, SH Song, and Khaled B Letaief",
+      "orig_title": "Client-edge-cloud hierarchical federated learning",
+      "paper_id": "1905.06641v2"
+    },
+    {
+      "index": 14,
+      "title": "HFEL: Joint Edge Association and Resource Allocation for Cost-Efficient Hierarchical Federated Edge Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Wireless Communications",
+      "authors": "Siqi Luo, Xu Chen, Qiong Wu, Zhi Zhou, and Shuai Yu",
+      "orig_title": "Hfel: Joint edge association and resource allocation for cost-efficient hierarchical federated edge learning",
+      "paper_id": "2002.11343v2"
+    },
+    {
+      "index": 15,
+      "title": "FedAT: A High-Performance and Communication-Efficient Federated Learning System with Asynchronous Tiers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "SC ’21",
+      "authors": "Zheng Chai, Yujing Chen, Ali Anwar, Liang Zhao, Yue Cheng, and Huzefa Rangwala",
+      "orig_title": "Fedat: A high-performance and communication-efficient federated learning system with asynchronous tiers",
+      "paper_id": "2010.05958v2"
+    },
+    {
+      "index": 16,
+      "title": "Playing atari with deep reinforcement learning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.5602",
+      "authors": "Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Alex Graves, Ioannis Antonoglou, Daan Wierstra, and Martin Riedmiller"
+    },
+    {
+      "index": 17,
+      "title": "Reinforcement learning: An introduction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "MIT press",
+      "authors": "Richard S Sutton and Andrew G Barto"
+    },
+    {
+      "index": 18,
+      "title": "Human-level control through deep reinforcement learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "nature",
+      "authors": "Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei A Rusu, Joel Veness, Marc G Bellemare, Alex Graves, Martin Riedmiller, Andreas K Fidjeland, Georg Ostrovski, et al."
+    },
+    {
+      "index": 19,
+      "title": "FLeet: Online Federated Learning via Staleness Awareness and Performance Prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "21st International Middleware Conference",
+      "authors": "Georgios Damaskinos, Rachid Guerraoui, Anne-Marie Kermarrec, Vlad Nitu, Rhicheek Patra, and Francois Taiani",
+      "orig_title": "Fleet: Online federated learning via staleness awareness and performance prediction",
+      "paper_id": "2006.07273v2"
+    },
+    {
+      "index": 20,
+      "title": "Gradient-based learning applied to document recognition",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE",
+      "authors": "Yann LeCun, Léon Bottou, Yoshua Bengio, and Patrick Haffner"
+    },
+    {
+      "index": 21,
+      "title": "Accurate and Fast Federated Learning via IID and Communication-Aware Grouping",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2012.04857",
+      "authors": "Jin-woo Lee, Jaehoon Oh, Yooju Shin, Jae-Gil Lee, and Se-Young Yoon",
+      "orig_title": "Accurate and fast federated learning via iid and communication-aware grouping",
+      "paper_id": "2012.04857v1"
+    },
+    {
+      "index": 22,
+      "title": "Min-max cost optimization for efficient hierarchical federated learning in wireless edge networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Parallel and Distributed Systems",
+      "authors": "Jie Feng, Lei Liu, Qingqi Pei, and Keqin Li"
+    },
+    {
+      "index": 23,
+      "title": "Experience-driven computational resource allocation of federated learning by deep reinforcement learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 IEEE International Parallel and Distributed Processing Symposium (IPDPS)",
+      "authors": "Yufeng Zhan, Peng Li, and Song Guo"
+    },
+    {
+      "index": 24,
+      "title": "Toward Multiple Federated Learning Services Resource Sharing in Mobile Edge Networks",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Mobile Computing",
+      "authors": "Minh N. H. Nguyen, Nguyen H. Tran, Yan Kyaw Tun, Zhu Han, and Choong Seon Hong",
+      "orig_title": "Toward multiple federated learning services resource sharing in mobile edge networks",
+      "paper_id": "2011.12469v1"
+    },
+    {
+      "index": 25,
+      "title": "Semi-Decentralized Federated Edge Learning for Fast Convergence on Non-IID Data",
+      "abstract": "",
+      "year": "2022",
+      "venue": "2022 IEEE Wireless Communications and Networking Conference (WCNC)",
+      "authors": "Yuchang Sun, Jiawei Shao, Yuyi Mao, Jessie Hui Wang, and Jun Zhang",
+      "orig_title": "Semi-decentralized federated edge learning for fast convergence on non-iid data",
+      "paper_id": "2104.12678v6"
+    },
+    {
+      "index": 26,
+      "title": "Deep Reinforcement Learning with Double Q-learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "13th AAAI conference on artificial intelligence",
+      "authors": "Hado Van Hasselt, Arthur Guez, and David Silver",
+      "orig_title": "Deep reinforcement learning with double q-learning",
+      "paper_id": "1509.06461v3"
+    },
+    {
+      "index": 27,
+      "title": "Federated Learning with Label Distribution Skew via Logits Calibration",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Jie Zhang, Zhiqi Li, Bo Li, Jianghe Xu, Shuang Wu, Shouhong Ding, and Chao Wu",
+      "orig_title": "Federated learning with label distribution skew via logits calibration",
+      "paper_id": "2209.00189v2"
+    },
+    {
+      "index": 28,
+      "title": "Jensen-shannon divergence as a measure of distinguishability between mixed quantum states",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Physical Review A",
+      "authors": "AP Majtey, PW Lamberti, and DP Prato"
+    },
+    {
+      "index": 29,
+      "title": "FedBN: Federated Learning on Non-IID Features via Local Batch Normalization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Xiaoxiao Li, Meirui JIANG, Xiaofei Zhang, Michael Kamp, and Qi Dou",
+      "orig_title": "Fedbn: Federated learning on non-iid features via local batch normalization",
+      "paper_id": "2102.07623v2"
+    },
+    {
+      "index": 30,
+      "title": "Privacy preserving k secure sum protocol",
+      "abstract": "",
+      "year": "2009",
+      "venue": "arXiv preprint arXiv:0912.0956",
+      "authors": "Rashid Sheikh, Beerendra Kumar, and Durgesh Kumar Mishra"
+    },
+    {
+      "index": 31,
+      "title": "Client Selection for Federated Learning with Heterogeneous Resources in Mobile Edge",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 IEEE international conference on communications (ICC)",
+      "authors": "Takayuki Nishio and Ryo Yonetani",
+      "orig_title": "Client selection for federated learning with heterogeneous resources in mobile edge",
+      "paper_id": "1804.08333v2"
+    },
+    {
+      "index": 32,
+      "title": "FLeet: Online Federated Learning via Staleness Awareness and Performance Prediction",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Transactions on Intelligent Systems and Technology (TIST)",
+      "authors": "Georgios Damaskinos, Rachid Guerraoui, Anne-Marie Kermarrec, Vlad Nitu, Rhicheek Patra, and Francois Taiani",
+      "orig_title": "Fleet: Online federated learning via staleness awareness and performance prediction",
+      "paper_id": "2006.07273v2"
+    },
+    {
+      "index": 33,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Alex Krizhevsky, Geoffrey Hinton, et al."
+    },
+    {
+      "index": 34,
+      "title": "LEAF: A Benchmark for Federated Settings",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1812.01097",
+      "authors": "Sebastian Caldas, Sai Meher Karthik Duddu, Peter Wu, Tian Li, Jakub Konečnỳ, H Brendan McMahan, Virginia Smith, and Ameet Talwalkar",
+      "orig_title": "Leaf: A benchmark for federated settings",
+      "paper_id": "1812.01097v3"
+    },
+    {
+      "index": 35,
+      "title": "Emnist: Extending mnist to handwritten letters",
+      "abstract": "",
+      "year": "2017",
+      "venue": "international joint conference on neural networks (IJCNN)",
+      "authors": "Gregory Cohen, Saeed Afshar, Jonathan Tapson, and Andre Van Schaik"
+    },
+    {
+      "index": 36,
+      "title": "Handwritten digit recognition with a back-propagation network",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Yann LeCun, Bernhard E Boser, John S Denker, Donnie Henderson, Richard E Howard, Wayne E Hubbard, and Lawrence D Jackel"
+    },
+    {
+      "index": 37,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 38,
+      "title": "Model Pruning Enables Efficient Federated Learning on Edge Devices",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "Yuang Jiang, Shiqiang Wang, Víctor Valls, Bong Jun Ko, Wei-Han Lee, Kin K. Leung, and Leandros Tassiulas",
+      "orig_title": "Model pruning enables efficient federated learning on edge devices",
+      "paper_id": "1909.12326v5"
+    },
+    {
+      "index": 39,
+      "title": "QSGD: Communication-Efficient SGD via Gradient Quantization and Encoding",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Dan Alistarh, Demjan Grubic, Jerry Li, Ryota Tomioka, and Milan Vojnovic",
+      "orig_title": "Qsgd: Communication-efficient sgd via gradient quantization and encoding",
+      "paper_id": "1610.02132v4"
+    },
+    {
+      "index": 40,
+      "title": "Cmfl: Mitigating communication overhead for federated learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 IEEE 39th International Conference on Distributed Computing Systems (ICDCS)",
+      "authors": "WANG Luping, WANG Wei, and LI Bo"
+    },
+    {
+      "index": 41,
+      "title": "Wireless Federated Distillation for Distributed Edge Learning with Heterogeneous Data",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 IEEE 30th Annual International Symposium on Personal, Indoor and Mobile Radio Communications (PIMRC)",
+      "authors": "Jin-Hyun Ahn, Osvaldo Simeone, and Joonhyuk Kang",
+      "orig_title": "Wireless federated distillation for distributed edge learning with heterogeneous data",
+      "paper_id": "1907.02745v1"
+    },
+    {
+      "index": 42,
+      "title": "Staleness-aware async-sgd for distributed deep learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Twenty-Fifth International Joint Conference on Artificial Intelligence",
+      "authors": "Wei Zhang, Suyog Gupta, Xiangru Lian, and Ji Liu"
+    },
+    {
+      "index": 43,
+      "title": "Delayed gradient averaging: Tolerate the communication latency for federated learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Ligeng Zhu, Hongzhou Lin, Yao Lu, Yujun Lin, and Song Han"
+    },
+    {
+      "index": 44,
+      "title": "Fedsa: A staleness-aware asynchronous federated learning algorithm with non-iid data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Future Generation Computer Systems",
+      "authors": "Ming Chen, Bingcheng Mao, and Tianyi Ma"
+    },
+    {
+      "index": 45,
+      "title": "CSAFL: A Clustered Semi-Asynchronous Federated Learning Framework",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 International Joint Conference on Neural Networks (IJCNN)",
+      "authors": "Yu Zhang, Morning Duan, Duo Liu, Li Li, Ao Ren, Xianzhang Chen, Yujuan Tan, and Chengliang Wang",
+      "orig_title": "Csafl: A clustered semi-asynchronous federated learning framework",
+      "paper_id": "2104.08184v1"
+    },
+    {
+      "index": 46,
+      "title": "TiFL: A Tier-based Federated Learning System",
+      "abstract": "",
+      "year": "2020",
+      "venue": "29th International Symposium on High-Performance Parallel and Distributed Computing",
+      "authors": "Zheng Chai, Ahsan Ali, Syed Zawad, Stacey Truex, Ali Anwar, Nathalie Baracaldo, Yi Zhou, Heiko Ludwig, Feng Yan, and Yue Cheng",
+      "orig_title": "Tifl: A tier-based federated learning system",
+      "paper_id": "2001.09249v1"
+    },
+    {
+      "index": 47,
+      "title": "FedGroup: Efficient Federated Learning via Decomposed Similarity-Based Clustering",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 IEEE Intl Conf on Parallel & Distributed Processing with Applications, Big Data & Cloud Computing, Sustainable Computing & Communications, Social Computing & Networking (ISPA/BDCloud/SocialCom/SustainCom)",
+      "authors": "Moming Duan, Duo Liu, Xinyuan Ji, Renping Liu, Liang Liang, Xianzhang Chen, and Yujuan Tan",
+      "orig_title": "Fedgroup: Efficient federated learning via decomposed similarity-based clustering",
+      "paper_id": "2010.06870v6"
+    },
+    {
+      "index": 48,
+      "title": "Fedcluster: Boosting the convergence of federated learning via cluster-cycling",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 IEEE International Conference on Big Data (Big Data)",
+      "authors": "Cheng Chen, Ziyi Chen, Yi Zhou, and Bhavya Kailkhura"
+    }
+  ]
+}

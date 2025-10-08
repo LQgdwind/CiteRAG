@@ -1,0 +1,423 @@
+{
+  "paper_id": "2007.11398v1",
+  "title": "A Framework for Consistency Algorithms",
+  "sections": {
+    "universal consistency": "The basis of our framework is a universal consistency problem which can be instantiated to simulate a particular memory model.\nFor its formulation, we make use of a consistency notion that allows for the construction of a fast algorithm but deviates from the literature    at first sight.\nTherefore, it is proven in Section 4 that instantiating the problem with a particular memory model yields the correct notion of consistency. We clarify our notion of consistency.\nIntuitively, a history is consistent under a memory model if it can be scheduled such that certain axioms defined by the model are satisfied.\nFollowing the formal framework of  , finding such a schedule amounts to finding a particular order of the write events that satisfies acyclicity requirements imposed by the axioms.\nFormally, let h=⟨O,𝑝𝑜,𝑟𝑓⟩ℎ𝑂𝑝𝑜𝑟𝑓h=\\langle O,\\mathit{po},\\mathit{rf}\\rangle be a history and let \\ComplexityFont​M​M\\ComplexityFont𝑀𝑀\\ComplexityFont{MM} be a memory model described by the tuple (𝑝𝑜​-​𝑚𝑚,𝑟𝑓​-​𝑚𝑚)𝑝𝑜-𝑚𝑚𝑟𝑓-𝑚𝑚(\\mathit{po}\\,\\text{-}\\mathit{mm},\\mathit{rf}\\text{-}\\mathit{mm}).\nThen hℎh is called \\ComplexityFont​M​M\\ComplexityFont𝑀𝑀\\ComplexityFont{MM}-consistent if there exists a strict total order 𝑡𝑤𝑡𝑤\\mathit{tw} on the write events 𝑊𝑅𝑊𝑅\\!\\mathit{WR} of hℎh such that the graphs are both acyclic.\nHere, the conflict relation 𝑐𝑓𝑐𝑓\\mathit{cf} is defined by 𝑐𝑓=𝑟𝑓−1∘⋃x∈𝑉𝑎𝑟𝑡𝑤x𝑐𝑓superscript𝑟𝑓1subscript𝑥𝑉𝑎𝑟subscript𝑡𝑤𝑥\\mathit{cf}=\\mathit{rf}^{-1}\\circ\\bigcup_{x\\in\\!\\mathit{Var}}\\mathit{tw}_{x}.\nPhrased differently, (r,w)∈𝑐𝑓𝑟𝑤𝑐𝑓(r,w)\\in\\mathit{cf} if r𝑟r is a read event on a variable x𝑥x, w𝑤w is a write event on x𝑥x, and there is a write event w′superscript𝑤′w^{\\prime} on x𝑥x such that (w′,r)∈𝑟𝑓superscript𝑤′𝑟𝑟𝑓(w^{\\prime},r)\\in\\mathit{rf} and (w′,w)∈𝑡𝑤superscript𝑤′𝑤𝑡𝑤(w^{\\prime},w)\\in\\mathit{tw}. The acyclicity of G𝑙𝑜𝑐subscript𝐺𝑙𝑜𝑐G_{\\mathit{loc}} is called uniprocessor requirement  or memory coherence for each location .\nRoughly, it demands that an order among writes to the same location that can be extracted from the history, is kept in 𝑡𝑤𝑡𝑤\\mathit{tw}.\nThe second acyclicity requirement in the definition resembles the underlying memory model \\ComplexityFont​M​M\\ComplexityFont𝑀𝑀\\ComplexityFont{MM}.\nIf G𝑚𝑚subscript𝐺𝑚𝑚G_{\\mathit{mm}} is acyclic, the history can be scheduled adhering to the axioms defined by \\ComplexityFont​M​M\\ComplexityFont𝑀𝑀\\ComplexityFont{MM}. Our definition of consistency deviates from the literature in two aspects.\nFirst, we demand a total order 𝑡𝑤𝑡𝑤\\mathit{tw} instead of a store order, a partial order that is total on writes to the same location   .\nIn Section 4 we will show that the resulting notions of consistency are equivalent.\nA further difference is that we do not explicitly test for out of thin air values [ref]41.\nFor the majority of memory models considered in this work, the test is not necessary as it is implied by the acyclicity of G𝑙𝑜𝑐subscript𝐺𝑙𝑜𝑐G_{\\mathit{loc}} and G𝑚𝑚subscript𝐺𝑚𝑚G_{\\mathit{mm}}.\nBut it can easily be added when needed. We are ready to state the universal consistency problem.\nTo this end, let \\ComplexityFont​M​M\\ComplexityFont𝑀𝑀\\ComplexityFont{MM} be a fixed memory model.\nGiven a history hℎh, the problem asks whether hℎh is \\ComplexityFont​M​M\\ComplexityFont𝑀𝑀\\ComplexityFont{MM}-consistent.\n{myproblem}\n\n\n\n\nInstantiations of the problem by well-known memory models like \\SC\\SC\\SC or \\ComplexityFont​T​S​O\\ComplexityFont𝑇𝑆𝑂\\ComplexityFont{TSO} are typically \\NP\\NP\\NP-hard  .\nHowever, we are interested in a deterministic algorithm for \\ComplexityFontMM-Consistency.\nWhile we cannot avoid an exponential running time for such an algorithm, a fine-grained complexity analysis can determine the optimal exponential dependence.\nMany parameters of \\ComplexityFontMM-Consistency like the number of threads, the maximum size per thread, or the size of the data domain yield parameterizations that are \\W​\\Wdelimited-[]1\\W-hard  .\nTherefore, we conduct a fine-grained analysis for the parameter k=|𝑊𝑅|𝑘𝑊𝑅k=|\\!\\mathit{WR}|, the number of writes in hℎh.\nThe main finding is an algorithm for \\ComplexityFontMM-Consistency running in time 𝒪∗​(2k)superscript𝒪superscript2𝑘\\mathcal{O}^{*}(2^{k}).\nThe optimality of this approach is shown in Section 5 by a complementing lower bound.\nWe formally state the upper bound in the following theorem.\nThere, n=|O|𝑛𝑂n=|O| denotes the number of events in hℎh. The problem \\ComplexityFont​M​M\\ComplexityFont𝑀𝑀\\ComplexityFont{MM}-Consistency can be solved in time 𝒪​(2k⋅k2⋅n2)𝒪⋅superscript2𝑘superscript𝑘2superscript𝑛2\\mathcal{O}(2^{k}\\cdot k^{2}\\cdot n^{2}). Note that an algorithm for \\ComplexityFontMM-Consistency running in time 𝒪∗​(kk)superscript𝒪superscript𝑘𝑘\\mathcal{O}^{*}(k^{k}) is immediate.\nOne can iterate over all total orders of 𝑊𝑅𝑊𝑅\\!\\mathit{WR} and check the acyclicity of G𝑙𝑜𝑐subscript𝐺𝑙𝑜𝑐G_{\\mathit{loc}} and G𝑚𝑚subscript𝐺𝑚𝑚G_{\\mathit{mm}} in polynomial time.\nSince we cannot afford this iteration in 𝒪∗​(2k)superscript𝒪superscript2𝑘\\mathcal{O}^{*}(2^{k}), improving the running time needs an alternative approach and further technical development that we summarize in Section 3.2."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 1,
+      "title": "The SPARC Architecture Manual - Version 8 and Version 9",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 2,
+      "title": "Coherence, non-coherence and local consistency in distributed shared memory for parallel computing",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Technical Report BU-CS-92-004, Boston University",
+      "authors": "H. Sinha A. Heddaya"
+    },
+    {
+      "index": 3,
+      "title": "An integrated specification and verification technique for highly concurrent data structures",
+      "abstract": "",
+      "year": "2013",
+      "venue": "TACAS",
+      "authors": "P. A. Abdulla, F. Haziza, L. Holík, B. Jonsson, and A. Rezine"
+    },
+    {
+      "index": 4,
+      "title": "The power of processor consistency",
+      "abstract": "",
+      "year": "1993",
+      "venue": "ACM",
+      "authors": "M. Ahamad, R. A. Bazzi, R. John, P. Kohli, and G. Neiger"
+    },
+    {
+      "index": 5,
+      "title": "A formal hierarchy of weak memory models",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Formal Methods Syst. Des.",
+      "authors": "J. Alglave"
+    },
+    {
+      "index": 6,
+      "title": "Herding cats: Modelling, simulation, testing, and data mining for weak memory",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM Trans. Program. Lang. Syst.",
+      "authors": "J. Alglave, L. Maranget, and M. Tautschnig"
+    },
+    {
+      "index": 7,
+      "title": "Model-checking of correctness conditions for concurrent objects",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Inf. Comput.",
+      "authors": "R. Alur, K. L. McMillan, and D. A. Peled"
+    },
+    {
+      "index": 8,
+      "title": "On the verification problem for weak memory models",
+      "abstract": "",
+      "year": "2010",
+      "venue": "POPL",
+      "authors": "M. F. Atig, A. Bouajjani, S. Burckhardt, and M. Musuvathi"
+    },
+    {
+      "index": 9,
+      "title": "What’s decidable about weak memory models?",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ESOP",
+      "authors": "M. F. Atig, A. Bouajjani, S. Burckhardt, and M. Musuvathi"
+    },
+    {
+      "index": 10,
+      "title": "On the Complexity of Checking Transactional Consistency",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proc. ACM Program. Lang.",
+      "authors": "R. Biswas and C. Enea",
+      "orig_title": "On the complexity of checking transactional consistency",
+      "paper_id": "1908.04509v1"
+    },
+    {
+      "index": 11,
+      "title": "On verifying causal consistency",
+      "abstract": "",
+      "year": "2017",
+      "venue": "POPL",
+      "authors": "A. Bouajjani, C. Enea, R. Guerraoui, and J. Hamza"
+    },
+    {
+      "index": 12,
+      "title": "Verifying eventual consistency of optimistic replication systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "POPL",
+      "authors": "A. Bouajjani, C. Enea, and J. Hamza"
+    },
+    {
+      "index": 13,
+      "title": "Deciding robustness against total store ordering",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICALP",
+      "authors": "A. Bouajjani, R. Meyer, and E. Möhlmann"
+    },
+    {
+      "index": 14,
+      "title": "A theory of partitioned global address spaces",
+      "abstract": "",
+      "year": "2013",
+      "venue": "FSTTCS",
+      "authors": "G. Calin, E. Derevenetc, R. Majumdar, and R. Meyer"
+    },
+    {
+      "index": 15,
+      "title": "The complexity of verifying memory coherence and consistency",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Transactions on Parallel and Distributed Systems",
+      "authors": "J. F. Cantin, M. H. Lipasti, and J. E. Smith"
+    },
+    {
+      "index": 16,
+      "title": "Tight lower bounds for certain parameterized np-hard problems",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Inf. Comput.",
+      "authors": "J. Chen, B. Chor, M. Fellows, X. Huang, D. W. Juedes, I. A. Kanj, and G. Xia"
+    },
+    {
+      "index": 17,
+      "title": "On the Complexity of Bounded Context Switching",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ESA",
+      "authors": "P. Chini, J. Kolberg, A. Krebs, R. Meyer, and P. Saivasan",
+      "orig_title": "On the complexity of bounded context switching",
+      "paper_id": "1609.09728v2"
+    },
+    {
+      "index": 18,
+      "title": "Fine-Grained Complexity of Safety Verification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "TACAS",
+      "authors": "P. Chini, R. Meyer, and P. Saivasan",
+      "orig_title": "Fine-grained complexity of safety verification",
+      "paper_id": "1802.05559v3"
+    },
+    {
+      "index": 19,
+      "title": "Complexity of liveness in parameterized systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "FSTTCS",
+      "authors": "P. Chini, R. Meyer, and P. Saivasan"
+    },
+    {
+      "index": 20,
+      "title": "On problems as hard as CNF-SAT",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Trans. Algorithms",
+      "authors": "M. Cygan, H. Dell, D. Lokshtanov, D. Marx, J. Nederlof, Y. Okamoto, R. Paturi, S. Saurabh, and M. Wahlström"
+    },
+    {
+      "index": 21,
+      "title": "Parameterized algorithms",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer",
+      "authors": "M. Cygan, F. V. Fomin, Ł. Kowalik, D. Lokshtanov, D. Marx, M. Pilipczuk, M. Pilipczuk, and S. Saurabh"
+    },
+    {
+      "index": 22,
+      "title": "Robustness against Power is PSpace-complete",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICALP",
+      "authors": "E. Derevenetc and R. Meyer",
+      "orig_title": "Robustness against power is pspace-complete",
+      "paper_id": "1404.7092v1"
+    },
+    {
+      "index": 23,
+      "title": "Fundamentals of Parameterized Complexity",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Springer",
+      "authors": "R. G. Downey and M. R. Fellows"
+    },
+    {
+      "index": 24,
+      "title": "Monitoring weak consistency",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CAV",
+      "authors": "M. Emmi and C. Enea"
+    },
+    {
+      "index": 25,
+      "title": "Sound, complete, and tractable linearizability monitoring for concurrent collections",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Proc. ACM Program. Lang.",
+      "authors": "M. Emmi and C. Enea"
+    },
+    {
+      "index": 26,
+      "title": "Monitoring refinement via symbolic reasoning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PLDI",
+      "authors": "M. Emmi, C. Enea, and J. Hamza"
+    },
+    {
+      "index": 27,
+      "title": "On atomicity in presence of non-atomic writes",
+      "abstract": "",
+      "year": "2016",
+      "venue": "TACAS",
+      "authors": "C. Enea and A. Farzan"
+    },
+    {
+      "index": 28,
+      "title": "The complexity of predicting atomicity violations",
+      "abstract": "",
+      "year": "2009",
+      "venue": "TACAS",
+      "authors": "A. Farzan and P. Madhusudan"
+    },
+    {
+      "index": 29,
+      "title": "Exact Exponential Algorithms",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Springer",
+      "authors": "F. V. Fomin and D. Kratsch"
+    },
+    {
+      "index": 30,
+      "title": "Memory-model-aware testing: A unified complexity analysis",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM Trans. Embedded Comput. Syst.",
+      "authors": "F. Furbach, R. Meyer, K. Schneider, and M. Senftleben"
+    },
+    {
+      "index": 31,
+      "title": "Testing shared memories",
+      "abstract": "",
+      "year": "1997",
+      "venue": "SIAM J. Comput.",
+      "authors": "P. B. Gibbons and E. Korach"
+    },
+    {
+      "index": 32,
+      "title": "Cache consistency and sequential consistency",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Technical Report 1006, University of Wisconsin-Madison",
+      "authors": "J. R. Goodman"
+    },
+    {
+      "index": 33,
+      "title": "Linearizability: A correctness condition for concurrent objects",
+      "abstract": "",
+      "year": "1990",
+      "venue": "ACM Trans. Program. Lang. Syst.",
+      "authors": "M. Herlihy and J. M. Wing"
+    },
+    {
+      "index": 34,
+      "title": "On the complexity of SAT",
+      "abstract": "",
+      "year": "2001",
+      "venue": "JCSS",
+      "authors": "R. Impagliazzo and R. Paturi",
+      "orig_title": "On the complexity of k-SAT",
+      "paper_id": "2111.06967v3"
+    },
+    {
+      "index": 35,
+      "title": "Topological sorting of large networks",
+      "abstract": "",
+      "year": "1962",
+      "venue": "Commun. ACM",
+      "authors": "A. B. Kahn"
+    },
+    {
+      "index": 36,
+      "title": "Time, clocks, and the ordering of events in a distributed system",
+      "abstract": "",
+      "year": "1978",
+      "venue": "Commun. ACM",
+      "authors": "L. Lamport"
+    },
+    {
+      "index": 37,
+      "title": "How to make a multiprocessor computer that correctly executes multiprocess programs",
+      "abstract": "",
+      "year": "1979",
+      "venue": "IEEE Trans. Computers",
+      "authors": "L. Lamport"
+    },
+    {
+      "index": 38,
+      "title": "Slightly superexponential parameterized problems",
+      "abstract": "",
+      "year": "2011",
+      "venue": "SODA",
+      "authors": "D. Lokshtanov, D. Marx, and S. Saurabh"
+    },
+    {
+      "index": 39,
+      "title": "An axiomatic memory model for POWER multiprocessors",
+      "abstract": "",
+      "year": "2012",
+      "venue": "CAV",
+      "authors": "S. Mador-Haim, L. Maranget, S. Sarkar, K. Memarian, J. Alglave, S. Owens, R. Alur, M. M. K. Martin, P. Sewell, and D. Williams"
+    },
+    {
+      "index": 40,
+      "title": "The java memory model",
+      "abstract": "",
+      "year": "2005",
+      "venue": "POPL",
+      "authors": "J. Manson, W. Pugh, and S. V. Adve"
+    },
+    {
+      "index": 41,
+      "title": "The Complexity of Dynamic Data Race Prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "LICS",
+      "authors": "U. Mathur, A. Pavlogiannis, and M. Viswanathan",
+      "orig_title": "The complexity of dynamic data race prediction",
+      "paper_id": "2004.14931v2"
+    },
+    {
+      "index": 42,
+      "title": "The serializability of concurrent database updates",
+      "abstract": "",
+      "year": "1979",
+      "venue": "J. ACM",
+      "authors": "C. H. Papadimitriou"
+    },
+    {
+      "index": 43,
+      "title": "PRAM: A scalable shared memory",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Technical Report CS-TR-180-88, Princeton University",
+      "authors": "J. S. Sandberg R. J. Lipton"
+    },
+    {
+      "index": 44,
+      "title": "Understanding POWER multiprocessors",
+      "abstract": "",
+      "year": "2011",
+      "venue": "PLDI",
+      "authors": "S. Sarkar, P. Sewell, J. Alglave, L. Maranget, and D. Williams"
+    },
+    {
+      "index": 45,
+      "title": "A unified theory of shared memory consistency",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. ACM",
+      "authors": "R. C. Steinke and G. J. Nutt"
+    },
+    {
+      "index": 46,
+      "title": "Managing update conflicts in bayou, a weakly connected replicated storage system",
+      "abstract": "",
+      "year": "1995",
+      "venue": "SOSP",
+      "authors": "D. B. Terry, M. Theimer, K. Petersen, A. J. Demers, M. Spreitzer, and C. Hauser"
+    },
+    {
+      "index": 47,
+      "title": "Verifying PRAM consistency over read/write traces of data replicas",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "H. Wei, Y. Huang, J. Cao, X. Ma, and J. Lu"
+    },
+    {
+      "index": 48,
+      "title": "Expressing interesting properties of programs in propositional temporal logic",
+      "abstract": "",
+      "year": "1986",
+      "venue": "POPL",
+      "authors": "P. Wolper"
+    },
+    {
+      "index": 49,
+      "title": "Gradual consistency checking",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CAV",
+      "authors": "R. Zennou, A. Bouajjani, C. Enea, and M. Erradi"
+    }
+  ]
+}

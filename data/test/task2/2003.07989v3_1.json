@@ -1,0 +1,479 @@
+{
+  "paper_id": "2003.07989v3",
+  "title": "GPU-Accelerated Computation of Vietoris-Rips Persistence Barcodes",
+  "sections": {
+    "introduction": "Topological data analysis (TDA)  is an emerging field in the era of big data, which has a strong mathematical foundation. As one of the core tools of TDA, persistent homology seeks to find topological or qualitative features of data (usually represented by a finite metric space). It has many applications, such as in neural networks , sensor networks , bioinformatics , deep learning , manifold learning [ref]43, and neuroscience . One of the most popular and useful topological signatures persistent homology can compute are Vietoris-Rips barcodes. There are two challenges to Vietoris-Rips barcode computation. The first one is its highly computing- and memory-intensive nature in part due to the exponentially growing number of simplices it must process. The second one is its irregular computation patterns with high dependencies such as its matrix reduction step . Therefore, sequential computation is still the norm in computing persistent homology. There are several CPU-based software packages in sequential mode for computing persistent homology   [ref]33  [ref]5. Ripser  [ref]5  is a representative and computationally efficient software specifically designed to compute Vietoris-Rips barcodes, achieving state of the art performance   by using effective and mathematically based algorithmic optimizations. The usage of hardware accelerators like GPU is inevitable for computation in many areas. To continue advancing the computational geometry field, we must include hardware-aware algorithmic efforts. The ending of Moore’s law  and the termination of Dennard scaling  technically limits the performance improvement of general-purpose CPUs . The computing ecosystem is rapidly evolving from conventional CPU computing to a new disruptive accelerated computing environment where hardware accelerators such as GPUs play the main roles of computation for performance improvement. Our goal in this work is to develop GPU-accelerated computation for Vietoris-Rips barcodes, not only significantly improving the performance, but also to lead a new direction in computing for topological data analysis. We identify two major computational components for computing Vietoris-Rips barcodes, namely filtration construction with clearing and matrix reduction. We look into the underlying mathematical and empirical properties tied to the hidden massive parallelism and data locality of these computations. Having laid mathematical foundations, we develop efficient parallel algorithms for each component, and put them together to create a computational software. Our contributions presented in this paper are as follows: 1. We introduce and prove the Apparent Pairs Lemma for Vietoris-Rips barcode computation. It has a natural algorithmic connection to the GPU. We furthermore prove theoretical bounds on the number of so-called ”apparent pairs.” 2. We design and implement hardware-aware massively parallel algorithms that accelerate the two major computation components of Vietoris-Rips barcodes as well as a data structure for persistence pairs for matrix reduction. 3. We perform extensive experiments justifying our algorithms’ computational effectiveness as well as dissecting the nature of Vietoris-Rips barcode computation, including looking into the expected number of apparent pairs as a function of the number of points. 4. We achieve up to 30x speedup over the original Ripser software; surprisingly, up to 2.0x CPU memory efficiency and requires, at best, 60% of the CPU memory used by Ripser on the GPU device memory. 5. Ripser++ is an open source software in the public domain to serve the TDA community and relevant application areas. here are four challenges to developing Ripser++: There is still little that we know about the empirical properties of persistent homology computation. It was discovered in [Zhang] that the matrix reduction component of persistent homology computation is highly irregular, heavily depending on the filtration type and without a general solution for all datasets. This was one of the motivations to atleast partially solve the problem by restricting to Vietoris-Rips filtrations. The GPU executes in a SIMD fashion in units of ”warps” of 32 threads. It is very nonintuitive to parallelize a completely sequential algorithm into a SIMD-parallel execution pattern. Furthermore, according to our experiments, Ripser is state of the art in Vietoris-Rips barcodes computation. Improving upon state of the art is a difficult task and doing so with the (still improving) device memory restrictions and the necessity to contribute SIMD parallelism on top of Ripser brings about added pressure. We are one of very few research that has introduced parallelism to persistent homology computation. The available literature is very sparse and can be overly theoretical. Unfortunately beautiful theory does not necessarily translate into high performance in practice."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Persistence Images: A Stable Vector Representation of Persistent Homology",
+      "abstract": "",
+      "year": "2017",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "Henry Adams, Tegan Emerson, Michael Kirby, Rachel Neville, Chris Peterson, Patrick Shipman, Sofya Chepushtanova, Eric Hanson, Francis Motta, and Lori Ziegelmeier",
+      "orig_title": "Persistence images: A stable vector representation of persistent homology",
+      "paper_id": "1507.06217v3"
+    },
+    {
+      "index": 1,
+      "title": "Javaplex tutorial",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Google Scholar",
+      "authors": "Henry Adams and Andrew Tausz"
+    },
+    {
+      "index": 2,
+      "title": "Persistence Homology of Networks: Methods and Applications",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Applied Network Science",
+      "authors": "Mehmet E Aktas, Esra Akbas, and Ahmed El Fatmaoui",
+      "orig_title": "Persistence homology of networks: methods and applications",
+      "paper_id": "1907.08708v1"
+    },
+    {
+      "index": 3,
+      "title": "The framed morse complex and its invariants",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": "Sergey Barannikov"
+    },
+    {
+      "index": 4,
+      "title": "Ripser: efficient computation of Vietoris–Rips persistence barcodes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Ulrich Bauer",
+      "orig_title": "Ripser: efficient computation of vietoris–rips persistence barcodes",
+      "paper_id": "1908.02518v2"
+    },
+    {
+      "index": 5,
+      "title": "Ripser: efficient computation of Vietoris–Rips persistence barcodes",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.02518",
+      "authors": "Ulrich Bauer",
+      "orig_title": "Ripser: efficient computation of vietoris-rips persistence barcodes",
+      "paper_id": "1908.02518v2"
+    },
+    {
+      "index": 6,
+      "title": "Clear and compress: Computing persistent homology in chunks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Topological methods in data analysis and visualization III",
+      "authors": "Ulrich Bauer, Michael Kerber, and Jan Reininghaus"
+    },
+    {
+      "index": 7,
+      "title": "Distributed Computation of Persistent Cohomology",
+      "abstract": "",
+      "year": "2014",
+      "venue": "2014 proceedings of the sixteenth workshop on algorithm engineering and experiments (ALENEX)",
+      "authors": "Ulrich Bauer, Michael Kerber, and Jan Reininghaus",
+      "orig_title": "Distributed computation of persistent homology",
+      "paper_id": "2410.16553v1"
+    },
+    {
+      "index": 8,
+      "title": "Phat–persistent homology algorithms toolbox",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of symbolic computation",
+      "authors": "Ulrich Bauer, Michael Kerber, Jan Reininghaus, and Hubert Wagner"
+    },
+    {
+      "index": 9,
+      "title": "Persistent homology analysis of brain artery trees",
+      "abstract": "",
+      "year": "2016",
+      "venue": "The annals of applied statistics",
+      "authors": "Paul Bendich, James S Marron, Ezra Miller, Alex Pieloch, and Sean Skwerer"
+    },
+    {
+      "index": 10,
+      "title": "The compressed annotation matrix: An efficient data structure for computing persistent cohomology",
+      "abstract": "",
+      "year": "2013",
+      "venue": "European Symposium on Algorithms",
+      "authors": "Jean-Daniel Boissonnat, Tamal K Dey, and Clément Maria"
+    },
+    {
+      "index": 11,
+      "title": "An Efficient Representation for Filtrations of Simplicial Complexes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Transactions on Algorithms",
+      "authors": "Jean-Daniel Boissonnat and C. Karthik",
+      "orig_title": "An Efficient Representation for Filtrations of Simplicial Complexes",
+      "paper_id": "1607.08449v3"
+    },
+    {
+      "index": 12,
+      "title": "The Simplex Tree: An Efficient Data Structure for General Simplicial Complexes",
+      "abstract": "",
+      "year": "2012",
+      "venue": "European Symposium on Algorithms",
+      "authors": "Jean-Daniel Boissonnat and Clément Maria",
+      "orig_title": "The simplex tree: An efficient data structure for general simplicial complexes",
+      "paper_id": "2001.02581v1"
+    },
+    {
+      "index": 13,
+      "title": "Statistical topological data analysis using persistence landscapes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "Peter Bubenik"
+    },
+    {
+      "index": 14,
+      "title": "Topology and data",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Bulletin of the American Mathematical Society",
+      "authors": "Gunnar Carlsson"
+    },
+    {
+      "index": 15,
+      "title": "Persistent and zigzag homology: A matrix factorization viewpoint",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.10693",
+      "authors": "Gunnar Carlsson, Anjan Dwaraknath, and Bradley J Nelson"
+    },
+    {
+      "index": 16,
+      "title": "A geometric perspective on sparse filtrations",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1506.03797",
+      "authors": "Nicholas J Cavanna, Mahmoodreza Jahanseir, and Donald R Sheehy"
+    },
+    {
+      "index": 17,
+      "title": "Persistent homology computation with a twist",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Proceedings 27th European Workshop on Computational Geometry",
+      "authors": "Chao Chen and Michael Kerber"
+    },
+    {
+      "index": 18,
+      "title": "A topological paradigm for hippocampal spatial map formation using persistent homology",
+      "abstract": "",
+      "year": "2012",
+      "venue": "PLoS computational biology",
+      "authors": "Yuri Dabaghian, Facundo Mémoli, Loren Frank, and Gunnar Carlsson"
+    },
+    {
+      "index": 19,
+      "title": "Coverage in sensor networks via persistent homology",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Algebraic & Geometric Topology",
+      "authors": "Vin De Silva and Robert Ghrist"
+    },
+    {
+      "index": 20,
+      "title": "Dualities in persistent (co) homology",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Inverse Problems",
+      "authors": "Vin De Silva, Dmitriy Morozov, and Mikael Vejdemo-Johansson"
+    },
+    {
+      "index": 21,
+      "title": "Persistent cohomology and circular coordinates",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Discrete & Computational Geometry",
+      "authors": "Vin De Silva, Dmitriy Morozov, and Mikael Vejdemo-Johansson"
+    },
+    {
+      "index": 22,
+      "title": "Skeletonization and partitioning of digital images using discrete morse theory",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "Olaf Delgado-Friedrichs, Vanessa Robins, and Adrian Sheppard"
+    },
+    {
+      "index": 23,
+      "title": "Design of ion-implanted mosfet’s with very small physical dimensions",
+      "abstract": "",
+      "year": "1974",
+      "venue": "IEEE Journal of Solid-State Circuits",
+      "authors": "Robert H Dennard, Fritz H Gaensslen, V Leo Rideout, Ernest Bassous, and Andre R LeBlanc"
+    },
+    {
+      "index": 24,
+      "title": "Computing topological persistence for simplicial maps",
+      "abstract": "",
+      "year": "2014",
+      "venue": "thirtieth annual symposium on Computational geometry",
+      "authors": "Tamal K Dey, Fengtao Fan, and Yusu Wang"
+    },
+    {
+      "index": 25,
+      "title": "Simba: An efficient tool for approximating rips-filtration persistence via simplicial batch collapse",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Journal of Experimental Alsgorithmics (JEA)",
+      "authors": "Tamal K Dey, Dayu Shi, and Yusu Wang"
+    },
+    {
+      "index": 26,
+      "title": "Computational topology: an introduction",
+      "abstract": "",
+      "year": "2010",
+      "venue": "American Mathematical Soc.",
+      "authors": "Herbert Edelsbrunner and John Harer"
+    },
+    {
+      "index": 27,
+      "title": "Topological persistence and simplification",
+      "abstract": "",
+      "year": "2000",
+      "venue": "41st annual symposium on foundations of computer science",
+      "authors": "Herbert Edelsbrunner, David Letscher, and Afra Zomorodian"
+    },
+    {
+      "index": 28,
+      "title": "Dark silicon and the end of multicore scaling",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Micro",
+      "authors": "Hadi Esmaeilzadeh, Emily Blem, Renee St Amant, Karthikeyan Sankaralingam, and Doug Burger"
+    },
+    {
+      "index": 29,
+      "title": "Confidence sets for persistence diagrams",
+      "abstract": "",
+      "year": "2014",
+      "venue": "The Annals of Statistics",
+      "authors": "Brittany Terese Fasy, Fabrizio Lecci, Alessandro Rinaldo, Larry Wasserman, Sivaraman Balakrishnan, Aarti Singh, et al."
+    },
+    {
+      "index": 30,
+      "title": "On Characterizing the Capacity of Neural Networks using Algebraic Topology",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.04443",
+      "authors": "William H Guss and Ruslan Salakhutdinov",
+      "orig_title": "On characterizing the capacity of neural networks using algebraic topology",
+      "paper_id": "1802.04443v1"
+    },
+    {
+      "index": 31,
+      "title": "Eirene: a platform for computational homological algebra",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "G Henselman"
+    },
+    {
+      "index": 32,
+      "title": "Matroid filtrations and computational persistent homology",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.00199",
+      "authors": "Gregory Henselman and Robert Ghrist"
+    },
+    {
+      "index": 33,
+      "title": "Deep Learning with Topological Signatures",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Christoph Hofer, Roland Kwitt, Marc Niethammer, and Andreas Uhl",
+      "orig_title": "Deep learning with topological signatures",
+      "paper_id": "1707.04041v3"
+    },
+    {
+      "index": 34,
+      "title": "A framework for the automatic vectorization of parallel sort on x86-based processors",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Parallel and Distributed Systems",
+      "authors": "Kaixi Hou, Hao Wang, and Wu-Chun Feng"
+    },
+    {
+      "index": 35,
+      "title": "Performance enhancement of a computational persistent homology package",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE 36th International Performance Computing and Communications Conference (IPCCC)",
+      "authors": "Alan Hylton, Janche Sang, Greg Henselman-Petrusek, and Robert Short"
+    },
+    {
+      "index": 36,
+      "title": "Sort vs. hash revisited: Fast join implementation on modern multi-core cpus",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Proc. VLDB Endow.",
+      "authors": "Changkyu Kim, Tim Kaldewey, Victor W. Lee, Eric Sedlar, Anthony D. Nguyen, Nadathur Satish, Jatin Chhugani, Andrea Di Blas, and Pradeep Dubey"
+    },
+    {
+      "index": 37,
+      "title": "The art of computer programming, volume 3",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Pearson Education",
+      "authors": "Donald Ervin Knuth"
+    },
+    {
+      "index": 38,
+      "title": "Computing persistent homology of directed flag complexes",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.10458",
+      "authors": "Daniel Luetgehetmann, Dejan Govc, Jason Smith, and Ran Levi"
+    },
+    {
+      "index": 39,
+      "title": "The gudhi library: Simplicial complexes and persistent homology",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Congress on Mathematical Software",
+      "authors": "Clément Maria, Jean-Daniel Boissonnat, Marc Glisse, and Mariette Yvinec"
+    },
+    {
+      "index": 40,
+      "title": "Parallel multi-scale reduction of persistent homology filtrations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1708.04710",
+      "authors": "Rodrigo Mendoza-Smith and Jared Tanner"
+    },
+    {
+      "index": 41,
+      "title": "Dionysus software",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Dmitriy Morozov"
+    },
+    {
+      "index": 42,
+      "title": "Finding the homology of submanifolds with high confidence from random samples",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Discrete & Computational Geometry",
+      "authors": "Partha Niyogi, Stephen Smale, and Shmuel Weinberger"
+    },
+    {
+      "index": 43,
+      "title": "A Roadmap for the Computation of Persistent Homology",
+      "abstract": "",
+      "year": "2017",
+      "venue": "EPJ Data Science",
+      "authors": "Nina Otter, Mason A Porter, Ulrike Tillmann, Peter Grindrod, and Heather A Harrington",
+      "orig_title": "A roadmap for the computation of persistent homology",
+      "paper_id": "1506.08903v7"
+    },
+    {
+      "index": 44,
+      "title": "Sopra una formola numerica",
+      "abstract": "",
+      "year": "1887",
+      "venue": "",
+      "authors": "Ernesto Pascal"
+    },
+    {
+      "index": 45,
+      "title": "A Stable Multi-Scale Kernel for Topological Machine Learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Jan Reininghaus, Stefan Huber, Ulrich Bauer, and Roland Kwitt",
+      "orig_title": "A stable multi-scale kernel for topological machine learning",
+      "paper_id": "1412.6821v1"
+    },
+    {
+      "index": 46,
+      "title": "Designing efficient sorting algorithms for manycore gpus",
+      "abstract": "",
+      "year": "2009",
+      "venue": "2009 IEEE International Symposium on Parallel&Distributed Processing, IPDPS ’09",
+      "authors": "Nadathur Satish, Mark Harris, and Michael Garland"
+    },
+    {
+      "index": 47,
+      "title": "Linear-size approximations to the Vietoris-Rips filtration",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Discrete & Computational Geometry",
+      "authors": "Donald R. Sheehy"
+    },
+    {
+      "index": 48,
+      "title": "Proof of bijection for combinatorial number system",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1601.05794",
+      "authors": "Abu Bakar Siddique, Saadia Farid, and Muhammad Tahir"
+    },
+    {
+      "index": 49,
+      "title": "Fast parallel gpu-sorting using a hybrid algorithm",
+      "abstract": "",
+      "year": "2008",
+      "venue": "J. Parallel Distrib. Comput.",
+      "authors": "Erik Sintorn and Ulf Assarsson"
+    },
+    {
+      "index": 50,
+      "title": "Persistent homology for detection of objects from mobile lidar point cloud data in autonomous vehicles",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Science and Information Conference",
+      "authors": "Meirman Syzdykbayev and Hassan A Karimi"
+    },
+    {
+      "index": 51,
+      "title": "GUDHI User and Reference Manual",
+      "abstract": "",
+      "year": "2015",
+      "venue": "GUDHI Editorial Board",
+      "authors": "The GUDHI Project"
+    },
+    {
+      "index": 52,
+      "title": "The end of moore’s law: A new beginning for information technology",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Computing in Science & Engineering",
+      "authors": "Thomas N Theis and H-S Philip Wong"
+    },
+    {
+      "index": 53,
+      "title": "Ripser. py: A lean persistent homology library for python",
+      "abstract": "",
+      "year": "2018",
+      "venue": "J. Open Source Software",
+      "authors": "Christopher Tralie, Nathaniel Saul, and Rann Bar-On"
+    },
+    {
+      "index": 54,
+      "title": "Hypha: a framework based on separation of parallelisms to accelerate persistent homology matrix reduction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM International Conference on Supercomputing",
+      "authors": "Simon Zhang, Mengbai Xiao, Chengxin Guo, Liang Geng, Hao Wang, and Xiaodong Zhang"
+    },
+    {
+      "index": 55,
+      "title": "Fast construction of the vietoris-rips complex",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Computers & Graphics",
+      "authors": "Afra Zomorodian"
+    }
+  ]
+}

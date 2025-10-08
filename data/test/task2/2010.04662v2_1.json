@@ -1,0 +1,491 @@
+{
+  "paper_id": "2010.04662v2",
+  "title": "Deterministic computation of the characteristic polynomial in the time of matrix multiplication",
+  "sections": {
+    "new tools, and ensuring reduced form in recursive calls": "When outlining the approach of our determinant algorithm via the identity in\nEq. 1, we implicitly assumed that the\nmatrices used as input in recursive calls, i.e. 𝐀1subscript𝐀1\\mathbf{{A}}_{1} and 𝐊2subscript𝐊2\\mathbf{{K}}_{2}\nand 𝐁𝐁\\mathbf{{B}}, do satisfy the input requirement of row reducedness: this is\nnot necessarily the case, even if starting from a reduced matrix 𝐀𝐀\\mathbf{{A}}. Concerning 𝐀1subscript𝐀1\\mathbf{{A}}_{1}, one may locate such a reduced submatrix of 𝐀𝐀\\mathbf{{A}}\nand then permute rows and columns of 𝐀𝐀\\mathbf{{A}} (which only affects the sign of\ndet(𝐀)𝐀\\det(\\mathbf{{A}})) to make this submatrix become the leading\nprincipal submatrix 𝐀1subscript𝐀1\\mathbf{{A}}_{1}. This is a classical operation on reduced\nmatrices which suggests using a form slightly stronger than reduced form called\nweak Popov form [ref]36 (see Section 2.4). Assuming\nthat 𝐀𝐀\\mathbf{{A}} has this form ensures that its leading principal submatrix\n𝐀1subscript𝐀1\\mathbf{{A}}_{1} has it as well. This assumption is acceptable in terms of\ncomplexity since one can transform a reduced 𝐀𝐀\\mathbf{{A}} into a weak Popov\n𝐏𝐏\\mathbf{{P}} by means of fast linear algebra in a cost negligible compared to\nour target [42, Sec. 3]; note that 𝐀𝐀\\mathbf{{A}} and 𝐏𝐏\\mathbf{{P}} have\nthe same determinant up to an easily found constant (see\nAlgorithm 1). Next, the cases of 𝐊2subscript𝐊2\\mathbf{{K}}_{2} and 𝐁𝐁\\mathbf{{B}} are strongly linked. First, we\nwill not discuss 𝐊2subscript𝐊2\\mathbf{{K}}_{2} but the whole kernel basis [𝐊1​𝐊2]delimited-[]subscript𝐊1subscript𝐊2[\\mathbf{{K}}_{1}\\;\\;\\mathbf{{K}}_{2}]. The fastest known algorithm for computing such a basis is that of\n, and for best efficiency it outputs a matrix in shifted\nreduced form, which is a generalization of reducedness involving degree weights\ngiven by a tuple 𝒔∈ℤm𝒔superscriptℤ𝑚\\boldsymbol{s}\\in\\mathbb{Z}^{m} called a shift (see\nSections 2.3 and 2.4 for definitions); the non-shifted\ncase is for 𝒔=𝟎𝒔0\\boldsymbol{s}=\\mathbf{0}. As in the determinant algorithm of\n[ref]32, here the shift for [𝐊1​𝐊2]delimited-[]subscript𝐊1subscript𝐊2[\\mathbf{{K}}_{1}\\;\\;\\mathbf{{K}}_{2}] is taken as\nthe list of row degrees of 𝐀𝐀\\mathbf{{A}}, denoted by 𝒔=rdeg​(𝐀)𝒔rdeg𝐀\\boldsymbol{s}=\\mathrm{rdeg}(\\mathbf{{A}}); for\nthe characteristic matrix one has 𝒔=(1,…,1)𝒔1…1\\boldsymbol{s}=(1,\\ldots,1) but non-uniform\nshifts may arise in recursive calls. We want [𝐊1​𝐊2]delimited-[]subscript𝐊1subscript𝐊2[\\mathbf{{K}}_{1}\\;\\;\\mathbf{{K}}_{2}] to\nbe not only 𝒔𝒔\\boldsymbol{s}-reduced, but in 𝒔𝒔\\boldsymbol{s}-weak Popov form: a direct\nconsequence is that 𝐁𝐁\\mathbf{{B}} is in weak Popov form, and is thus suitable\ninput for a recursive call. To obtain [𝐊1​𝐊2]delimited-[]subscript𝐊1subscript𝐊2[\\mathbf{{K}}_{1}\\;\\;\\mathbf{{K}}_{2}] we use the kernel basis algorithm of\n and transform its output into 𝒔𝒔\\boldsymbol{s}-weak Popov form. A\nminor issue is that the fastest known algorithm for such transformations was\nwritten in [42, Sec. 3] for non-shifted forms; yet it easily\nextends to shifted forms as we show in Section 4,\nobtaining the next result. There is an algorithm ReducedToWeakPopov which takes as input a\nmatrix 𝐀∈𝕂​[x]m×n𝐀𝕂superscriptdelimited-[]𝑥𝑚𝑛\\mathbf{{A}}\\in\\mathbb{K}[x]^{m\\times n} with m≤n𝑚𝑛m\\leq n and a shift\n𝐬∈ℤn𝐬superscriptℤ𝑛\\boldsymbol{s}\\in\\mathbb{Z}^{n} such that 𝐀𝐀\\mathbf{{A}} is in 𝐬𝐬\\boldsymbol{s}-reduced form,\nand returns an 𝐬𝐬\\boldsymbol{s}-weak Popov form of 𝐀𝐀\\mathbf{{A}} using\nO​(mω−2​n​D+mω−1​n)𝑂superscript𝑚𝜔2𝑛𝐷superscript𝑚𝜔1𝑛\\mathchoice{O\\left(m^{\\omega-2}nD+m^{\\omega-1}n\\right)}{O(m^{\\omega-2}nD+m^{\\omega-1}n)}{O(m^{\\omega-2}nD+m^{\\omega-1}n)}{O(m^{\\omega-2}nD+m^{\\omega-1}n)} operations\nin 𝕂𝕂\\mathbb{K}, where D=|rdeg𝐬​(𝐀)|−m⋅min⁡(𝐬)𝐷subscriptrdeg𝐬𝐀⋅𝑚𝐬D=|\\mathrm{rdeg}_{{\\boldsymbol{s}}}(\\mathbf{{A}})|-m\\cdot\\min(\\boldsymbol{s}). Here, following usual notation recalled in\nSection 2.1, |rdeg𝒔​(𝐀)|subscriptrdeg𝒔𝐀|\\mathrm{rdeg}_{{\\boldsymbol{s}}}(\\mathbf{{A}})| is the sum of\nthe 𝒔𝒔\\boldsymbol{s}-degrees of the rows of 𝐀𝐀\\mathbf{{A}}. This result extends\n[42, Thm. 13] since for 𝒔=𝟎𝒔0\\boldsymbol{s}=\\mathbf{0} the quantity\nD𝐷D is the sum of the row degrees of 𝐀𝐀\\mathbf{{A}} and in particular\nD≤m​deg⁡(𝐀)𝐷𝑚degree𝐀D\\leq m\\deg(\\mathbf{{A}}), leading to the cost bound\nO​(mω−1​n​deg⁡(𝐀))𝑂superscript𝑚𝜔1𝑛degree𝐀\\mathchoice{O\\left(m^{\\omega-1}n\\deg(\\mathbf{{A}})\\right)}{O(m^{\\omega-1}n\\deg(\\mathbf{{A}}))}{O(m^{\\omega-1}n\\deg(\\mathbf{{A}}))}{O(m^{\\omega-1}n\\deg(\\mathbf{{A}}))}. To summarize, at this stage we have outlined how to ensure, without exceeding\nour target cost bound, that 𝐀1subscript𝐀1\\mathbf{{A}}_{1} and 𝐁𝐁\\mathbf{{B}} are valid input for\nrecursive calls, i.e. are in weak Popov form. Having det(𝐀1)subscript𝐀1\\det(\\mathbf{{A}}_{1}) and\ndet(𝐁)𝐁\\det(\\mathbf{{B}}), it remains to find det(𝐊2)subscript𝐊2\\det(\\mathbf{{K}}_{2}) and then the sought\ndet(𝐀)𝐀\\det(\\mathbf{{A}}) follows. We noted that, to ensure the form of 𝐁𝐁\\mathbf{{B}} but\nalso for efficiency reasons, the kernel basis [𝐊1​𝐊2]delimited-[]subscript𝐊1subscript𝐊2[\\mathbf{{K}}_{1}\\;\\;\\mathbf{{K}}_{2}] is\ncomputed in 𝒔𝒔\\boldsymbol{s}-weak Popov form for the shift 𝒔=rdeg​(𝐀)𝒔rdeg𝐀\\boldsymbol{s}=\\mathrm{rdeg}(\\mathbf{{A}}).\nThis causes the main difficulty related to our modification of the determinant\nalgorithm of [ref]32: 𝐊2subscript𝐊2\\mathbf{{K}}_{2} is not valid input for a recursive\ncall since it is in 𝒗𝒗\\boldsymbol{v}-weak Popov form for some shift 𝒗𝒗\\boldsymbol{v},\na subtuple of 𝒔𝒔\\boldsymbol{s} which is possibly nonzero. A first idea is to extend our approach to the shifted case, allowing recursive\ncalls with such a 𝒗𝒗\\boldsymbol{v}-reduced matrix: this is straightforward but\ngives an inefficient algorithm. Indeed, along the recursion the shift drifts\naway from its initial value and becomes arbitrarily large and unbalanced with\nrespect to the degrees of the input matrices of recursive calls. For example,\nas mentioned above the sum of row degrees of the initial non-shifted\nm×m𝑚𝑚m\\times m matrix 𝐀𝐀\\mathbf{{A}} is D=deg⁡(det(𝐀))𝐷degree𝐀D=\\deg(\\det(\\mathbf{{A}})), whereas\nfor the 𝒗𝒗\\boldsymbol{v}-shifted (m/2)×(m/2)𝑚2𝑚2(m/2)\\times(m/2) matrix 𝐊2subscript𝐊2\\mathbf{{K}}_{2}\nwe only have the same bound D𝐷D instead of one related to\ndeg⁡(det(𝐊2))degreesubscript𝐊2\\deg(\\det(\\mathbf{{K}}_{2})) itself, which is known to be at most D/2𝐷2D/2 in\nour algorithm. This gap, here between D𝐷D and D/2𝐷2D/2, will only\ngrow as the algorithm goes down the tree of recursive calls, meaning that\ndegrees in matrices handled recursively are not sufficiently well controlled. Another idea is to compute a 𝟎0\\mathbf{0}-reduced matrix which has the same\ndeterminant as 𝐊2subscript𝐊2\\mathbf{{K}}_{2}. Finding a 𝟎0\\mathbf{0}-reduced form of\n𝐊2subscript𝐊2\\mathbf{{K}}_{2} within our target cost seems to be a difficult problem. The best\nknown algorithms for general 𝟎0\\mathbf{0}-reduction involve log⁡(m)𝑚\\log(m)\nfactors, either explicitly  or implicitly  (in\nthe latter approach one starts by using the above-discussed triangularization\nprocedure of [ref]32 which we are modifying here to avoid\nlog⁡(m)𝑚\\log(m) factors). More specific algorithms exploit the form of\n𝐊2subscript𝐊2\\mathbf{{K}}_{2}, interpreting the problem as a change of shift from 𝒗𝒗\\boldsymbol{v}\nto 𝟎0\\mathbf{0}; yet at the time of writing efficient changes of shifts have\nonly been achieved when the target shift is larger than the origin shift\n[27, Sec. 5], a fact that offers degree control for the\ntransformation between the two matrices. Another possibility is to compute the\nso-called 𝒗𝒗\\boldsymbol{v}-Popov form 𝐏𝐏\\mathbf{{P}} of 𝐊2subscript𝐊2\\mathbf{{K}}_{2}, since its\ntranspose 𝐏𝖳superscript𝐏𝖳\\mathbf{{P}}^{\\mathsf{T}} is 𝟎0\\mathbf{0}-reduced by definition (see\nSection 2.4), and det(𝐏𝖳)=det(𝐏)superscript𝐏𝖳𝐏\\det(\\mathbf{{P}}^{\\mathsf{T}})=\\det(\\mathbf{{P}}) is\ndet(𝐊2)subscript𝐊2\\det(\\mathbf{{K}}_{2}) up to a constant. However this suffers from the same issue,\nas computing 𝐏𝐏\\mathbf{{P}} is essentially the same as changing the shift\n𝒗𝒗\\boldsymbol{v} into the nonpositive shift −𝜹𝜹-\\boldsymbol{\\delta}, where 𝜹𝜹\\boldsymbol{\\delta} is\nthe list of diagonal degrees of 𝐊2subscript𝐊2\\mathbf{{K}}_{2}  [ref]26. To circumvent these issues, we use the property that the transpose\n𝐊2𝖳superscriptsubscript𝐊2𝖳\\mathbf{{K}}_{2}^{\\mathsf{T}} of a 𝒗𝒗\\boldsymbol{v}-reduced matrix is in\n−𝒅𝒅-\\boldsymbol{d}-reduced form where 𝒅=rdeg𝒗​(𝐊2)𝒅subscriptrdeg𝒗subscript𝐊2\\boldsymbol{d}=\\mathrm{rdeg}_{{\\boldsymbol{v}}}(\\mathbf{{K}}_{2}).\nThis fact naturally comes up here since det(𝐊2)=det(𝐊2𝖳)subscript𝐊2superscriptsubscript𝐊2𝖳\\det(\\mathbf{{K}}_{2})=\\det(\\mathbf{{K}}_{2}^{\\mathsf{T}}), but seems otherwise rarely exploited in polynomial\nmatrix algorithms: in fact we did not find a previous occurrence of it apart\nfrom related degree considerations in [56, Lem. 2.2]. Transposing the above two approaches using 𝐊2𝖳superscriptsubscript𝐊2𝖳\\mathbf{{K}}_{2}^{\\mathsf{T}} instead of\n𝐊2subscript𝐊2\\mathbf{{K}}_{2}, we observe that computing a 𝟎0\\mathbf{0}-reduced form of\n𝐊2𝖳superscriptsubscript𝐊2𝖳\\mathbf{{K}}_{2}^{\\mathsf{T}} is a change of shift from −𝒅𝒅-\\boldsymbol{d} to\n𝟎0\\boldsymbol{0}, and computing the −𝒅𝒅-\\boldsymbol{d}-Popov form 𝐏𝐏\\mathbf{{P}} of\n𝐊2𝖳superscriptsubscript𝐊2𝖳\\mathbf{{K}}_{2}^{\\mathsf{T}} is essentially a change of shift from −𝒅𝒅-\\boldsymbol{d} to\n−𝜹𝜹-\\boldsymbol{\\delta}. In both cases the target shift is larger than the origin shift,\nimplying that the kernel-based change of shift of [27, Sec. 5]\ninvolves matrices of well-controlled degrees. Still, this is not enough to make\nthis change of shift efficient as such, the difficulty being now that the\naverage row degree of 𝐊2𝖳superscriptsubscript𝐊2𝖳\\mathbf{{K}}_{2}^{\\mathsf{T}} may not be small: only its average\ncolumn degree, which corresponds to the average row degree of 𝐊2subscript𝐊2\\mathbf{{K}}_{2}, is\ncontrolled. Our solution uses the second approach, computing the −𝒅𝒅-\\boldsymbol{d}-Popov form\n𝐏𝐏\\mathbf{{P}}, because it offers the a priori knowledge that the column degrees\nof 𝐏𝐏\\mathbf{{P}} are exactly 𝜹𝜹\\boldsymbol{\\delta}. We exploit this degree knowledge to\ncarry out partial linearization techniques, originally designed for approximant\nbases  , which we extend here to kernel bases.\nThese techniques allow us to reduce our problem to a kernel basis computation\nwhere the matrix entries have uniformly small degrees, implying that it can be\nefficiently handled via the minimal approximant basis algorithm\nPM-Basis from . The next result summarizes the new\nalgorithmic tool developed in Section 5 for finding\n𝐏𝐏\\mathbf{{P}}. Let 𝐬∈ℤm𝐬superscriptℤ𝑚\\boldsymbol{s}\\in\\mathbb{Z}^{m}, let 𝐀∈𝕂​[x]m×m𝐀𝕂superscriptdelimited-[]𝑥𝑚𝑚\\mathbf{{A}}\\in\\mathbb{K}[x]^{m\\times m} be in\n−𝐬𝐬-\\boldsymbol{s}-weak Popov form, let 𝛅∈ℤ≥0m𝛅superscriptsubscriptℤabsent0𝑚\\boldsymbol{\\delta}\\in\\mathbb{Z}_{\\geq 0}^{m} be the\n−𝐬𝐬-\\boldsymbol{s}-pivot degree of 𝐀𝐀\\mathbf{{A}}, and assume that 𝐬≥𝛅𝐬𝛅\\boldsymbol{s}\\geq\\boldsymbol{\\delta}. There is an algorithm WeakPopovToPopov which takes as\ninput (𝐀,𝐬)𝐀𝐬(\\mathbf{{A}},\\boldsymbol{s}) and computes the −𝐬𝐬-\\boldsymbol{s}-Popov form of\n𝐀𝐀\\mathbf{{A}} by performing PM-Basis at order less than\n|𝒔|/m+4𝒔𝑚4|\\boldsymbol{s}|/m+4 on an input matrix of row dimension at\nmost 6​m6𝑚6m and column dimension at most 3​m3𝑚3m, multiplying the inverse of a matrix in 𝕂m×msuperscript𝕂𝑚𝑚\\mathbb{K}^{m\\times m} by a\nmatrix in 𝕂​[x]m×m𝕂superscriptdelimited-[]𝑥𝑚𝑚\\mathbb{K}[x]^{m\\times m} of column degree 𝜹𝜹\\boldsymbol{\\delta}, and performing O​(m2)𝑂superscript𝑚2\\mathchoice{O\\left(m^{2}\\right)}{O(m^{2})}{O(m^{2})}{O(m^{2})} extra operations in 𝕂𝕂\\mathbb{K}. Thus, computing the −𝐬𝐬-\\boldsymbol{s}-Popov form of 𝐀𝐀\\mathbf{{A}} can be done in\nO​(mω​𝖬′⁡(|𝐬|/m))𝑂superscript𝑚𝜔superscript𝖬′𝐬𝑚\\mathchoice{O\\left(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(|\\boldsymbol{s}|/m\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)}\\right)}{O(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(|\\boldsymbol{s}|/m\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)})}{O(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(|\\boldsymbol{s}|/m\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)})}{O(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(|\\boldsymbol{s}|/m\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)}{\\operatorname{\\mathsf{M}}^{\\prime}(|\\boldsymbol{s}|/m)})} operations in\n𝕂𝕂\\mathbb{K}. This theorem is a generalization of [42, Sec. 4] to shifted forms,\nfor shifts −𝒔𝒔-\\boldsymbol{s} that satisfy the assumption 𝒔≥𝜹𝒔𝜹\\boldsymbol{s}\\geq\\boldsymbol{\\delta}.\nIndeed, if 𝐀𝐀\\mathbf{{A}} is 𝟎0\\mathbf{0}-weak Popov, then one recovers\n[42, Thm. 20] by taking\n𝒔=(deg⁡(𝐀),…,deg⁡(𝐀))𝒔degree𝐀…degree𝐀\\boldsymbol{s}=(\\deg(\\mathbf{{A}}),\\ldots,\\deg(\\mathbf{{A}})) in the above theorem. For\ncomparison, the naive generalization of [42, Sec. 4] to shifted\nforms\nruns in O​(mω​𝖬′⁡(max⁡(𝒔)))𝑂superscript𝑚𝜔superscript𝖬′𝒔\\mathchoice{O\\left(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(\\max(\\boldsymbol{s})\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))}\\right)}{O(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(\\max(\\boldsymbol{s})\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))})}{O(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(\\max(\\boldsymbol{s})\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))})}{O(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(\\max(\\boldsymbol{s})\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))}{\\operatorname{\\mathsf{M}}^{\\prime}(\\max(\\boldsymbol{s}))})}, which exceeds our\ntarget complexity as soon as max⁡(𝒔)≫|𝒔|/mmuch-greater-than𝒔𝒔𝑚\\max(\\boldsymbol{s})\\gg|\\boldsymbol{s}|/m.\nHence the use of partial linearization techniques, which were not needed in the\nnon-shifted case featuring max⁡(𝒔)=|𝒔|/m=deg⁡(𝐀)𝒔𝒔𝑚degree𝐀\\max(\\boldsymbol{s})=|\\boldsymbol{s}|/m=\\deg(\\mathbf{{A}}). As mentioned above, our Algorithm WeakPopovToPopov is based on the\ncomputation of a kernel basis with a priori knowledge of the degree profile of\nthe output. This kernel problem is very close to the one handled in\n[56, Sec. 4], except that in this reference one only has upper\nbounds on the output degrees, implying a certain number—possibly logarithmic\nin m𝑚m—of calls to PM-Basis to recover the output and its\nactual degrees. In the same spirit but in the context of approximant bases, [28, Sec. 5]\nuses partial linearization techniques to reduce an arbitrary input with known\noutput degrees to essentially one call to PM-Basis, whereas\n[55, Algo. 2] assumes weaker output degree information\nand makes a potentially logarithmic number of calls to PM-Basis."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Efficient algorithms for computing the characteristic polynomial in a domain",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Journal of Pure and Applied Algebra",
+      "authors": "Abdeljaoued, J., Malaschonok, G.I."
+    },
+    {
+      "index": 1,
+      "title": "On the complexity of partial derivatives",
+      "abstract": "",
+      "year": "1983",
+      "venue": "Theoretical computer science",
+      "authors": "Baur, W., Strassen, V.",
+      "orig_title": "The complexity of partial derivatives",
+      "paper_id": "1607.05494v2"
+    },
+    {
+      "index": 2,
+      "title": "A uniform approach for the fast computation of matrix-type Padé approximants",
+      "abstract": "",
+      "year": "1994",
+      "venue": "SIAM J. Matrix Anal. Appl.",
+      "authors": "Beckermann, B., Labahn, G."
+    },
+    {
+      "index": 3,
+      "title": "Shifted normal forms of polynomial matrices",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ISSAC’99, ACM",
+      "authors": "Beckermann, B., Labahn, G., Villard, G."
+    },
+    {
+      "index": 4,
+      "title": "Normal forms for general polynomial matrices",
+      "abstract": "",
+      "year": "2006",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Beckermann, B., Labahn, G., Villard, G."
+    },
+    {
+      "index": 5,
+      "title": "On computing the determinant in small parallel time using a small number of processors",
+      "abstract": "",
+      "year": "1984",
+      "venue": "Information Processing Letters",
+      "authors": "Berkowitz, S.J."
+    },
+    {
+      "index": 6,
+      "title": "Triangular factorization and inversion by fast matrix multiplication",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Mathematics of Computation",
+      "authors": "Bunch, J.R., Hopcroft, J.E."
+    },
+    {
+      "index": 7,
+      "title": "Algebraic Complexity Theory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Springer-Verlag Berlin Heidelberg",
+      "authors": "Bürgisser, P., Clausen, M., Shokrollahi, A."
+    },
+    {
+      "index": 8,
+      "title": "On fast multiplication of polynomials over arbitrary algebras",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Acta Inform.",
+      "authors": "Cantor, D.G., Kaltofen, E."
+    },
+    {
+      "index": 9,
+      "title": "On the minimum computation time of functions",
+      "abstract": "",
+      "year": "1966",
+      "venue": "",
+      "authors": "Cook, S.A."
+    },
+    {
+      "index": 10,
+      "title": "Fast parallel matrix inversion algorithms",
+      "abstract": "",
+      "year": "1975",
+      "venue": "16th Annual Symposium on Foundations of Computer Science (sfcs 1975)",
+      "authors": "Csanky, L."
+    },
+    {
+      "index": 11,
+      "title": "The numerical solution of the secular equation",
+      "abstract": "",
+      "year": "1937",
+      "venue": "Matem. Sbornik",
+      "authors": "Danilevskij, A.M."
+    },
+    {
+      "index": 12,
+      "title": "Fast Computation of the Rank Profile Matrix and the Generalized Bruhat Decomposition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Dumas, J.G., Pernet, C., Sultan, Z.",
+      "orig_title": "Fast computation of the rank profile matrix and the generalized Bruhat decomposition",
+      "paper_id": "1601.01798v2"
+    },
+    {
+      "index": 13,
+      "title": "Efficient computation of the characteristic polynomial",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ISSAC’05, ACM",
+      "authors": "Dumas, J.G., Pernet, C., Wan, Z."
+    },
+    {
+      "index": 14,
+      "title": "Abstract Algebra",
+      "abstract": "",
+      "year": "2004",
+      "venue": "John Wiley & Sons",
+      "authors": "Dummit, D.S., Foote, R.M."
+    },
+    {
+      "index": 15,
+      "title": "Collected Problems in Higher Algebra, Problem n°979",
+      "abstract": "",
+      "year": "1949",
+      "venue": "",
+      "authors": "Faddeev, D., Sominskii, I."
+    },
+    {
+      "index": 16,
+      "title": "Minimal Bases of Rational Vector Spaces, with Applications to Multivariable Linear Systems",
+      "abstract": "",
+      "year": "1975",
+      "venue": "SIAM Journal on Control",
+      "authors": "Forney, Jr., G.D."
+    },
+    {
+      "index": 17,
+      "title": "A simple recurrent formula for inverting a matrix (abstract)",
+      "abstract": "",
+      "year": "1949",
+      "venue": "Bull. of Amer. Math. Soc.",
+      "authors": "Frame, J."
+    },
+    {
+      "index": 18,
+      "title": "Modern Computer Algebra (third edition)",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Cambridge University Press",
+      "authors": "Gathen, J.v.z., Gerhard, J."
+    },
+    {
+      "index": 19,
+      "title": "Nearly optimal algorithms for canonical matrix forms",
+      "abstract": "",
+      "year": "1995",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Giesbrecht, M."
+    },
+    {
+      "index": 20,
+      "title": "On the complexity of polynomial matrix computations",
+      "abstract": "",
+      "year": "2003",
+      "venue": "ISSAC’03, ACM",
+      "authors": "Giorgi, P., Jeannerod, C.P., Villard, G."
+    },
+    {
+      "index": 21,
+      "title": "Certification of Minimal Approximant Bases",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ISSAC’18, ACM",
+      "authors": "Giorgi, P., Neiger, V.",
+      "orig_title": "Certification of minimal approximant bases",
+      "paper_id": "1802.01920v2"
+    },
+    {
+      "index": 22,
+      "title": "Triangular x𝑥x-basis decompositions and derandomization of linear algebra algorithms over K​[x]𝐾delimited-[]𝑥{K}[x]",
+      "abstract": "",
+      "year": "2012",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Gupta, S., Sarkar, S., Storjohann, A., Valeriote, J."
+    },
+    {
+      "index": 23,
+      "title": "Faster polynomial multiplication over finite fields",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. ACM",
+      "authors": "Harvey, D., Van Der Hoeven, J., Lecerf, G."
+    },
+    {
+      "index": 24,
+      "title": "A generalization of the fast LUP matrix decomposition algorithm and applications",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Journal of Algorithms",
+      "authors": "Ibarra, O.H., Moran, S., Hui, R."
+    },
+    {
+      "index": 25,
+      "title": "Fast Computation of Minimal Interpolation Bases in Popov Form for Arbitrary Shifts",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ISSAC’16, ACM",
+      "authors": "Jeannerod, C.P., Neiger, V., Schost, E., Villard, G.",
+      "orig_title": "Fast computation of minimal interpolation bases in Popov form for arbitrary shifts",
+      "paper_id": "1602.00651v2"
+    },
+    {
+      "index": 26,
+      "title": "Computing minimal interpolation bases",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Jeannerod, C.P., Neiger, V., Schost, E., Villard, G.",
+      "orig_title": "Computing minimal interpolation bases",
+      "paper_id": "1512.03503v2"
+    },
+    {
+      "index": 27,
+      "title": "Fast computation of approximant bases in canonical form",
+      "abstract": "",
+      "year": "2020",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Jeannerod, C.P., Neiger, V., Villard, G.",
+      "orig_title": "Fast computation of approximant bases in canonical form",
+      "paper_id": "1801.04553v2"
+    },
+    {
+      "index": 28,
+      "title": "Linear Systems",
+      "abstract": "",
+      "year": "1980",
+      "venue": "Prentice-Hall",
+      "authors": "Kailath, T."
+    },
+    {
+      "index": 29,
+      "title": "On the complexity of computing determinants",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Computational Complexity",
+      "authors": "Kaltofen, E., Villard, G."
+    },
+    {
+      "index": 30,
+      "title": "Fast algorithms for the characteristic polynomial",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Theoretical Computer Science",
+      "authors": "Keller-Gehrig, W."
+    },
+    {
+      "index": 31,
+      "title": "Fast, deterministic computation of the Hermite normal form and determinant of a polynomial matrix",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. Complexity",
+      "authors": "Labahn, G., Neiger, V., Zhou, W."
+    },
+    {
+      "index": 32,
+      "title": "Powers of Tensors and Fast Matrix Multiplication",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ISSAC’14, ACM",
+      "authors": "Le Gall, F.",
+      "orig_title": "Powers of tensors and fast matrix multiplication",
+      "paper_id": "1401.7714v1"
+    },
+    {
+      "index": 33,
+      "title": "Sur les variations séculaires des éléments elliptiques des sept plantètes principales",
+      "abstract": "",
+      "year": "1840",
+      "venue": "Journal des Mathématiques Pures et Appliquées",
+      "authors": "Le Verrier, U."
+    },
+    {
+      "index": 34,
+      "title": "Bruhat canonical form for linear systems",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Linear Algebra Appl.",
+      "authors": "Manthey, W., Helmke, U."
+    },
+    {
+      "index": 35,
+      "title": "On lattice reduction for polynomial matrices",
+      "abstract": "",
+      "year": "2003",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Mulders, T., Storjohann, A."
+    },
+    {
+      "index": 36,
+      "title": "Computing Popov and Hermite Forms of Rectangular Polynomial Matrices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ISSAC’18, ACM",
+      "authors": "Neiger, V., Rosenkilde, J., Solomatov, G.",
+      "orig_title": "Computing Popov and Hermite Forms of Rectangular Polynomial Matrices",
+      "paper_id": "1802.01928v2"
+    },
+    {
+      "index": 37,
+      "title": "Computing Canonical Bases of Modules of Univariate Relations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISSAC’17, ACM",
+      "authors": "Neiger, V., Vu, T.X.",
+      "orig_title": "Computing canonical bases of modules of univariate relations",
+      "paper_id": "1705.10649v1"
+    },
+    {
+      "index": 38,
+      "title": "Faster Algorithms for the Characteristic Polynomial",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ISSAC’07, ACM",
+      "authors": "Pernet, C., Storjohann, A."
+    },
+    {
+      "index": 39,
+      "title": "Invariant description of linear, time-invariant controllable systems",
+      "abstract": "",
+      "year": "1972",
+      "venue": "SIAM Journal on Control",
+      "authors": "Popov, V.M."
+    },
+    {
+      "index": 40,
+      "title": "A method of determining explicitly the coefficients of the characteristic equation",
+      "abstract": "",
+      "year": "1942",
+      "venue": "Annals of Mathematical Statistics",
+      "authors": "Samuelson, P.A."
+    },
+    {
+      "index": 41,
+      "title": "Normalization of row reduced matrices",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ISSAC’11, ACM",
+      "authors": "Sarkar, S., Storjohann, A."
+    },
+    {
+      "index": 42,
+      "title": "Une méthode pour la décomposition spectrale et l’inversion des matrices",
+      "abstract": "",
+      "year": "1948",
+      "venue": "Comptes-Rendus de l’Académie des Sciences",
+      "authors": "Souriau, J.M."
+    },
+    {
+      "index": 43,
+      "title": "Deterministic computation of the frobenius form",
+      "abstract": "",
+      "year": "2001",
+      "venue": "42nd IEEE Symposium on Foundations of Computer Science",
+      "authors": "Storjohann, A."
+    },
+    {
+      "index": 44,
+      "title": "High-order lifting and integrality certification",
+      "abstract": "",
+      "year": "2003",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Storjohann, A."
+    },
+    {
+      "index": 45,
+      "title": "Notes on computing minimal approximant bases",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Challenges in Symbolic Computation Software",
+      "authors": "Storjohann, A."
+    },
+    {
+      "index": 46,
+      "title": "Gaussian elimination is not optimal",
+      "abstract": "",
+      "year": "1969",
+      "venue": "Numer. Math.",
+      "authors": "Strassen, V."
+    },
+    {
+      "index": 47,
+      "title": "FFLAS-FFPACK: Finite Field Linear Algebra Subroutines / Package, version 2.4.3",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "The FFLAS-FFPACK Group"
+    },
+    {
+      "index": 48,
+      "title": "Linbox: Linear algebra over black-box matrices, version 1.6.3",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "The LinBox Group"
+    },
+    {
+      "index": 49,
+      "title": "The complexity of a scheme of functional elements realizing the multiplication of integers",
+      "abstract": "",
+      "year": "1963",
+      "venue": "Soviet Mathematics Doklady",
+      "authors": "Toom, A.L."
+    },
+    {
+      "index": 50,
+      "title": "A general module theoretic framework for vector M-Padé and matrix rational interpolation",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Numer. Algorithms",
+      "authors": "Van Barel, M., Bultheel, A."
+    },
+    {
+      "index": 51,
+      "title": "Linear Multivariable Systems",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Springer-Verlag New-York",
+      "authors": "Wolovich, W.A."
+    },
+    {
+      "index": 52,
+      "title": "Fast Order Basis and Kernel Basis Computation and Related Problems",
+      "abstract": "",
+      "year": "2012",
+      "venue": "University of Waterloo",
+      "authors": "Zhou, W."
+    },
+    {
+      "index": 53,
+      "title": "Efficient computation of order bases",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ISSAC’09, ACM",
+      "authors": "Zhou, W., Labahn, G."
+    },
+    {
+      "index": 54,
+      "title": "Efficient algorithms for order basis computation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Zhou, W., Labahn, G."
+    },
+    {
+      "index": 55,
+      "title": "Computing column bases of polynomial matrices",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISSAC’13, ACM",
+      "authors": "Zhou, W., Labahn, G."
+    },
+    {
+      "index": 56,
+      "title": "Unimodular completion of polynomial matrices",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ISSAC’14, ACM",
+      "authors": "Zhou, W., Labahn, G."
+    },
+    {
+      "index": 57,
+      "title": "Computing minimal nullspace bases",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ISSAC’12, ACM",
+      "authors": "Zhou, W., Labahn, G., Storjohann, A."
+    }
+  ]
+}

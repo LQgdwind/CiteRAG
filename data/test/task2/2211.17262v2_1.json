@@ -1,0 +1,473 @@
+{
+  "paper_id": "2211.17262v2",
+  "title": "Non-Deterministic Approximation Fixpoint Theory and Its Application in Disjunctive Logic Programming",
+  "sections": {
+    "introduction": "Semantics of various formalisms for knowledge representation can often be described by fixpoints of corresponding operators. For example, in many logics theories\nof a set of formulas can be seen as fixpoints of the underlying consequence operator . Likewise, in logic programming, default logic or formal\nargumentation, all the major semantics can be formulated as different types of fixpoints of the same operator (see ). Such operators are usually non-monotonic,\nand so one cannot always be sure whether their fixpoints exist, and how they can be constructed. In order to deal with this ‘illusive nature’ of the fixpoints, Denecker, Marek and Truszczyński  introduced a method for approximating\neach value z𝑧z of the underlying operator by a pair of elements (x,y)𝑥𝑦(x,y). These elements intuitively represent lower and upper bounds on z𝑧z, and so a corresponding\napproximation operator for the original, non-monotonic operator, is constructed. If the approximating operator that is obtained is precision-monotonic, intuitively meaning\nthat more precise inputs of the operator give rise to more precise outputs, then by Tarski and Knaster’s Fixpoint Theorem the approximating operator has fixpoints that can be constructively\ncomputed, and which in turn approximate the fixpoints of the approximated operator, if such fixpoints exist. The usefulness of the algebraic theory that underlies the computation process described above was demonstrated on several knowledge representation formalisms, such as propositional\nlogic programming , default logic , autoepistemic logic , abstract argumentation and abstract\ndialectical frameworks , hybrid MKNF , the graph description language SCHACL , and active\nintegrity constraints [ref]10, each one of which was shown to be an instantiation of this abstract theory of approximation. More precisely, it was shown that various\nsemantics of the formalisms mentioned above correspond to the various fixpoints defined in . This means that approximation fixpoint theory\n(AFT, for short) captures the uniform principles underlying all these non-monotonic formalisms in a purely algebraic way. Besides its unifying capabilities, AFT also allows for a straightforward definition of semantics for new formalisms. Indeed, one merely has to define an approximation of the\noperator of interest, and AFT then automatically gives rise to a family of semantics with several desirable properties. This potential of AFT for a straightforward derivation\nof semantics was demonstrated in e.g. logic programming, where it was used to define semantics for extensions of logic programs   , in argumentation theory, where it was used to define semantics for weighted abstract dialectical\nframeworks (ADFs, ), in autoepistemic logic, where it was used for defining distributed variants that are suitable for studying access control\npolicies 5, and in second-order logic extended with non-monotone inductive definitions . Another benefit of AFT is that, due to its generality, it has proven useful to develop central concepts, such as strong equivalence ,\ngroundedness , safe inductions , and stratification  for approximation operators in a purely algebraic way, which then allow to derive\nresults on these concepts for all the specific formalisms representable in AFT as straightforward corollaries. So far, AFT has mainly been applied to deterministic operators, i.e., operators which map single inputs to single outputs. This means that, while AFT is able to characterize\nsemantics for normal logic programs (i.e., programs consisting of rules with single atomic formulas as their head), disjunctive logic programs \n(i.e., programs consisting of rules with disjunctions of atoms in their head) cannot be represented by it. The same holds for the representation of e.g. default logic versus disjunctive default\nlogic 2, abstract argumentation versus set-based abstract argumentation  and the generalization of abstract dialectical\nframeworks to conditional abstract dialectical frameworks 8. Extending AFT to handle disjunctive information is therefore a desirable goal, as the latter has a central role in systems for knowledge representation and reasoning, and since\ndisjunctive reasoning capabilities provide an additional way of expressing uncertainty and indeterminism to many formalisms for non-monotonic reasoning. However, the introduction of disjunctive reasoning often increases the computational complexity of formalisms and thus extends their modeling capabilities .\nPerhaps due to this additional expressiveness, the integration of non-deterministic reasoning with non-monotonic reasoning (NMR) has often proven non-trivial, as witnessed e.g. by the large body of literature on disjunctive logic programming  . The implementation of non-deterministic reasoning in NMR\nyielded the formulation of some (open) problems that are related to the combination of non-monotonic and disjunctive reasoning   , or was restricted to limited semantics available for the core formalism, as is the case for\ne.g. default logic 2. The goal of this work is to provide an adequate framework for modeling disjunctive reasoning in NMR. We do so by extending AFT to handle non-deterministic operators.\nThis idea was first introduced by Pelov and Truszczyński in , where some first results on two-valued semantics for disjunctive logic programs were\nprovided. In this paper, we further extend AFT for non-deterministic operators, which, among others, allows a generalization of the results of  to the\nthree-valued case. In particular, we define several interesting classes of approximating fixpoints and show their existence, constructability and consistency where it is possible.\nAn application of this theory is demonstrated in the context of disjunctive logic programming. Furthermore, we show that our theory is a conservative generalization of the work\nin  of AFT for deterministic operators, in the sense that all the concepts introduced in this paper coincide with the deterministic counterparts when the operator at hand happens to be deterministic. The outcome of this work is therefore a comprehensive study of semantics for non-monotonic formalisms incorporating non-determinism.\nIts application is demonstrated in this paper in the context of disjunctive logic programming. Specifically, the paper contains the following contributions: We define variants of both the Kripke-Kleene and the stable/ well-founded semantics, the interpretation or fixpoint semantics and state semantics.\nInterpretation semantics consist of single pairs of elements, and thus approximate of a single element. State semantics, on the other hand, consist of pairs of sets of elements, intuitively\nviewed as a convex set, which approximates a set of elements. We show that the Kripke-Kleene state and well-founded state (obtained as the least fixed point of the stable state operator) exist and are unique (Theorem 3 and\nTheorem 5). We show that the Kripke-Kleene state approximates any fixpoint of an approximation operator (Theorem 5),\nwhereas the well-founded state approximates any stable fixpoint of an approximation operator (Theorem 5).\nIn more detail, any fixpoint of an approximation operator respectively stable fixpoint of an approximation operator is an element of the convex set represented by the Kripke-Kleene state respectively the well-founded state. We show that when restricting attention to deterministic operators, the theory reduces to deterministic AFT  (Remark 5 and\nPropositions 2, 9 and 11). We show that, just like in deterministic AFT, stable fixpoints are fixpoints that are minimal with respect to the truth order (Proposition 14). We demonstrate the usefulness of our abstract framework by showing how all the major semantics for disjunctive logic programming can be characterized as fixpoints\nof an approximation operator for disjunctive logic programming. In more detail, the weakly supported models  are characterized as\nfixpoints of the operator ℐ​𝒞𝒫ℐsubscript𝒞𝒫{\\cal IC}_{\\cal P} (Theorem 1), the stable models can be characterized as the stable fixpoints of\nℐ​𝒞𝒫ℐsubscript𝒞𝒫{\\cal IC}_{\\cal P} (Theorem 4) and the well-founded semantics by Alcântara, Damásio and\nPereira  is strongly related to the well-founded state of ℐ​𝒞𝒫ℐsubscript𝒞𝒫{\\cal IC}_{\\cal P} (Theorem 7). This work extends and improves the work by Heyninck and Arieli 7. The theory has been simplified on several accounts, among others since: (1) we no longer require minimality of the elements of the range of a non-deterministic (approximation)\noperator, which leads to a significant decrease in the number of lattice-constructions needed, (2) the state operator is now more general and can\nbe defined on the basis of a non-deterministic approximation operator. Furthermore, intuitive explanations and illustrative examples are added throughout the paper.\nAs a by-product, the simplified framework allows us to identify and correct a faulty statement on the ≤isubscript𝑖\\leq_{i}-monotonicity\nof the approximation operator for disjunctive logic programs, made by Heyninck and Arieli 7 (see Remark 7). Both this paper and the work of Heyninck and Arieli 7 were partially inspired by the work of Pelov and Truszczyński  where,\nto the best of our knowledge, the idea of a non-deterministic operator was first introduced in approximation fixpoint theory. Pelov and Truszczyński  studied only two-valued semantics, whereas\nwe study the full range of semantics for AFT. Furthermore, Pelov and Truszczyński  required minimality of the codomain of non-deterministic operators, which we do not require here. This rest of this paper is organized as follows: In Section 2 we recall the necessary background on disjunctive logic programming (Section 2.1)\nand approximation fixpoint theory (Section 2.2). In Section 3 we introduce non-deterministic operators and their approximation, and show some preliminary results\non approximations of non-deterministic operators. In Section 4 we study these non-deterministic approximation operators, showing their consistency and introducing and studying their fixpoint, Kripke-Kleene interpretation and the\nKripke-Kleene state semantics. In Section 5 we introduce and study the stable interpretation and state semantics, as well as the well-founded\nstate semantics. Related work is discussed in Section 6, followed by a conclusion in Section 7."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Forgetting auxiliary atoms in forks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Artificial Intelligence",
+      "authors": "Felicidad Aguado, Pedro Cabalar, Jorge Fandinno, David Pearce, Gilberto Pérez, and Concepción Vidal"
+    },
+    {
+      "index": 1,
+      "title": "A well-founded semantics with disjunction",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ICLP’05",
+      "authors": "Joao Alcântara, Carlos Viegas Damásio, and Luís Moniz Pereira"
+    },
+    {
+      "index": 2,
+      "title": "Hex semantics via approximation fixpoint theory",
+      "abstract": "",
+      "year": "2013",
+      "venue": "LPNMR’13",
+      "authors": "Christian Antić, Thomas Eiter, and Michael Fink"
+    },
+    {
+      "index": 3,
+      "title": "Reasoning with logical bilattices",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Journal of Logic Language and Information",
+      "authors": "Ofer Arieli and Arnon Avron"
+    },
+    {
+      "index": 4,
+      "title": "Reasoning by Cases in Structured Argumentation.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SAC’17",
+      "authors": "Mathieu Beirlaen, Jesse Heyninck, and Christian Straßer",
+      "orig_title": "Reasoning by cases in structured argumentation",
+      "paper_id": "1703.08397v1"
+    },
+    {
+      "index": 5,
+      "title": "A critical assessment of pollock’s work on logic-based argumentation with suppositions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NMR’18",
+      "authors": "Mathieu Beirlaen, Jesse Heyninck, and Christian Straßer"
+    },
+    {
+      "index": 6,
+      "title": "How a computer should think",
+      "abstract": "",
+      "year": "1977",
+      "venue": "Contemporary Aspects of Philosophy",
+      "authors": "Nuel D. Belnap"
+    },
+    {
+      "index": 7,
+      "title": "A useful four-valued logic",
+      "abstract": "",
+      "year": "1977",
+      "venue": "Modern Uses of Multiple-Valued Logics",
+      "authors": "Nuel D. Belnap"
+    },
+    {
+      "index": 8,
+      "title": "Weighted abstract dialectical frameworks through the lens of approximation fixpoint theory",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI’19",
+      "authors": "Bart Bogaerts"
+    },
+    {
+      "index": 9,
+      "title": "Fixpoint semantics for active integrity constraints",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Artificial Intelligence",
+      "authors": "Bart Bogaerts and Luís Cruz-Filipe"
+    },
+    {
+      "index": 10,
+      "title": "Fixpoint Semantics for Recursive SHACL",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLP Technical Communications 2021",
+      "authors": "Bart Bogaerts and Maxime Jakubowski",
+      "orig_title": "Fixpoint semantics for recursive SHACL",
+      "paper_id": "2109.08285v1"
+    },
+    {
+      "index": 11,
+      "title": "Grounded fixpoints and their applications in knowledge representation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Artificial Intelligence",
+      "authors": "Bart Bogaerts, Joost Vennekens, and Marc Denecker"
+    },
+    {
+      "index": 12,
+      "title": "Safe inductions and their applications in knowledge representation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Artif. Intell.",
+      "authors": "Bart Bogaerts, Joost Vennekens, and Marc Denecker"
+    },
+    {
+      "index": 13,
+      "title": "Defaulting on reasons",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Noûs",
+      "authors": "Daniel Bonevac"
+    },
+    {
+      "index": 14,
+      "title": "Characterizations of the stable semantics by partial evaluation",
+      "abstract": "",
+      "year": "1995",
+      "venue": "LPNMR’95",
+      "authors": "Stefan Brass and Jürgen Dix"
+    },
+    {
+      "index": 15,
+      "title": "Analysing and extending well-founded and partial stable semantics using partial equilibrium logic",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ICLP’06",
+      "authors": "Pedro Cabalar, Sergei Odintsov, David Pearce, and Agustín Valverde"
+    },
+    {
+      "index": 16,
+      "title": "Partial equilibrium logic",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Annals of Mathematics and Artificial Intelligence",
+      "authors": "Pedro Cabalar, Sergei Odintsov, David Pearce, and Agustín Valverde"
+    },
+    {
+      "index": 17,
+      "title": "Approximation Fixpoint Theory and the Well-Founded Semantics of Higher-Order Logic Programs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Theory and Practice of Logic Programming",
+      "authors": "Angelos Charalambidis, Panos Rondogiannis, and Ioanna Symeonidou",
+      "orig_title": "Approximation fixpoint theory and the well-founded semantics of higher-order logic programs",
+      "paper_id": "1804.08335v1"
+    },
+    {
+      "index": 18,
+      "title": "A compositional typed higher-order logic with definitions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICLP",
+      "authors": "Ingmar Dasseville, Matthias van der Hallen, Bart Bogaerts, Gerda Janssens, and Marc Denecker"
+    },
+    {
+      "index": 19,
+      "title": "Approximation fixpoint theory and the semantics of logic and answers set programs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Correct reasoning",
+      "authors": "Marc Denecker, Maurice Bruynooghe, and Joost Vennekens"
+    },
+    {
+      "index": 20,
+      "title": "Ultimate approximations in nonmonotonic knowledge representation systems",
+      "abstract": "",
+      "year": "2002",
+      "venue": "KR’02",
+      "authors": "Marc Denecker, V Wiktor Marek, and Miroslaw Truszczynski"
+    },
+    {
+      "index": 21,
+      "title": "Approximations, stable operators, well-founded fixpoints and applications in nonmonotonic reasoning",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Logic-based Artificial Intelligence",
+      "authors": "Marc Denecker, Victor Marek, and Mirosław Truszczyński"
+    },
+    {
+      "index": 22,
+      "title": "Uniform semantic treatment of default and autoepistemic logics",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Artificial Intelligence",
+      "authors": "Marc Denecker, Victor Marek, and Mirosław Truszczyński"
+    },
+    {
+      "index": 23,
+      "title": "Computing ideal sceptical argumentation",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Artificial Intelligence",
+      "authors": "Phan Minh Dung, Paolo Mancarella, and Francesca Toni"
+    },
+    {
+      "index": 24,
+      "title": "Complexity results for disjunctive logic programming and application to nonmonotonic logics",
+      "abstract": "",
+      "year": "1993",
+      "venue": "ILPS’93",
+      "authors": "Thomas Eiter and Georg Gottlob"
+    },
+    {
+      "index": 25,
+      "title": "Recursive aggregates in disjunctive logic programs: Semantics and complexity",
+      "abstract": "",
+      "year": "2004",
+      "venue": "JELIA’04",
+      "authors": "Wolfgang Faber, Nicola Leone, and Gerald Pfeifer"
+    },
+    {
+      "index": 26,
+      "title": "Bottom-up computation of perfect models for disjunctive theories",
+      "abstract": "",
+      "year": "1995",
+      "venue": "The Journal of logic programming",
+      "authors": "José Alberto Fernández and Jack Minker"
+    },
+    {
+      "index": 27,
+      "title": "Bilattices and the semantics of logic programming",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Journal of Logic Programming",
+      "authors": "Melvin Fitting"
+    },
+    {
+      "index": 28,
+      "title": "Bilattices are nice things",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Self Reference",
+      "authors": "Melvin Fitting"
+    },
+    {
+      "index": 29,
+      "title": "Bilattice basics",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IfCoLog Journal of Logics and their Applications",
+      "authors": "Melvin Fitting"
+    },
+    {
+      "index": 30,
+      "title": "Classical negation in logic programs and disjunctive databases",
+      "abstract": "",
+      "year": "1991",
+      "venue": "New generation computing",
+      "authors": "Michael Gelfond and Vladimir Lifschitz"
+    },
+    {
+      "index": 31,
+      "title": "Disjunctive defaults",
+      "abstract": "",
+      "year": "1991",
+      "venue": "KR’91",
+      "authors": "Michael Gelfond, Halina Przymusinska, Vladimir Lifschitz, and Miroslaw Truszczynski"
+    },
+    {
+      "index": 32,
+      "title": "Vicious circle principle and logic programs with aggregates",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Theory and Practice of Logic Programming",
+      "authors": "Michael Gelfond and Yuanlin Zhang"
+    },
+    {
+      "index": 33,
+      "title": "Multi-valued logics: A uniform approach to reasoning in artificial intelligence",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Computer Intelligence",
+      "authors": "Matthew L. Ginsberg"
+    },
+    {
+      "index": 34,
+      "title": "Distributed autoepistemic logic and its application to access control",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IJCAI",
+      "authors": "Pieter Van Hertum, Marcos Cramer, Bart Bogaerts, and Marc Denecker"
+    },
+    {
+      "index": 35,
+      "title": "Argumentative reflections of approximation fixpoint theory",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Computational Models of Argument: COMMA 2020",
+      "authors": "Jesse Heyninck and Ofer Arieli"
+    },
+    {
+      "index": 36,
+      "title": "Approximation fixpoint theory for non-deterministic operators and its application in disjunctive logic programming",
+      "abstract": "",
+      "year": "2021",
+      "venue": "KR’21",
+      "authors": "Jesse Heyninck and Ofer Arieli"
+    },
+    {
+      "index": 37,
+      "title": "Conditional abstract dialectical frameworks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "AAAI’22",
+      "authors": "Jesse Heyninck, Matthias Thimm, Gabriele Kern-Isberner, Tjitze Rienstra, and Kenneth Skiba"
+    },
+    {
+      "index": 38,
+      "title": "Alternating Fixpoint Operator for Hybrid MKNF Knowledge Bases as an Approximator of AFT",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Theory and Practice of Logic Programming",
+      "authors": "Fangfang Liu and Jia-Huai You",
+      "orig_title": "Alternating fixpoint operator for hybrid MKNF knowledge bases as an approximator of AFT",
+      "paper_id": "2105.11071v3"
+    },
+    {
+      "index": 39,
+      "title": "Foundations of disjunctive logic programming",
+      "abstract": "",
+      "year": "1992",
+      "venue": "MIT press",
+      "authors": "Jorge Lobo, Jack Minker, and Arcot Rajasekar"
+    },
+    {
+      "index": 40,
+      "title": "Disjunctive logic programming: A survey and assessment",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Computational logic: logic programming and beyond",
+      "authors": "Jack Minker and Dietmar Seipel"
+    },
+    {
+      "index": 41,
+      "title": "A generalization of dung’s abstract framework for argumentation: Arguing with sets of attacking arguments",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ArgMAS’06",
+      "authors": "Søren Holbech Nielsen and Simon Parsons"
+    },
+    {
+      "index": 42,
+      "title": "Equilibrium logic",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Annals of Mathematics and Artificial Intelligence",
+      "authors": "David Pearce"
+    },
+    {
+      "index": 43,
+      "title": "Well-founded and stable semantics of logic programs with aggregates",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Theory and Practice of Logic Programming",
+      "authors": "Nikolay Pelov, Marc Denecker, and Maurice Bruynooghe"
+    },
+    {
+      "index": 44,
+      "title": "Semantics of disjunctive programs with monotone aggregates: an operator-based approach",
+      "abstract": "",
+      "year": "2004",
+      "venue": "NMR’04",
+      "authors": "Nikolay Pelov and Miroslaw Truszczynski"
+    },
+    {
+      "index": 45,
+      "title": "The well-founded semantics coincides with the three-valued stable semantics",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Fundamenta Informaticae",
+      "authors": "Teodor C. Przymusinski"
+    },
+    {
+      "index": 46,
+      "title": "Paraconsistent stable semantics for extended disjunctive programs",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Journal of Logic and Computation",
+      "authors": "Chiaki Sakama and Katsumi Inoue"
+    },
+    {
+      "index": 47,
+      "title": "An alternating well-founded semantics for query answering in disjunctive databases",
+      "abstract": "",
+      "year": "1998",
+      "venue": "FQAS’98",
+      "authors": "Dietmar Seipel"
+    },
+    {
+      "index": 48,
+      "title": "Powerdomains",
+      "abstract": "",
+      "year": "1976",
+      "venue": "MFCS’76",
+      "authors": "Michael B Smyth"
+    },
+    {
+      "index": 49,
+      "title": "Approximating operators and semantics for abstract dialectical frameworks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Artificial Intelligence",
+      "authors": "Hannes Strass"
+    },
+    {
+      "index": 50,
+      "title": "Analyzing the computational complexity of abstract dialectical frameworks via approximation fixpoint theory",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Artificial Intelligence",
+      "authors": "Hannes Strass and Johannes Peter Wallner"
+    },
+    {
+      "index": 51,
+      "title": "On the concept of logical consequence",
+      "abstract": "",
+      "year": "1936",
+      "venue": "Logic, semantics, metamathematics",
+      "authors": "Alfred Tarski"
+    },
+    {
+      "index": 52,
+      "title": "Strong and uniform equivalence of nonmonotonic theories–an algebraic approach",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Annals of Mathematics and Artificial Intelligence",
+      "authors": "Mirosław Truszczyński"
+    },
+    {
+      "index": 53,
+      "title": "Reducts of propositional theories, satisfiability relations, and generalizations of semantics of logic programs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Artificial Intelligence",
+      "authors": "Miroslaw Truszczyński"
+    },
+    {
+      "index": 54,
+      "title": "The semantics of predicate logic as a programming language",
+      "abstract": "",
+      "year": "1976",
+      "venue": "Journal of the ACM",
+      "authors": "Maarten H. van Emden and Robert A. Kowalski"
+    },
+    {
+      "index": 55,
+      "title": "The well-founded semantics for general logic programs",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Journal of the ACM",
+      "authors": "Allen Van Gelder, Kenneth A Ross, and John S Schlipf"
+    },
+    {
+      "index": 56,
+      "title": "Splitting an operator: Algebraic modularity results for logics with fixpoint semantics",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ACM Transactions on Computational Logic",
+      "authors": "Joost Vennekens, David Gilis, and Marc Denecker"
+    }
+  ]
+}

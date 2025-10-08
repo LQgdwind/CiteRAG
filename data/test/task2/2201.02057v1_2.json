@@ -1,0 +1,331 @@
+{
+  "paper_id": "2201.02057v1",
+  "title": "GLAN: A Graph-based Linear Assignment Network",
+  "sections": {
+    "generalization study": "Generalization ability is an important quality of linear assignment solvers, especially for learning-based methods that are usually sensitive to the different data distribution between test data and training data. To verify the generalization ability of our framework and baselines, we train the learning-based models on the synthetic dataset S​y​n​D​a​t​a10​_​1501𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎110_150SynData^{1}_{10\\_150} and test them on three types of dataset which have different data distributions from S​y​n​D​a​t​a10​_​1501𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎110_150SynData^{1}_{10\\_150}. Specifically, in order to evaluate the assignment precision on dataset with larger cost matrices, we generate a synthetic dataset named S​y​n​D​a​t​a200​_​30001𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎1200_3000SynData^{1}_{200\\_3000} where the problem size is ranging from 200 to 3000 with an interval of 200 and the cost value is in (0,1). Table 3 reports the assignment precisions of our framework compared with the state-of-the-art baselines. In traditional solvers, the performance of SH  and SD [ref]14 have an evident tendency to degradation with the problem size expanding. The assignment precision of the other traditional method, i.e., RM , is not sensitive to the problem size, however its performance is still poor.\nIn the learning-based method, with the expansion of the problem scale, the assignment precision of DHN is severely reduced. When the problem size is greater than 1000, the problem cannot be solved within 5 minutes, which makes it difficult to perform complete statistics on the results of large-sized problems.\nIn addition, DCNN  and BDL  have similar average assignment precision, while their performance are still sensitive to the size of problem. Different from these baselines discussed above, our proposed framework GLAN achieves consistent assignment precision, and surpasses all baselines on all cases, which demonstrates that our model trained on small-sized data is competent for more difficult problems with large-sized cost. Besides, we also test all the methods on the dataset which is the combination of the datasets S​y​n​D​a​t​a10​_​1501𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎110_150SynData^{1}_{10\\_150} and S​y​n​D​a​t​a200​_​30001𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎1200_3000SynData^{1}_{200\\_3000}, yet the cost matrices are multiplied by a real value randomly sampled from 1 to 10 making the cost value be in (0,10)010(0,10).\nFor the sake of clarity, this dataset is divided into two parts named S​y​n​D​a​t​a10​_​15010𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎1010_150SynData^{10}_{10\\_150} and S​y​n​D​a​t​a200​_​300010𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎10200_3000SynData^{10}_{200\\_3000}, and the corresponding experimental results are reported in Table 4 and Table 5. Concretely, Table 4 illustrates the comparison results to validate the models’ generalization on test data which has a different cost value interval from the training data. And Table 5 reports the experimental results predicted on a more difficult dataset in which not only the problem size but the cost value interval are also different from the training data. In traditional solvers, SH  simply makes assignment decision by performing column- and row- normalization iteratively, thus is not sensitive to the cost value scale and achieves the similar assignment precision to its results on S​y​n​D​a​t​a10​_​1501𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎110_150SynData^{1}_{10\\_150} and S​y​n​D​a​t​a200​_​30001𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎1200_3000SynData^{1}_{200\\_3000}. As the variant of SH , SD [ref]14 achieves better performance on the dataset with interval of (0,10)010(0,10) than that in (0,1)01(0,1). Interestingly, RM  achieves the best assignment precision on data with varying sizes from 10 to 30 in Table 4, because multiplying a value greater than 1 on cost matrix is equivalent to expanding the gradient during optimization, thus speeding up its convergence rate. Besides, in the case of the same data size, RM  achieves better results on data in (0,10)010(0,10) than on data in (0,1)01(0,1). However, the assignment precision of RM  is lower than our proposed framework GLAN when the problem size is greater than 30. In learning-based baselines, both DCNN  and BDL  obtain relative low assignment precision on data with small-size such as 10 and 20, and gradually increase the precision until it is stable around a certain value as the problem size expands. The results of DCNN  and BDL  on S​y​n​D​a​t​a10​_​15010𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎1010_150SynData^{10}_{10\\_150} demonstrate that both of them overfit small-sized training data and are susceptible to different data distribution. Besides, the assignment precision of DFC  and DHN  on S​y​n​D​a​t​a10​_​15010𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎1010_150SynData^{10}_{10\\_150} are obviously worse than the results on S​y​n​D​a​t​a10​_​1501𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎110_150SynData^{1}_{10\\_150}. In addition, the performance of DHN  on S​y​n​D​a​t​a200​_​300010𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎10200_3000SynData^{10}_{200\\_3000} are still deteriorated as the problem size increases, and worse than that on S​y​n​D​a​t​a160​_​3001𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎1160_300SynData^{1}_{160\\_300}, which demonstrate that DHN  fails to handle the linear assignment problem whose data size and value scale are different from its training data. Due to the structured inductive representations, our framework GLAN obtains the similar performance on S​y​n​D​a​t​a10​_​15010𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎1010_150SynData^{10}_{10\\_150} as that on the dataset S​y​n​D​a​t​a10​_​1501𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎110_150SynData^{1}_{10\\_150}, and achieves the best average assignment precision. Furthermore, it also obtains the best and nearly consistent assignment precision on S​y​n​D​a​t​a200​_​300010𝑆𝑦𝑛𝐷𝑎𝑡subscriptsuperscript𝑎10200_3000SynData^{10}_{200\\_3000} where both the problem size and cost value scale are different from the training data. The experimental results mentioned above demonstrate that our framework is insensitive to the data size and value scale, and can achieve consistent assignment precision."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Linear assignment problems and extensions",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Handb. Comb. Optim.",
+      "authors": "R. E. Burkard, E. Cela"
+    },
+    {
+      "index": 1,
+      "title": "A concave optimization algorithm for matching partially overlapping point sets",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Pattern Recognit.",
+      "authors": "W. Lian, L. Zhang"
+    },
+    {
+      "index": 2,
+      "title": "Matching based ground-truth annotation for online handwritten mathematical expressions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Pattern Recognit.",
+      "authors": "N. S. Hirata, F. D. Julca-Aguilar"
+    },
+    {
+      "index": 3,
+      "title": "Deep affinity network for multiple object tracking",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "S. Sun, N. Akhtar, H. Song, A. Mian, M. Shah"
+    },
+    {
+      "index": 4,
+      "title": "How To Train Your Deep Multi-Object Tracker",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Conf. Comput. Vis. Pattern Recog.",
+      "authors": "Y. Xu, A. Osep, Y. Ban, R. Horaud, L. Leal-Taixé, X. Alameda-Pineda",
+      "orig_title": "How to train your deep multi-object tracker",
+      "paper_id": "1906.06618v3"
+    },
+    {
+      "index": 5,
+      "title": "The hungarian method for the assignment problem",
+      "abstract": "",
+      "year": "2010",
+      "venue": "50 Years of Integer Programming",
+      "authors": "H. W. Kuhn"
+    },
+    {
+      "index": 6,
+      "title": "Algorithms for the assignment and transportation problems",
+      "abstract": "",
+      "year": "1957",
+      "venue": "J. Soc. Ind. Appl. Math.",
+      "authors": "J. Munkres"
+    },
+    {
+      "index": 7,
+      "title": "Deep greedy switching: A fast and simple approach for linear assignment problems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Int. Conf. Numer. Anal. Appl. Numer.",
+      "authors": "A. Naiem, M. El-Beltagy"
+    },
+    {
+      "index": 8,
+      "title": "On the optimality and speed of the deep greedy switching algorithm for linear assignment problems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Int. Symp. Parallel Distrib. Process. Worksh. Phd Forum",
+      "authors": "Naiem, Amgad and El-Beltagy, Mohammed"
+    },
+    {
+      "index": 9,
+      "title": "Computational results of an interior point algorithm for large scale linear programming",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Math. Program.",
+      "authors": "N. Karmarkar, K. G. Ramakrishnan"
+    },
+    {
+      "index": 10,
+      "title": "An approximate dual projective algorithm for solving assignment problems",
+      "abstract": "",
+      "year": "",
+      "venue": "Network Flows And Matching",
+      "authors": "K. G. Ramakrishnan, N. Karmarkar, A. Kamath"
+    },
+    {
+      "index": 11,
+      "title": "The auction algorithm: A distributed relaxation method for the assignment problem",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Ann. Oper. Res.",
+      "authors": "D. P. Bertsekas"
+    },
+    {
+      "index": 12,
+      "title": "A relationship between arbitrary positive matrices and doubly stochastic matrices",
+      "abstract": "",
+      "year": "1964",
+      "venue": "Ann. Math. Stat.",
+      "authors": "R. Sinkhorn"
+    },
+    {
+      "index": 13,
+      "title": "Sinkhorn distances: Lightspeed computation of optimal transport",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Adv. Neural Inform. Process. Syst.",
+      "authors": "M. Cuturi"
+    },
+    {
+      "index": 14,
+      "title": "Near-linear time approximation algorithms for optimal transport via Sinkhorn iteration",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Adv. Neural Inform. Process. Syst.",
+      "authors": "J. Altschuler, J. Weed, P. Rigollet",
+      "orig_title": "Near-linear time approximation algorithms for optimal transport via sinkhorn iteration",
+      "paper_id": "1705.09634v2"
+    },
+    {
+      "index": 15,
+      "title": "DMM-Net: Differentiable Mask-Matching Network for Video Object Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Int. Conf. Comput. Vis.",
+      "authors": "X. Zeng, R. Liao, L. Gu, Y. Xiong, S. Fidler, R. Urtasun",
+      "orig_title": "Dmm-net: Differentiable mask-matching network for video object segmentation",
+      "paper_id": "1909.12471v1"
+    },
+    {
+      "index": 16,
+      "title": "A method for finding projections onto the intersection of convex sets in hilbert spaces",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Adv. Order Restr. Stat. Inference",
+      "authors": "J. P. Boyle, R. L. Dykstra"
+    },
+    {
+      "index": 17,
+      "title": "An algorithm for restricted least squares regression",
+      "abstract": "",
+      "year": "1983",
+      "venue": "J. Am. Stat. Assoc.",
+      "authors": "R. L. Dykstra"
+    },
+    {
+      "index": 18,
+      "title": "Deep neural networks for linear sum assignment problems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Wirel. Commun. Lett.",
+      "authors": "M. Lee, Y. Xiong, G. Yu, G. Y. Li"
+    },
+    {
+      "index": 19,
+      "title": "Bidirectional long short-term memory neural networks for linear sum assignment problems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Appl. Sci.",
+      "authors": "N. Minh-Tuan, Y.-H. Kim"
+    },
+    {
+      "index": 20,
+      "title": "Serial order: A parallel distributed processing approach",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Adv. Psychol.",
+      "authors": "M. I. Jordan"
+    },
+    {
+      "index": 21,
+      "title": "Convolutional networks for images, speech, and time series",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Handb. Brain Theory Neural Netw.",
+      "authors": "Y. LeCun, Y. Bengio, et al."
+    },
+    {
+      "index": 22,
+      "title": "A shortest augmenting path algorithm for dense and sparse linear assignment problems",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Computing",
+      "authors": "R. Jonker, A. Volgenant"
+    },
+    {
+      "index": 23,
+      "title": "A dual feasible forest algorithm for the linear assignment problem",
+      "abstract": "",
+      "year": "1991",
+      "venue": "RAIRO-Operations Research",
+      "authors": "M. Akgül, O. Ekin"
+    },
+    {
+      "index": 24,
+      "title": "A new polynomial-time algorithm for linear programming",
+      "abstract": "",
+      "year": "1984",
+      "venue": "Comb.",
+      "authors": "N. Karmarkar"
+    },
+    {
+      "index": 25,
+      "title": "An efficient cost scaling algorithm for the assignment problem",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Math. Program.",
+      "authors": "A. V. Goldberg, R. Kennedy"
+    },
+    {
+      "index": 26,
+      "title": "A linear relaxation heuristic for the generalized assignment problem",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Nav. Res. Logist.",
+      "authors": "M. A. Trick"
+    },
+    {
+      "index": 27,
+      "title": "Greedy randomized adaptive search procedures",
+      "abstract": "",
+      "year": "1995",
+      "venue": "J. Glob. Optim.",
+      "authors": "T. A. Feo, M. G. C. Resende"
+    },
+    {
+      "index": 28,
+      "title": "A one-layer projection neural network for linear assignment problem",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Chin. Control Conf.",
+      "authors": "Q. Liu, Y. Zhao"
+    },
+    {
+      "index": 29,
+      "title": "A Comprehensive Survey on Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Neural Networks Learn. Syst.",
+      "authors": "Z. Wu, S. Pan, F. Chen, G. Long, C. Zhang, P. S. Yu",
+      "orig_title": "A comprehensive survey on graph neural networks",
+      "paper_id": "1901.00596v4"
+    },
+    {
+      "index": 30,
+      "title": "Relational inductive biases, deep learning, and graph networks",
+      "abstract": "",
+      "year": "",
+      "venue": "CoRR",
+      "authors": "P. W. Battaglia, J. B. Hamrick, V. Bapst, A. Sanchez-Gonzalez, V. F. Zambaldi, M. Malinowski, A. Tacchetti, D. Raposo, A. Santoro, R. Faulkner, Ç. Gülçehre, H. F. Song, A. J. Ballard, J. Gilmer, G. E. Dahl, A. Vaswani, K. R. Allen, C. Nash, V. Langston, C. Dyer, N. Heess, D. Wierstra, P. Kohli, M. Botvinick, O. Vinyals, Y. Li, R. Pascanu",
+      "orig_title": "Relational inductive biases, deep learning, and graph networks",
+      "paper_id": "1806.01261v3"
+    },
+    {
+      "index": 31,
+      "title": "Transductive zero-shot action recognition via visually connected graph convolutional networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Neural Networks Learn. Syst.",
+      "authors": "Y. Xu, C. Han, J. Qin, X. Xu, G. Han, S. He"
+    },
+    {
+      "index": 32,
+      "title": "Graph edge convolutional neural networks for skeleton-based action recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Neural Networks Learn. Syst.",
+      "authors": "X. Zhang, C. Xu, X. Tian, D. Tao"
+    },
+    {
+      "index": 33,
+      "title": "Hierarchical Representation Learning in Graph Neural Networks with Node Decimation Pooling",
+      "abstract": "",
+      "year": "",
+      "venue": "CoRR",
+      "authors": "F. M. Bianchi, D. Grattarola, L. Livi, C. Alippi",
+      "orig_title": "Hierarchical representation learning in graph neural networks with node decimation pooling",
+      "paper_id": "1910.11436v3"
+    },
+    {
+      "index": 34,
+      "title": "Learning combinatorial solver for graph matching",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Conf. Comput. Vis. Pattern Recog.",
+      "authors": "T. Wang, H. Liu, Y. Li, Y. Jin, X. Hou, H. Ling"
+    },
+    {
+      "index": 35,
+      "title": "Tracking without bells and whistles",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Int. Conf. Comput. Vis.",
+      "authors": "P. Bergmann, T. Meinhardt, L. Leal-Taixé",
+      "orig_title": "Tracking without bells and whistles",
+      "paper_id": "1903.05625v3"
+    },
+    {
+      "index": 36,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "S. Ren, K. He, R. B. Girshick, J. Sun",
+      "orig_title": "Faster R-CNN: towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 37,
+      "title": "MOT16: A Benchmark for Multi-Object Tracking",
+      "abstract": "",
+      "year": "",
+      "venue": "CoRR",
+      "authors": "A. Milan, L. Leal-Taixé, I. D. Reid, S. Roth, K. Schindler",
+      "orig_title": "MOT16: A benchmark for multi-object tracking",
+      "paper_id": "1603.00831v2"
+    }
+  ]
+}

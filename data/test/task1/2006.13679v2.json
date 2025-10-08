@@ -1,0 +1,531 @@
+{
+  "paper_id": "2006.13679v2",
+  "title": "Approximation of the Diagonal of a Laplacian’s Pseudoinverse for Complex Network Analysis",
+  "abstract": "Abstract\nThe ubiquity of massive graph data sets in numerous applications requires fast algorithms for extracting\nknowledge from these data.\nWe are motivated here by three electrical measures for the analysis of large small-world\ngraphs G=(V,E)𝐺𝑉𝐸G=(V,E) – i. e., graphs with diameter in 𝒪​(log⁡|V|)𝒪𝑉\\mathcal{O}(\\log|V|),\nwhich are abundant in complex network analysis.\nFrom a computational point of view, the three measures have in common that their crucial component is the\ndiagonal of the graph Laplacian’s pseudoinverse, 𝐋†superscript𝐋†\\mathbf{L}^{\\dagger}.\nComputing diag⁡(𝐋†)diagsuperscript𝐋†\\operatorname{diag}(\\mathbf{L}^{\\dagger}) exactly by pseudoinversion, however, is as expensive as dense matrix multiplication – and the standard tools in practice even require\ncubic time. Moreover, the pseudoinverse requires quadratic space – hardly feasible for large graphs. Resorting to approximation by, e. g., using the Johnson-Lindenstrauss transform, requires the solution of 𝒪​(log⁡|V|/ϵ2)𝒪𝑉superscriptitalic-ϵ2\\mathcal{O}(\\log|V|/\\epsilon^{2})\nLaplacian linear systems to guarantee a relative error, which is still very expensive for large inputs.\nIn this paper, we present a novel approximation algorithm\nthat requires the solution of only one Laplacian linear system.\nThe remaining parts are purely combinatorial –\nmainly sampling uniform spanning trees, which we relate to diag⁡(𝐋†)diagsuperscript𝐋†\\operatorname{diag}(\\mathbf{L}^{\\dagger})\nvia effective resistances. For small-world networks, our algorithm\nobtains a ±ϵplus-or-minusitalic-ϵ\\pm\\epsilon-approximation with high probability, in a time that is\nnearly-linear in |E|𝐸|E| and quadratic in 1/ϵ1italic-ϵ1/\\epsilon.\nAnother positive aspect of our algorithm is its parallel nature due to independent sampling.\nWe thus provide two parallel implementations of our algorithm: one using OpenMP, one MPI + OpenMP.\nIn our experiments against the state of the art, our algorithm (i) yields more accurate approximation results\nfor diag⁡(𝐋†)diagsuperscript𝐋†\\operatorname{diag}(\\mathbf{L}^{\\dagger}), (ii) is much faster and more memory-efficient, and (iii) obtains good parallel speedups,\nin particular in the distributed setting.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "The random walk construction of uniform spanning trees and uniform labelled trees",
+      "abstract": "",
+      "year": "1990",
+      "venue": "SIAM J. Discret. Math.",
+      "authors": "David J. Aldous"
+    },
+    {
+      "index": 1,
+      "title": "Graph Clustering using Effective Resistance",
+      "abstract": "",
+      "year": "2018",
+      "venue": "9th Innovations in Theoretical Computer Science Conference, ITCS 2018",
+      "authors": "Vedat Levi Alev, Nima Anari, Lap Chi Lau, and Shayan Oveis Gharan",
+      "orig_title": "Graph clustering using effective resistance",
+      "paper_id": "1711.06530v1"
+    },
+    {
+      "index": 2,
+      "title": "Parallel computation of entries of a-1-1{}^{\\mbox{-1}}",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIAM J. Scientific Computing",
+      "authors": "Patrick Amestoy, Iain S. Duff, Jean-Yves L’Excellent, and François-Henry Rouet"
+    },
+    {
+      "index": 3,
+      "title": "Approximation of the diagonal of a laplacian’s pseudoinverse for complex network analysis, 2020",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv",
+      "authors": "Eugenio Angriman, Maria Predari, Alexander van der Grinten, and Henning Meyerhenke"
+    },
+    {
+      "index": 4,
+      "title": "Guidelines for experimental algorithmics: A case study in network analysis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Algorithms",
+      "authors": "Eugenio Angriman, Alexander van der Grinten, Moritz von Looz, Henning Meyerhenke, Martin Nöllenburg, Maria Predari, and Charilaos Tzovas"
+    },
+    {
+      "index": 5,
+      "title": "Randomized algorithms for estimating the trace of an implicit symmetric positive semi-definite matrix",
+      "abstract": "",
+      "year": "2011",
+      "venue": "J. ACM",
+      "authors": "Haim Avron and Sivan Toledo"
+    },
+    {
+      "index": 6,
+      "title": "On the architectural requirements for efficient execution of graph algorithms",
+      "abstract": "",
+      "year": "2005",
+      "venue": "2005 International Conference on Parallel Processing (ICPP’05)",
+      "authors": "David A Bader, Guojing Cong, and John Feo"
+    },
+    {
+      "index": 7,
+      "title": "Estimating the inverse trace using random forests on graphs, 2019",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv",
+      "authors": "Simon Barthelmé, Nicolas Tremblay, Alexandre Gaudillière, Luca Avena, and Pierre-Olivier Amblard"
+    },
+    {
+      "index": 8,
+      "title": "An estimator for the diagonal of a matrix",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Appl. Numer. Math.",
+      "authors": "C. Bekas, E. Kokiopoulou, and Y. Saad"
+    },
+    {
+      "index": 9,
+      "title": "Computing top-𝑘 Closeness Centrality Faster in Unweighted Graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "TKDD",
+      "authors": "Elisabetta Bergamini, Michele Borassi, Pierluigi Crescenzi, Andrea Marino, and Henning Meyerhenke",
+      "orig_title": "Computing top-k closeness centrality faster in unweighted graphs",
+      "paper_id": "1704.01077v2"
+    },
+    {
+      "index": 10,
+      "title": "Estimating Current-Flow Closeness Centrality with a Multigrid Laplacian Solver",
+      "abstract": "",
+      "year": "2016",
+      "venue": "7th SIAM Workshop on Combinatorial Scientific Computing, CSC 2016",
+      "authors": "Elisabetta Bergamini, Michael Wegner, Dimitar Lukarski, and Henning Meyerhenke",
+      "orig_title": "Estimating current-flow closeness centrality with a multigrid laplacian solver",
+      "paper_id": "1607.02955v2"
+    },
+    {
+      "index": 11,
+      "title": "Near linear-work parallel sdd solvers, low-diameter decomposition, and low-stretch subgraphs, 2011",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": "Guy E. Blelloch, Anupam Gupta, Ioannis Koutis, Gary L. Miller, Richard Peng, and Kanat Tangwongsan"
+    },
+    {
+      "index": 12,
+      "title": "Axioms for centrality",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Internet Mathematics",
+      "authors": "Paolo Boldi and Sebastiano Vigna"
+    },
+    {
+      "index": 13,
+      "title": "Modern Graph Theory, volume 184 of Graduate Texts in Mathematics",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Springer",
+      "authors": "Béla Bollobás"
+    },
+    {
+      "index": 14,
+      "title": "Approximations of the generalized inverse of the graph laplacian matrix",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Internet mathematics",
+      "authors": "Enrico Bozzo and Massimo Franceschet"
+    },
+    {
+      "index": 15,
+      "title": "Resistance distance, closeness, and betweenness",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Social Networks",
+      "authors": "Enrico Bozzo and Massimo Franceschet"
+    },
+    {
+      "index": 16,
+      "title": "Centrality measures based on current flow",
+      "abstract": "",
+      "year": "2005",
+      "venue": "22nd Annual Symposium on Theoretical Aspects of Computer Science, STACS 2005",
+      "authors": "Ulrik Brandes and Daniel Fleischer"
+    },
+    {
+      "index": 17,
+      "title": "Generating random spanning trees",
+      "abstract": "",
+      "year": "1989",
+      "venue": "30th Annual Symposium on Foundations of Computer Science, SFCS ’89",
+      "authors": "A. Broder"
+    },
+    {
+      "index": 18,
+      "title": "R-mat: A recursive model for graph mining",
+      "abstract": "",
+      "year": "2004",
+      "venue": "2004 SIAM International Conference on Data Mining",
+      "authors": "Deepayan Chakrabarti, Yiping Zhan, and Christos Faloutsos"
+    },
+    {
+      "index": 19,
+      "title": "The electrical resistance of a graph captures its commute and cover times",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Computational Complexity",
+      "authors": "Ashok K Chandra, Prabhakar Raghavan, Walter L Ruzzo, Roman Smolensky, and Prasoon Tiwari"
+    },
+    {
+      "index": 20,
+      "title": "Solving sdd linear systems in nearly mlog1/2n time",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Forty-Sixth Annual ACM Symposium on Theory of Computing, STOC ’14",
+      "authors": "Michael B. Cohen, Rasmus Kyng, Gary L. Miller, Jakub W. Pachocki, Richard Peng, Anup B. Rao, and Shen Chen Xu"
+    },
+    {
+      "index": 21,
+      "title": "Effective graph resistance",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Linear Algebra and its Applications",
+      "authors": "Wendy Ellens, Flora Spieksma, P. Mieghem, A. Jamakovic, and Robert Kooij"
+    },
+    {
+      "index": 22,
+      "title": "Effective resistance on graphs and the epidemic quasimetric",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Involve, a Journal of Mathematics",
+      "authors": "Josh Ericson, Pietro Poggi-Corradini, and Hainan Zhang"
+    },
+    {
+      "index": 23,
+      "title": "A stochastic estimator of the trace of the influence matrix for laplacian smoothing splines",
+      "abstract": "",
+      "year": "1990",
+      "venue": "J. Commun. Statist. Simula.",
+      "authors": "Hutchinson M. F."
+    },
+    {
+      "index": 24,
+      "title": "Minimizing effective resistance of a graph",
+      "abstract": "",
+      "year": "2008",
+      "venue": "SIAM Rev.",
+      "authors": "Arpita Ghosh, Stephen Boyd, and Amin Saberi"
+    },
+    {
+      "index": 25,
+      "title": "Algebraic graph theory, volume 207",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Springer Science & Business Media",
+      "authors": "Chris Godsil and Gordon F Royle"
+    },
+    {
+      "index": 26,
+      "title": "Matrix computations",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Johns Hopkins University Press",
+      "authors": "Gene H. Golub and Charles F. Van Loan"
+    },
+    {
+      "index": 27,
+      "title": "Eigen v3",
+      "abstract": "",
+      "year": "2010",
+      "venue": "http://eigen.tuxfamily.org",
+      "authors": "Gaël Guennebaud, Benoît Jacob, et al."
+    },
+    {
+      "index": 28,
+      "title": "Efficient algorithms for spanning tree centrality",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IJCAI",
+      "authors": "Takanori Hayashi, Takuya Akiba, and Yuichi Yoshida"
+    },
+    {
+      "index": 29,
+      "title": "Pselinv – a distributed memory parallel algorithm for selected inversion: The non-symmetric case",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Parallel Computing",
+      "authors": "Mathias Jacquelin, Lin Lin, and Chao Yang"
+    },
+    {
+      "index": 30,
+      "title": "Extensions of lipschitz mappings into a hilbert space",
+      "abstract": "",
+      "year": "1984",
+      "venue": "Contemporary mathematics",
+      "authors": "William B Johnson and Joram Lindenstrauss"
+    },
+    {
+      "index": 31,
+      "title": "A simple, combinatorial algorithm for solving sdd systems in nearly-linear time",
+      "abstract": "",
+      "year": "2013",
+      "venue": "forty-fifth annual ACM symposium on Theory of computing",
+      "authors": "Jonathan A Kelner, Lorenzo Orecchia, Aaron Sidford, and Zeyuan Allen Zhu"
+    },
+    {
+      "index": 32,
+      "title": "Resistance distance",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Journal of Mathematical Chemistry",
+      "authors": "Douglas Klein and Milan Randic"
+    },
+    {
+      "index": 33,
+      "title": "A nearly-m log n time solver for SDD linear systems",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE 52nd Annual Symposium on Foundations of Computer Science, FOCS 2011",
+      "authors": "Ioannis Koutis, Gary L. Miller, and Richard Peng"
+    },
+    {
+      "index": 34,
+      "title": "Approaching optimality for solving SDD linear systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "SIAM J. Comput.",
+      "authors": "Ioannis Koutis, Gary L. Miller, and Richard Peng"
+    },
+    {
+      "index": 35,
+      "title": "Combinatorial preconditioners and multilevel solvers for problems in computer vision and image processing",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Computer Vision and Image Understanding",
+      "authors": "Ioannis Koutis, Gary L. Miller, and David Tolliver"
+    },
+    {
+      "index": 36,
+      "title": "KONECT: the koblenz network collection",
+      "abstract": "",
+      "year": "2013",
+      "venue": "22nd International World Wide Web Conference, WWW ’13, Companion Volume",
+      "authors": "Jérôme Kunegis"
+    },
+    {
+      "index": 37,
+      "title": "Approximate Gaussian Elimination for Laplacians – Fast, Sparse, and Simple",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 IEEE 57th Annual Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "R. Kyng and S. Sachdeva",
+      "orig_title": "Approximate gaussian elimination for laplacians - fast, sparse, and simple",
+      "paper_id": "1605.02353v1"
+    },
+    {
+      "index": 38,
+      "title": "Sparsified cholesky and multigrid solvers for connection laplacians",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Forty-Eighth Annual ACM Symposium on Theory of Computing, STOC ’16",
+      "authors": "Rasmus Kyng, Yin Tat Lee, Richard Peng, Sushant Sachdeva, and Daniel A. Spielman"
+    },
+    {
+      "index": 39,
+      "title": "Current Flow Group Closeness Centrality for Complex Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "The World Wide Web Conference, WWW 2019",
+      "authors": "Huan Li, Richard Peng, Liren Shan, Yuhao Yi, and Zhongzhi Zhang",
+      "orig_title": "Current flow group closeness centrality for complex networks?",
+      "paper_id": "1802.02556v2"
+    },
+    {
+      "index": 40,
+      "title": "Kirchhoff Index As a Measure of Edge Centrality in Weighted Networks: Nearly Linear Time Algorithms",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Twenty-Ninth Annual ACM-SIAM Symposium on Discrete Algorithms",
+      "authors": "Huan Li and Zhongzhi Zhang",
+      "orig_title": "Kirchhoff index as a measure of edge centrality in weighted networks: Nearly linear time algorithms",
+      "paper_id": "1708.05959v3"
+    },
+    {
+      "index": 41,
+      "title": "Lean algebraic multigrid (LAMG): Fast graph laplacian linear solver",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIAM Journal on Scientific Computing",
+      "authors": "Oren E Livne and Achi Brandt"
+    },
+    {
+      "index": 42,
+      "title": "Random walks on graphs: A survey",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Combinatorics, Paul Erdős is Eighty",
+      "authors": "L. Lovász"
+    },
+    {
+      "index": 43,
+      "title": "Challenges in parallel graph processing",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Parallel Processing Letters",
+      "authors": "Andrew Lumsdaine, Douglas Gregor, Bruce Hendrickson, and Jonathan Berry"
+    },
+    {
+      "index": 44,
+      "title": "Probability on Trees and Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Cambridge University Press",
+      "authors": "Russell Lyons and Yuval Peres"
+    },
+    {
+      "index": 45,
+      "title": "Fast computation of empirically tight bounds for the diameter of massive graphs",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Journal of Experimental Algorithmics (JEA)",
+      "authors": "Clémence Magnien, Matthieu Latapy, and Michel Habib"
+    },
+    {
+      "index": 46,
+      "title": "Spanning Edge Centrality: Large-scale Computation and Applications",
+      "abstract": "",
+      "year": "2015",
+      "venue": "24th International Conference on World Wide Web, WWW 2015",
+      "authors": "Charalampos Mavroforakis, Richard Garcia-Lebron, Ioannis Koutis, and Evimaria Terzi"
+    },
+    {
+      "index": 47,
+      "title": "Practical graph isomorphism",
+      "abstract": "",
+      "year": "1981",
+      "venue": "Department of Computer Science, Vanderbilt University Tennessee, USA",
+      "authors": "Brendan D McKay et al."
+    },
+    {
+      "index": 48,
+      "title": "Scaling of random walk betweenness in networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Complex Networks and Their Applications VII",
+      "authors": "Onuttom Narayan and Iraj Saniee"
+    },
+    {
+      "index": 49,
+      "title": "Networks (2nd Ed.)",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Oxford university press",
+      "authors": "Mark Newman"
+    },
+    {
+      "index": 50,
+      "title": "Ranking of closeness centrality for large-scale social networks",
+      "abstract": "",
+      "year": "2008",
+      "venue": "International workshop on frontiers in algorithmics",
+      "authors": "Kazuya Okamoto, Wei Chen, and Xiang-Yang Li"
+    },
+    {
+      "index": 51,
+      "title": "Pcg: A family of simple fast space-efficient statistically good algorithms for random number generation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Technical Report HMC-CS-2014-0905, Harvey Mudd College, Claremont, CA",
+      "authors": "Melissa E. O’Neill"
+    },
+    {
+      "index": 52,
+      "title": "An efficient parallel solver for sdd linear systems, 2014",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Richard Peng and Daniel A. Spielman"
+    },
+    {
+      "index": 53,
+      "title": "Incremental computation of pseudo-inverse of laplacian",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Combinatorial Optimization and Applications",
+      "authors": "Gyan Ranjan, Zhi-Li Zhang, and Daniel Boley"
+    },
+    {
+      "index": 54,
+      "title": "An almost-linear time algorithm for uniform random spanning tree generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "50th Annual ACM SIGACT Symposium on Theory of Computing, STOC 2018",
+      "authors": "Aaron Schild"
+    },
+    {
+      "index": 55,
+      "title": "Kernel Methods for Pattern Analysis",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Cambridge University Press",
+      "authors": "John Shawe-Taylor and Nello Cristianini"
+    },
+    {
+      "index": 56,
+      "title": "Adjustment of an inverse matrix corresponding to a change in one element of a given matrix",
+      "abstract": "",
+      "year": "1950",
+      "venue": "Ann. Math. Statist.",
+      "authors": "Jack Sherman and Winifred J. Morrison"
+    },
+    {
+      "index": 57,
+      "title": "Rational approximation to the fermi-dirac function with applications in density functional theory",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Numerical Algorithms",
+      "authors": "Roger B. Sidje and Yousef Saad"
+    },
+    {
+      "index": 58,
+      "title": "Graph sparsification by effective resistances",
+      "abstract": "",
+      "year": "2011",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Daniel A. Spielman and Nikhil Srivastava"
+    },
+    {
+      "index": 59,
+      "title": "Networkit: A tool suite for large-scale complex network analysis",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Network Science",
+      "authors": "Christian L. Staudt, Aleksejs Sazonovs, and Henning Meyerhenke"
+    },
+    {
+      "index": 60,
+      "title": "A probing method for computing the diagonal of a matrix inverse",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Numerical Linear Algebra with Applications",
+      "authors": "Jok M. Tang and Yousef Saad"
+    },
+    {
+      "index": 61,
+      "title": "Pseudoinverse of the laplacian and best spreader node in a network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Physical Review E",
+      "authors": "Piet Van Mieghem, Karel Devriendt, and H Cetinay"
+    },
+    {
+      "index": 62,
+      "title": "Generating massive complex networks with hyperbolic geometry faster in practice",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 IEEE High Performance Extreme Computing Conference, HPEC 2016",
+      "authors": "Moritz von Looz, Mustafa Safa Özdayi, Sören Laue, and Henning Meyerhenke"
+    },
+    {
+      "index": 63,
+      "title": "Generating random spanning trees more quickly than the cover time",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Twenty-eighth Annual ACM Symposium on Theory of Computing, STOC ’96",
+      "authors": "David Bruce Wilson"
+    }
+  ]
+}

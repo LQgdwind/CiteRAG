@@ -1,0 +1,451 @@
+{
+  "paper_id": "2303.09058v1",
+  "title": "SVDE: Scalable Value-Decomposition Exploration for Cooperative Multi-Agent Reinforcement Learning",
+  "sections": {
+    "i introduction": "Cooperative multi-agent reinforcement learning (MARL)  [ref]2 has made great progress such as in solving sparse rewards  , incorporating game theory and agent communication [ref]5 [ref]6 , and combining relationships between agents .\nHowever, there are two unsolvable problems in MARL.\nFirst is the data-efficiency problem under the framework of centralized training with decentralized execution (CTDE) , which is mainly caused by poor sample generation and an unbalanced sample distribution in the replay buffer.\nThe learning of MARL requires large samples, which is time-consuming due to the high cost of interacting with the environment.\nThe replay buffer of off-policy reinforcement learning (RL) is always stuffed by trajectories of various qualities, the high quality sample can hardly be selected for training, which makes convergence slower.\nThere is also the exploration and exploitation problem 0 1 2 in MARL.\nAs the number of agents scales up, the dimensionality of the joint state-action space grows exponentially, which makes exploration more difficult3.\nAs a result, the agent will easily fall into local optima. There are many efficient exploration methods in single-agent reinforcement learning (SARL), such as environment reset and recording action paths in an archive 4.\nDue to the exponential growth of the state-action space, these methods cannot be simply migrated to MARL 5.\nDistributed training frameworks such as IMPALA 6 and SEED 7 only support SARL and are unsuitable for MARL.\nAlthough Ray 8 supports some specific MARL algorithms, it does not help the agent better explore the environment and efficiently use sample data. Value-decomposition is a popular method in MARL.\nBy decomposing the joint state-action space into local observation-action spaces, value-decomposition can significantly reduce the difficulty of multi-agent learning. For example,\nVDN 9 decomposes the joint action-value function into the sum of multiple independent agent action-value functions.\nQMIX  and WQMIX  relax the assumption to a nonlinear monotonic combination of local action-value functions, and are most related to our method.\nBut they can only perform passive exploration (such as ϵ−limit-fromitalic-ϵ\\epsilon-greedy), and cannot effectively and actively explore the environment.\nSome recent work like QTRAN  and MAVEN  follows the way of value-decomposition and further improves the ability of multi-agent systems.\nHowever, these methods still cannot solve the above problems. We propose a scalable value-decomposition exploration (SVDE) algorithm that has a scalable training mechanism, intrinsic reward design, and explorative experience replay. First, the scalable training mechanism in SVDE adapts to cooperative MARL, which collects a large number of samples in a MapReduce manner .\nIt models the general MARL learning problem as three processes: rollout, serving, and training, and contains four main modules: replay buffer, actor, worker, and a centralized learner.\nThe scalability of workers and actors can make full use of computing resources, and such a function greatly expands the parallelization of sample generation.\nThrough the three processes and four modules, learning and training can be decoupled, which accelerates the convergence of the joint Q-function. Second, the intrinsic reward design enables the agent to perform effective exploration when the environment only returns a team reward, i.e., an individual agent does not receive its own reward.\nIt worth noting that we combine the intrinsic reward of curiosity with the value-decomposition method.\nCuriosity rewards encourage agents to generate diversified trajectories, which makes for better exploration behavior .\nBased on the value-decomposition method, each agent can calculate intrinsic rewards only based on its local observations, without considering the influence of the exploration behavior on the joint action of multi-agents. Third, SVDE uses explorative experience replay to make better use of training samples.\nWhen selecting samples from the replay buffer, different from other priority experience replay (PER) , explorative experience replay considers the “freshness” of samples as well as the priority.\nWe adopt an Upper Confidence Tree (UCT)-like method to filter and replace the outdated samples from the replay buffer in time, so as to further force the model to keep exploring all the time. In multiple maps of StarCraft II, SVDE has achieved the best experimental results compared with popular MARL algorithms, with an average win rate exceeding 90% on all maps.\nAnd the results from data-efficiency and sample distribution experiments fully demonstrate the acceleration of the scalable training mechanism for sample collection and policy convergence.\nMoreover, our ablation experiments show both the necessity of intrinsic reward design and explorative experience replay in order to explore comprehensively and learn better strategies."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Multitask learning and reinforcement learning for personalized dialog generation: An empirical study",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE transactions on neural networks and learning systems",
+      "authors": "M. Yang, W. Huang, W. Tu, Q. Qu, Y. Shen, and K. Lei"
+    },
+    {
+      "index": 1,
+      "title": "Learning automata-based multiagent reinforcement learning for optimization of cooperative tasks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE transactions on neural networks and learning systems",
+      "authors": "Z. Zhang, D. Wang, and J. Gao"
+    },
+    {
+      "index": 2,
+      "title": "MASER: Multi-Agent Reinforcement Learning with Subgoals Generated from Experience Replay Buffer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "J. Jeon, W. Kim, W. Jung, and Y. Sung",
+      "orig_title": "Maser: Multi-agent reinforcement learning with subgoals generated from experience replay buffer",
+      "paper_id": "2206.10607v1"
+    },
+    {
+      "index": 3,
+      "title": "Intrinsic motivated multi-agent communication",
+      "abstract": "",
+      "year": "2021",
+      "venue": "20th International Conference on Autonomous Agents and MultiAgent Systems",
+      "authors": "C. Sun, B. Wu, R. Wang, X. Hu, X. Yang, and C. Cong"
+    },
+    {
+      "index": 4,
+      "title": "Minimax-optimal multi-agent rl in zero-sum markov games with a generative model",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2208.10458",
+      "authors": "G. Li, Y. Chi, Y. Wei, and Y. Chen"
+    },
+    {
+      "index": 5,
+      "title": "Counterfactual Multi-Agent Policy Gradients",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI conference on artificial intelligence",
+      "authors": "J. Foerster, G. Farquhar, T. Afouras, N. Nardelli, and S. Whiteson",
+      "orig_title": "Counterfactual multi-agent policy gradients",
+      "paper_id": "1705.08926v3"
+    },
+    {
+      "index": 6,
+      "title": "Learning Individually Inferred Communication for Multi-Agent Cooperation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Z. Ding, T. Huang, and Z. Lu",
+      "orig_title": "Learning individually inferred communication for multi-agent cooperation",
+      "paper_id": "2006.06455v2"
+    },
+    {
+      "index": 7,
+      "title": "Graph Convolutional Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.09202",
+      "authors": "J. Jiang, C. Dun, T. Huang, and Z. Lu",
+      "orig_title": "Graph convolutional reinforcement learning",
+      "paper_id": "1810.09202v5"
+    },
+    {
+      "index": 8,
+      "title": "Distributed multiagent reinforcement learning with action networks for dynamic economic dispatch",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "C. Hu, G. Wen, S. Wang, J. Fu, and W. Yu"
+    },
+    {
+      "index": 9,
+      "title": "Exploration with task information for meta reinforcement learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "P. Jiang, S. Song, and G. Huang"
+    },
+    {
+      "index": 10,
+      "title": "Feudal latent space exploration for coordinated multi-agent reinforcement learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "X. Liu and Y. Tan"
+    },
+    {
+      "index": 11,
+      "title": "Understanding via exploration: Discovery of interpretable features with deep reinforcement learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "J. Wei, Z. Qiu, F. Wang, W. Lin, N. Gui, and W. Gui"
+    },
+    {
+      "index": 12,
+      "title": "Exploration in deep reinforcement learning: a comprehensive survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2109.06668",
+      "authors": "T. Yang, H. Tang, C. Bai, J. Liu, J. Hao, Z. Meng, P. Liu, and Z. Wang"
+    },
+    {
+      "index": 13,
+      "title": "First return, then explore",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Nature",
+      "authors": "A. Ecoffet, J. Huizinga, J. Lehman, K. O. Stanley, and J. Clune"
+    },
+    {
+      "index": 14,
+      "title": "Exploration in Deep Reinforcement Learning: From Single-Agent to Multi-Agent Domain",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "J. Hao, T. Yang, H. Tang, C. Bai, J. Liu, Z. Meng, P. Liu, and Z. Wang",
+      "orig_title": "Exploration in deep reinforcement learning: From single-agent to multiagent domain",
+      "paper_id": "2109.06668v6"
+    },
+    {
+      "index": 15,
+      "title": "IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on machine learning",
+      "authors": "L. Espeholt, H. Soyer, R. Munos, K. Simonyan, V. Mnih, T. Ward, Y. Doron, V. Firoiu, T. Harley, I. Dunning, et al.",
+      "orig_title": "Impala: Scalable distributed deep-rl with importance weighted actor-learner architectures",
+      "paper_id": "1802.01561v3"
+    },
+    {
+      "index": 16,
+      "title": "SEED RL: Scalable and Efficient Deep-RL with Accelerated Central Inference",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.06591",
+      "authors": "L. Espeholt, R. Marinier, P. Stanczyk, K. Wang, and M. Michalski",
+      "orig_title": "Seed rl: Scalable and efficient deep-rl with accelerated central inference",
+      "paper_id": "1910.06591v2"
+    },
+    {
+      "index": 17,
+      "title": "Ray: A distributed framework for emerging {{\\{AI}}} applications",
+      "abstract": "",
+      "year": "2018",
+      "venue": "13th USENIX Symposium on Operating Systems Design and Implementation (OSDI 18)",
+      "authors": "P. Moritz, R. Nishihara, S. Wang, A. Tumanov, R. Liaw, E. Liang, M. Elibol, Z. Yang, W. Paul, M. I. Jordan, et al."
+    },
+    {
+      "index": 18,
+      "title": "Value-Decomposition Networks For Cooperative Multi-Agent Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1706.05296",
+      "authors": "P. Sunehag, G. Lever, A. Gruslys, W. M. Czarnecki, V. Zambaldi, M. Jaderberg, M. Lanctot, N. Sonnerat, J. Z. Leibo, K. Tuyls, et al.",
+      "orig_title": "Value-decomposition networks for cooperative multi-agent learning",
+      "paper_id": "1706.05296v1"
+    },
+    {
+      "index": 19,
+      "title": "QMIX: Monotonic Value Function Factorisation for Deep Multi-Agent Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on machine learning",
+      "authors": "T. Rashid, M. Samvelyan, C. Schroeder, G. Farquhar, J. Foerster, and S. Whiteson",
+      "orig_title": "Qmix: Monotonic value function factorisation for deep multi-agent reinforcement learning",
+      "paper_id": "1803.11485v2"
+    },
+    {
+      "index": 20,
+      "title": "Weighted QMIX: Expanding Monotonic Value Function Factorisation for Deep Multi-Agent Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in neural information processing systems",
+      "authors": "T. Rashid, G. Farquhar, B. Peng, and S. Whiteson",
+      "orig_title": "Weighted qmix: Expanding monotonic value function factorisation for deep multi-agent reinforcement learning",
+      "paper_id": "2006.10800v2"
+    },
+    {
+      "index": 21,
+      "title": "QTRAN: Learning to Factorize with Transformation for Cooperative Multi-Agent Reinforcement learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International conference on machine learning",
+      "authors": "K. Son, D. Kim, W. J. Kang, D. E. Hostallero, and Y. Yi",
+      "orig_title": "Qtran: Learning to factorize with transformation for cooperative multi-agent reinforcement learning",
+      "paper_id": "1905.05408v1"
+    },
+    {
+      "index": 22,
+      "title": "MAVEN: Multi-Agent Variational Exploration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Mahajan, T. Rashid, M. Samvelyan, and S. Whiteson",
+      "orig_title": "Maven: Multi-agent variational exploration",
+      "paper_id": "1910.07483v2"
+    },
+    {
+      "index": 23,
+      "title": "Parallel data processing with mapreduce: a survey",
+      "abstract": "",
+      "year": "2012",
+      "venue": "AcM sIGMoD record",
+      "authors": "K.-H. Lee, Y.-J. Lee, H. Choi, Y. D. Chung, and B. Moon"
+    },
+    {
+      "index": 24,
+      "title": "Liir: Learning individual intrinsic reward in multi-agent reinforcement learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Y. Du, L. Han, M. Fang, J. Liu, T. Dai, and D. Tao"
+    },
+    {
+      "index": 25,
+      "title": "Exploration by Random Network Distillation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.12894",
+      "authors": "Y. Burda, H. Edwards, A. Storkey, and O. Klimov",
+      "orig_title": "Exploration by random network distillation",
+      "paper_id": "1810.12894v1"
+    },
+    {
+      "index": 26,
+      "title": "Dynamic analysis of multiagent q-learning with ε𝜀\\varepsilon-greedy exploration",
+      "abstract": "",
+      "year": "2009",
+      "venue": "26th annual international conference on machine learning",
+      "authors": "E. Rodrigues Gomes and R. Kowalczyk"
+    },
+    {
+      "index": 27,
+      "title": "A survey and critique of multiagent deep reinforcement learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Autonomous Agents and Multi-Agent Systems",
+      "authors": "P. Hernandez-Leal, B. Kartal, and M. E. Taylor"
+    },
+    {
+      "index": 28,
+      "title": "Multi-agent reinforcement learning: Independent vs. cooperative agents",
+      "abstract": "",
+      "year": "1993",
+      "venue": "tenth international conference on machine learning",
+      "authors": "M. Tan"
+    },
+    {
+      "index": 29,
+      "title": "Multiagent cooperation and competition with deep reinforcement learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "PloS one",
+      "authors": "A. Tampuu, T. Matiisen, D. Kodelja, I. Kuzovkin, K. Korjus, J. Aru, J. Aru, and R. Vicente"
+    },
+    {
+      "index": 30,
+      "title": "Stabilising Experience Replay for Deep Multi-Agent Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International conference on machine learning",
+      "authors": "J. Foerster, N. Nardelli, G. Farquhar, T. Afouras, P. H. Torr, P. Kohli, and S. Whiteson",
+      "orig_title": "Stabilising experience replay for deep multi-agent reinforcement learning",
+      "paper_id": "1702.08887v3"
+    },
+    {
+      "index": 31,
+      "title": "Coordinated reinforcement learning",
+      "abstract": "",
+      "year": "2002",
+      "venue": "ICML",
+      "authors": "C. Guestrin, M. Lagoudakis, and R. Parr"
+    },
+    {
+      "index": 32,
+      "title": "Collaborative multiagent reinforcement learning by payoff propagation",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "J. R. Kok and N. Vlassis"
+    },
+    {
+      "index": 33,
+      "title": "Multi-agent Reinforcement Learning in Sequential Social Dilemmas",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1702.03037",
+      "authors": "J. Z. Leibo, V. Zambaldi, M. Lanctot, J. Marecki, and T. Graepel",
+      "orig_title": "Multi-agent reinforcement learning in sequential social dilemmas",
+      "paper_id": "1702.03037v1"
+    },
+    {
+      "index": 34,
+      "title": "TLeague: A Framework for Competitive Self-Play based Distributed Multi-Agent Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2011.12895",
+      "authors": "P. Sun, J. Xiong, L. Han, X. Sun, S. Li, J. Xu, M. Fang, and Z. Zhang",
+      "orig_title": "Tleague: A framework for competitive self-play based distributed multi-agent reinforcement learning",
+      "paper_id": "2011.12895v2"
+    },
+    {
+      "index": 35,
+      "title": "Mava: A research framework for distributed multi-agent reinforcement learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2107.01460",
+      "authors": "A. Pretorius, K. ab Tessera, A. P. Smit, K. Eloff, C. Formanek, S. J. Grimbly, S. Danisa, L. Francis, J. Shock, H. Kamper, W. Brink, H. Engelbrecht, A. Laterre, and K. Beguir"
+    },
+    {
+      "index": 36,
+      "title": "Learning automata-based multiagent reinforcement learning for optimization of cooperative tasks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "Z. Zhang, D. Wang, and J. Gao"
+    },
+    {
+      "index": 37,
+      "title": "Qatten: A General Framework for Cooperative Multiagent Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.03939",
+      "authors": "Y. Yang, J. Hao, B. Liao, K. Shao, G. Chen, W. Liu, and H. Tang",
+      "orig_title": "Qatten: A general framework for cooperative multiagent reinforcement learning",
+      "paper_id": "2002.03939v2"
+    },
+    {
+      "index": 38,
+      "title": "QPLEX: Duplex Dueling Multi-Agent Q-Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2008.01062",
+      "authors": "J. Wang, Z. Ren, T. Liu, Y. Yu, and C. Zhang",
+      "orig_title": "Qplex: Duplex dueling multi-agent q-learning",
+      "paper_id": "2008.01062v3"
+    },
+    {
+      "index": 39,
+      "title": "Exploration with Unreliable Intrinsic Reward in Multi-Agent Reinforcement Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.02138",
+      "authors": "W. Böhmer, T. Rashid, and S. Whiteson",
+      "orig_title": "Exploration with unreliable intrinsic reward in multi-agent reinforcement learning",
+      "paper_id": "1906.02138v1"
+    },
+    {
+      "index": 40,
+      "title": "Coordinated Exploration via Intrinsic Rewards for Multi-Agent Reinforcement Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1905.12127",
+      "authors": "S. Iqbal and F. Sha",
+      "orig_title": "Coordinated exploration via intrinsic rewards for multi-agent reinforcement learning",
+      "paper_id": "1905.12127v3"
+    },
+    {
+      "index": 41,
+      "title": "A concise introduction to decentralized POMDPs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Springer",
+      "authors": "F. A. Oliehoek and C. Amato"
+    },
+    {
+      "index": 42,
+      "title": "Mastering the game of go without human knowledge",
+      "abstract": "",
+      "year": "2017",
+      "venue": "nature",
+      "authors": "D. Silver, J. Schrittwieser, K. Simonyan, I. Antonoglou, A. Huang, A. Guez, T. Hubert, L. Baker, M. Lai, A. Bolton, et al."
+    },
+    {
+      "index": 43,
+      "title": "Curiosity-driven Exploration by Self-supervised Prediction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International conference on machine learning",
+      "authors": "D. Pathak, P. Agrawal, A. A. Efros, and T. Darrell",
+      "orig_title": "Curiosity-driven exploration by self-supervised prediction",
+      "paper_id": "1705.05363v1"
+    },
+    {
+      "index": 44,
+      "title": "Count-Based Exploration with Neural Density Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International conference on machine learning",
+      "authors": "G. Ostrovski, M. G. Bellemare, A. Oord, and R. Munos",
+      "orig_title": "Count-based exploration with neural density models",
+      "paper_id": "1703.01310v2"
+    },
+    {
+      "index": 45,
+      "title": "Deep Recurrent Q-Learning for Partially Observable MDPs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 aaai fall symposium series",
+      "authors": "M. Hausknecht and P. Stone",
+      "orig_title": "Deep recurrent q-learning for partially observable mdps",
+      "paper_id": "1507.06527v4"
+    },
+    {
+      "index": 46,
+      "title": "Safe and Sample-efficient Reinforcement Learning for Clustered Dynamic Environments",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Control Systems Letters",
+      "authors": "H. Chen and C. Liu",
+      "orig_title": "Safe and sample-efficient reinforcement learning for clustered dynamic environments",
+      "paper_id": "2303.14265v1"
+    },
+    {
+      "index": 47,
+      "title": "Self-adaptive priority correction for prioritized experience replay",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Applied Sciences",
+      "authors": "H. Zhang, C. Qu, J. Zhang, and J. Li"
+    },
+    {
+      "index": 48,
+      "title": "The StarCraft Multi-Agent Challenge",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1902.04043",
+      "authors": "M. Samvelyan, T. Rashid, C. S. De Witt, G. Farquhar, N. Nardelli, T. G. Rudner, C.-M. Hung, P. H. Torr, J. Foerster, and S. Whiteson",
+      "orig_title": "The starcraft multi-agent challenge",
+      "paper_id": "1902.04043v5"
+    }
+  ]
+}

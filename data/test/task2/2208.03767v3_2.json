@@ -1,0 +1,559 @@
+{
+  "paper_id": "2208.03767v3",
+  "title": "Class-Incremental Learning with Cross-Space Clustering and Controlled Transfer",
+  "sections": {
+    "introduction": "Incremental learning is a paradigm of machine learning where learning objectives are introduced to a model incrementally in the form of phases or tasks, and the model must dynamically learn new tasks while maintaining knowledge on previously seen tasks. The differences of this setup from a static training scenario is that the model is not allowed to retrain from scratch on encountering new tasks, and no task information is available upfront.\nA fundamental challenge in incremental learning is in the stability-plasticity trade-off , where stability relates to maintaining accuracy on the previous tasks, while plasticity relates to learning the current task effectively. In their naive form, deep learning models are too plastic; the model changes significantly during training, and incurs catastrophic forgetting  of old tasks when exposed to new ones. Class-incremental learning (CIL) 2  is a specific sub-paradigm of incremental learning where tasks are composed of new classes and we seek to learn a unified model that can represent and classify all classes seen so far equally well. The main challenge in class-incremental learning lies in how knowledge over the long stream of classes can be consolidated at every phase. Regularization-based methods     quantify and preserve important parameters corresponding to prior tasks. Another set of approaches     focus on modifying the learning algorithm to ensure that gradient updates do not conflict with the previous tasks. In dynamic architecture methods     1, the network architecture is modified by expansion or masking when encountering new tasks during learning.\nReplay-based methods 2 9 3       [ref]2 7 6  store a subset of each previous task in a separate memory, and replay the tasks when learning a new one, to directly preserve the knowledge on those tasks.\nA wide variety of such replay methods have been developed recently, and have attained promising results in the CIL setting. A number of these methods 2 9 3  [ref]2 7   use variants of knowledge distillation 8, where the model and its predictions corresponding to the previous task are utilized to prevent the current task’s model from diverging too much from its previous state. Our work herein falls under distillation-based methods. Prior work has advocated for utilizing distillation to directly constrain an example’s position or angle using its position in the previous feature space 9, to preserve pooled convolutional outputs of an instance 3, or to maintain the distribution of logits that the model’s classifier outputs on the data [ref]2 2. We argue that preserving the features or predictions of a model on independent individual instances are only useful to a certain extent, and do not characterize and preserve properties of a class captured globally by the model as a whole. Class-level semantics may be more important to be preserved in the class-incremental learning setting, to holistically prevent individual classes from being forgotten.\nTo this end, we develop an objective termed Cross-Space Clustering (CSC) that characterizes entire regions in the feature space that classes should stay away from, and those that a class should belong to, and distills this information to the model. Our objective indirectly establishes multiple goals at once: (i) it encourages the model to cluster all instances of a given class; (ii) ensures that these clusters are well-separated; and (iii) regularizes to preserve class cluster positions as a single entity in the feature space. This provides for a class-consolidated distillation objective, prodding instances of a given class to “unite” and thus prevent the class from being forgotten. Next, as part of our second objective, we tackle the class-incremental-learning problem from a different perspective. While all prior distillation objectives seek better ways to preserve properties of the learned representations in the feature space 2 9 3  [ref]2 7  , we believe that controlling inter-class transfer is also critical for class-incremental learning. This comes from the observation that forgetting often results from negative backward transfer from new classes to previous classes, and plasticity is ensured when there is positive forward transfer from prior classes to new ones .\nTo this end, we develop an objective called Controlled Transfer (CT) that controls and regularizes transfer of features between classes at a fine-grained level. We formulate an objective that approximates the relative similarity between an incoming class and all previous classes, and conditions the current task’s model on these estimated similarities. This encourages new classes to be situated optimally in the feature space, ensuring maximal positive transfer and minimal negative transfer. A unique characteristic of our objectives is their ability to extend and enhance existing distillation-based CIL methodologies, without any change to their methodologies. We verify this by adding our objectives to three prominent and state-of-the art CIL methods that employ distillation in their formulation: iCARL 2, LUCIR 9 and PODNet 3. We conduct thorough experimental evaluations on benchmark incremental versions of large-scale datasets like CIFAR-100 and ImageNet subset. We perform a comprehensive evaluation of our method, considering a wide variety of experimental settings. We show that our method consistently improves incremental learning performance across datasets and methods, at no additional cost. We further analyze and present ablation studies on our method, highlighting the contribution of each of our components."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Conditional channel gated networks for task-aware continual learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Abati, D., Tomczak, J.M., Blankevoort, T., Calderara, S., Cucchiara, R., Bejnordi, B.E."
+    },
+    {
+      "index": 1,
+      "title": "Ss-il: Separated softmax for incremental learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Ahn, H., Kwak, J., Lim, S.F., Bang, H., Kim, H., Moon, T."
+    },
+    {
+      "index": 2,
+      "title": "Variational Information Distillation for Knowledge Transfer",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Ahn, S., Hu, S.X., Damianou, A.C., Lawrence, N.D., Dai, Z.",
+      "orig_title": "Variational information distillation for knowledge transfer",
+      "paper_id": "1904.05835v1"
+    },
+    {
+      "index": 3,
+      "title": "Memory Aware Synapses: Learning what (not) to forget",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Aljundi, R., Babiloni, F., Elhoseiny, M., Rohrbach, M., Tuytelaars, T.",
+      "orig_title": "Memory aware synapses: Learning what (not) to forget",
+      "paper_id": "1711.09601v4"
+    },
+    {
+      "index": 4,
+      "title": "Gradient based sample selection for online continual learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Aljundi, R., Lin, M., Goujaud, B., Bengio, Y."
+    },
+    {
+      "index": 5,
+      "title": "Il2m: Class incremental learning with dual memory",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Belouadah, E., Popescu, A.D."
+    },
+    {
+      "index": 6,
+      "title": "End-to-End Incremental Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Castro, F.M., Marín-Jiménez, M.J., Mata, N.G., Schmid, C., Karteek, A.",
+      "orig_title": "End-to-end incremental learning",
+      "paper_id": "1807.09536v2"
+    },
+    {
+      "index": 7,
+      "title": "Co2L: Contrastive Continual Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Cha, H., Lee, J., Shin, J.",
+      "orig_title": "Co2l: Contrastive continual learning",
+      "paper_id": "2106.14413v1"
+    },
+    {
+      "index": 8,
+      "title": "Riemannian Walk for Incremental Learning: Understanding Forgetting and Intransigence",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Chaudhry, A., Dokania, P.K., Ajanthan, T., Torr, P.H.",
+      "orig_title": "Riemannian walk for incremental learning: Understanding forgetting and intransigence",
+      "paper_id": "1801.10112v3"
+    },
+    {
+      "index": 9,
+      "title": "Efficient lifelong learning with a-GEM",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Chaudhry, A., Ranzato, M., Rohrbach, M., Elhoseiny, M."
+    },
+    {
+      "index": 10,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR",
+      "authors": "Deng, J., Dong, W., Socher, R., Li, L.J., Li, K., Fei-Fei, L."
+    },
+    {
+      "index": 11,
+      "title": "Learning without Memorizing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Dhar, P., Singh, R.V., Peng, K.C., Wu, Z., Chellappa, R.",
+      "orig_title": "Learning without memorizing",
+      "paper_id": "1811.08051v2"
+    },
+    {
+      "index": 12,
+      "title": "Podnet: Pooled outputs distillation for small-tasks incremental learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Douillard, A., Cord, M., Ollion, C., Robert, T., Valle, E."
+    },
+    {
+      "index": 13,
+      "title": "Orthogonal gradient descent for continual learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AISTATS",
+      "authors": "Farajtabar, M., Azizan, N., Mott, A., Li, A."
+    },
+    {
+      "index": 14,
+      "title": "Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "Finn, C., Abbeel, P., Levine, S.",
+      "orig_title": "Model-agnostic meta-learning for fast adaptation of deep networks",
+      "paper_id": "1703.03400v3"
+    },
+    {
+      "index": 15,
+      "title": "Catastrophic forgetting in connectionist networks",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Trends in Cognitive Sciences",
+      "authors": "French, R.M."
+    },
+    {
+      "index": 16,
+      "title": "Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1706.02677",
+      "authors": "Goyal, P., Dollár, P., Girshick, R., Noordhuis, P., Wesolowski, L., Kyrola, A., Tulloch, A., Jia, Y., He, K.",
+      "orig_title": "Accurate, large minibatch sgd: Training imagenet in 1 hour",
+      "paper_id": "1706.02677v2"
+    },
+    {
+      "index": 17,
+      "title": "Distilling the Knowledge in a Neural Network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1503.02531",
+      "authors": "Hinton, G.E., Vinyals, O., Dean, J.",
+      "orig_title": "Distilling the knowledge in a neural network",
+      "paper_id": "1503.02531v1"
+    },
+    {
+      "index": 18,
+      "title": "Learning a unified classifier incrementally via rebalancing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Hou, S., Pan, X., Loy, C.C., Wang, Z., Lin, D."
+    },
+    {
+      "index": 19,
+      "title": "Like What You Like: Knowledge Distill via Neuron Selectivity Transfer",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:abs/1707.01219",
+      "authors": "Huang, Z., Wang, N.",
+      "orig_title": "Like what you like: Knowledge distill via neuron selectivity transfer",
+      "paper_id": "1707.01219v2"
+    },
+    {
+      "index": 20,
+      "title": "Meta-Learning Representations for Continual Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Javed, K., White, M.",
+      "orig_title": "Meta-learning representations for continual learning",
+      "paper_id": "1905.12588v2"
+    },
+    {
+      "index": 21,
+      "title": "Energy-based Latent Aligner for Incremental Learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Joseph, K., Khan, S., Khan, F.S., Anwer, R.M., Balasubramanian, V.N.",
+      "orig_title": "Energy-based latent aligner for incremental learning",
+      "paper_id": "2203.14952v1"
+    },
+    {
+      "index": 22,
+      "title": "Towards open world object detection",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Joseph, K., Khan, S., Khan, F.S., Balasubramanian, V.N."
+    },
+    {
+      "index": 23,
+      "title": "Paraphrasing Complex Network: Network Compression via Factor Transfer",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "Kim, J., Park, S., Kwak, N.",
+      "orig_title": "Paraphrasing complex network: Network compression via factor transfer",
+      "paper_id": "1802.04977v3"
+    },
+    {
+      "index": 24,
+      "title": "Overcoming catastrophic forgetting in neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "PNAS",
+      "authors": "Kirkpatrick, J., Pascanu, R., Rabinowitz, N., Veness, J., Desjardins, G., Rusu, A.A., Milan, K., Quan, J., Ramalho, T., Grabska-Barwinska, A., Hassabis, D., Clopath, C., Kumaran, D., Hadsell, R.",
+      "orig_title": "Overcoming catastrophic forgetting in neural networks",
+      "paper_id": "1612.00796v2"
+    },
+    {
+      "index": 25,
+      "title": "Meta-Consolidation for Continual Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "KJ, J., N Balasubramanian, V.",
+      "orig_title": "Meta-consolidation for continual learning",
+      "paper_id": "2010.00352v1"
+    },
+    {
+      "index": 26,
+      "title": "Incremental object detection via meta-learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE TPAMI",
+      "authors": "Kj, J., Rajasegaran, J., Khan, S., Khan, F.S., Balasubramanian, V.N."
+    },
+    {
+      "index": 27,
+      "title": "Lit: Learned intermediate representation training for model compression",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "Koratana, A., Kang, D., Bailis, P., Zaharia, M.A."
+    },
+    {
+      "index": 28,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Citeseer",
+      "authors": "Krizhevsky, A., Hinton, G."
+    },
+    {
+      "index": 29,
+      "title": "Overcoming Catastrophic Forgetting with Unlabeled Data in the Wild",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1903.12648",
+      "authors": "Lee, K., Lee, K., Shin, J., Lee, H.",
+      "orig_title": "Overcoming catastrophic forgetting with unlabeled data in the wild",
+      "paper_id": "1903.12648v3"
+    },
+    {
+      "index": 30,
+      "title": "Learn to Grow: A Continual Structure Learning Framework for Overcoming Catastrophic Forgetting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "Li, X., Zhou, Y., Wu, T., Socher, R., Xiong, C.",
+      "orig_title": "Learn to grow: A continual structure learning framework for overcoming catastrophic forgetting",
+      "paper_id": "1904.00310v3"
+    },
+    {
+      "index": 31,
+      "title": "Learning without Forgetting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE TPAMI",
+      "authors": "Li, Z., Hoiem, D.",
+      "orig_title": "Learning without forgetting",
+      "paper_id": "1606.09282v3"
+    },
+    {
+      "index": 32,
+      "title": "Mnemonics Training: Multi-Class Incremental Learning without Forgetting",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Liu, Y., Liu, A., Su, Y., Schiele, B., Sun, Q.",
+      "orig_title": "Mnemonics training: Multi-class incremental learning without forgetting",
+      "paper_id": "2002.10211v6"
+    },
+    {
+      "index": 33,
+      "title": "Gradient Episodic Memory for Continual Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "Lopez-Paz, D., Ranzato, M.",
+      "orig_title": "Gradient episodic memory for continual learning",
+      "paper_id": "1706.08840v6"
+    },
+    {
+      "index": 34,
+      "title": "Visualizing Data using GTSNE",
+      "abstract": "",
+      "year": "2008",
+      "venue": "JMLR",
+      "authors": "van der Maaten, L., Hinton, G.",
+      "orig_title": "Visualizing data using t-sne",
+      "paper_id": "2108.01301v1"
+    },
+    {
+      "index": 35,
+      "title": "Class-incremental learning: survey and performance evaluation on image classification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2010.15277",
+      "authors": "Masana, M., Liu, X., Twardowski, B., Menta, M., Bagdanov, A.D., van de Weijer, J.",
+      "orig_title": "Class-incremental learning: survey and performance evaluation on image classification",
+      "paper_id": "2010.15277v3"
+    },
+    {
+      "index": 36,
+      "title": "The stability-plasticity dilemma: investigating the continuum from catastrophic forgetting to age-limited learning effects",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Frontiers in Psychology",
+      "authors": "Mermillod, M., Bugaiska, A., Bonin, P."
+    },
+    {
+      "index": 37,
+      "title": "On First-Order Meta-Learning Algorithms",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1803.02999",
+      "authors": "Nichol, A., Achiam, J., Schulman, J.",
+      "orig_title": "On first-order meta-learning algorithms",
+      "paper_id": "1803.02999v3"
+    },
+    {
+      "index": 38,
+      "title": "Relational Knowledge Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Park, W., Kim, D., Lu, Y., Cho, M.",
+      "orig_title": "Relational knowledge distillation",
+      "paper_id": "1904.05068v2"
+    },
+    {
+      "index": 39,
+      "title": "Correlation Congruence for Knowledge Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Peng, B., Jin, X., Liu, J., Zhou, S., Wu, Y., Liu, Y., Li, D., Zhang, Z.",
+      "orig_title": "Correlation congruence for knowledge distillation",
+      "paper_id": "1904.01802v1"
+    },
+    {
+      "index": 40,
+      "title": "Random path selection for continual learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Rajasegaran, J., Hayat, M., Khan, S.H., Khan, F.S., Shao, L."
+    },
+    {
+      "index": 41,
+      "title": "iCaRL: Incremental Classifier and Representation Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Rebuffi, S.A., Kolesnikov, A., Sperl, G., Lampert, C.H.",
+      "orig_title": "icarl: Incremental classifier and representation learning",
+      "paper_id": "1611.07725v2"
+    },
+    {
+      "index": 42,
+      "title": "Learning to Learn without Forgetting By Maximizing Transfer and Minimizing Interference",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Riemer, M., Cases, I., Ajemian, R., Liu, M., Rish, I., Tu, Y., , Tesauro, G.",
+      "orig_title": "Learning to learn without forgetting by maximizing transfer and minimizing interference",
+      "paper_id": "1810.11910v3"
+    },
+    {
+      "index": 43,
+      "title": "FitNets: Hints for Thin Deep Nets",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Romero, A., Ballas, N., Kahou, S.E., Chassang, A., Gatta, C., Bengio, Y.",
+      "orig_title": "Fitnets: Hints for thin deep nets",
+      "paper_id": "1412.6550v4"
+    },
+    {
+      "index": 44,
+      "title": "Overcoming Catastrophic Forgetting with Hard Attention to the Task",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Serrà, J., Surís, D., Miron, M., Karatzoglou, A.",
+      "orig_title": "Overcoming catastrophic forgetting with hard attention to the task",
+      "paper_id": "1801.01423v3"
+    },
+    {
+      "index": 45,
+      "title": "Continual Learning with Deep Generative Replay",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "Shin, H., Lee, J.K., Kim, J., Kim, J.",
+      "orig_title": "Continual learning with deep generative replay",
+      "paper_id": "1705.08690v3"
+    },
+    {
+      "index": 46,
+      "title": "On Learning the Geodesic Path for Incremental Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Simon, C., Koniusz, P., Harandi, M.",
+      "orig_title": "On learning the geodesic path for incremental learning",
+      "paper_id": "2104.08572v1"
+    },
+    {
+      "index": 47,
+      "title": "Don’t Decay the Learning Rate, Increase the Batch Size",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Smith, S.L., Kindermans, P.J., Le, Q.V.",
+      "orig_title": "Don’t decay the learning rate, increase the batch size",
+      "paper_id": "1711.00489v2"
+    },
+    {
+      "index": 48,
+      "title": "Similarity-Preserving Knowledge Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Tung, F., Mori, G.",
+      "orig_title": "Similarity-preserving knowledge distillation",
+      "paper_id": "1907.09682v2"
+    },
+    {
+      "index": 49,
+      "title": "Training networks in null space of feature covariance for continual learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Wang, S., Li, X., Sun, J., Xu, Z."
+    },
+    {
+      "index": 50,
+      "title": "Large Scale Incremental Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Wu, Y., Chen, Y., Wang, L., Ye, Y., Liu, Z., Guo, Y., Fu, Y.R.",
+      "orig_title": "Large scale incremental learning",
+      "paper_id": "1905.13260v1"
+    },
+    {
+      "index": 51,
+      "title": "DER: Dynamically Expandable Representation for Class Incremental Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Yan, S., Xie, J., He, X.",
+      "orig_title": "Der: Dynamically expandable representation for class incremental learning",
+      "paper_id": "2103.16788v1"
+    },
+    {
+      "index": 52,
+      "title": "A gift from knowledge distillation: Fast optimization, network minimization and transfer learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Yim, J., Joo, D., Bae, J.H., Kim, J."
+    },
+    {
+      "index": 53,
+      "title": "Dreaming to Distill: Data-free Knowledge Transfer via DeepInversion",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Yin, H., Molchanov, P., Li, Z., Álvarez, J.M., Mallya, A., Hoiem, D., Jha, N.K., Kautz, J.",
+      "orig_title": "Dreaming to distill: Data-free knowledge transfer via deepinversion",
+      "paper_id": "1912.08795v2"
+    },
+    {
+      "index": 54,
+      "title": "Lifelong Learning with Dynamically Expandable Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Yoon, J., Yang, E., Lee, J., Hwang, S.J.",
+      "orig_title": "Lifelong learning with dynamically expandable networks",
+      "paper_id": "1708.01547v11"
+    },
+    {
+      "index": 55,
+      "title": "Large batch optimization for deep learning: Training bert in 76 minutes",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.00962",
+      "authors": "You, Y., Li, J., Reddi, S., Hseu, J., Kumar, S., Bhojanapalli, S., Song, X., Demmel, J., Keutzer, K., Hsieh, C.J."
+    },
+    {
+      "index": 56,
+      "title": "Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via Attention Transfer",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Zagoruyko, S., Komodakis, N.",
+      "orig_title": "Paying more attention to attention: Improving the performance of convolutional neural networks via attention transfer",
+      "paper_id": "1612.03928v3"
+    },
+    {
+      "index": 57,
+      "title": "Continual learning through synaptic intelligence",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "Zenke, F., Poole, B., Ganguli, S."
+    },
+    {
+      "index": 58,
+      "title": "Lifelong GAN: Continual Learning for Conditional Image Generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Zhai, M., Chen, L., Tung, F., He, J., Nawhal, M., Mori, G.",
+      "orig_title": "Lifelong gan: Continual learning for conditional image generation",
+      "paper_id": "1907.10107v2"
+    }
+  ]
+}

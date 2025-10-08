@@ -1,0 +1,2213 @@
+{
+  "paper_id": "2412.04747v1",
+  "title": "Code Generation and Runtime Techniques for Enabling Data-Efficient Deep Learning Training on GPUs",
+  "sections": {
+    "related work": "Swapping and offloading. Many LLM systems with offloading abilities are inference-only  [ref]185 . In inference, weights and KV-cache never change and are reused across iterations; researchers leverage this to enhance locality and memory efficiency. However, in LLM training, the weights are updated in each iteration, and all tensors change across the iterations. Some work avails offloading features [ref]184 for training but is mostly designed to accommodate larger models in a smaller system at the cost of performance. They lack the asynchronous data transfer ability to maintain performance. Another direction is to offload data and the associated computation to the CPU [ref]158  . The offloaded computation is relatively light, and the offloaded data include gradients, sparse elements in the weights, etc.\nRecognizing this direction, SSDTrain is made orthogonal because we offload the activations to SSDs via GDS to minimize the interference with the CPU. Activations are for gradient computation, which is compute-intensive and best done solely on GPUs. Before the massive adoption of LLMs, there is work on offloading data for deep learning     . Most of them offload data to main memory while some  enable the GPU–SSD data path. LLM training is unique because massive parallelism and its implications on the memory use of optimizer states, gradients, and weights are fundamental to the design space. SSDTrain naturally supports multiple GPUs. Besides, we demonstrated its viability on clusters and introduced the ROK curve to help with the design choice. On the other hand, LLMs have such a high demand for computing power that it stimulates rapid development in specialized hardware, e.g., transformer engine , and distributed frameworks. This is why we ensure good interoperability. In contrast, most earlier work in this direction is bound to a specific PyTorch version or a custom runtime with support to select layers. Quantization and sparsity. Some work on offloading uses quantization and/or sparsity to reduce the I/O size [ref]185  . To reduce computation, algorithms have been proposed to quantize parameters and introduce sparsity into the model     . Mixture-of-Experts (MoE)  is in this direction as it sparsifies the token-to-neuron connection in the MLP to the token-to-expert connection. Some algorithms introduce structured sparsity, e.g., N:M  sparsity and 2:4  sparsity. On the other hand, there are frameworks and specialized kernels to accelerate models with quantization and/or sparsity    . Some kernels leverage specialized hardware, e.g., Ampere tensor core  .\nThese techniques are orthogonal to SSDTrain and can be used to alternate the model and accelerate the computation while using SSDTrain. Notably, given the hardware, the reuse factor to fully overlap the computation with PCIe transfer will change according to the new numerical format or sparsity access pattern. We believe that SSDTrain’s adaptive offloading algorithm helps optimize the offload amounts in these cases. Optimized kernels. Previous work develops optimized kernels to accelerate LLM   . Some kernels utilize special hardware . SSDTrain’s interoperability ensures it can be used easily with these and upcoming techniques."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Graph Convolutional Neural Networks for Web-Scale Recommender Systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Graph convolutional neural networks for web-scale recommender systems",
+      "paper_id": "1806.01973v1"
+    },
+    {
+      "index": 1,
+      "title": "Graph Convolutional Neural Networks for Web-Scale Recommender Systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM SIGKDD International Conference on Knowledge Discovery & Data Mining",
+      "authors": "R. Ying, R. He, K. Chen, P. Eksombatchai, W. L. Hamilton, and J. Leskovec",
+      "orig_title": "Graph convolutional neural networks for web-scale recommender systems",
+      "paper_id": "1806.01973v1"
+    },
+    {
+      "index": 2,
+      "title": "Deep Learning Recommendation Model for Personalization and Recommendation Systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "M. Naumov, D. Mudigere, H.-J. M. Shi, J. Huang, N. Sundaraman, J. Park, X. Wang, U. Gupta, C.-J. Wu, A. G. Azzolini, D. Dzhulgakov, A. Mallevich, I. Cherniavskii, Y. Lu, R. Krishnamoorthi, A. Yu, V. Kondratenko, S. Pereira, X. Chen, W. Chen, V. Rao, B. Jia, L. Xiong, and M. Smelyanskiy",
+      "orig_title": "Deep learning recommendation model for personalization and recommendation systems",
+      "paper_id": "1906.00091v1"
+    },
+    {
+      "index": 3,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 4,
+      "title": "“Trading off compute in training and inference",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 5,
+      "title": "“Deep learning hardware: Past",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 6,
+      "title": "“TPU v4: An optically reconfigurable supercomputer for machine learning with hardware support for embeddings",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 7,
+      "title": "“LLM-Analysis: Latency and memory analysis of transformer models for training and inference",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 8,
+      "title": "LLM Inference Unveiled: Survey and Roofline Model Insights",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“LLM inference unveiled: Survey and roofline model insights",
+      "paper_id": "2402.16363v6"
+    },
+    {
+      "index": 9,
+      "title": "compute and data trends in machine learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 10,
+      "title": "“GPU specs database",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 11,
+      "title": "“Lots of questions on Google’s ‘Trillium’ TPU v6",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 12,
+      "title": "“NVIDIA Blackwell architecture and B200/B100 accelerators announced: Going bigger with smaller data",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 13,
+      "title": "“Tensor processing unit",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 14,
+      "title": "R. Narayanaswami",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 15,
+      "title": "“Large graph convolutional network training with GPU-oriented data communication architecture",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 16,
+      "title": "EMOGI: Efficient Memory-access for Out-of-memory Graph-traversal in GPUs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“EMOGI: Efficient memory-access for out-of-memory graph-traversal in GPUs",
+      "paper_id": "2006.06890v2"
+    },
+    {
+      "index": 17,
+      "title": "“Fine-grained memory access over I/O interconnect for efficient remote sparse data access",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 18,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 19,
+      "title": "“Memory capacity growth: A major contributor to the success of computers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 20,
+      "title": "“No silver bullet essence and accidents of software engineering",
+      "abstract": "",
+      "year": "1987",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 21,
+      "title": "“cuBLAS library user guide v12.0",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 22,
+      "title": "” NVIDIA Corporation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 23,
+      "title": "“Hector: An efficient programming and compilation framework for implementing relational graph neural networks in GPU architectures",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 24,
+      "title": "“PyTorch-Direct: Enabling GPU centric data access for very large graph neural network training with irregular accesses",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 25,
+      "title": "“Graph neural network training with data tiering",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 26,
+      "title": "TBA: Faster Large Language Model Training Using SSD-Based Activation Offloading",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“TBA: Faster large language model training using SSD-based activation offloading",
+      "paper_id": "2408.10013v2"
+    },
+    {
+      "index": 27,
+      "title": "“Backpropagation applied to handwritten zip code recognition",
+      "abstract": "",
+      "year": "1989",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 28,
+      "title": "“Spectral networks and locally connected networks on graphs",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 29,
+      "title": "Inductive Representation Learning on Large Graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Inductive representation learning on large graphs",
+      "paper_id": "1706.02216v4"
+    },
+    {
+      "index": 30,
+      "title": "“Convolutional neural networks on graphs with fast localized spectral filtering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 31,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 32,
+      "title": "“Variational graph auto-encoders",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 33,
+      "title": "Learning Convolutional Neural Networks for Graphs",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Learning convolutional neural networks for graphs",
+      "paper_id": "1605.05273v4"
+    },
+    {
+      "index": 34,
+      "title": "Representation Learning on Graphs: Methods and Applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Representation learning on graphs: Methods and applications",
+      "paper_id": "1709.05584v3"
+    },
+    {
+      "index": 35,
+      "title": "DeepWalk: Online Learning of Social Representations",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“DeepWalk: Online learning of social representations",
+      "paper_id": "1403.6652v2"
+    },
+    {
+      "index": 36,
+      "title": "node2vec: Scalable Feature Learning for Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Node2vec: Scalable feature learning for networks",
+      "paper_id": "1607.00653v1"
+    },
+    {
+      "index": 37,
+      "title": "“Bing Chat — Microsoft Edge",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 38,
+      "title": "” 2022. [Online]. Available: https://github.com/langchain-ai/langchain",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 39,
+      "title": "Emergent Abilities of Large Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Emergent abilities of large language models",
+      "paper_id": "2206.07682v2"
+    },
+    {
+      "index": 40,
+      "title": "“Language models are unsupervised multitask learners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 41,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 42,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“BERT: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 43,
+      "title": "Llama 2: Open Foundation and Fine-Tuned Chat Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Llama 2: Open foundation and fine-tuned chat models",
+      "paper_id": "2307.09288v2"
+    },
+    {
+      "index": 44,
+      "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+      "abstract": "",
+      "year": "1910",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Exploring the limits of transfer learning with a unified text-to-text transformer",
+      "paper_id": "1910.10683v4"
+    },
+    {
+      "index": 45,
+      "title": "GSPMD: General and Scalable Parallelization for ML Computation Graphs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“GSPMD: General and scalable parallelization for ML computation graphs",
+      "paper_id": "2105.04663v2"
+    },
+    {
+      "index": 46,
+      "title": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+      "abstract": "",
+      "year": "1909",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Megatron-LM: Training multi-billion parameter language models using model parallelism",
+      "paper_id": "1909.08053v4"
+    },
+    {
+      "index": 47,
+      "title": "“DeepSpeed: System optimizations enable training deep learning models with over 100 billion parameters",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 48,
+      "title": "“PyTorch 2: Faster machine learning through dynamic python bytecode transformation and graph compilation",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 49,
+      "title": "“ZeRO: Memory optimizations toward training trillion parameter models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 50,
+      "title": "Programming Massively Parallel Processors",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 51,
+      "title": "“Nvidia Tesla V100 GPU architecture whitepaper",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 52,
+      "title": "“Dissecting the NVIDIA Volta GPU architecture via microbenchmarking",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 53,
+      "title": "“Instructions for managing a parallel cache hierarchy",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 54,
+      "title": "“EE 7722 GPU microarchitecture lecture notes",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 55,
+      "title": "“2. kernel profiling guide — NsightCompute 12.6 documentation",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 56,
+      "title": "“Sorting of vector of tuple in C++ (ascending order)",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 57,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 58,
+      "title": "“Can pytorch by-pass Python GIL?” 2019",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 59,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 60,
+      "title": "“PEP 703 – making the global interpreter lock optional in CPython — peps.python.org",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 61,
+      "title": "“Automated GPU kernel fusion with XLA",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 62,
+      "title": "“PyTorch 2 tutorial and paper presentation @ ASPLOS’2024",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 63,
+      "title": "“Compiling high-level scripting languages to performant code",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 64,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 65,
+      "title": "“GPU acceleration of automatic differentiation in C++ with Clad",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 66,
+      "title": "“Reverse-mode automatic differentiation and optimization of GPU kernels via Enzyme",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 67,
+      "title": "“pybind11 — seamless operability between c++11 and python",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 68,
+      "title": "“Deep graph library: A graph-centric",
+      "abstract": "",
+      "year": "1909",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 69,
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "abstract": "",
+      "year": "1903",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Fast graph representation learning with PyTorch Geometric",
+      "paper_id": "1903.02428v3"
+    },
+    {
+      "index": 70,
+      "title": "FeatGraph: A Flexible and Efficient Backend for Graph Neural Network Systems",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“FeatGraph: A flexible and efficient backend for graph neural network systems",
+      "paper_id": "2008.11359v2"
+    },
+    {
+      "index": 71,
+      "title": "Efficient Sparse Matrix Kernels based on Adaptive Workload-Balancing and Parallel-Reduction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Efficient sparse matrix kernels based on adaptive workload-balancing and parallel-reduction",
+      "paper_id": "2106.16064v2"
+    },
+    {
+      "index": 72,
+      "title": "SparseTIR: Composable Abstractions for Sparse Compilation in Deep Learning",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“SparseTIR: Composable abstractions for sparse compilation in deep learning",
+      "paper_id": "2207.04606v4"
+    },
+    {
+      "index": 73,
+      "title": "“Modeling relational data with graph convolutional networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 74,
+      "title": "Heterogeneous Graph Transformer",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Heterogeneous graph transformer",
+      "paper_id": "2003.01332v1"
+    },
+    {
+      "index": 75,
+      "title": "“Empirical analysis of performance bottlenecks in graph neural network training and inference with GPUs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 76,
+      "title": "“The nature of graph neural network workloads",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 77,
+      "title": "“cublas<<t>>gemmBatched() — cuBLAS library user guide v12.2",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 78,
+      "title": "“Accelerating matrix multiplication with block sparse format and NVIDIA tensor cores — NVIDIA technical blog",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 79,
+      "title": "“[feature] gather mm by isratnisa ⋅⋅\\cdot pull request #3641 ⋅⋅\\cdot dmlc/dgl",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 80,
+      "title": "“Seastar: Vertex-centric programming for graph neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 81,
+      "title": "“Graphiler: Optimizing graph neural networks with message passing data flow graph",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 82,
+      "title": "“HGL: Accelerating heterogeneous GNN training with holistic representation and optimization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 83,
+      "title": "Relational Graph Attention Networks",
+      "abstract": "",
+      "year": "1904",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Relational graph attention networks",
+      "paper_id": "1904.05811v1"
+    },
+    {
+      "index": 84,
+      "title": "Open Graph Benchmark: Datasets for Machine Learning on Graphs",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Open graph benchmark: Datasets for machine learning on graphs",
+      "paper_id": "2005.00687v7"
+    },
+    {
+      "index": 85,
+      "title": "“Kernel methods for mining instance data in ontologies",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 86,
+      "title": "” Journal of Medicinal Chemistry",
+      "abstract": "",
+      "year": "1991",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 87,
+      "title": "“A fast approximation of the weisfeiler-lehman graph kernel for RDF data",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 88,
+      "title": "J. van Ossenbruggen",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 89,
+      "title": "“Observed versus latent features for knowledge base and text inference",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 90,
+      "title": "“Fast algorithms for convolutional neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 91,
+      "title": "“Optimizing irregular dense operators of heterogeneous gnn models on gpu",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 92,
+      "title": "“TorchScript — PyTorch 2.2 documentation",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 93,
+      "title": "“Numba: A LLVM-based Python JIT compiler",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 94,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 95,
+      "title": "“TVM: An automated end-to-end optimizing compiler for deep learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 96,
+      "title": "GE-SpMM: General-purpose Sparse Matrix-Matrix Multiplication on GPUs for Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“GE-SpMM: General-purpose sparse matrix-matrix multiplication on GPUs for graph neural networks",
+      "paper_id": "2007.03179v1"
+    },
+    {
+      "index": 97,
+      "title": "At-Scale Sparse Deep Neural Network Inference With Efficient GPU Implementation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“At-scale sparse deep neural network inference with efficient gpu implementation",
+      "paper_id": "2007.14152v2"
+    },
+    {
+      "index": 98,
+      "title": "“TLPGNN: A lightweight two-level parallelism paradigm for graph neural network computation on GPU",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 99,
+      "title": "“The tensor algebra compiler",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 100,
+      "title": "“MLIR: Scaling compiler infrastructure for domain specific computation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 101,
+      "title": "FusedMM: A Unified SDDMM-SpMM Kernel for Graph Embedding and Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“FusedMM: A unified sddmm-spmm kernel for graph embedding and graph neural networks",
+      "paper_id": "2011.06391v2"
+    },
+    {
+      "index": 102,
+      "title": "“Dense dynamic blocks: Optimizing SpMM for processors with vector and matrix units using machine learning techniques",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 103,
+      "title": "H. Asghari-Moghaddam",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 104,
+      "title": "“Automatic performance tuning of sparse matrix kernels",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 105,
+      "title": "“Design principles for sparse matrix multiplication on the GPU",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 106,
+      "title": "CSR5: An Efficient Storage Format for Cross-Platform Sparse Matrix-Vector Multiplication",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“CSR5: An efficient storage format for cross-platform sparse matrix-vector multiplication",
+      "paper_id": "1503.05032v2"
+    },
+    {
+      "index": 107,
+      "title": "“yaSpMV: Yet another SpMV framework on GPUs",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 108,
+      "title": "“Chapter 31 - abstraction for AoS and SoA layout in C++",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 109,
+      "title": "SoAx: A generic C++ Structure of Arrays for handling particles in HPC codes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“SoAx: A generic C++ structure of arrays for handling particles in HPC codes",
+      "paper_id": "1710.03462v1"
+    },
+    {
+      "index": 110,
+      "title": "DistDGL: Distributed Graph Neural Network Training for Billion-Scale Graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“DistDGL: Distributed graph neural network training for billion-scale graphs",
+      "paper_id": "2010.05337v3"
+    },
+    {
+      "index": 111,
+      "title": "“Tensor algebra compilation with workspaces",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 112,
+      "title": "“Cluster-GCN: An efficient algorithm for training deep and large graph convolutional networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 113,
+      "title": "“GraphSAINT: Graph sampling based inductive learning method",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 114,
+      "title": "A Comprehensive Survey on Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“A comprehensive survey on graph neural networks",
+      "paper_id": "1901.00596v4"
+    },
+    {
+      "index": 115,
+      "title": "“Stellargraph machine learning library",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 116,
+      "title": "Graph Neural Networks in TensorFlow and Keras with Spektral",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Graph neural networks in tensorflow and keras with spektral",
+      "paper_id": "2006.12138v1"
+    },
+    {
+      "index": 117,
+      "title": "SIGN: Scalable Inception Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“SIGN: Scalable inception graph neural networks",
+      "paper_id": "2004.11198v3"
+    },
+    {
+      "index": 118,
+      "title": "efficient and scalable graph embedding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 119,
+      "title": "“Improving the accuracy",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 120,
+      "title": "“Leaderboards for node property prediction — open graph benchmark",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 121,
+      "title": "“Towards efficient large-scale graph neural network computing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 122,
+      "title": "“Traversing large graphs on GPUs with unified memory",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 123,
+      "title": "“Subway: Minimizing data transfer during out-of-GPU-memory graph processing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 124,
+      "title": "“Nvidia Tesla P100 whitepaper",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 125,
+      "title": "“Nvidia A100 TensorCore GPU architecture whitepaper",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 126,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 127,
+      "title": "“Evaluating characteristics of CUDA communication primitives on high-bandwidth interconnects",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 128,
+      "title": "“Data transfer matters for GPU computing",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 129,
+      "title": "“Developing a linux kernel module using GPUDirect RDMA",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 130,
+      "title": "“Unified memory for CUDA beginners",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 131,
+      "title": "“Performance evaluation of advanced features in CUDA unified memory",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 132,
+      "title": "“ImageNet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 133,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 134,
+      "title": "Graph Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Graph attention networks",
+      "paper_id": "1710.10903v3"
+    },
+    {
+      "index": 135,
+      "title": "“Torchvision the machine-vision package of torch",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 136,
+      "title": "“Beyond GPU memory limits with unified memory on pascal",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 137,
+      "title": "“Autograd - pytorch/pytorch",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 138,
+      "title": "“Aten/aten/src/readme.md at master · zdevito/aten · GitHub",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 139,
+      "title": "“The WebGraph framework I: Compression techniques",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 140,
+      "title": "“What is Twitter",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 141,
+      "title": "“Konect: The koblenz network collection",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 142,
+      "title": "Winner-Take-All Column Row Sampling for Memory Efficient Adaptation of Language Model",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Winner-take-all column row sampling for memory efficient adaptation of language model",
+      "paper_id": "2305.15265v4"
+    },
+    {
+      "index": 143,
+      "title": "Reducing Activation Recomputation in Large Transformer Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Reducing activation recomputation in large transformer models",
+      "paper_id": "2205.05198v1"
+    },
+    {
+      "index": 144,
+      "title": "“MegaScale: Scaling large language model training to more than 10",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 145,
+      "title": "A. McMillan-Major",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 146,
+      "title": "“Dissecting batching effects in GPT inference",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 147,
+      "title": "The Case for Co-Designing Model Architectures with Hardware",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“The case for co-designing model architectures with hardware",
+      "paper_id": "2401.14489v2"
+    },
+    {
+      "index": 148,
+      "title": "DeepSpeed Inference: Enabling Efficient Inference of Transformer Models at Unprecedented Scale",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“DeepSpeed Inference: Enabling efficient inference of transformer models at unprecedented scale",
+      "paper_id": "2207.00032v1"
+    },
+    {
+      "index": 149,
+      "title": "Scaling Laws for Neural Language Models",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Scaling laws for neural language models",
+      "paper_id": "2001.08361v1"
+    },
+    {
+      "index": 150,
+      "title": "An Empirical Model of Large-Batch Training",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“An empirical model of large-batch training",
+      "paper_id": "1812.06162v1"
+    },
+    {
+      "index": 151,
+      "title": "“Training deep nets with sublinear memory cost",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 152,
+      "title": "“Announcing Epoch AI’s updated parameter",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 153,
+      "title": "“ND A100 V4-series - Azure virtual machines",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 154,
+      "title": "“GPU machine types | compute engine documentation",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 155,
+      "title": "“Delta project profile",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 156,
+      "title": "Fiddler: CPU-GPU Orchestration for Fast Inference of Mixture-of-Experts Models",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Fiddler: CPU-GPU orchestration for fast inference of mixture-of-experts models",
+      "paper_id": "2402.07033v3"
+    },
+    {
+      "index": 157,
+      "title": "ZeRO-Offload: Democratizing Billion-Scale Model Training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“ZeRO-Offload: Democratizing billion-scale model training",
+      "paper_id": "2101.06840v1"
+    },
+    {
+      "index": 158,
+      "title": "PowerInfer: Fast Large Language Model Serving with a Consumer-grade GPU",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“PowerInfer: Fast large language model serving with a consumer-grade GPU",
+      "paper_id": "2312.12456v2"
+    },
+    {
+      "index": 159,
+      "title": "“FlashNeuron: SSD-enabled large-batch training of very deep neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 160,
+      "title": "“About Google cloud hyperdisk — compute engine documentation",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 161,
+      "title": "“Architecture and performance of Perlmutter’s 35 PB ClusterStor E1000 all‐flash file system",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 162,
+      "title": "“Megatron-DeepSpeed: Ongoing research training transformer language models at scale",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 163,
+      "title": "Training Compute-Optimal Large Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Training compute-optimal large language models",
+      "paper_id": "2203.15556v1"
+    },
+    {
+      "index": 164,
+      "title": "Language Models are Few-Shot Learners",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Language models are few-shot learners",
+      "paper_id": "2005.14165v4"
+    },
+    {
+      "index": 165,
+      "title": "“All SPEC/OSG results.” [Online]. Available: http://spec.org/cgi-bin/osgresults?conf=cpu2017;op=dump;format=csvdump",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 166,
+      "title": "“Ultra-low latency with Samsung Z-NAND SSD",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 167,
+      "title": "JESD218B: Solid-State Drive (SSD) Requirements and Endurance Test Method",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 168,
+      "title": "Available: https://thinksystem",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 169,
+      "title": "“QNAP NAS solution: QTS SSD extra over-provisioning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 170,
+      "title": "“Why SMART’s over-provisioning?” 2024",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 171,
+      "title": "“Solidigm™ SSD endurance estimator",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 172,
+      "title": "“Over-provisioning NAND-based Intel® SSDs for better endurance",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 173,
+      "title": "“Over-provisioning benefits for Samsung data center SSDs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 174,
+      "title": "“Operational characteristics of SSDs in enterprise storage systems: A large-scale field study",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 175,
+      "title": "“D7-P5620 mid-endurance PCIe 4.0 NVMe SSD for data centers | Solidigm D7 SSD",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 176,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 177,
+      "title": "“Solidigm™ solid state drive D7-P5620 series (12.8TB",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 178,
+      "title": "“FL6 series (2.5-inch) | KIOXIA - United States (English)",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 179,
+      "title": "“Kioxia fl6xhul1t60 1.6TB PCIe4 NVMe SSD brand new",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 180,
+      "title": "“SOLIDIGM ssdpf2sq800gz01 D7-P5810 solid state drive – Dihuni – GPU server for AI",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 181,
+      "title": "“Quantifying performance gains of GPUDirect Storage",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 182,
+      "title": "“STRONGHOLD: Fast and affordable billion-scale deep learning model training",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 183,
+      "title": "“ZeRO-Infinity: Breaking the GPU memory wall for extreme scale deep learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 184,
+      "title": "FlexGen: High-Throughput Generative Inference of Large Language Models with a Single GPU",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“FlexGen: High-throughput generative inference of large language models with a single GPU",
+      "paper_id": "2303.06865v2"
+    },
+    {
+      "index": 185,
+      "title": "LLM in a flash: Efficient Large Language Model Inference with Limited Memory",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“LLM in a Flash: Efficient large language model inference with limited memory",
+      "paper_id": "2312.11514v3"
+    },
+    {
+      "index": 186,
+      "title": "“KvikIO - high performance file IO",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 187,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 188,
+      "title": "“Flash Correct-and-Refresh: Retention-aware error management for increased Flash memory lifetime",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 189,
+      "title": "“Error patterns in MLC NAND Flash memory: Measurement",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 190,
+      "title": "“Optimizing NAND Flash-based SSDs via retention relaxation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 191,
+      "title": "“Behemoth: A Flash-centric training accelerator for extreme-scale DNNs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 192,
+      "title": "A Monolingual Approach to Contextualized Word Embeddings for Mid-Resource Languages",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“A monolingual approach to contextualized word embeddings for mid-resource languages",
+      "paper_id": "2006.06202v2"
+    },
+    {
+      "index": 193,
+      "title": "“Asynchronous pipelines for processing huge corpora on medium to low resource infrastructures",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 194,
+      "title": "FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“FlashAttention-2: Faster attention with better parallelism and work partitioning",
+      "paper_id": "2307.08691v1"
+    },
+    {
+      "index": 195,
+      "title": "“Scaling large language model training with Pax on GPUs",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 196,
+      "title": "“FlashAttention: Fast and memory-efficient exact attention with IO-awareness",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 197,
+      "title": "“Paxml (aka Pax)",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 198,
+      "title": "analytics and research – Dihuni – GPU server for AI",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 199,
+      "title": "“Intel Optane DC P5800X series 1.6TB",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 200,
+      "title": "“Samsung V-NAND SSD 980 pro 2021 data sheet revision 2.1",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 201,
+      "title": "“Samsung 980 pro 1TB internal gaming SSD PCIe gen 4 x4 nvme mz-v8p1t0b/am",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 202,
+      "title": "“Don’t be a blockhead: Zoned namespaces make work on conventional SSDs obsolete",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 203,
+      "title": "“ZNS+: Advanced zoned namespace interface for supporting in-storage zone compaction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 204,
+      "title": "The Datacenter as a Computer: Designing Warehouse-Scale Machines",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 205,
+      "title": "“Total cost of ownership (TCO) analysis",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 206,
+      "title": "“Nvidia Blackwell perf TCO analysis – B100 vs B200 vs GB200NVL72 – SemiAnalysis",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 207,
+      "title": "“SNIA enterprise TCO calculator",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 208,
+      "title": "“Introduction to NVIDIA DGX H100/H200 systems — NVIDIA DGX H100/H200 user guide",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 209,
+      "title": "“NVM Express moves into the future",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 210,
+      "title": "“Software:Lustre (file system)",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 211,
+      "title": "“GPU Direct I/O with HDF5",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 212,
+      "title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Efficient memory management for large language model serving with PagedAttention",
+      "paper_id": "2309.06180v1"
+    },
+    {
+      "index": 213,
+      "title": "“Capuchin: Tensor-based GPU memory management for deep learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 214,
+      "title": "SuperNeurons: Dynamic GPU Memory Management for Training Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“SuperNeurons: Dynamic GPU memory management for training deep neural networks",
+      "paper_id": "1801.04380v1"
+    },
+    {
+      "index": 215,
+      "title": "“vDNN: Virtualized deep neural networks for scalable",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 216,
+      "title": "“SwapAdvisor: Pushing deep learning beyond the GPU memory limit via smart swapping",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 217,
+      "title": "“NVIDIA H100 tensor core GPU architecture",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 218,
+      "title": "“Big Bird: Transformers for longer sequences",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 219,
+      "title": "Deja Vu: Contextual Sparsity for Efficient LLMs at Inference Time",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Deja Vu: Contextual sparsity for efficient LLMs at inference time",
+      "paper_id": "2310.17157v1"
+    },
+    {
+      "index": 220,
+      "title": "SqueezeLLM: Dense-and-Sparse Quantization",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“SqueezeLLM: Dense-and-sparse quantization",
+      "paper_id": "2306.07629v4"
+    },
+    {
+      "index": 221,
+      "title": "SpQR: A Sparse-Quantized Representation for Near-Lossless LLM Weight Compression",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“SpQR: A sparse-quantized representation for near-lossless LLM weight compression",
+      "paper_id": "2306.03078v1"
+    },
+    {
+      "index": 222,
+      "title": "“SparseGPT: Massive language models can be accurately pruned in one-shot",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 223,
+      "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Outrageously large neural networks: The sparsely-gated mixture-of-experts layer",
+      "paper_id": "1701.06538v1"
+    },
+    {
+      "index": 224,
+      "title": "Learning N:M Fine-grained Structured Sparse Neural Networks From Scratch",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Learning n:m fine-grained structured sparse neural networks from scratch",
+      "paper_id": "2102.04010v2"
+    },
+    {
+      "index": 225,
+      "title": "“Channel permutations for N:M sparsity",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 226,
+      "title": "“MegaBlocks: Efficient sparse training with mixture-of-experts",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 227,
+      "title": "“SparTA: Deep-learning model sparsity via tensor-with-sparsity-attribute",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 228,
+      "title": "Sparse GPU Kernels for Deep Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Sparse GPU kernels for deep learning",
+      "paper_id": "2006.10901v2"
+    },
+    {
+      "index": 229,
+      "title": "Efficient Quantized Sparse Matrix Operations on Tensor Cores",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Efficient quantized sparse matrix operations on tensor cores",
+      "paper_id": "2209.06979v4"
+    },
+    {
+      "index": 230,
+      "title": "Dynamic N:M Fine-grained Structured Sparse Attention Mechanism",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Dynamic N:M fine-grained structured sparse attention mechanism",
+      "paper_id": "2203.00091v1"
+    },
+    {
+      "index": 231,
+      "title": "Accelerating Sparse Deep Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Accelerating sparse deep neural networks",
+      "paper_id": "2104.08378v1"
+    },
+    {
+      "index": 232,
+      "title": "“TensorRT-LLM: A TensorRT toolbox for optimized large language model inference",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 233,
+      "title": "“Transformer engine",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 234,
+      "title": "“Add new keys for Graphcore IPU (DispatchKey / Backend / DeviceType) by AnthonyBarbier · pull request #74763 · pytorch/pytorch",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 235,
+      "title": "“Release v0.8.0 · dmlc/dgl",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 236,
+      "title": "“[doc] add an official documentation of UnifiedTensor by davidmin7 · pull request #3194 · dmlc/dgl",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 237,
+      "title": "“[feature] add multi-GPU UnifiedTensor unit test by davidmin7 · pull request #3184 · dmlc/dgl",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 238,
+      "title": "” 2021. [Online]. Available: https://github.com/dmlc/dgl/pull/3086",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 239,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 240,
+      "title": "“Bridging the gap between deep learning and sparse matrix format selection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 241,
+      "title": "“Parallelizing maximal clique enumeration on GPUs",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 242,
+      "title": "“HyLAC: Hybrid linear assignment solver in CUDA",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 243,
+      "title": "“Controlling data movement to boost performance on the NVIDIA ampere architecture",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 244,
+      "title": "“Mixture-of-experts with expert choice routing",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 245,
+      "title": "“2017 Kaggle machine learning & data science survey",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 246,
+      "title": "“2017 data scientist report",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 247,
+      "title": "“Doing a reality check on GPU-accelerated databases",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 248,
+      "title": "“RAPIDS: GPU-accelerated data analytics & machine learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 249,
+      "title": "“GPU database systems characterization and optimization",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 250,
+      "title": "“GPU databases—the new modality of data analytics",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 251,
+      "title": "“Database optimization techniques #1: Indexing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 252,
+      "title": "“MySQL :: MySQL 8.4 reference manual :: 10.3 optimization and indexes",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 253,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 254,
+      "title": "“SQream’s unique architecture: Comparing and contrasting to leading data architectures",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 255,
+      "title": "“Evaluating end-to-end optimization for data analytics applications in Weld",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 256,
+      "title": "“A tensor compiler for uniﬁed machine learning prediction serving",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    }
+  ]
+}

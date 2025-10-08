@@ -1,0 +1,393 @@
+{
+  "paper_id": "2303.11156v4",
+  "title": "Can AI-Generated Text be Reliably Detected?",
+  "sections": {
+    "introduction": "Artificial Intelligence (AI) has made tremendous advances in recent years, from generative models in computer vision   to large language models (LLMs) in natural language processing (NLP)   .\nLLMs can now generate texts of supreme quality with the potential in many applications. For example, the recent model of ChatGPT  can generate human-like texts for various tasks such as writing codes for computer programs, lyrics for songs, completing documents, and question answering; its applications are endless. The trend in NLP shows that these LLMs will even get better with time. However, this comes with a significant challenge in terms of authenticity and regulations. AI tools have the potential to be misused by users for unethical purposes such as plagiarism, generating fake news, spamming, generating fake product reviews, and manipulating web content for social engineering in ways that can have negative impacts on society  . Some news articles rewritten by AI have led to many fundamental errors in them . Hence, there is a need to ensure the responsible use of these generative AI tools. In order to aid this, a lot of recent research focuses on detecting AI-generated texts. Several detection works study this problem as a binary classification problem [ref]3    .\nFor example, OpenAI fine-tunes RoBERTa-based  GPT-2 detector models to distinguish between non-AI generated and GPT-2 generated texts [ref]3. This requires such a detector to be fine-tuned with supervision on each new LLM for reliable detection.\nThese approaches that rely on a neural network for their detection, can be vulnerable to adversarial and poisoning attacks   0 1.\nAnother stream of work focuses on zero-shot AI text detection without any additional training overhead 2 3 4. These works evaluate the expected per-token log probability of texts and perform thresholding to detect AI-generated texts. Mitchell et al.  observe that AI-generated passages tend to lie in negative curvature of log probability of texts. They propose DetectGPT, a zero-shot LLM text detection method, to leverage this observation.\nAnother line of work aims to watermark AI-generated texts to ease their detection 5 6 [ref]1 7. Watermarking eases the detection of LLM output text by imprinting specific patterns on them. Soft watermarking proposed in Kirchenbauer et al. [ref]1 partitions tokens into green and red lists to help create these patterns. A watermarked LLM samples a token, with high probability, from the green list determined by its prefix token. These watermarks are often imperceptible to humans. However, watermarking might not be a useful tool to prevent LLM exploitation unless all the powerful LLMs are protected similarly. Krishna et al. [ref]4 introduces an information retrieval-based detector by storing the outputs of the LLM in a database. For a candidate passage, their algorithm searches this database for semantically similar matches to make their detection robust to paraphrasing. However, storing user-LLM conversations might lead to serious privacy concerns. In this paper, through empirical and theoretical analysis, we show that these state-of-the-art AI-text detectors are unreliable in practical scenarios 8 9 . We study empirical attacks on soft watermarking [ref]1, and a wide range of zero-shot , retrieval-based [ref]4, and neural network-based detectors [ref]3. Paraphrasers: We show that a paraphrasing attack, where a lightweight neural network-based paraphraser is applied to the output text of the AI-generative model, can evade various types of detectors. Before highlighting the results, let us provide an intuition why this attack is successful. For a given sentence s𝑠s, suppose P​(s)𝑃𝑠P(s) is the set of all paraphrased sentences that have similar meanings to the sentence s𝑠s. Moreover, let L​(s)𝐿𝑠L(s) be the set of sentences the source LLM can output with meanings similar to s𝑠s. Suppose a user has generated s𝑠s using an LLM and wants to evade detection. If |L​(s)|≪|P​(s)|much-less-than𝐿𝑠𝑃𝑠|L(s)|\\ll|P(s)|, the user can randomly sample from P​(s)𝑃𝑠P(s) and avoid detection (if the detection model has a reasonably low false positive rate). Moreover, if |L​(s)|𝐿𝑠|L(s)| is comparable to |P​(s)|𝑃𝑠|P(s)|, the detector cannot have low false positive and negative rates simultaneously. With this intuition in mind, in §2, we use light-weight neural network-based paraphrasers (2.3×2.3\\times and 5.5×5.5\\times smaller than the source LLM in terms of the number of parameters) to rephrase the source LLM’s output text. Our experiments show that this automated paraphrasing attack can drastically reduce the accuracy of various detectors, including those using soft watermarking. For example, a PEGASUS-based paraphraser  can drop the soft watermarking detector’s [ref]1 accuracy from 97%percent9797\\% to 80%percent8080\\% with just a degradation of 3.5 in the perplexity score. The area under the receiver operating characteristic (AUROC) curves of zero-shot detectors  drop from 96.5%percent96.596.5\\% to 25.2%percent25.225.2\\% using a T5-based paraphraser . We also observe that the performance of neural network-based trained detectors [ref]3 deteriorate significantly after our paraphrasing attack. For instance, the true positive rate of the RoBERTa-Large-Detector from OpenAI drops from 100%percent100100\\% to 60%percent6060\\% at a realistic low false positive rate of 1%percent11\\%. In addition, we show that retrieval-based detector by Krishna et al. [ref]4 designed to evade paraphrase attacks are vulnerable to recursive paraphrasing. In fact, the accuracy of their detector falls from 100%percent100100\\% to 25%percent2525\\% with our recursive paraphrase attack. We also show that recursive paraphrasing can further deteriorate the performance of watermarking-based [ref]1 detectors (from 99%percent9999\\% to 15%percent1515\\% true positive rate at 1%percent11\\% false positive rate), zero-shot , and neural network-based detectors [ref]3. Impossibility of Detection: In §3, we present an impossibility result regarding the detection of AI-generated texts.\nAs language models advance, so does their ability to emulate human text. Indeed,\nthe problem of AI-text detection becomes more important and interesting in the presence of language models that are designed to mimic humans and evade detection111Evasion tools: https://goldpenguin.org/blog/make-ai-writing-undetectable/222Undetectable AI: https://undetectable.ai/333StealthGPT: https://www.stealthgpt.ai/ .\nWith new advances in LLMs, the distribution of AI-generated texts becomes increasingly similar to human-generated texts, making them harder to detect.\nThis similarity is reflected in the decreasing total variation distance between the distributions of human and AI-generated text sequences. Adversaries, by seeking to mimic the human-generated text distribution using AI models, implicitly reduce the total variation distance between the two distributions to evade detection. Theorem 1 shows that as the total variation between the two distributions decreases, the performance of even the best possible detector deteriorates.\nIt bounds the area under the receiver operating characteristic curve (AUROC) of the best possible detector D𝐷D as where 𝖳𝖵​(ℳ,ℋ)𝖳𝖵ℳℋ\\mathsf{TV}(\\mathcal{M},\\mathcal{H}) is the total variation distance between model-generated text distribution ℳℳ\\mathcal{M} and human-generated text distribution ℋℋ\\mathcal{H}.\nIt shows that as the total variation distance diminishes, the best-possible detection performance approaches 1/2121/2, which represents the AUROC corresponding to a classifier that randomly labels text as AI or human-generated. Our impossibility result does not imply that detection performance will necessarily become as bad as random, but that reliable detection may be unachievable.\nIn most real-world scenarios, a detector is considered good if it can achieve a high true positive rate, say 90%, while maintaining a low false positive rate, say 1%.\nThis is impossible to achieve when the two distributions overlap more than 11% (i.e., total variation <0.89absent0.89<0.89).\nThe aim of this analysis is to urge caution when dealing with detection systems that purport to detect text produced by an AI model.\nAny such system needs to be independently and rigorously evaluated for reliability and bias, ideally on language models designed to evade detection, before deployment in the real world.\n We complement our result with a tightness analysis, where we demonstrate that for a given human distribution ℋℋ\\mathcal{H}, there exists a distribution ℳℳ\\mathcal{M} and a detector D𝐷D for which the above bound holds with equality.\nIn §4, we also present a method to empirically estimate the total variation distance and show that it decreases with an increase in model size. Generalizability: Although our analysis considers the text generated by all humans and general language models, it can also be applied to specific scenarios, such as particular writing styles, clever prompt engineering, or sentence paraphrasing, by defining ℳℳ\\mathcal{M} and ℋℋ\\mathcal{H} appropriately.\nOur impossibility result does not make any assumptions on the nature of the distributions, such as ℋℋ\\mathcal{H} being a monolithic distribution shared by all humans, as claimed by Kirchenbauer et al.  in more recent work.\nThe same result can be derived using ℋℋ\\mathcal{H} to represent the text distribution produced by an individual human (e.g. Donald Trump or Barack Obama, to borrow the example used in ) and ℳℳ\\mathcal{M} to represent the output distribution of an AI seeking to mimic the individual’s writing style.\nℳℳ\\mathcal{M} could also represent the text distribution of a general-purpose language model like GPT-4 when prompted in a specific manner, e.g., ‘Write a speech in the style of …’, to induce a certain writing style.\nℋℋ\\mathcal{H} and ℳℳ\\mathcal{M} could also represent a collection of human distributions and a collection of model distributions (mimicking the human distributions) combined together using appropriate weights based on context. In Section 3.3, we extend our impossibility result to include the case where pseudorandom number generators are used in LLMs (e.g., sampling tokens) instead of true randomness.\nThis pseudorandomness could make the AI-generated text distribution very different from the human-generated text distribution .\nThis is because the pseudorandom AI-generated distribution is a collection of Dirac delta function distributions and a human is exorbitantly unlikely to produce a sample corresponding to any of the delta functions.\nThis means that the total variation between the human and pseudorandom AI-generated distributions is almost one, implying that an almost perfect detector could exist in theory.\nHowever, the existence of such a detector does not imply that it could be computed efficiently.\nWe show that, for a computationally bounded detector, the bound in Theorem 1 could be modified with a small correction term ϵitalic-ϵ\\epsilon to account for the presence of pseudorandomness.\nFormally, for a polynomial-time computable detector D𝐷D, we prove the following bound on its performance: where ϵitalic-ϵ\\epsilon is a negligible function 1/bt1superscript𝑏𝑡1/b^{t} of the number of bits b𝑏b used in the seed of the pseudorandom generator for a positive integer t𝑡t. Our impossibility result could also be used to show that AI-generated text, even with an embedded watermark, can be made difficult to detect by simply passing it through a paraphrasing tool. For a sequence s𝑠s generated by a language model, we set ℳℳ\\mathcal{M} and ℋℋ\\mathcal{H} to be the distributions of sequences of similar meaning to s𝑠s produced by the paraphraser and humans. The goal of the paraphraser is to make its output distribution similar to the distribution of human-generated sequences with respect to the total variation distance.\nThe above result puts a constraint on the performance of the detector on the rephrased AI text. Spoofing Attacks: Finally, we discuss the possibility of spoofing attacks on text generative models in §5. In this setting, an attacker generates a non-AI text that is detected to be AI-generated. An adversary can potentially launch spoofing attacks to produce derogatory texts that are detected to be AI-generated to affect the reputation of the target LLM’s developers.\nThough the random seed used for generating watermarked text is private [ref]1, we develop an attack that smartly queries the target LLM multiple times to learn its watermarking scheme. An adversarial human can then use this information to compose texts that are detected to be watermarked.\nRetrieval-based detectors [ref]4 can also be easily spoofed by registering paraphrased versions of human essays in their database. An adversarial human with the knowledge of another person’s essay could prompt an LLM to paraphrase it. The output of the LLM (paraphrased version of the human essay) would be stored in its database. The original human essay will now be detected as AI-generated since retrieval-based detectors can be robust to simple paraphrasing (while they are not robust to recursive paraphrasing). For zero-shot and neural network-based detectors, we find that a naïve attack where different human texts are combined leads to them being classified as AI-generated text.\nFigure 1 illustrates vulnerabilities of existing AI-text detectors. Identifying AI-generated text is a critical problem to avoid its misuse by users for unethical purposes such as plagiarism, generating fake news and spamming. However, deploying unreliable detectors is not the right solution to tackle this issue as a detector with a high false positive rate will cause more harm than good in society.\nOur results highlight the sensitivities of a wide range of detectors to simple practical attacks such as paraphrasing attacks. More importantly, our results indicate the impossibility of developing reliable detectors in practical scenarios — to maintain reliable detection performance, LLMs would have to trade off their performance. We hope that these findings can initiate an honest dialogue within the community concerning the ethical and dependable utilization of AI-generated text."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A watermark for large language models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2301.10226",
+      "authors": "John Kirchenbauer, Jonas Geiping, Yuxin Wen, Jonathan Katz, Ian Miers, and Tom Goldstein"
+    },
+    {
+      "index": 1,
+      "title": "DetectGPT: Zero-Shot Machine-Generated Text Detection using Probability Curvature",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2301.11305",
+      "authors": "Eric Mitchell, Yoonho Lee, Alexander Khazatsky, Christopher D Manning, and Chelsea Finn",
+      "orig_title": "Detectgpt: Zero-shot machine-generated text detection using probability curvature",
+      "paper_id": "2301.11305v2"
+    },
+    {
+      "index": 2,
+      "title": "Gpt-2: 1.5b release",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "OpenAI"
+    },
+    {
+      "index": 3,
+      "title": "Paraphrasing evades detectors of AI-generated text, but retrieval is an effective defense",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Kalpesh Krishna, Yixiao Song, Marzena Karpinska, John Wieting, and Mohit Iyyer",
+      "orig_title": "Paraphrasing evades detectors of ai-generated text, but retrieval is an effective defense",
+      "paper_id": "2303.13408v2"
+    },
+    {
+      "index": 4,
+      "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Björn Ommer",
+      "orig_title": "High-resolution image synthesis with latent diffusion models",
+      "paper_id": "2112.10752v2"
+    },
+    {
+      "index": 5,
+      "title": "Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2205.11487",
+      "authors": "Chitwan Saharia, William Chan, Saurabh Saxena, Lala Li, Jay Whang, Emily Denton, Seyed Kamyar Seyed Ghasemipour, Burcu Karagol Ayan, S Sara Mahdavi, Rapha Gontijo Lopes, et al.",
+      "orig_title": "Photorealistic text-to-image diffusion models with deep language understanding",
+      "paper_id": "2205.11487v1"
+    },
+    {
+      "index": 6,
+      "title": "Language Models are Few-Shot Learners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al.",
+      "orig_title": "Language models are few-shot learners",
+      "paper_id": "2005.14165v4"
+    },
+    {
+      "index": 7,
+      "title": "OPT: Open Pre-trained Transformer Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Susan Zhang, Stephen Roller, Naman Goyal, Mikel Artetxe, Moya Chen, Shuohui Chen, Christopher Dewan, Mona Diab, Xian Li, Xi Victoria Lin, Todor Mihaylov, Myle Ott, Sam Shleifer, Kurt Shuster, Daniel Simig, Punit Singh Koura, Anjali Sridhar, Tianlu Wang, and Luke Zettlemoyer",
+      "orig_title": "Opt: Open pre-trained transformer language models",
+      "paper_id": "2205.01068v4"
+    },
+    {
+      "index": 8,
+      "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu",
+      "orig_title": "Exploring the limits of transfer learning with a unified text-to-text transformer",
+      "paper_id": "1910.10683v4"
+    },
+    {
+      "index": 9,
+      "title": "Chatgpt: Optimizing language models for dialogue",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "OpenAI"
+    },
+    {
+      "index": 10,
+      "title": "Generating sentiment-preserving fake online reviews using neural language models and their human-and machine-based detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advanced Information Networking and Applications: 34th International Conference on Advanced Information Networking and Applications (AINA-2020)",
+      "authors": "David Ifeoluwa Adelani, Haotian Mai, Fuming Fang, Huy H Nguyen, Junichi Yamagishi, and Isao Echizen"
+    },
+    {
+      "index": 11,
+      "title": "Deepfake bot submissions to federal public comment websites cannot be distinguished from human submissions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Technology Science",
+      "authors": "Max Weiss"
+    },
+    {
+      "index": 12,
+      "title": "Cnet secretly used ai on articles that didn’t disclose that fact, staff say",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Jon Christian"
+    },
+    {
+      "index": 13,
+      "title": "Automatic Detection of Machine Generated Text: A Critical Survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2011.01314",
+      "authors": "Ganesh Jawahar, Muhammad Abdul-Mageed, and Laks VS Lakshmanan",
+      "orig_title": "Automatic detection of machine generated text: A critical survey",
+      "paper_id": "2011.01314v1"
+    },
+    {
+      "index": 14,
+      "title": "Real or Fake? Learning to Discriminate Machine from Human Generated Text",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.03351",
+      "authors": "Anton Bakhtin, Sam Gross, Myle Ott, Yuntian Deng, Marc’Aurelio Ranzato, and Arthur Szlam",
+      "orig_title": "Real or fake? learning to discriminate machine from human generated text",
+      "paper_id": "1906.03351v2"
+    },
+    {
+      "index": 15,
+      "title": "Tweepfake: About detecting deepfake tweets. arxiv",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2008.00036",
+      "authors": "T Fagni, F Falchi, M Gambini, A Martella, and M Tesconi"
+    },
+    {
+      "index": 16,
+      "title": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.11692",
+      "authors": "Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov",
+      "orig_title": "Roberta: A robustly optimized bert pretraining approach",
+      "paper_id": "1907.11692v1"
+    },
+    {
+      "index": 17,
+      "title": "Explaining and Harnessing Adversarial Examples",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6572",
+      "authors": "Ian J Goodfellow, Jonathon Shlens, and Christian Szegedy",
+      "orig_title": "Explaining and harnessing adversarial examples",
+      "paper_id": "1412.6572v3"
+    },
+    {
+      "index": 18,
+      "title": "CUDA: Convolution-based Unlearnable Datasets",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2303.04278",
+      "authors": "Vinu Sankar Sadasivan, Mahdi Soltanolkotabi, and Soheil Feizi",
+      "orig_title": "Cuda: Convolution-based unlearnable datasets",
+      "paper_id": "2303.04278v1"
+    },
+    {
+      "index": 19,
+      "title": "Certifying model accuracy under distribution shifts",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2201.12440",
+      "authors": "Aounon Kumar, Alexander Levine, Tom Goldstein, and Soheil Feizi"
+    },
+    {
+      "index": 20,
+      "title": "Improved Certified Defenses against Data Poisoning with (Deterministic) Finite Aggregation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Wenxiao Wang, Alexander J Levine, and Soheil Feizi",
+      "orig_title": "Improved certified defenses against data poisoning with (deterministic) finite aggregation",
+      "paper_id": "2202.02628v3"
+    },
+    {
+      "index": 21,
+      "title": "Release strategies and the social impacts of language models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.09203",
+      "authors": "Irene Solaiman, Miles Brundage, Jack Clark, Amanda Askell, Ariel Herbert-Voss, Jeff Wu, Alec Radford, Gretchen Krueger, Jong Wook Kim, Sarah Kreps, et al."
+    },
+    {
+      "index": 22,
+      "title": "Automatic Detection of Generated Text is Easiest when Humans are Fooled",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.00650",
+      "authors": "Daphne Ippolito, Daniel Duckworth, Chris Callison-Burch, and Douglas Eck",
+      "orig_title": "Automatic detection of generated text is easiest when humans are fooled",
+      "paper_id": "1911.00650v2"
+    },
+    {
+      "index": 23,
+      "title": "Gltr: Statistical detection and visualization of generated text",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.04043",
+      "authors": "Sebastian Gehrmann, Hendrik Strobelt, and Alexander M Rush"
+    },
+    {
+      "index": 24,
+      "title": "Natural language watermarking: Design, analysis, and a proof-of-concept implementation",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Information Hiding: 4th International Workshop, IH 2001 Pittsburgh, PA, USA, April 25–27, 2001",
+      "authors": "Mikhail J Atallah, Victor Raskin, Michael Crogan, Christian Hempelmann, Florian Kerschbaum, Dina Mohamed, and Sanket Naik"
+    },
+    {
+      "index": 25,
+      "title": "Linguistic steganography on twitter: hierarchical language modeling with manual interaction",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Media Watermarking, Security, and Forensics",
+      "authors": "Alex Wilson, Phil Blunsom, and Andrew D Ker"
+    },
+    {
+      "index": 26,
+      "title": "Protecting Language Generation Models via Invisible Watermarking",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2302.03162",
+      "authors": "Xuandong Zhao, Yu-Xiang Wang, and Lei Li",
+      "orig_title": "Protecting language generation models via invisible watermarking",
+      "paper_id": "2302.03162v3"
+    },
+    {
+      "index": 27,
+      "title": "Attacking Neural Text Detectors",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "Max Wolff",
+      "orig_title": "Attacking neural text detectors",
+      "paper_id": "2002.11768v4"
+    },
+    {
+      "index": 28,
+      "title": "My ai safety lecture for ut effective altruism",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Scott Aaronson"
+    },
+    {
+      "index": 29,
+      "title": "GPT detectors are biased against non-native English writers",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2304.02819",
+      "authors": "Weixin Liang, Mert Yuksekgonul, Yining Mao, Eric Wu, and James Zou",
+      "orig_title": "Gpt detectors are biased against non-native english writers",
+      "paper_id": "2304.02819v3"
+    },
+    {
+      "index": 30,
+      "title": "Pegasus: Pre-training with extracted gap-sentences for abstractive summarization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Jingqing Zhang, Yao Zhao, Mohammad Saleh, and Peter J. Liu"
+    },
+    {
+      "index": 31,
+      "title": "Parrot: Paraphrase generation for nlu.",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Prithiviraj Damodaran"
+    },
+    {
+      "index": 32,
+      "title": "Large Language Models can be Guided to Evade AI-Generated Text Detection",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Ning Lu, Shengcai Liu, Rui He, Qi Wang, and Ke Tang",
+      "orig_title": "Large language models can be guided to evade ai-generated text detection",
+      "paper_id": "2305.10847v6"
+    },
+    {
+      "index": 33,
+      "title": "On the Reliability of Watermarks for Large Language Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "John Kirchenbauer, Jonas Geiping, Yuxin Wen, Manli Shu, Khalid Saifullah, Kezhi Kong, Kasun Fernando, Aniruddha Saha, Micah Goldblum, and Tom Goldstein",
+      "orig_title": "On the reliability of watermarks for large language models",
+      "paper_id": "2306.04634v4"
+    },
+    {
+      "index": 34,
+      "title": "Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ArXiv",
+      "authors": "Shashi Narayan, Shay B. Cohen, and Mirella Lapata",
+      "orig_title": "Don’t give me the details, just the summary! topic-aware convolutional neural networks for extreme summarization",
+      "paper_id": "1808.08745v1"
+    },
+    {
+      "index": 35,
+      "title": "Language models are unsupervised multitask learners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever"
+    },
+    {
+      "index": 36,
+      "title": "Comparison of two pseudo-random number generators",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Advances in Cryptology: CRYPTO ’82",
+      "authors": "Lenore Blum, Manuel Blum, and Mike Shub"
+    },
+    {
+      "index": 37,
+      "title": "How to generate cryptographically strong sequences of pseudorandom bits",
+      "abstract": "",
+      "year": "1984",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Manuel Blum and Silvio Micali"
+    },
+    {
+      "index": 38,
+      "title": "On the Use of ArXiv as a Dataset",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Colin B. Clement, Matthew Bierbaum, Kevin P. O’Keeffe, and Alexander A. Alemi",
+      "orig_title": "On the use of arxiv as a dataset",
+      "paper_id": "1905.00075v1"
+    },
+    {
+      "index": 39,
+      "title": "GPT-4 Technical Report",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "OpenAI",
+      "orig_title": "Gpt-4 technical report",
+      "paper_id": "2303.08774v6"
+    },
+    {
+      "index": 40,
+      "title": "On the Possibilities of AI-Generated Text Detection",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Souradip Chakraborty, Amrit Singh Bedi, Sicheng Zhu, Bang An, Dinesh Manocha, and Furong Huang",
+      "orig_title": "On the possibilities of ai-generated text detection",
+      "paper_id": "2304.04736v3"
+    },
+    {
+      "index": 41,
+      "title": "DetectGPT: Zero-Shot Machine-Generated Text Detection using Probability Curvature",
+      "abstract": "",
+      "year": "2023",
+      "venue": "OpenReview",
+      "authors": "Eric Mitchell, Yoonho Lee, Alexander Khazatsky, Christopher D Manning, and Chelsea Finn",
+      "orig_title": "Detectgpt: Zero-shot machine-generated text detection using probability curvature",
+      "paper_id": "2301.11305v2"
+    }
+  ]
+}

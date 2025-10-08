@@ -1,0 +1,405 @@
+{
+  "paper_id": "2206.06359v1",
+  "title": "EnergyMatch: Energy-based Pseudo-Labeling for Semi-Supervised Learning",
+  "sections": {
+    "introduction": "In semi-supervised learning (SSL)   , a machine learning model is trained with (a small amount of) labeled data and (a large amount of) unlabeled data, with the goal of reducing the cost of human annotation. In recent years, the frontier of SSL has seen significant advances through pseudo-labeling 0 0 combined with consistency regularization  5 [ref]1  2 7. Pseudo-labeling, a type of self-training 1 4 technique, converts model predictions on unlabeled samples into soft or hard labels as optimization targets, while consistency regularization  5 [ref]1  2 7 trains the model to produce the same pseudo-label for two different views (strong and weak augmentations) of an unlabeled sample. State-of-the-art methods rely on confidence-based thresholding 0 2 7  for pseudo-labeling, in which only the unlabeled samples whose predicted class confidence surpasses a very high threshold (e.g., 0.95) are pseudo-labeled for training. While this typically leads to high precision in the pseudo-labels, it can lead to low recall, especially in low-data settings (e.g., for rare classes in the imbalanced scenario 6). More critically, prior studies 4 7  have shown that softmax-based confidence scores in deep networks can be arbitrarily high for samples that are far from the training data — thus, in the SSL setting, the pseudo-label for any unlabeled sample that is far from the labeled training data may be unreliable, even if the model’s confidence for it is very high. Figure 1 illustrates such an example. In this work, we present a novel perspective for pseudo-labeling in SSL. Instead of relying on a model’s prediction confidence to decide whether to pseudo-label an unlabeled instance or not, we propose to view the pseudo-labeling decision as an evolving in-distribution vs. out-of-distribution classification problem. Specifically, we treat instances that are close to the current training distribution—and hence likely to have more reliable predictions—as “in-distribution”, and those that are far—and hence likely to have unreliable predictions—as “out-of-distribution”.111Note that our definition of out-of-distribution is different from the typical definition from the Out-of-Distribution literature that constitutes unseen classes. At the beginning of training, only the unlabeled instances that are close to the initial labeled data will be treated as “in-distribution”. As training progresses, more and more unlabeled instances are pseudo-labeled. The in-distribution vs. out-of-distribution boundary will evolve to be jointly shaped by both the initial labeled samples as well as the unlabeled samples that are pseudo-labeled up to that point. Thus, unlabeled instances that were previously predicted to be out-of-distribution, could now be predicted as in-distribution as the distribution of the (pseudo-)labeled training data is continuously updated and expanded. To determine whether an unlabeled sample is in-distribution or out-of-distribution, we leverage the energy score  for its simplicity and good empirical performance. The energy score is a non-probabilistic scalar that is derived from a model’s output and theoretically aligned with the probability density of a data sample—lower/higher energy reflects data with higher/lower likelihood of occurrence following the training distribution, and has been shown to be useful for conventional out-of-distribution (OOD) detection 3. In our SSL setting, at each training iteration, we compute the energy score for each unlabeled sample and pseudo-label it if its energy is below a certain threshold. If it is, then we choose its pseudo-label to be the predicted class made by the model. To the best of our knowledge, our work is the first to consider pseudo-labeling in SSL from an in-distribution vs. out-distribution perspective. Our energy-based pseudo-labeling can easily replace vanilla confidence-based pseudo-labeling in any SSL framework. When integrated into FixMatch 2, our method performs significantly better than standard confidence-based pseudo-labeling methods when the training data is imbalanced across categories, which we believe better reflects real-world data distributions. For example, our method outperforms state-of-the-art methods by 4-6% absolute accuracy on long-tailed CIFAR10 [ref]17 when the imbalance ratio between the head class and tail class is greater than 50. When combining our energy-based pseudo-labeling with ABC 1, a method designed specifically for the long-tailed SSL setting, our approach still shows noticeable improvement, which demonstrates its generalizability to different SSL frameworks. Finally, on standard SSL benchmarks (CIFAR10/CIFAR100 [ref]17, STL-10 , and SVHN 6) where training data is mostly balanced across the categories, our method shows either comparable or better performance compared to highly-competitive baselines. This is in contrast to the existing SSL literature, in which an SSL method either performs well in the balanced or imbalanced setting, but not both."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "MixMatch: A holistic approach to semi-supervised learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "D. Berthelot, N. Carlini, I. Goodfellow, N. Papernot, A. Oliver, and C. A. Raffel"
+    },
+    {
+      "index": 1,
+      "title": "ReMixMatch: Semi-Supervised Learning with Distribution Alignment and Augmentation Anchoring",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "D. Berthelot, N. Carlini, E. D. Cubuk, A. Kurakin, K. Sohn, H. Zhang, and C. Raffel",
+      "orig_title": "ReMixMatch: Semi-supervised learning with distribution alignment and augmentation anchoring",
+      "paper_id": "1911.09785v2"
+    },
+    {
+      "index": 2,
+      "title": "Semi-supervised learning (chapelle, o. et al., eds.; 2006)[book reviews]",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Transactions on Neural Networks",
+      "authors": "O. Chapelle, B. Scholkopf, and A. Zien"
+    },
+    {
+      "index": 3,
+      "title": "An analysis of single-layer networks in unsupervised feature learning",
+      "abstract": "",
+      "year": "2011",
+      "venue": "fourteenth international conference on artificial intelligence and statistics, JMLR Workshop and Conference Proceedings",
+      "authors": "A. Coates, A. Ng, and H. Lee"
+    },
+    {
+      "index": 4,
+      "title": "RandAugment: Practical automated data augmentation with a reduced search space",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops",
+      "authors": "E. D. Cubuk, B. Zoph, J. Shlens, and Q. V. Le"
+    },
+    {
+      "index": 5,
+      "title": "Class-Balanced Loss Based on Effective Number of Samples",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "Y. Cui, M. Jia, T.-Y. Lin, Y. Song, and S. Belongie",
+      "orig_title": "Class-balanced loss based on effective number of samples",
+      "paper_id": "1901.05555v1"
+    },
+    {
+      "index": 6,
+      "title": "Improved Regularization of Convolutional Neural Networks with Cutout",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1708.04552",
+      "authors": "T. DeVries and G. W. Taylor",
+      "orig_title": "Improved regularization of convolutional neural networks with cutout",
+      "paper_id": "1708.04552v2"
+    },
+    {
+      "index": 7,
+      "title": "Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Machine Learning, PMLR",
+      "authors": "Y. Gal and Z. Ghahramani",
+      "orig_title": "Dropout as a bayesian approximation: Representing model uncertainty in deep learning",
+      "paper_id": "1506.02142v6"
+    },
+    {
+      "index": 8,
+      "title": "Semi-supervised learning by entropy minimization",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Y. Grandvalet and Y. Bengio"
+    },
+    {
+      "index": 9,
+      "title": "Your classifier is secretly an energy based model and you should treat it like one",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "W. Grathwohl, K.-C. Wang, J.-H. Jacobsen, D. Duvenaud, M. Norouzi, and K. Swersky",
+      "orig_title": "Your classifier is secretly an energy based model and you should treat it like one",
+      "paper_id": "1912.03263v3"
+    },
+    {
+      "index": 10,
+      "title": "On Calibration of Modern Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning, PMLR",
+      "authors": "C. Guo, G. Pleiss, Y. Sun, and K. Q. Weinberger",
+      "orig_title": "On calibration of modern neural networks",
+      "paper_id": "1706.04599v2"
+    },
+    {
+      "index": 11,
+      "title": "Why ReLU networks yield high-confidence predictions far away from the training data and how to mitigate the problem",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "M. Hein, M. Andriushchenko, and J. Bitterwolf",
+      "orig_title": "Why ReLU networks yield high-confidence predictions far away from the training data and how to mitigate the problem",
+      "paper_id": "1812.05720v2"
+    },
+    {
+      "index": 12,
+      "title": "A Baseline for Detecting Misclassified and Out-of-Distribution Examples in Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations",
+      "authors": "D. Hendrycks and K. Gimpel",
+      "orig_title": "A baseline for detecting misclassified and out-of-distribution examples in neural networks",
+      "paper_id": "1610.02136v3"
+    },
+    {
+      "index": 13,
+      "title": "Label Propagation for Deep Semi-supervised Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "A. Iscen, G. Tolias, Y. Avrithis, and O. Chum",
+      "orig_title": "Label propagation for deep semi-supervised learning",
+      "paper_id": "1904.04717v1"
+    },
+    {
+      "index": 14,
+      "title": "Distribution Aligning Refinery of Pseudo-label for Imbalanced Semi-supervised Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "J. Kim, Y. Hur, S. Park, E. Yang, S. J. Hwang, and J. Shin",
+      "orig_title": "Distribution aligning refinery of pseudo-label for imbalanced semi-supervised learning",
+      "paper_id": "2007.08844v2"
+    },
+    {
+      "index": 15,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 16,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Technical report, University of Toronto",
+      "authors": "A. Krizhevsky and G. Hinton"
+    },
+    {
+      "index": 17,
+      "title": "Temporal Ensembling for Semi-Supervised Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations",
+      "authors": "S. Laine and T. Aila",
+      "orig_title": "Temporal ensembling for semi-supervised learning",
+      "paper_id": "1610.02242v3"
+    },
+    {
+      "index": 18,
+      "title": "A tutorial on energy-based learning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Predicting structured data",
+      "authors": "Y. LeCun, S. Chopra, R. Hadsell, M. Ranzato, and F. Huang"
+    },
+    {
+      "index": 19,
+      "title": "Pseudo-label: The simple and efficient semi-supervised learning method for deep neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Workshop on challenges in representation learning, ICML",
+      "authors": "D.-H. Lee et al."
+    },
+    {
+      "index": 20,
+      "title": "ABC: Auxiliary Balanced Classifier for Class-imbalanced Semi-supervised Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "H. Lee, S. Shin, and H. Kim",
+      "orig_title": "ABC: Auxiliary balanced classifier for class-imbalanced semi-supervised learning",
+      "paper_id": "2110.10368v1"
+    },
+    {
+      "index": 21,
+      "title": "Enhancing The Reliability of Out-of-distribution Image Detection in Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "S. Liang, Y. Li, and R. Srikant",
+      "orig_title": "Enhancing the reliability of out-of-distribution image detection in neural networks",
+      "paper_id": "1706.02690v5"
+    },
+    {
+      "index": 22,
+      "title": "Energy-based Out-of-distribution Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "W. Liu, X. Wang, J. Owens, and Y. Li",
+      "orig_title": "Energy-based out-of-distribution detection",
+      "paper_id": "2010.03759v4"
+    },
+    {
+      "index": 23,
+      "title": "Iterative reclassification procedure for constructing an asymptotically optimal rule of allocation in discriminant analysis",
+      "abstract": "",
+      "year": "1975",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "G. J. McLachlan"
+    },
+    {
+      "index": 24,
+      "title": "Virtual Adversarial Training: A Regularization Method for Supervised and Semi-Supervised Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "T. Miyato, S.-i. Maeda, M. Koyama, and S. Ishii",
+      "orig_title": "Virtual adversarial training: a regularization method for supervised and semi-supervised learning",
+      "paper_id": "1704.03976v2"
+    },
+    {
+      "index": 25,
+      "title": "Reading digits in natural images with unsupervised feature learning",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Workshop on Deep Learning and Unsupervised Feature Learning, NIPS",
+      "authors": "Y. Netzer, T. Wang, A. Coates, A. Bissacco, B. Wu, and A. Y. Ng"
+    },
+    {
+      "index": 26,
+      "title": "Deep Neural Networks are Easily Fooled: High Confidence Predictions for Unrecognizable Images",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "A. Nguyen, J. Yosinski, and J. Clune",
+      "orig_title": "Deep neural networks are easily fooled: High confidence predictions for unrecognizable images",
+      "paper_id": "1412.1897v4"
+    },
+    {
+      "index": 27,
+      "title": "Realistic Evaluation of Deep Semi-Supervised Learning Algorithms",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Oliver, A. Odena, C. A. Raffel, E. D. Cubuk, and I. Goodfellow",
+      "orig_title": "Realistic evaluation of deep semi-supervised learning algorithms",
+      "paper_id": "1804.09170v4"
+    },
+    {
+      "index": 28,
+      "title": "In Defense of Pseudo-Labeling: An Uncertainty-Aware Pseudo-label Selection Framework for Semi-Supervised Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "M. N. Rizve, K. Duarte, Y. S. Rawat, and M. Shah",
+      "orig_title": "In defense of pseudo-labeling: An uncertainty-aware pseudo-label selection framework for semi-supervised learning",
+      "paper_id": "2101.06329v3"
+    },
+    {
+      "index": 29,
+      "title": "Semi-supervised self-training of object detection models",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Seventh IEEE Workshops on Applications of Computer Vision (WACV/MOTION’05)-Volume 1",
+      "authors": "C. Rosenberg, M. Hebert, and H. Schneiderman"
+    },
+    {
+      "index": 30,
+      "title": "Probability of error of some adaptive pattern-recognition machines",
+      "abstract": "",
+      "year": "1965",
+      "venue": "IEEE Transactions on Information Theory",
+      "authors": "H. Scudder"
+    },
+    {
+      "index": 31,
+      "title": "FixMatch: Simplifying semi-supervised learning with consistency and confidence",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "K. Sohn, D. Berthelot, N. Carlini, Z. Zhang, H. Zhang, C. A. Raffel, E. D. Cubuk, A. Kurakin, and C.-L. Li"
+    },
+    {
+      "index": 32,
+      "title": "Graph-based semi-supervised learning: A comprehensive review",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "Z. Song, X. Yang, Z. Xu, and I. King"
+    },
+    {
+      "index": 33,
+      "title": "Intriguing properties of neural networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conference on Learning Representations",
+      "authors": "C. Szegedy, W. Zaremba, I. Sutskever, J. Bruna, D. Erhan, I. Goodfellow, and R. Fergus"
+    },
+    {
+      "index": 34,
+      "title": "Mean teachers are better role models: Weight-averaged consistency targets improve semi-supervised deep learning results",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Tarvainen and H. Valpola",
+      "orig_title": "Mean teachers are better role models: Weight-averaged consistency targets improve semi-supervised deep learning results",
+      "paper_id": "1703.01780v6"
+    },
+    {
+      "index": 35,
+      "title": "CReST: A class-rebalancing self-training framework for imbalanced semi-supervised learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "C. Wei, K. Sohn, C. Mellina, A. Yuille, and F. Yang"
+    },
+    {
+      "index": 36,
+      "title": "Unsupervised data augmentation for consistency training",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Q. Xie, Z. Dai, E. Hovy, T. Luong, and Q. Le"
+    },
+    {
+      "index": 37,
+      "title": "Self-training with noisy student improves imagenet classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "Q. Xie, M.-T. Luong, E. Hovy, and Q. V. Le"
+    },
+    {
+      "index": 38,
+      "title": "Wide Residual Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "British Machine Vision Conference, British Machine Vision Association",
+      "authors": "S. Zagoruyko and N. Komodakis",
+      "orig_title": "Wide residual networks",
+      "paper_id": "1605.07146v4"
+    },
+    {
+      "index": 39,
+      "title": "FlexMatch: Boosting Semi-Supervised Learning with Curriculum Pseudo Labeling",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "B. Zhang, Y. Wang, W. Hou, H. Wu, J. Wang, M. Okumura, and T. Shinozaki",
+      "orig_title": "FlexMatch: Boosting semi-supervised learning with curriculum pseudo labeling",
+      "paper_id": "2110.08263v3"
+    },
+    {
+      "index": 40,
+      "title": "mixup: Beyond Empirical Risk Minimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "H. Zhang, M. Cisse, Y. N. Dauphin, and D. Lopez-Paz",
+      "orig_title": "mixup: Beyond empirical risk minimization",
+      "paper_id": "1710.09412v2"
+    },
+    {
+      "index": 41,
+      "title": "Learning from labeled and unlabeled data with label propagation",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Technical report, CMU-CALD-02-107, Carnegie Mellon University",
+      "authors": "X. Zhu and Z. Ghahramani"
+    },
+    {
+      "index": 42,
+      "title": "Introduction to semi-supervised learning",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Synthesis lectures on artificial intelligence and machine learning",
+      "authors": "X. Zhu and A. B. Goldberg"
+    },
+    {
+      "index": 43,
+      "title": "Semi-supervised learning literature survey",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Technical report, University of Wisconsin-Madison Department of Computer Sciences",
+      "authors": "X. J. Zhu"
+    }
+  ]
+}

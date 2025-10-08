@@ -1,0 +1,433 @@
+{
+  "paper_id": "2111.05008v1",
+  "title": "Misspecified Gaussian Process Bandit Optimization",
+  "sections": {
+    "appendix a gp bandits: useful definitions and auxiliary results (realizable setting)": "Assumed observation model. We say a real-valued random variable X𝑋X is σ𝜎\\sigma-sub-Gaussian if it its mean is zero and for all ε∈ℝ𝜀ℝ\\varepsilon\\in\\mathbb{R} we have At every round t𝑡t, the learner selects xt∈Dsubscript𝑥𝑡𝐷x_{t}\\in D and observes the noisy function evaluation where we assume {ηt}t=1Tsuperscriptsubscriptsubscript𝜂𝑡𝑡1𝑇\\{\\eta_{t}\\}_{t=1}^{T} are σ𝜎\\sigma-sub-Gaussian random variables that are independent over time steps. Such assumptions on the noise variables are frequently used in bandit optimization. Typically, in kernelized bandits, we assume that unknown f∈ℱk​(𝒟;B)={f∈ℋk​(𝒟):‖f‖k≤B}𝑓subscriptℱ𝑘𝒟𝐵conditional-set𝑓subscriptℋ𝑘𝒟subscriptnorm𝑓𝑘𝐵f\\in{\\cal F}_{k}({\\cal D};B)=\\{f\\in{\\cal H}_{k}({\\cal D}):\\|f\\|_{k}\\leq B\\}, where ℋk​(𝒟)subscriptℋ𝑘𝒟{\\cal H}_{k}({\\cal D}) is the reproducing kernel Hilbert space of functions associated with the given positive-definite kernel function. Typically, the learner knows ℱk​(𝒟;B)subscriptℱ𝑘𝒟𝐵{\\cal F}_{k}({\\cal D};B), meaning that both k​(⋅,⋅)𝑘⋅⋅k(\\cdot,\\cdot) and B𝐵B are considered as input to the learner’s algorithm. Example kernel functions.\nWe outline some commonly used kernel functions k:𝒟×𝒟→ℝ:𝑘→𝒟𝒟ℝk:{\\cal D}\\times{\\cal D}\\to\\mathbb{R}, that we also consider: Linear kernel: klin​(x,x′)=xT​x′subscript𝑘lin𝑥superscript𝑥′superscript𝑥𝑇superscript𝑥′k_{\\text{lin}}(x,x^{\\prime})=x^{T}x^{\\prime}, Squared exponential kernel: kSE​(x,x′)=exp⁡(−‖x−x′‖22​l2)subscript𝑘SE𝑥superscript𝑥′superscriptnorm𝑥superscript𝑥′22superscript𝑙2k_{\\text{SE}}(x,x^{\\prime})=\\exp\\left(-\\dfrac{\\|x-x^{\\prime}\\|^{2}}{2l^{2}}\\right), Matérn kernel: kMat​(x,x′)=21−νΓ​(ν)​(2​ν​‖x−x′‖l)​Jν​(2​ν​‖x−x′‖l)subscript𝑘Mat𝑥superscript𝑥′superscript21𝜈Γ𝜈2𝜈norm𝑥superscript𝑥′𝑙subscript𝐽𝜈2𝜈norm𝑥superscript𝑥′𝑙k_{\\text{Mat}}(x,x^{\\prime})=\\frac{2^{1-\\nu}}{\\Gamma(\\nu)}\\Big{(}\\frac{\\sqrt{2\\nu}\\|x-x^{\\prime}\\|}{l}\\Big{)}J_{\\nu}\\Big{(}\\frac{\\sqrt{2\\nu}\\|x-x^{\\prime}\\|}{l}\\Big{)}, where l𝑙l denotes the length-scale hyperparameter, ν>0𝜈0\\nu>0 is an additional hyperparameter that dictates the smoothness, and J​(ν)𝐽𝜈J(\\nu) and Γ​(ν)Γ𝜈\\Gamma(\\nu) denote the modified Bessel function and the Gamma function, respectively [ref]34. Maximum information gain.\nMaximum information gain is a kernel-dependent quantity that measures the complexity of the given function class. It has first been introduced in , and since then it has been used in numerous works on Gaussian process bandits. Typically, the upper regret bounds in Gaussian process bandits are expressed in terms of this complexity measure. It represents the maximum amount of information that a set of noisy observations can reveal about the unknown f𝑓f that is sampled from a zero-mean Gaussian process with kernel k𝑘k, i.e., f∼G​P​(0,k)similar-to𝑓𝐺𝑃0𝑘f\\sim GP(0,k). More precisely, for a set of sampling points S⊂𝒟𝑆𝒟S\\subset{\\cal D}, we use fSsubscript𝑓𝑆f_{S} to denote a random vector [f​(x)]x∈Ssubscriptdelimited-[]𝑓𝑥𝑥𝑆[f(x)]_{x\\in S}, and YSsubscript𝑌𝑆Y_{S} to denote the corresponding noisy observations obtained as YS=fS+ηSsubscript𝑌𝑆subscript𝑓𝑆subscript𝜂𝑆Y_{S}=f_{S}+\\eta_{S}, where ηS∼𝒩​(0,λ​I)similar-tosubscript𝜂𝑆𝒩0𝜆𝐼\\eta_{S}\\sim\\mathcal{N}(0,\\lambda I). We note that under this setup after observing YSsubscript𝑌𝑆Y_{S}, the posterior distribution of f𝑓f is a Gaussian process with posterior mean and variance that correspond to Eq. 8 and Eq. 9. The maximum information gain (about f𝑓f) after observing t𝑡t noisy samples is defined as (see ): where I​(⋅,⋅)𝐼⋅⋅I(\\cdot,\\cdot) denotes the mutual information between random variables, |⋅||\\cdot| is used to denote a matrix determinant, and Ktsubscript𝐾𝑡K_{t} is a kernel matrix [k​(xs,xs′)]s,s′≤t∈ℝt×tsubscriptdelimited-[]𝑘subscript𝑥𝑠subscript𝑥superscript𝑠′𝑠superscript𝑠′𝑡superscriptℝ𝑡𝑡[k(x_{s},x_{s^{\\prime}})]_{s,s^{\\prime}\\leq t}\\in\\mathbb{R}^{t\\times t}. Under the previous setup (GP prior and Gaussian likelihood), the maximum information gain can be expressed in terms of predictive GP variances: The proof of this claim can be found in [40, Lemma 5.3]. It also allows us to rewrite Eq. (12) from Lemma 1 in the following frequently used form: Next, we outline an important relation (due to ) frequently used to relate the sum of GP predictive standard deviations with the maximum information gain. We use the formulation that follows from Lemma 4 in : Consider some kernel k:𝒟×𝒟→ℝ:𝑘→𝒟𝒟ℝk:{\\cal D}\\times{\\cal D}\\to\\mathbb{R} such that k​(x,x)≤1𝑘𝑥𝑥1k(x,x)\\leq 1 for every x∈𝒟𝑥𝒟x\\in{\\cal D}, and let f∼G​P​(0,k)similar-to𝑓𝐺𝑃0𝑘f\\sim GP(0,k) be a sample from a zero-mean GP with the corresponding kernel function. Then for any set of queried points {x1,…,xt}subscript𝑥1…subscript𝑥𝑡\\{x_{1},\\dots,x_{t}\\} and λ>0𝜆0\\lambda>0, it holds that Finally, we outline bounds on γt​(k,𝒟)subscript𝛾𝑡𝑘𝒟\\gamma_{t}(k,{\\cal D}) for commonly used kernels as provided in . An important observation is that the maximum information gain is sublinear in terms of number of samples t𝑡t for these kernels. Let d∈ℕ𝑑ℕd\\in\\mathbb{N} and 𝒟⊂ℝd𝒟superscriptℝ𝑑{\\cal D}\\subset\\mathbb{R}^{d} be a compact and convex set. Consider a kernel k:𝒟×𝒟→ℝ:𝑘→𝒟𝒟ℝk:{\\cal D}\\times{\\cal D}\\to\\mathbb{R} such that k​(x,x)≤1𝑘𝑥𝑥1k(x,x)\\leq 1 for every x∈𝒟𝑥𝒟x\\in{\\cal D}, and let f∼G​P​(0,k)similar-to𝑓𝐺𝑃0𝑘f\\sim GP(0,k) be a sample from a zero-mean Gaussian Process (supported on 𝒟𝒟{\\cal D}) with the corresponding kernel function. Then in case of Linear kernel: γt​(klin,𝒟)=O​(d​log⁡t)subscript𝛾𝑡subscript𝑘lin𝒟𝑂𝑑𝑡\\gamma_{t}(k_{\\text{lin}},{\\cal D})=O(d\\log t), Squared exponential kernel: γt​(kSE,𝒟)=O​((log⁡t)d+1)subscript𝛾𝑡subscript𝑘SE𝒟𝑂superscript𝑡𝑑1\\gamma_{t}(k_{\\text{SE}},{\\cal D})=O((\\log t)^{d+1}), Matérn kernel: γt​(kMat,𝒟)=O​(td​(d+1)/(2​ν+d​(d+1))​log⁡t)subscript𝛾𝑡subscript𝑘Mat𝒟𝑂superscript𝑡𝑑𝑑12𝜈𝑑𝑑1𝑡\\gamma_{t}(k_{\\text{Mat}},{\\cal D})=O(t^{d(d+1)/(2\\nu+d(d+1))}\\log t). We also note that the previous rates in case of the Matérn kernel have been recently improved to:\nO​(td2​ν+d​(log⁡t)2​ν2​ν+d)𝑂superscript𝑡𝑑2𝜈𝑑superscript𝑡2𝜈2𝜈𝑑O\\Big{(}t^{\\tfrac{d}{2\\nu+d}}(\\log t)^{\\tfrac{2\\nu}{2\\nu+d}}\\Big{)} in ."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Improved algorithms for linear stochastic bandits",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Yasin Abbasi-Yadkori, Dávid Pál, and Csaba Szepesvári"
+    },
+    {
+      "index": 1,
+      "title": "Corralling a band of bandit algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Conference on Learning Theory",
+      "authors": "Alekh Agarwal, Haipeng Luo, Behnam Neyshabur, and Robert E Schapire"
+    },
+    {
+      "index": 2,
+      "title": "No-Regret Bayesian Optimization with Unknown Hyperparameters",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1901.03357",
+      "authors": "Felix Berkenkamp, Angela P Schoellig, and Andreas Krause",
+      "orig_title": "No-regret Bayesian optimization with unknown hyperparameters",
+      "paper_id": "1901.03357v2"
+    },
+    {
+      "index": 3,
+      "title": "Corruption-tolerant Gaussian process bandit optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Conference on Artificial Intelligence and Statistics (AISTATS)",
+      "authors": "Ilija Bogunovic, Andreas Krause, and Scarlett Jonathan"
+    },
+    {
+      "index": 4,
+      "title": "Adversarially Robust Optimization with Gaussian Processes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Ilija Bogunovic, Jonathan Scarlett, Stefanie Jegelka, and Volkan Cevher",
+      "orig_title": "Adversarially robust optimization with Gaussian processes",
+      "paper_id": "1810.10775v2"
+    },
+    {
+      "index": 5,
+      "title": "Truncated Variance Reduction: A Unified Approach to Bayesian Optimization and Level-Set Estimation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Ilija Bogunovic, Jonathan Scarlett, Andreas Krause, and Volkan Cevher",
+      "orig_title": "Truncated variance reduction: A unified approach to Bayesian optimization and level-set estimation",
+      "paper_id": "1610.07379v1"
+    },
+    {
+      "index": 6,
+      "title": "Bayesian optimization of risk measures",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2007.05554",
+      "authors": "Sait Cakmak, Raul Astudillo, Peter Frazier, and Enlu Zhou"
+    },
+    {
+      "index": 7,
+      "title": "High-dimensional experimental design and kernel bandits",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Romain Camilleri, Kevin Jamieson, and Julian Katz-Samuels"
+    },
+    {
+      "index": 8,
+      "title": "On Kernelized Multi-armed Bandits",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Sayak Ray Chowdhury and Aditya Gopalan",
+      "orig_title": "On kernelized multi-armed bandits",
+      "paper_id": "1704.00445v2"
+    },
+    {
+      "index": 9,
+      "title": "Parallel Gaussian process optimization with upper confidence bound and pure exploration",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Joint European Conference on Machine Learning and Knowledge Discovery in Databases",
+      "authors": "Emile Contal, David Buffoni, Alexandre Robicquet, and Nicolas Vayatis"
+    },
+    {
+      "index": 10,
+      "title": "Regret bounds for deterministic Gaussian process bandits",
+      "abstract": "",
+      "year": "2012",
+      "venue": "arXiv preprint arXiv:1203.2177",
+      "authors": "Nando de Freitas, Alex Smola, and Masrour Zoghi"
+    },
+    {
+      "index": 11,
+      "title": "Is a good representation sufficient for sample efficient reinforcement learning?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.03016",
+      "authors": "Simon S Du, Sham M Kakade, Ruosong Wang, and Lin F Yang"
+    },
+    {
+      "index": 12,
+      "title": "Streaming kernel regression with provably adaptive mean, variance, and regularization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "Audrey Durand, Odalric-Ambrym Maillard, and Joelle Pineau",
+      "orig_title": "Streaming kernel regression with provably adaptive mean, variance, and regularization",
+      "paper_id": "1708.00768v1"
+    },
+    {
+      "index": 13,
+      "title": "Adapting to misspecification in contextual bandits",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Dylan J Foster, Claudio Gentile, Mehryar Mohri, and Julian Zimmert"
+    },
+    {
+      "index": 14,
+      "title": "Beyond UCB: Optimal and efficient contextual bandits with regression oracles",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.04926",
+      "authors": "Dylan J Foster and Alexander Rakhlin"
+    },
+    {
+      "index": 15,
+      "title": "Misspecified Linear Bandits",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Avishek Ghosh, Sayak Ray Chowdhury, and Aditya Gopalan",
+      "orig_title": "Misspecified linear bandits",
+      "paper_id": "1704.06880v1"
+    },
+    {
+      "index": 16,
+      "title": "Provably Efficient Reinforcement Learning with Linear Function Approximation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Conference on Learning Theory",
+      "authors": "Chi Jin, Zhuoran Yang, Zhaoran Wang, and Michael I Jordan",
+      "orig_title": "Provably efficient reinforcement learning with linear function approximation",
+      "paper_id": "1907.05388v2"
+    },
+    {
+      "index": 17,
+      "title": "Gaussian Processes and Kernel Methods: A Review on Connections and Equivalences",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1807.02582",
+      "authors": "Motonobu Kanagawa, Philipp Hennig, Dino Sejdinovic, and Bharath K Sriperumbudur",
+      "orig_title": "Gaussian processes and kernel methods: A review on connections and equivalences",
+      "paper_id": "1807.02582v1"
+    },
+    {
+      "index": 18,
+      "title": "The equivalence of two extremum problems",
+      "abstract": "",
+      "year": "1960",
+      "venue": "Canadian Journal of Mathematics",
+      "authors": "Jack Kiefer and Jacob Wolfowitz"
+    },
+    {
+      "index": 19,
+      "title": "Distributionally robust Bayesian optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.09038",
+      "authors": "Johannes Kirschner, Ilija Bogunovic, Stefanie Jegelka, and Andreas Krause"
+    },
+    {
+      "index": 20,
+      "title": "Stochastic Bandits with Context Distributions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Johannes Kirschner and Andreas Krause",
+      "orig_title": "Stochastic bandits with context distributions",
+      "paper_id": "1906.02685v2"
+    },
+    {
+      "index": 21,
+      "title": "Contextual Gaussian process bandit optimization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Andreas Krause and Cheng S Ong"
+    },
+    {
+      "index": 22,
+      "title": "Near-optimal sensor placements in gaussian processes: Theory, efficient algorithms and empirical studies",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Andreas Krause, Ajit Singh, and Carlos Guestrin"
+    },
+    {
+      "index": 23,
+      "title": "Learning with good feature representations in bandits and in RL with a generative model",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Tor Lattimore, Csaba Szepesvari, and Gellert Weisz"
+    },
+    {
+      "index": 24,
+      "title": "A contextual-bandit approach to personalized news article recommendation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "International conference on World Wide Web",
+      "authors": "Lihong Li, Wei Chu, John Langford, and Robert E Schapire"
+    },
+    {
+      "index": 25,
+      "title": "Hyperband: A Novel Bandit-Based Approach to Hyperparameter Optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "Lisha Li, Kevin Jamieson, Giulia DeSalvo, Afshin Rostamizadeh, and Ameet Talwalkar",
+      "orig_title": "Hyperband: A novel bandit-based approach to hyperparameter optimization",
+      "paper_id": "1603.06560v4"
+    },
+    {
+      "index": 26,
+      "title": "Competing Bandits in Matching Markets",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Artificial Intelligence and Statistics",
+      "authors": "Lydia T Liu, Horia Mania, and Michael Jordan",
+      "orig_title": "Competing bandits in matching markets",
+      "paper_id": "1906.05363v2"
+    },
+    {
+      "index": 27,
+      "title": "Universal kernels",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Charles A Micchelli, Yuesheng Xu, and Haizhang Zhang"
+    },
+    {
+      "index": 28,
+      "title": "Uncertainty quantification using martingales for misspecified Gaussian processes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.07368",
+      "authors": "Willie Neiswanger and Aaditya Ramdas",
+      "orig_title": "Uncertainty quantification using martingales for misspecified Gaussian processes",
+      "paper_id": "2006.07368v2"
+    },
+    {
+      "index": 29,
+      "title": "Efficient and robust algorithms for adversarial linear contextual bandits",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.00287",
+      "authors": "Gergely Neu and Julia Olkhovskaya",
+      "orig_title": "Efficient and robust algorithms for adversarial linear contextual bandits",
+      "paper_id": "2002.00287v3"
+    },
+    {
+      "index": 30,
+      "title": "Distributionally robust Bayesian quadrature optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2001.06814",
+      "authors": "Thanh Tang Nguyen, Sunil Gupta, Huong Ha, Santu Rana, and Svetha Venkatesh"
+    },
+    {
+      "index": 31,
+      "title": "Regret Bound Balancing and Elimination for Model Selection in Bandits and RL",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2012.13045",
+      "authors": "Aldo Pacchiano, Christoph Dann, Claudio Gentile, and Peter Bartlett",
+      "orig_title": "Regret bound balancing and elimination for model selection in bandits and RL",
+      "paper_id": "2012.13045v1"
+    },
+    {
+      "index": 32,
+      "title": "Model selection in contextual stochastic bandit problems",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.01704",
+      "authors": "Aldo Pacchiano, My Phan, Yasin Abbasi-Yadkori, Anup Rao, Julian Zimmert, Tor Lattimore, and Csaba Szepesvari"
+    },
+    {
+      "index": 33,
+      "title": "Gaussian processes for machine learning, volume 1",
+      "abstract": "",
+      "year": "2006",
+      "venue": "MIT press Cambridge",
+      "authors": "Carl Edward Rasmussen and Christopher KI Williams"
+    },
+    {
+      "index": 34,
+      "title": "Tight Regret Bounds for Bayesian Optimization in One Dimension",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Jonathan Scarlett",
+      "orig_title": "Tight regret bounds for Bayesian optimization in one dimension",
+      "paper_id": "1805.11792v3"
+    },
+    {
+      "index": 35,
+      "title": "Lower Bounds on Regret for Noisy Gaussian Process Bandit Optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Conference on Learning Theory (COLT)",
+      "authors": "Jonathan Scarlett, Ilijia Bogunovic, and Volkan Cevher",
+      "orig_title": "Lower bounds on regret for noisy Gaussian process bandit optimization",
+      "paper_id": "1706.00090v3"
+    },
+    {
+      "index": 36,
+      "title": "Quantifying mismatch in Bayesian optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NeurIPS workshop on Bayesian optimization: Black-box optimization and beyond",
+      "authors": "Eric Schulz, Maarten Speekenbrink, José Miguel Hernández-Lobato, Zoubin Ghahramani, and Samuel J Gershman"
+    },
+    {
+      "index": 37,
+      "title": "Mixed strategies for robust optimization of unknown objectives",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Conference on Artificial Intelligence and Statistics (AISTATS)",
+      "authors": "Pier Giuseppe Sessa, Ilija Bogunovic, Maryam Kamgarpour, and Andreas Krause"
+    },
+    {
+      "index": 38,
+      "title": "Gaussian Process Bandits with Adaptive Discretization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Electronic Journal of Statistics",
+      "authors": "Shubhanshu Shekhar and Tara Javidi",
+      "orig_title": "Gaussian process bandits with adaptive discretization",
+      "paper_id": "1712.01447v2"
+    },
+    {
+      "index": 39,
+      "title": "Gaussian process optimization in the bandit setting: No regret and experimental design",
+      "abstract": "",
+      "year": "2010",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Niranjan Srinivas, Andreas Krause, Sham M Kakade, and Matthias Seeger"
+    },
+    {
+      "index": 40,
+      "title": "Safe exploration for optimization with Gaussian processes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Yanan Sui, Alkis Gotovos, Joel Burdick, and Andreas Krause"
+    },
+    {
+      "index": 41,
+      "title": "From ads to interventions: Contextual bandits in mobile health",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Mobile Health",
+      "authors": "Ambuj Tewari and Susan A Murphy"
+    },
+    {
+      "index": 42,
+      "title": "On information gain and regret bounds in Gaussian process bandits",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2009.06966",
+      "authors": "Sattar Vakili, Kia Khezeli, and Victor Picheny"
+    },
+    {
+      "index": 43,
+      "title": "Finite-time analysis of kernelised contextual bandits",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Uncertainty In Artificial Intelligence (UAI)",
+      "authors": "Michal Valko, Nathaniel Korda, Rémi Munos, Ilias Flaounas, and Nelo Cristianini"
+    },
+    {
+      "index": 44,
+      "title": "Comments on the du-kakade-wang-yang lower bounds",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.07910",
+      "authors": "Benjamin Van Roy and Shi Dong"
+    },
+    {
+      "index": 45,
+      "title": "Theoretical Analysis of Bayesian Optimisation with Unknown Gaussian Process Hyper-Parameters",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1406.7758",
+      "authors": "Ziyu Wang and Nando de Freitas",
+      "orig_title": "Theoretical analysis of Bayesian optimisation with unknown Gaussian process hyper-parameters",
+      "paper_id": "1406.7758v1"
+    },
+    {
+      "index": 46,
+      "title": "Convergence Guarantees for Gaussian Process Means With Misspecified Likelihoods and Smoothness",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "George Wynne, Francois-Xavier Briol, and Mark Girolami",
+      "orig_title": "Convergence guarantees for Gaussian process means with misspecified likelihoods and smoothness",
+      "paper_id": "2001.10818v3"
+    },
+    {
+      "index": 47,
+      "title": "Learning Near Optimal Policies with Low Inherent Bellman Error",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.00153",
+      "authors": "Andrea Zanette, Alessandro Lazaric, Mykel Kochenderfer, and Emma Brunskill",
+      "orig_title": "Learning near optimal policies with low inherent Bellman error",
+      "paper_id": "2003.00153v3"
+    }
+  ]
+}

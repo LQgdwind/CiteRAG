@@ -1,0 +1,561 @@
+{
+  "paper_id": "2110.13985v1",
+  "title": "Combining Recurrent, Convolutional, and Continuous-time Models with Linear State-Space Layers",
+  "abstract": "Abstract\nRecurrent neural networks (RNNs), temporal convolutions, and neural differential equations (NDEs) are popular families of deep learning models for time-series data,\neach with unique strengths and tradeoffs in modeling power and computational efficiency.\nWe introduce a simple sequence model inspired by control systems that generalizes these approaches while addressing their shortcomings.\nThe Linear State-Space Layer (LSSL) maps a sequence u↦ymaps-to𝑢𝑦u\\mapsto y by simply simulating a linear continuous-time state-space representation x˙=A​x+B​u,y=C​x+D​uformulae-sequence˙𝑥𝐴𝑥𝐵𝑢𝑦𝐶𝑥𝐷𝑢\\dot{x}=Ax+Bu,y=Cx+Du.\nTheoretically, we show that LSSL models are closely related to the three aforementioned families of models and inherit their strengths.\nFor example, they generalize convolutions to continuous-time, explain common RNN heuristics,\nand share features of NDEs such as time-scale adaptation.\nWe then incorporate and generalize recent theory on continuous-time memorization to introduce a trainable subset of structured matrices A𝐴A that endow LSSLs with long-range memory.\nEmpirically, stacking LSSL layers into a simple deep neural network obtains state-of-the-art results across time series benchmarks for long dependencies in sequential image classification, real-world healthcare regression tasks, and speech.\nOn a difficult speech classification task with length-16000 sequences, LSSL outperforms prior approaches by 24 accuracy points, and even outperforms\nbaselines that use hand-crafted features on 100x shorter sequences.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Mathematical methods for physicists : a comprehensive guide",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Academic Press",
+      "authors": "George B. Arfken, Hans J. Weber, Frank E. Harris"
+    },
+    {
+      "index": 1,
+      "title": "Unitary Evolution Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "The International Conference on Machine Learning (ICML)",
+      "authors": "Martin Arjovsky, Amar Shah, and Yoshua Bengio",
+      "orig_title": "Unitary evolution recurrent neural networks",
+      "paper_id": "1511.06464v4"
+    },
+    {
+      "index": 2,
+      "title": "An empirical evaluation of generic convolutional and recurrent networks for sequence modeling",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1803.01271",
+      "authors": "Shaojie Bai, J Zico Kolter, and Vladlen Koltun"
+    },
+    {
+      "index": 3,
+      "title": "Trellis Networks for Sequence Modeling",
+      "abstract": "",
+      "year": "2019",
+      "venue": "The International Conference on Learning Representations (ICLR)",
+      "authors": "Shaojie Bai, J Zico Kolter, and Vladlen Koltun",
+      "orig_title": "Trellis networks for sequence modeling",
+      "paper_id": "1810.06682v2"
+    },
+    {
+      "index": 4,
+      "title": "Quasi-Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.01576",
+      "authors": "James Bradbury, Stephen Merity, Caiming Xiong, and Richard Socher",
+      "orig_title": "Quasi-recurrent neural networks",
+      "paper_id": "1611.01576v2"
+    },
+    {
+      "index": 5,
+      "title": "Numerical methods for ordinary differential equations, volume 2",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Wiley Online Library",
+      "authors": "John Charles Butcher and Nicolette Goodwin"
+    },
+    {
+      "index": 6,
+      "title": "AntisymmetricRNN: A Dynamical System View on Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Bo Chang, Minmin Chen, Eldad Haber, and Ed H Chi",
+      "orig_title": "Antisymmetricrnn: A dynamical system view on recurrent neural networks",
+      "paper_id": "1902.09689v1"
+    },
+    {
+      "index": 7,
+      "title": "Dilated Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Shiyu Chang, Yang Zhang, Wei Han, Mo Yu, Xiaoxiao Guo, Wei Tan, Xiaodong Cui, Michael Witbrock, Mark Hasegawa-Johnson, and Thomas S Huang",
+      "orig_title": "Dilated recurrent neural networks",
+      "paper_id": "1710.02224v3"
+    },
+    {
+      "index": 8,
+      "title": "Recurrent Neural Networks for Multivariate Time Series with Missing Values",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Scientific reports",
+      "authors": "Zhengping Che, Sanjay Purushotham, Kyunghyun Cho, David Sontag, and Yan Liu",
+      "orig_title": "Recurrent neural networks for multivariate time series with missing values",
+      "paper_id": "1606.01865v2"
+    },
+    {
+      "index": 9,
+      "title": "Neural Ordinary Differential Equations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Tian Qi Chen, Yulia Rubanova, Jesse Bettencourt, and David K Duvenaud",
+      "orig_title": "Neural ordinary differential equations",
+      "paper_id": "1806.07366v5"
+    },
+    {
+      "index": 10,
+      "title": "An introduction to orthogonal polynomials",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Dover Books on Mathematics. Dover Publications",
+      "authors": "T. S. Chihara"
+    },
+    {
+      "index": 11,
+      "title": "Parallelizing Legendre Memory Unit Training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "The International Conference on Machine Learning (ICML)",
+      "authors": "Narsimha Chilkuri and Chris Eliasmith",
+      "orig_title": "Parallelizing legendre memory unit training",
+      "paper_id": "2102.11417v2"
+    },
+    {
+      "index": 12,
+      "title": "Xception: Deep Learning with Depthwise Separable Convolutions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "François Chollet",
+      "orig_title": "Xception: Deep learning with depthwise separable convolutions",
+      "paper_id": "1610.02357v3"
+    },
+    {
+      "index": 13,
+      "title": "Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.3555",
+      "authors": "Junyoung Chung, Caglar Gulcehre, KyungHyun Cho, and Yoshua Bengio",
+      "orig_title": "Empirical evaluation of gated recurrent neural networks on sequence modeling",
+      "paper_id": "1412.3555v1"
+    },
+    {
+      "index": 14,
+      "title": "Catformer: Designing stable transformers via sensitivity analysis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "The International Conference on Machine Learning (ICML)",
+      "authors": "Jared Quincy Davis, Albert Gu, Tri Dao, Krzysztof Choromanski, Christopher Ré, Percy Liang, and Chelsea Finn"
+    },
+    {
+      "index": 15,
+      "title": "GRU-ODE-Bayes: Continuous modeling of sporadically-observed time series",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Edward De Brouwer, Jaak Simm, Adam Arany, and Yves Moreau",
+      "orig_title": "Gru-ode-bayes: Continuous modeling of sporadically-observed time series",
+      "paper_id": "1905.12374v2"
+    },
+    {
+      "index": 16,
+      "title": "A two-pronged progress in structured dense matrix vector multiplication",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Twenty-Ninth Annual ACM-SIAM Symposium on Discrete Algorithms",
+      "authors": "Christopher De Sa, Albert Gu, Rohan Puttagunta, Christopher Ré, and Atri Rudra",
+      "orig_title": "A two-pronged progress in structured dense matrix vector multiplication",
+      "paper_id": "1611.01569v3"
+    },
+    {
+      "index": 17,
+      "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2010.11929",
+      "authors": "Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, et al.",
+      "orig_title": "An image is worth 16x16 words: Transformers for image recognition at scale",
+      "paper_id": "2010.11929v2"
+    },
+    {
+      "index": 18,
+      "title": "On a new class of structured matrices",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Integral Equations and Operator Theory",
+      "authors": "Y. Eidelman and I. Gohberg"
+    },
+    {
+      "index": 19,
+      "title": "Lipschitz Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "N Benjamin Erichson, Omri Azencot, Alejandro Queiruga, Liam Hodgkinson, and Michael W Mahoney",
+      "orig_title": "Lipschitz recurrent neural networks",
+      "paper_id": "2006.12070v3"
+    },
+    {
+      "index": 20,
+      "title": "Dynamic causal modelling",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Neuroimage",
+      "authors": "Karl J Friston, Lee Harrison, and Will Penny"
+    },
+    {
+      "index": 21,
+      "title": "Approximation of dynamical systems by continuous time recurrent neural networks",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Neural networks",
+      "authors": "Ken-ichi Funahashi and Yuichi Nakamura"
+    },
+    {
+      "index": 22,
+      "title": "Matrix computations, volume 3",
+      "abstract": "",
+      "year": "2013",
+      "venue": "JHU press",
+      "authors": "Gene H Golub and Charles F Van Loan"
+    },
+    {
+      "index": 23,
+      "title": "HiPPO: Recurrent Memory with Optimal Polynomial Projections",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems 33",
+      "authors": "Albert Gu, Tri Dao, Stefano Ermon, Atri Rudra, and Christopher Ré",
+      "orig_title": "Hippo: Recurrent memory with optimal polynomial projections",
+      "paper_id": "2008.07669v2"
+    },
+    {
+      "index": 24,
+      "title": "Improving the Gating Mechanism of Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "The International Conference on Machine Learning (ICML)",
+      "authors": "Albert Gu, Caglar Gulcehre, Tom Le Paine, Matt Hoffman, and Razvan Pascanu",
+      "orig_title": "Improving the gating mechanism of recurrent neural networks",
+      "paper_id": "1910.09890v2"
+    },
+    {
+      "index": 25,
+      "title": "Closed-form continuous-depth models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.13898",
+      "authors": "Ramin Hasani, Mathias Lechner, Alexander Amini, Lucas Liebenwein, Max Tschaikowski, Gerald Teschl, and Daniela Rus"
+    },
+    {
+      "index": 26,
+      "title": "Liquid Time-constant Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Ramin Hasani, Mathias Lechner, Alexander Amini, Daniela Rus, and Radu Grosu",
+      "orig_title": "Liquid time-constant networks",
+      "paper_id": "2006.04439v4"
+    },
+    {
+      "index": 27,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural computation",
+      "authors": "Sepp Hochreiter and Jürgen Schmidhuber"
+    },
+    {
+      "index": 28,
+      "title": "Gated recurrent units viewed through the lens of continuous time dynamical systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Frontiers in computational neuroscience",
+      "authors": "Ian D Jordan, Piotr Aleksander Sokół, and Il Memming Park"
+    },
+    {
+      "index": 29,
+      "title": "Rnns incrementally evolving on an equilibrium manifold: A panacea for vanishing and exploding gradients?",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Anil Kag, Ziming Zhang, and Venkatesh Saligrama"
+    },
+    {
+      "index": 30,
+      "title": "Neural Controlled Differential Equations for Irregular Time Series",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2005.08926",
+      "authors": "Patrick Kidger, James Morrill, James Foster, and Terry Lyons",
+      "orig_title": "Neural controlled differential equations for irregular time series",
+      "paper_id": "2005.08926v2"
+    },
+    {
+      "index": 31,
+      "title": "Learning Long-Term Dependencies in Irregularly-Sampled Time Series",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.04418",
+      "authors": "Mathias Lechner and Ramin Hasani",
+      "orig_title": "Learning long-term dependencies in irregularly-sampled time series",
+      "paper_id": "2006.04418v4"
+    },
+    {
+      "index": 32,
+      "title": "Simple Recurrent Units for Highly Parallelizable Recurrence",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1709.02755",
+      "authors": "Tao Lei, Yu Zhang, Sida I Wang, Hui Dai, and Yoav Artzi",
+      "orig_title": "Simple recurrent units for highly parallelizable recurrence",
+      "paper_id": "1709.02755v5"
+    },
+    {
+      "index": 33,
+      "title": "Independently Recurrent Neural Network (IndRNN): Building A Longer and Deeper RNN",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Shuai Li, Wanqing Li, Chris Cook, Ce Zhu, and Yanbo Gao",
+      "orig_title": "Independently recurrent neural network (IndRNN): Building a longer and deeper RNN",
+      "paper_id": "1803.04831v3"
+    },
+    {
+      "index": 34,
+      "title": "Understanding the Difficulty of Training Transformers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "The International Conference on Machine Learning (ICML)",
+      "authors": "Liyuan Liu, Xiaodong Liu, Jianfeng Gao, Weizhu Chen, and Jiawei Han",
+      "orig_title": "Understanding the difficulty of training transformers",
+      "paper_id": "2004.08249v3"
+    },
+    {
+      "index": 35,
+      "title": "Deep learning face attributes in the wild",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Ziwei Liu, Ping Luo, Xiaogang Wang, and Xiaoou Tang"
+    },
+    {
+      "index": 36,
+      "title": "Neural rough differential equations for long time series",
+      "abstract": "",
+      "year": "2021",
+      "venue": "The International Conference on Machine Learning (ICML)",
+      "authors": "James Morrill, Cristopher Salvi, Patrick Kidger, James Foster, and Terry Lyons"
+    },
+    {
+      "index": 37,
+      "title": "Recurrent neural networks in the eye of differential equations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.12933",
+      "authors": "Murphy Yuezhen Niu, Lior Horesh, and Isaac Chuang"
+    },
+    {
+      "index": 38,
+      "title": "On the difficulty of training recurrent neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "International conference on machine learning",
+      "authors": "Razvan Pascanu, Tomas Mikolov, and Yoshua Bengio"
+    },
+    {
+      "index": 39,
+      "title": "Computing with Quasiseparable Matrices",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM on International Symposium on Symbolic and Algebraic Computation",
+      "authors": "Clément Pernet",
+      "orig_title": "Computing with quasiseparable matrices",
+      "paper_id": "1602.01246v2"
+    },
+    {
+      "index": 40,
+      "title": "The matrix cookbook, version 20121115",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Technical Univ. Denmark, Kongens Lyngby, Denmark, Tech. Rep",
+      "authors": "KB Petersen and MS Pedersen"
+    },
+    {
+      "index": 41,
+      "title": "The PyTorch-Kaldi Speech Recognition Toolkit",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICASSP",
+      "authors": "M. Ravanelli, T. Parcollet, and Y. Bengio",
+      "orig_title": "The pytorch-kaldi speech recognition toolkit",
+      "paper_id": "1811.07453v2"
+    },
+    {
+      "index": 42,
+      "title": "FlexConv: Continuous Kernel Convolutions with Differentiable Kernel Sizes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2110.08059",
+      "authors": "David W Romero, Robert-Jan Bruintjes, Jakub M Tomczak, Erik J Bekkers, Mark Hoogendoorn, and Jan C van Gemert",
+      "orig_title": "Flexconv: Continuous kernel convolutions with differentiable kernel sizes",
+      "paper_id": "2110.08059v3"
+    },
+    {
+      "index": 43,
+      "title": "Ckconv: Continuous kernel convolution for sequential data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2102.02611",
+      "authors": "David W Romero, Anna Kuzina, Erik J Bekkers, Jakub M Tomczak, and Mark Hoogendoorn"
+    },
+    {
+      "index": 44,
+      "title": "Latent ordinary differential equations for irregularly-sampled time series",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Yulia Rubanova, Tian Qi Chen, and David K Duvenaud"
+    },
+    {
+      "index": 45,
+      "title": "Coupled Oscillatory Recurrent Neural Network (coRNN): An accurate and (gradient) stable architecture for learning long time dependencies",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "T. Konstantin Rusch and Siddhartha Mishra",
+      "orig_title": "Coupled oscillatory recurrent neural network (cornn): An accurate and (gradient) stable architecture for learning long time dependencies",
+      "paper_id": "2010.00951v2"
+    },
+    {
+      "index": 46,
+      "title": "UnICORNN: A recurrent model for learning very long time dependencies",
+      "abstract": "",
+      "year": "2021",
+      "venue": "The International Conference on Machine Learning (ICML)",
+      "authors": "T Konstantin Rusch and Siddhartha Mishra",
+      "orig_title": "Unicornn: A recurrent model for learning very long time dependencies",
+      "paper_id": "2103.05487v2"
+    },
+    {
+      "index": 47,
+      "title": "Weak supervision as an efficient approach for automated seizure detection in electroencephalography",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NPJ Digital Medicine",
+      "authors": "Khaled Saab, Jared Dunnmon, Christopher Ré, Daniel Rubin, and Christopher Lee-Messer"
+    },
+    {
+      "index": 48,
+      "title": "The Temple University hospital seizure detection corpus",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Frontiers in neuroinformatics",
+      "authors": "Vinit Shah, Eva Von Weltin, Silvia Lopez, James Riley McHugh, Lillian Veloso, Meysam Golmohammadi, Iyad Obeid, and Joseph Picone"
+    },
+    {
+      "index": 49,
+      "title": "Orthogonal Polynomials and Related Approximation Results",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Springer Berlin Heidelberg",
+      "authors": "Jie Shen, Tao Tang, and Li-Lian Wang"
+    },
+    {
+      "index": 50,
+      "title": "A computational introduction to number theory and algebra",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Cambridge university press",
+      "authors": "Victor Shoup"
+    },
+    {
+      "index": 51,
+      "title": "Orthogonal Polynomials",
+      "abstract": "",
+      "year": "1967",
+      "venue": "American Mathematical Society colloquium publications. American Mathematical Society",
+      "authors": "G. Szegö"
+    },
+    {
+      "index": 52,
+      "title": "Orthogonal Polynomials",
+      "abstract": "",
+      "year": "1975",
+      "venue": "American Mathematical Society: Colloquium publications. American Mathematical Society",
+      "authors": "G. Szegő"
+    },
+    {
+      "index": 53,
+      "title": "Can recurrent neural networks warp time?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "The International Conference on Learning Representations (ICLR)",
+      "authors": "Corentin Tallec and Yann Ollivier"
+    },
+    {
+      "index": 54,
+      "title": "Time series extrinsic regression",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Data Mining and Knowledge Discovery",
+      "authors": "Chang Wei Tan, Christoph Bergmeir, Francois Petitjean, and Geoffrey I Webb"
+    },
+    {
+      "index": 55,
+      "title": "Learning Longer-term Dependencies in RNNs with Auxiliary Losses",
+      "abstract": "",
+      "year": "2018",
+      "venue": "The International Conference on Machine Learning (ICML)",
+      "authors": "Trieu H Trinh, Andrew M Dai, Minh-Thang Luong, and Quoc V Le",
+      "orig_title": "Learning longer-term dependencies in RNNs with auxiliary losses",
+      "paper_id": "1803.00144v3"
+    },
+    {
+      "index": 56,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 57,
+      "title": "Legendre memory units: Continuous-time representation in recurrent neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Aaron Voelker, Ivana Kajić, and Chris Eliasmith"
+    },
+    {
+      "index": 58,
+      "title": "Linear state-space control systems",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Wiley Online Library",
+      "authors": "Robert L Williams, Douglas A Lawrence, et al."
+    },
+    {
+      "index": 59,
+      "title": "Inverting modified matrices",
+      "abstract": "",
+      "year": "1950",
+      "venue": "Memorandum report",
+      "authors": "Max A Woodbury"
+    },
+    {
+      "index": 60,
+      "title": "Performance recovery in digital implementation of analogue systems",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIAM journal on control and optimization",
+      "authors": "Guofeng Zhang, Tongwen Chen, and Xiang Chen"
+    },
+    {
+      "index": 61,
+      "title": "A comprehensive review of stability analysis of continuous-time recurrent neural networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "Huaguang Zhang, Zhanshan Wang, and Derong Liu"
+    }
+  ]
+}

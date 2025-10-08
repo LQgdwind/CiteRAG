@@ -1,0 +1,421 @@
+{
+  "paper_id": "2106.10562v2",
+  "title": "Score-Based Explanations in Data Management and Machine Learning: An Answer-Set Programming Approach to Counterfactual Analysis",
+  "sections": {
+    "the shapley value in databases": "The Shapley value was proposed in game theory by Lloyd Shapley in 1953\n, to quantify the contribution of a player to a coalition game where players share a wealth function.333The original paper and related ones on the\nShapley value can be found in the book edited by Alvin Roth\n[ref]43. Shapley and Roth shared the Nobel Prize in Economic\nSciences 2012. It has been applied in many disciplines. In particular, it has been investigated in computer science under\nalgorithmic game theory [ref]40, and it has been applied to many and\ndifferent computational problems. The\ncomputation of the Shapley value is, in general, intractable. In many\nscenarios where it is applied its computation turns out to be\n#​P#𝑃\\#{\\it P}-hard  .  Here, the class #​P#𝑃\\#{\\it P} contains the problems of counting the solutions for problems in 𝑁𝑃𝑁𝑃{\\it NP}. A typical problem in the class, actually, hard for the class, is #​𝑆𝐴𝑇#𝑆𝐴𝑇\\#{\\it SAT}, about counting the number of satisfying assignments for a propositional formula. Clearly, this problem cannot be easier than 𝑆𝐴𝑇𝑆𝐴𝑇{\\it SAT}, because a solution for #​𝑆𝐴𝑇#𝑆𝐴𝑇\\#{\\it SAT} immediately gives a solution for 𝑆𝐴𝑇𝑆𝐴𝑇{\\it SAT} . In particular, the Shapley value has been used in knowledge\nrepresentation, to measure the degree of inconsistency of a\npropositional knowledge base ; in machine learning to provide explanations for the outcomes of\nclassification models on the basis of numerical scores assigned to the participating feature values  (c.f. Section 13); and in data management to\nmeasure the contribution of a tuple to a query answer [ref]30, which we briefly review in this section. Consider a set of players D𝐷{D}, and a\ngame function, 𝒢:𝒫​(D)→ℝ:𝒢→𝒫𝐷ℝ\\mathcal{G}:\\mathcal{P}(D)\\rightarrow\\mathbb{R}, where 𝒫​(D)𝒫𝐷\\mathcal{P}(D) the power set of D𝐷D.  The Shapley value of player p𝑝{p} in D𝐷{D} es defined by: Notice that here, |S|!​(|D|−|S|−1)!𝑆𝐷𝑆1{|S|!(|D|-|S|-1)!} is the number of permutations of\nD𝐷{D} with all players in S𝑆{S} coming first, then p𝑝{p}, and then all the others. That is, this quantity\nis the expected contribution of player p𝑝p under all possible additions of p𝑝p to a partial random sequence of players followed by a random sequence of the rests of the players. Notice the counterfactual flavor, in that there is a comparison between what happens having p𝑝p vs. not having it. The Shapley value is the only function that satisfies certain natural properties in relation to games. So, it is a\nresult of a categorical set of axioms or conditions [ref]43. Back to query answering in databases,  the players are tuples in the database D𝐷{D}. We also have a\nBoolean query  𝒬𝒬\\mathcal{Q}, which becomes a game function, as follows:  For  S⊆D𝑆𝐷{S\\subseteq D}, With these elements we can define the Shapley value of a database tuple τ𝜏\\tau: If the query is monotone, i.e. its set of answers never shrinks when new tuples are added to the database, which is the case of conjunctive queries (CQs), among others, the difference 𝒬​(S∪{τ})−𝒬​(S)𝒬𝑆𝜏𝒬𝑆\\mathcal{Q}(S\\cup\\{{\\tau}\\})-\\mathcal{Q}(S) is always 111 or 00, and the average in the definition\nof the Shapley value returns a value between 00 and 111.  This value quantifies the contribution of tuple  τ𝜏{\\tau}  to the query result. It was introduced and investigated in [ref]30,\nfor BCQs and some aggregate queries defined over CQs. We report on some of the findings in the rest of this section. The analysis has been extended to queries with negated atoms in CQs . A main result obtained in [ref]30 is about the complexity of computing this Shapley score. The following\nDichotomy Theorem holds:  For 𝒬𝒬{\\mathcal{Q}} a BCQ without self-joins, if  𝒬𝒬{\\mathcal{Q}}  is hierarchical, then 𝑆ℎ𝑎𝑝𝑙𝑒𝑦​(D,𝒬,τ)𝑆ℎ𝑎𝑝𝑙𝑒𝑦𝐷𝒬𝜏{{\\it Shapley}(D,\\mathcal{Q},\\tau)} can be computed in polynomial-time\n(in the size of D𝐷D); otherwise, the problem is  #​P#𝑃{\\it\\#P}-complete. Here, 𝒬𝒬{\\mathcal{Q}}  is hierarchical if for every two existential variables x𝑥{x} and y𝑦{y}, it holds:  (a)\n𝐴𝑡𝑜𝑚𝑠​(x)⊆𝐴𝑡𝑜𝑚𝑠​(y)𝐴𝑡𝑜𝑚𝑠𝑥𝐴𝑡𝑜𝑚𝑠𝑦{\\it Atoms}(x)\\subseteq{\\it Atoms}(y),  or\n𝐴𝑡𝑜𝑚𝑠​(y)⊆𝐴𝑡𝑜𝑚𝑠​(x)𝐴𝑡𝑜𝑚𝑠𝑦𝐴𝑡𝑜𝑚𝑠𝑥{\\it Atoms}(y)\\subseteq{\\it Atoms}(x),  or\n𝐴𝑡𝑜𝑚𝑠​(x)∩𝐴𝑡𝑜𝑚𝑠​(y)=∅𝐴𝑡𝑜𝑚𝑠𝑥𝐴𝑡𝑜𝑚𝑠𝑦{\\it Atoms}(x)\\cap{\\it Atoms}(y)=\\emptyset.\n For example, 𝒬:∃x​∃y​∃z​(R​(x,y)∧S​(x,z)):𝒬𝑥𝑦𝑧𝑅𝑥𝑦𝑆𝑥𝑧{\\mathcal{Q}:\\ \\exists x\\exists y\\exists z(R(x,y)\\wedge S(x,z))}, for which  𝐴𝑡𝑜𝑚𝑠​(x)𝐴𝑡𝑜𝑚𝑠𝑥{\\it Atoms}(x) ={R(x,y),=\\{R(x,y), S(x,z)}\\ S(x,z)\\},  𝐴𝑡𝑜𝑚𝑠​(y)={R​(x,y)}𝐴𝑡𝑜𝑚𝑠𝑦𝑅𝑥𝑦{\\it Atoms}(y)=\\{R(x,y)\\},  𝐴𝑡𝑜𝑚𝑠​(z)={S​(x,z)}𝐴𝑡𝑜𝑚𝑠𝑧𝑆𝑥𝑧{\\it Atoms}(z)=\\{S(x,z)\\}, is\nhierarchical.  However,  𝒬𝑛ℎ:∃x​∃y​(R​(x)∧S​(x,y)∧T​(y)):superscript𝒬𝑛ℎ𝑥𝑦𝑅𝑥𝑆𝑥𝑦𝑇𝑦{\\mathcal{Q}^{{\\it nh}}:\\ \\exists x\\exists y({R(x)\\wedge S(x,y)\\wedge T(y)})}, for which  𝐴𝑡𝑜𝑚𝑠​(x)={R​(x),S​(x,y)}𝐴𝑡𝑜𝑚𝑠𝑥𝑅𝑥𝑆𝑥𝑦{\\it Atoms}(x)=\\{R(x),\\ S(x,y)\\},  𝐴𝑡𝑜𝑚𝑠​(y)={S​(x,y),T​(y)}𝐴𝑡𝑜𝑚𝑠𝑦𝑆𝑥𝑦𝑇𝑦{\\it Atoms}(y)=\\{S(x,y),T(y)\\}, is not hierarchical. These are the same criteria for (in)tractability that apply to evaluation of BCQs over probabilistic databases . However, the same proofs do not apply, at least not straightforwardly.\nThe intractability result uses query 𝒬𝑛ℎsuperscript𝒬𝑛ℎ{\\mathcal{Q}^{{\\it nh}}}  above, and a\nreduction from counting independent sets in a bipartite graph. The dichotomy results can be extended to summation over CQs, with the same conditions and cases. This is because the\nShapley value, as an expectation, is linear.  Hardness extends to aggregates max, min, and avg over non-hierarchical queries. For the hard cases, there is, as established in [ref]30, an approximation result:  For every fixed BCQ 𝒬𝒬\\mathcal{Q} (or summation over a CQ), there is a multiplicative fully-polynomial randomized approximation scheme (FPRAS) , A𝐴A, with A related and popular score, in coalition games and other areas, is the Bahnzhaf Power Index, which is similar to the Shapley value, but the order of players is ignored, by considering subsets of players rather than permutations thereof. It is defined by: The Bahnzhaf-index is also difficult to compute; provably #P-hard in general. The results in [ref]30 carry over to this index when applied to query answering.\n In [ref]30 it was proved that the causal-effect score of Section 3.2 coincides with the Banzhaf-index, which gives to the former an additional justification."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Computational Complexity",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Cambridge University Press",
+      "authors": "Arora, S. and Barak, B."
+    },
+    {
+      "index": 1,
+      "title": "Consistent Query Answers in Inconsistent Databases",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ACM PODS",
+      "authors": "Arenas, M., Bertossi, L. and Chomicki, J."
+    },
+    {
+      "index": 2,
+      "title": "The Tractability of SHAP-Scores over Deterministic and Decomposable Boolean Circuits",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI",
+      "authors": "Arenas, M., Pablo Barceló, P., Bertossi, L. and Monet, M."
+    },
+    {
+      "index": 3,
+      "title": "Database Repairing and Consistent Query Answering",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Synthesis Lectures in Data Management. Morgan & Claypool",
+      "authors": "Bertossi. L."
+    },
+    {
+      "index": 4,
+      "title": "From Causes for Database Queries to Repairs and Model-Based Diagnosis and Back",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Theory of Computing Systems",
+      "authors": "Bertossi, L. and Salimi, B.",
+      "orig_title": "From Causes for Database Queries to Repairs and Model-Based Diagnosis and Back",
+      "paper_id": "1507.00257v3"
+    },
+    {
+      "index": 5,
+      "title": "Causes for Query Answers from Databases: Datalog Abduction, View-Updates, and Integrity Constraints",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Int. J. Approximate Reasoning",
+      "authors": "Bertossi, L. and Salimi, B.",
+      "orig_title": "Causes for Query Answers from Databases: Datalog Abduction, View-Updates, and Integrity Constraints",
+      "paper_id": "1611.01711v3"
+    },
+    {
+      "index": 6,
+      "title": "Repair-Based Degrees of Database Inconsistency",
+      "abstract": "",
+      "year": "2019",
+      "venue": "LPNMR",
+      "authors": "Bertossi, L."
+    },
+    {
+      "index": 7,
+      "title": "Specifying and Computing Causes for Query Answers in Databases via Database Repairs and Repair-Programs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Knowledge and Information Systems",
+      "authors": "Bertossi, L.",
+      "orig_title": "Specifying and Computing Causes for Query Answers in Databases via Database Repairs and Repair Programs",
+      "paper_id": "1712.01001v7"
+    },
+    {
+      "index": 8,
+      "title": "Causality-based Explanation of Classification Outcomes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Fourth Workshop on Data Management for End-To-End Machine Learning, DEEM@SIGMOD",
+      "authors": "Bertossi, L., Li, J., Schleich, M., Suciu, D. and Vagena, Z.",
+      "orig_title": "Causality-Based Explanation of Classification Outcomes",
+      "paper_id": "2003.06868v2"
+    },
+    {
+      "index": 9,
+      "title": "An ASP-Based Approach to Counterfactual Explanations for Classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "RuleML-RR",
+      "authors": "Bertossi, L.",
+      "orig_title": "An ASP-Based Approach to Counterfactual Explanations for Classification",
+      "paper_id": "2004.13237v2"
+    },
+    {
+      "index": 10,
+      "title": "Declarative Approaches to Counterfactual Explanations for Classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv Paper 2011.07423",
+      "authors": "Bertossi, L."
+    },
+    {
+      "index": 11,
+      "title": "Classification and Regression Trees",
+      "abstract": "",
+      "year": "1984",
+      "venue": "CRC press",
+      "authors": "Breiman, L., Friedman, J., Stone, C. J. and Olshen, R. A."
+    },
+    {
+      "index": 12,
+      "title": "Answer Set Programming at a Glance",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Commun. ACM",
+      "authors": "Brewka, G., Eiter, T. and Truszczynski, M."
+    },
+    {
+      "index": 13,
+      "title": "Why and Where: A Characterization of Data Provenance",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ICDT",
+      "authors": "Buneman, P., Khanna, S. and Tan, W. C."
+    },
+    {
+      "index": 14,
+      "title": "Computable Functions in ASP: Theory and Implementation",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ICLP",
+      "authors": "Calimeri, F., Cozza, S., Ianni, G. and Leone, N."
+    },
+    {
+      "index": 15,
+      "title": "An ASP System with Functions, Lists,and Sets",
+      "abstract": "",
+      "year": "2009",
+      "venue": "LPNMR",
+      "authors": "Calimeri, F., Cozza, S., Ianni, G. and Leone, N."
+    },
+    {
+      "index": 16,
+      "title": "The Consistency Extractor System: Answer Set Programs for Consistent Query Answering in Databases",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Data & Knowledge Engineering",
+      "authors": "Caniupan, M. and Bertossi, L."
+    },
+    {
+      "index": 17,
+      "title": "An Interpretable Model with Globally Consistent Explanations for Credit Risk",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Chen, C., Lin, K., Rudin, C., Shaposhnik, Y., Wang, S. and Wang, T.",
+      "orig_title": "An Interpretable Model with Globally Consistent Explanations for Credit Risk",
+      "paper_id": "1811.12615v1"
+    },
+    {
+      "index": 18,
+      "title": "Responsibility and Blame: A Structural-Model Approach",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. Artif. Intell. Res.",
+      "authors": "Chockler, H. and Halpern, J."
+    },
+    {
+      "index": 19,
+      "title": "Complexity and Expressive Power of Logic Programming",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ACM Computing Surveys",
+      "authors": "Dantsin, E., Eiter, T., Gottlob, G. and Voronkov, A."
+    },
+    {
+      "index": 20,
+      "title": "On the Complexity of Cooperative Solution Concepts",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Math. Oper. Res.",
+      "authors": "Deng, X. and Papadimitriou, C."
+    },
+    {
+      "index": 21,
+      "title": "The Shapley Value for Cooperative Games under Precedence Constraints",
+      "abstract": "",
+      "year": "1992",
+      "venue": "International Journal of Game Theory",
+      "authors": "Faigle, U. and Kern, W."
+    },
+    {
+      "index": 22,
+      "title": "Classical Negation in Logic Programs and Disjunctive Databases",
+      "abstract": "",
+      "year": "1991",
+      "venue": "New Generation Computing",
+      "authors": "Gelfond, M. and Lifschitz, V."
+    },
+    {
+      "index": 23,
+      "title": "Knowledge Representation and Reasoning, and the Design of Intelligent Agents",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Cambridge Univ. Press",
+      "authors": "Gelfond, M. and Kahl, Y."
+    },
+    {
+      "index": 24,
+      "title": "Programming with Non-Determinism in Deductive Databases",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Annals of Mathematics in Artificial Intelligence",
+      "authors": "Giannotti, F., Greco, S., Sacca, D. and Zaniolo, C."
+    },
+    {
+      "index": 25,
+      "title": "Causes and Explanations: A Structural-Model Approach. Part I: Causes",
+      "abstract": "",
+      "year": "2005",
+      "venue": "The British journal for the philosophy of science",
+      "authors": "Halpern, J. and Pearl, J."
+    },
+    {
+      "index": 26,
+      "title": "A Modification of the Halpern-Pearl Definition of Causality",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IJCAI",
+      "authors": "Halpern, J. Y.",
+      "orig_title": "A Modification of the Halpern-Pearl Definition of Causality",
+      "paper_id": "1505.00162v1"
+    },
+    {
+      "index": 27,
+      "title": "On the Measure of Conflicts: Shapley Inconsistency Values",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Artif. Intell.",
+      "authors": "Hunter, A. and Konieczny, S."
+    },
+    {
+      "index": 28,
+      "title": "The DLV System for Knowledge Representation and Reasoning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ACM Transactions on Computational Logic",
+      "authors": "Leone, N., Pfeifer, G., Faber, W., Eiter, T., Gottlob, G., Perri, S. and Scarcello, F."
+    },
+    {
+      "index": 29,
+      "title": "The Shapley Value of Tuples in Query Answering",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICDT",
+      "authors": "Livshits, E., Bertossi, L., Kimelfeld, B. and Sebag, M.",
+      "orig_title": "The Shapley Value of Tuples in Query Answering",
+      "paper_id": "1904.08679v5"
+    },
+    {
+      "index": 30,
+      "title": "The Shapley Value of Inconsistency Measures for Functional Dependencies",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICDT",
+      "authors": "Livshits, E. and Kimelfeld, B.",
+      "orig_title": "The Shapley Value of Inconsistency Measures for Functional Dependencies",
+      "paper_id": "2009.13819v4"
+    },
+    {
+      "index": 31,
+      "title": "Complexity of Consistent Query Answering in Databases under Cardinality-Based and Incremental Repair Semantics",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ICDT",
+      "authors": "Lopatenko, A. and Bertossi, L."
+    },
+    {
+      "index": 32,
+      "title": "Explaining Predictions from Tree-based Boosting Ensembles",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Lucic, A., Haned, H. and de Rijke, M.",
+      "orig_title": "Explaining Predictions from Tree-Based Boosting Ensembles",
+      "paper_id": "1907.02582v1"
+    },
+    {
+      "index": 33,
+      "title": "From Local Explanations to Global Understanding with Explainable AI for Trees",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Nature Machine Intelligence",
+      "authors": "Lundberg, S., Erion, G., Chen, H., DeGrave, A., Prutkin, J., Nair, B., Katz, R., Himmelfarb, J., Bansal, N. and Lee, S.-I."
+    },
+    {
+      "index": 34,
+      "title": "A Unified Approach to Interpreting Model Predictions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Lundberg, S. and Lee, S.",
+      "orig_title": "A Unified Approach to Interpreting Model Predictions",
+      "paper_id": "1705.07874v2"
+    },
+    {
+      "index": 35,
+      "title": "The Complexity of Causality and Responsibility for Query Answers and Non-Answers",
+      "abstract": "",
+      "year": "2010",
+      "venue": "VLDB",
+      "authors": "Meliou, A., Gatterbauer, W., Moore, K. F. and Suciu, D."
+    },
+    {
+      "index": 36,
+      "title": "Causality in Databases",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Data Engineering Bulletin",
+      "authors": "Meliou, A., Gatterbauer, W., Halpern, J.Y., Koch, C., Moore, K. F. and Suciu, D."
+    },
+    {
+      "index": 37,
+      "title": "Machine Learning",
+      "abstract": "",
+      "year": "1997",
+      "venue": "McGraw-Hill",
+      "authors": "Mitchell, T. M."
+    },
+    {
+      "index": 38,
+      "title": "Interpretable Machine Learning: A Guide for Making Black Box Models Explainable",
+      "abstract": "",
+      "year": "2020",
+      "venue": "https://christophm.github.io/interpretable-ml-book",
+      "authors": "Molnar, C."
+    },
+    {
+      "index": 39,
+      "title": "Algorithmic Game Theory",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Cambridge University Press",
+      "authors": "Nisan, N., Roughgarden, T., Tardos, E. and Vazirani, V. V. (eds.)"
+    },
+    {
+      "index": 40,
+      "title": "The Impact of Negation on the Complexity of the Shapley Value in Conjunctive Queries",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PODS",
+      "authors": "Reshef, A., Kimelfeld, B. and Livshits, E.",
+      "orig_title": "The Impact of Negation on the Complexity of the Shapley Value in Conjunctive Queries",
+      "paper_id": "1912.12610v1"
+    },
+    {
+      "index": 41,
+      "title": "Stop Explaining Black Box Machine Learning Models for High Stakes Decisions and Use Interpretable Models Instead",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Nature Machine Intelligence",
+      "authors": "Rudin, C."
+    },
+    {
+      "index": 42,
+      "title": "The Shapley Value: Essays in Honor of Lloyd S. Shapley",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Cambridge University Press",
+      "authors": "Roth, A. E. (ed.)"
+    },
+    {
+      "index": 43,
+      "title": "Quantifying Causal Effects on Query Answering in Databases",
+      "abstract": "",
+      "year": "2016",
+      "venue": "8th USENIX Workshop on the Theory and Practice of Provenance (TaPP)",
+      "authors": "Salimi, B., Bertossi, L., Suciu, D. and Van den Broeck, G.",
+      "orig_title": "Quantifying Causal Effects on Query Answering in Databases",
+      "paper_id": "1603.02705v2"
+    },
+    {
+      "index": 44,
+      "title": "A Value for n-Person Games",
+      "abstract": "",
+      "year": "1953",
+      "venue": "Contributions to the Theory of Games",
+      "authors": "Shapley, L. S."
+    },
+    {
+      "index": 45,
+      "title": "Model-Based Problem Solving",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Handbook of Knowledge Representation, Elsevier",
+      "authors": "Struss, P."
+    },
+    {
+      "index": 46,
+      "title": "Probabilistic Databases",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Synthesis Lectures on Data Management, Morgan & Claypool",
+      "authors": "Suciu, D., Olteanu, D., Re, C. and Koch, C."
+    },
+    {
+      "index": 47,
+      "title": "On the Tractability of SHAP Explanations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI",
+      "authors": "Van den Broeck, G., Lykov, A., Schleich, M. and Suciu, D.",
+      "orig_title": "On the Tractability of SHAP Explanations",
+      "paper_id": "2009.08634v2"
+    }
+  ]
+}

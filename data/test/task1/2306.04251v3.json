@@ -1,0 +1,545 @@
+{
+  "paper_id": "2306.04251v3",
+  "title": "Stochastic Collapse: How Gradient Noise Attracts SGD Dynamics Towards Simpler Subnetworks",
+  "abstract": "Abstract\nIn this work, we reveal a strong implicit bias of stochastic gradient descent (SGD) that drives overly expressive networks to much simpler subnetworks, thereby dramatically reducing the number of independent parameters, and improving generalization.\nTo reveal this bias, we identify invariant sets, or subsets of parameter space that remain unmodified by SGD.\nWe focus on two classes of invariant sets that correspond to simpler (sparse or low-rank) subnetworks and commonly appear in modern architectures.\nOur analysis uncovers that SGD exhibits a property of stochastic attractivity towards these simpler invariant sets.\nWe establish a sufficient condition for stochastic attractivity based on a competition between the loss landscape’s curvature around the invariant set and the noise introduced by stochastic gradients.\nRemarkably, we find that an increased level of noise strengthens attractivity, leading to the emergence of attractive invariant sets associated with saddle-points or local maxima of the train loss.\nWe observe empirically the existence of attractive invariant sets in trained deep neural networks, implying that SGD dynamics often collapses to simple subnetworks with either vanishing or redundant neurons.\nWe further demonstrate how this simplifying process of stochastic collapse benefits generalization in a linear teacher-student framework.\nFinally, through this analysis, we mechanistically explain why early training with large learning rates for extended periods benefits subsequent generalization.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Understanding deep learning (still) requires rethinking generalization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Commun. ACM",
+      "authors": "Chiyuan Zhang, Samy Bengio, Moritz Hardt, Benjamin Recht, and Oriol Vinyals"
+    },
+    {
+      "index": 1,
+      "title": "Control batch size and learning rate to generalize well: Theoretical and empirical evidence",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Fengxiang He, Tongliang Liu, and Dacheng Tao"
+    },
+    {
+      "index": 2,
+      "title": "Implicit Gradient Regularization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "David Barrett and Benoit Dherin",
+      "orig_title": "Implicit gradient regularization",
+      "paper_id": "2009.11162v3"
+    },
+    {
+      "index": 3,
+      "title": "Stochastic Training is Not Necessary for Generalization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Jonas Geiping, Micah Goldblum, Phil Pope, Michael Moeller, and Tom Goldstein",
+      "orig_title": "Stochastic training is not necessary for generalization",
+      "paper_id": "2109.14119v2"
+    },
+    {
+      "index": 4,
+      "title": "Limiting dynamics of sgd: Modified loss, phase space oscillations, and anomalous diffusion",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2107.09133",
+      "authors": "Daniel Kunin, Javier Sagastuy-Brena, Lauren Gillespie, Eshed Margalit, Hidenori Tanaka, Surya Ganguli, and Daniel LK Yamins"
+    },
+    {
+      "index": 5,
+      "title": "Shape Matters: Understanding the Implicit Bias of the Noise Covariance",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Thirty Fourth Conference on Learning Theory",
+      "authors": "Jeff Z. HaoChen, Colin Wei, Jason Lee, and Tengyu Ma",
+      "orig_title": "Shape matters: Understanding the implicit bias of the noise covariance",
+      "paper_id": "2006.08680v2"
+    },
+    {
+      "index": 6,
+      "title": "Implicit regularization for deep neural networks driven by an Ornstein-Uhlenbeck like process",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Thirty Third Conference on Learning Theory",
+      "authors": "Guy Blanc, Neha Gupta, Gregory Valiant, and Paul Valiant",
+      "orig_title": "Implicit regularization for deep neural networks driven by an ornstein-uhlenbeck like process",
+      "paper_id": "1904.09080v2"
+    },
+    {
+      "index": 7,
+      "title": "Label Noise SGD Provably Prefers Flat Global Minimizers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Alex Damian, Tengyu Ma, and Jason D Lee",
+      "orig_title": "Label noise sgd provably prefers flat global minimizers",
+      "paper_id": "2106.06530v2"
+    },
+    {
+      "index": 8,
+      "title": "What Happens after SGD Reaches Zero Loss? –A Mathematical Framework",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Zhiyuan Li, Tianhao Wang, and Sanjeev Arora",
+      "orig_title": "What happens after SGD reaches zero loss? –a mathematical framework",
+      "paper_id": "2110.06914v4"
+    },
+    {
+      "index": 9,
+      "title": "An Alternative View: When Does SGD Escape Local Minima?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "35th International Conference on Machine Learning",
+      "authors": "Bobby Kleinberg, Yuanzhi Li, and Yang Yuan",
+      "orig_title": "An alternative view: When does SGD escape local minima?",
+      "paper_id": "1802.06175v2"
+    },
+    {
+      "index": 10,
+      "title": "The Anisotropic Noise in Stochastic Gradient Descent: Its Behavior of Escaping from Sharp Minima and Regularization Effects",
+      "abstract": "",
+      "year": "2019",
+      "venue": "36th International Conference on Machine Learning",
+      "authors": "Zhanxing Zhu, Jingfeng Wu, Bing Yu, Lei Wu, and Jinwen Ma",
+      "orig_title": "The anisotropic noise in stochastic gradient descent: Its behavior of escaping from sharp minima and regularization effects",
+      "paper_id": "1803.00195v5"
+    },
+    {
+      "index": 11,
+      "title": "A Diffusion Theory For Deep Learning Dynamics: Stochastic Gradient Descent Exponentially Favors Flat Minima",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.03495",
+      "authors": "Zeke Xie, Issei Sato, and Masashi Sugiyama",
+      "orig_title": "A diffusion theory for deep learning dynamics: Stochastic gradient descent exponentially favors flat minima",
+      "paper_id": "2002.03495v14"
+    },
+    {
+      "index": 12,
+      "title": "On large-batch training for deep learning: Generalization gap and sharp minima",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1609.04836",
+      "authors": "Nitish Shirish Keskar, Dheevatsa Mudigere, Jorge Nocedal, Mikhail Smelyanskiy, and Ping Tak Peter Tang"
+    },
+    {
+      "index": 13,
+      "title": "The asymmetric maximum margin bias of quasi-homogeneous neural networks",
+      "abstract": "",
+      "year": "2023",
+      "venue": "The Eleventh International Conference on Learning Representations",
+      "authors": "Daniel Kunin, Atsushi Yamamura, Chao Ma, and Surya Ganguli"
+    },
+    {
+      "index": 14,
+      "title": "Kernel and Rich Regimes in Overparametrized Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Thirty Third Conference on Learning Theory",
+      "authors": "Blake Woodworth, Suriya Gunasekar, Jason D. Lee, Edward Moroshko, Pedro Savarese, Itay Golan, Daniel Soudry, and Nathan Srebro",
+      "orig_title": "Kernel and rich regimes in overparametrized models",
+      "paper_id": "2002.09277v3"
+    },
+    {
+      "index": 15,
+      "title": "Implicit bias of the step size in linear diagonal neural networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "39th International Conference on Machine Learning",
+      "authors": "Mor Shpigel Nacson, Kavya Ravichandran, Nathan Srebro, and Daniel Soudry"
+    },
+    {
+      "index": 16,
+      "title": "Implicit bias of sgd for diagonal linear networks: a provable benefit of stochasticity",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Scott Pesme, Loucas Pillaud-Vivien, and Nicolas Flammarion"
+    },
+    {
+      "index": 17,
+      "title": "SGD with Large Step Sizes Learns Sparse Features",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2210.05337",
+      "authors": "Maksym Andriushchenko, Aditya Varre, Loucas Pillaud-Vivien, and Nicolas Flammarion",
+      "orig_title": "Sgd with large step sizes learns sparse features",
+      "paper_id": "2210.05337v2"
+    },
+    {
+      "index": 18,
+      "title": "Label noise (stochastic) gradient descent implicitly solves the Lasso for quadratic parametrisation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Thirty Fifth Conference on Learning Theory",
+      "authors": "Loucas Pillaud Vivien, Julien Reygner, and Nicolas Flammarion",
+      "orig_title": "Label noise (stochastic) gradient descent implicitly solves the lasso for quadratic parametrisation",
+      "paper_id": "2206.09841v1"
+    },
+    {
+      "index": 19,
+      "title": "Loss Landscapes of Regularized Linear Autoencoders",
+      "abstract": "",
+      "year": "2019",
+      "venue": "36th International Conference on Machine Learning",
+      "authors": "Daniel Kunin, Jonathan Bloom, Aleksandrina Goeva, and Cotton Seed",
+      "orig_title": "Loss landscapes of regularized linear autoencoders",
+      "paper_id": "1901.08168v2"
+    },
+    {
+      "index": 20,
+      "title": "Exact Solutions of a Deep Linear Network",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Liu Ziyin, Botao Li, and Xiangming Meng",
+      "orig_title": "Exact solutions of a deep linear network",
+      "paper_id": "2202.04777v7"
+    },
+    {
+      "index": 21,
+      "title": "Sgd and weight decay provably induce a low-rank bias in neural networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arxiv.org/abs/2206.05794",
+      "authors": "Tomer Galanti, Zachary S Siegel, Aparna Gupte, and Tomaso Poggio"
+    },
+    {
+      "index": 22,
+      "title": "Implicit bias of sgd in l2subscript𝑙2l_{2}-regularized linear dnns: One-way jumps from high to low rank",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2305.16038",
+      "authors": "Zihan Wang and Arthur Jacot"
+    },
+    {
+      "index": 23,
+      "title": "Implicit Bias of Large Depth Networks: a Notion of Rank for Nonlinear Functions",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2209.15055",
+      "authors": "Arthur Jacot",
+      "orig_title": "Implicit bias of large depth networks: a notion of rank for nonlinear functions",
+      "paper_id": "2209.15055v4"
+    },
+    {
+      "index": 24,
+      "title": "The low-rank simplicity bias in deep networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.10427",
+      "authors": "Minyoung Huh, Hossein Mobahi, Richard Zhang, Brian Cheung, Pulkit Agrawal, and Phillip Isola"
+    },
+    {
+      "index": 25,
+      "title": "Gradient Descent Happens in a Tiny Subspace",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Guy Gur-Ari, Daniel A. Roberts, and Ethan Dyer",
+      "orig_title": "Gradient descent happens in a tiny subspace",
+      "paper_id": "1812.04754v1"
+    },
+    {
+      "index": 26,
+      "title": "What shapes the loss landscape of self supervised learning?",
+      "abstract": "",
+      "year": "2023",
+      "venue": "The Eleventh International Conference on Learning Representations",
+      "authors": "Liu Ziyin, Ekdeep Singh Lubana, Masahito Ueda, and Hidenori Tanaka",
+      "orig_title": "What shapes the loss landscape of self supervised learning?",
+      "paper_id": "2210.00638v2"
+    },
+    {
+      "index": 27,
+      "title": "SGD with a Constant Large Learning Rate Can Converge to Local Maxima",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2107.11774",
+      "authors": "Liu Ziyin, Botao Li, James B Simon, and Masahito Ueda",
+      "orig_title": "Sgd with a constant large learning rate can converge to local maxima",
+      "paper_id": "2107.11774v4"
+    },
+    {
+      "index": 28,
+      "title": "The probabilistic stability of stochastic gradient descent",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2303.13093",
+      "authors": "Liu Ziyin, Botao Li, Tomer Galanti, and Masahito Ueda"
+    },
+    {
+      "index": 29,
+      "title": "Rectified linear units improve restricted boltzmann machines",
+      "abstract": "",
+      "year": "2010",
+      "venue": "27th International Conference on Machine Learning, ICML’10",
+      "authors": "Vinod Nair and Geoffrey E. Hinton"
+    },
+    {
+      "index": 30,
+      "title": "Rectifier nonlinearities improve neural network acoustic models",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Proc. icml",
+      "authors": "Andrew L Maas, Awni Y Hannun, Andrew Y Ng, et al."
+    },
+    {
+      "index": 31,
+      "title": "Fast and Accurate Deep Network Learning by Exponential Linear Units (ELUs)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1511.07289",
+      "authors": "Djork-Arné Clevert, Thomas Unterthiner, and Sepp Hochreiter",
+      "orig_title": "Fast and accurate deep network learning by exponential linear units (elus)",
+      "paper_id": "1511.07289v5"
+    },
+    {
+      "index": 32,
+      "title": "Searching for Activation Functions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Quoc V. Le Prajit Ramachandran, Barret Zoph",
+      "orig_title": "Searching for activation functions",
+      "paper_id": "1710.05941v2"
+    },
+    {
+      "index": 33,
+      "title": "Gaussian Error Linear Units (GELUs)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.08415",
+      "authors": "Dan Hendrycks and Kevin Gimpel",
+      "orig_title": "Gaussian error linear units (gelus)",
+      "paper_id": "1606.08415v5"
+    },
+    {
+      "index": 34,
+      "title": "Neural mechanics: Symmetry and broken conservation laws in deep learning dynamics",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Daniel Kunin, Javier Sagastuy-Brena, Surya Ganguli, Daniel LK Yamins, and Hidenori Tanaka"
+    },
+    {
+      "index": 35,
+      "title": "Weight-space symmetry in deep networks gives rise to permutation saddles, connected by equal-loss valleys across the loss landscape",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.02911",
+      "authors": "Johanni Brea, Berfin Simsek, Bernd Illing, and Wulfram Gerstner",
+      "orig_title": "Weight-space symmetry in deep networks gives rise to permutation saddles, connected by equal-loss valleys across the loss landscape",
+      "paper_id": "1907.02911v1"
+    },
+    {
+      "index": 36,
+      "title": "Geometry of the loss landscape in overparameterized neural networks: Symmetries and invariances",
+      "abstract": "",
+      "year": "2021",
+      "venue": "38th International Conference on Machine Learning",
+      "authors": "Berfin Simsek, François Ged, Arthur Jacot, Francesco Spadaro, Clement Hongler, Wulfram Gerstner, and Johanni Brea"
+    },
+    {
+      "index": 37,
+      "title": "Dynamics of learning near singularities in layered networks",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Neural Comput.",
+      "authors": "Haikun Wei, Jun Zhang, Florent Cousseau, Tomoko Ozeki, and Shun-ichi Amari"
+    },
+    {
+      "index": 38,
+      "title": "Stochastic modified equations and adaptive stochastic gradient algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "34th International Conference on Machine Learning",
+      "authors": "Qianxiao Li, Cheng Tai, and Weinan E",
+      "orig_title": "Stochastic modified equations and adaptive stochastic gradient algorithms",
+      "paper_id": "1511.06251v3"
+    },
+    {
+      "index": 39,
+      "title": "A Variational Analysis of Stochastic Gradient Algorithms",
+      "abstract": "",
+      "year": "2016",
+      "venue": "The 33rd International Conference on Machine Learning",
+      "authors": "Stephan Mandt, Matthew Hoffman, and David Blei",
+      "orig_title": "A variational analysis of stochastic gradient algorithms",
+      "paper_id": "1602.02666v1"
+    },
+    {
+      "index": 40,
+      "title": "Three Factors Influencing Minima in SGD",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.04623",
+      "authors": "Stanisław Jastrzębski, Zachary Kenton, Devansh Arpit, Nicolas Ballas, Asja Fischer, Yoshua Bengio, and Amos Storkey",
+      "orig_title": "Three factors influencing minima in sgd",
+      "paper_id": "1711.04623v3"
+    },
+    {
+      "index": 41,
+      "title": "Stochastic gradient descent performs variational inference, converges to limit cycles for deep networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 Information Theory and Applications Workshop (ITA)",
+      "authors": "Pratik Chaudhari and Stefano Soatto",
+      "orig_title": "Stochastic gradient descent performs variational inference, converges to limit cycles for deep networks",
+      "paper_id": "1710.11029v2"
+    },
+    {
+      "index": 42,
+      "title": "The implicit regularization of stochastic gradient flow for least squares",
+      "abstract": "",
+      "year": "2020",
+      "venue": "37th International Conference on Machine Learning",
+      "authors": "Alnur Ali, Edgar Dobriban, and Ryan Tibshirani"
+    },
+    {
+      "index": 43,
+      "title": "Stochastic stability and control",
+      "abstract": "",
+      "year": "1967",
+      "venue": "Academic Press",
+      "authors": "Harold J Kushner"
+    },
+    {
+      "index": 44,
+      "title": "Brownian motion in a field of force and the diffusion model of chemical reactions",
+      "abstract": "",
+      "year": "1940",
+      "venue": "Physica",
+      "authors": "Hendrik Anthony Kramers"
+    },
+    {
+      "index": 45,
+      "title": "Kramers’ law: Validity, derivations and generalisations",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Markov Processes And Related Fields",
+      "authors": "Nils Berglund"
+    },
+    {
+      "index": 46,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1556",
+      "authors": "Karen Simonyan and Andrew Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 47,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 48,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "University of Toronto",
+      "authors": "Alex Krizhevsky, Geoffrey Hinton, et al."
+    },
+    {
+      "index": 49,
+      "title": "High-dimensional dynamics of generalization error in neural networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Neural Networks",
+      "authors": "Madhu S. Advani, Andrew M. Saxe, and Haim Sompolinsky"
+    },
+    {
+      "index": 50,
+      "title": "An analytic theory of generalization dynamics and transfer learning in deep linear networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Andrew K. Lampinen and Surya Ganguli"
+    },
+    {
+      "index": 51,
+      "title": "Dynamics of stochastic gradient descent for two-layer neural networks in the teacher-student setup",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Sebastian Goldt, Madhu Advani, Andrew M Saxe, Florent Krzakala, and Lenka Zdeborová",
+      "orig_title": "Dynamics of stochastic gradient descent for two-layer neural networks in the teacher-student setup",
+      "paper_id": "1906.08632v2"
+    },
+    {
+      "index": 52,
+      "title": "Exact solutions to the nonlinear dynamics of learning in deep linear neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.6120",
+      "authors": "Andrew M Saxe, James L McClelland, and Surya Ganguli"
+    },
+    {
+      "index": 53,
+      "title": "Neural networks and principal component analysis: Learning from examples without local minima",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Neural Networks",
+      "authors": "Pierre Baldi and Kurt Hornik"
+    },
+    {
+      "index": 54,
+      "title": "Local minima and plateaus in hierarchical structures of multilayer perceptrons",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Neural networks",
+      "authors": "Kenji Fukumizu and Shun-ichi Amari"
+    },
+    {
+      "index": 55,
+      "title": "Singularities affect dynamics of learning in neuromanifolds",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Neural computation",
+      "authors": "Shun-ichi Amari, Hyeyoung Park, and Tomoko Ozeki"
+    },
+    {
+      "index": 56,
+      "title": "How to modify a neural network gradually without changing its input-output functionality",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Neural computation",
+      "authors": "Christopher DiMattina and Kechen Zhang"
+    },
+    {
+      "index": 57,
+      "title": "Stochastic differential equations: an introduction with applications",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Springer Science & Business Media",
+      "authors": "Bernt Oksendal"
+    },
+    {
+      "index": 58,
+      "title": "The singular values and vectors of low rank perturbations of large rectangular random matrices",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Journal of Multivariate Analysis",
+      "authors": "Florent Benaych-Georges and Raj Rao Nadakuditi"
+    },
+    {
+      "index": 59,
+      "title": "The effective rank: A measure of effective dimensionality",
+      "abstract": "",
+      "year": "2007",
+      "venue": "15th European Signal Processing Conference",
+      "authors": "Olivier Roy and Martin Vetterli"
+    }
+  ]
+}

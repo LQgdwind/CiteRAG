@@ -1,0 +1,409 @@
+{
+  "paper_id": "2009.09883v1",
+  "title": "Selectivity Estimation with Attribute Value Dependencies using Linked Bayesian Networks",
+  "sections": {
+    "related work": "Ever since the seminal work of Selinger et al. , query optimisation has largely relied on the use of cost models. Because the most important part of the cost model is the selectivity estimation module , a lot of good efforts have been made across the decades.  first proposed the use of histograms to approximate the distribution P​(x)𝑃𝑥P(x) of a single attribute x𝑥x. Since then, a lot of work has gone into developing optimal histograms  that have been used ubiquitously in cutting edge cost models. Smooth versions of histograms, e.g., kernel density estimators (KDEs)  and wavelets , have also been proposed. However, these methods are based on single attributes, and as such lose in accuracy what they gain in computational efficiency. Indeed, there is no way to capture a dependency between two attributes x𝑥x and y𝑦y if one only has unidimensional distributions P​(x)𝑃𝑥P(x) and P​(y)𝑃𝑦P(y) available, regardless of their accuracy. Multidimensional distributions, i.e., P​(X1,…,Xn)𝑃subscript𝑋1…subscript𝑋𝑛P(X_{1},\\dots,X_{n}), are a way to catch dependencies between attributes. Methods based on such distributions are naturally more accurate because they soften the AVI assumption. However, they require a large amount of computational resources which hinders their use in high-throughput settings.  first formalised the use of equi-depth multidimensional histograms and introduced an efficient construction algorithm.  proposed another construction algorithm based on Hilbert curves. Multidimensional KDEs have also been proposed , with somewhat the same complexity guarantees. In search for efficiency,  offered a workload-aware method where the idea is to only build histograms for attributes that are often queried together. Even though methods based on multidimensional distributions are costly, they are implemented in some database systems and are used when specified by a database administrator. However, these methods do not help whatsoever in capturing dependencies across relations, which is probably the biggest issue cost models have to deal with. Sampling methods have also been proposed to perform selectivity estimation. The idea is to run a query on a sample of the database and extrapolate the selectivity . Sampling works very well for single relations and has been adopted by some commercial database systems. However, off the shelf sampling procedures suffer from the fact that the join of sampled relations has a high probability of being empty ; in other words a join has to be materialised before sampling can be done. This issue can be alleviated by the use of correlated sampling , where a deterministic hash function is used to ensure that samples from different relations will match with each other. Another technique is to use indexes when available , but this is only realistic for in-memory databases.  also proposed heuristics for maintaining statistics of join synopses. Overall, sampling is an elegant selectivity estimation method, not least because it can handle complex predicates which statistical summaries cannot (e.g., regex queries). However, sampling necessarily incurs a high computational cost. Indeed even if the samples are obtained at downtime, they still have to be loaded in memory during the query optimisation phase. Throughout the years, a lot of proposals have been made to relax the simplifying assumptions from . All of these require compromises in terms of accuracy, speed, and memory usage. The general consensus is that each method shines in a particular use case, and thus combining different methods might be a good approach.  formalised this idea by using a maximum entropy approach. Recently,  proposed combining sampling and synopses. Another approach altogether is to “give up” on the cost model and instead memorise the worst mistakes it makes so as not to reproduce them in the future [ref]11. There have also been proposals that make use of machine learning  [ref]31 [ref]32 , where a supervised learning algorithm is taught to predict selectivities based on features derived from a given query and the database’s metadata. Recently, deep learning methods have been proposed to extract features that don’t require rules written by humans. One of the most prominent papers that advocates the use of deep learning for selectivity estimation can be found in . They proposed a neural network architecture, which they dubbed MSCN for multi-set convolutional network. Although approaches based on supervised machine learning have had great success in other domains, their performance for query selectivity estimation isn’t competitive enough, yet. Approaches that exploit attribute correlations in order to avoid storing redundant information have also been proposed. For example,  proposes to build a statistical interaction model that allows to determine a relevant subset of multidimensional histograms to build. In other words, they propose to build histograms when attributes are correlated, and to make the AVI assumption if not. Bayesian networks can be seen through the same lens of exploiting redundant information. Essentially, they factorise the full probability distribution into a set of conditional distributions. A conditional distribution between two attributes implies a hierarchy whereby one of the attributes determines to some extent the other. Formally, a Bayesian network is a directed acyclic graph (DAG) where each node is an attribute and each arrow implies a conditional dependency. They can be used to summarise a probability distribution by breaking it up into smaller pieces. In comparison with the supervised learning based methods mentioned in the previous paragraph, Bayesian networks are an unsupervised learning method. What this means is that they directly learn by looking at the data, whereas supervised methods require a workload of queries and outputs in order to learn. In , we proposed to use Bayesian networks for capturing attribute value dependencies inside individual relations.  and  both proposed methods for using Bayesian networks to capture attribute value dependencies between different relations. Although this leads to more accurate selectivity estimates, it requires much more computation time and is infeasible in practice. This is due to the fact that they require the use of expensive belief propagation algorithms for performing inference. Meanwhile, our method is much faster because it restricts each Bayesian network to a tree topology, which allows the use of the variable elimination algorithm. However, our method completely ignores dependencies between attributes of different relations. Our goal in this paper is to reconcile both approaches. Effectively, we want to keep the computational benefits of building and using individual Bayesian networks, but at the same time we want our method to capture some dependencies across relations."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Query optimization",
+      "abstract": "",
+      "year": "1996",
+      "venue": "ACM Computing Surveys (CSUR)",
+      "authors": "Yannis E Ioannidis"
+    },
+    {
+      "index": 1,
+      "title": "How good are query optimizers, really?",
+      "abstract": "",
+      "year": "2015",
+      "venue": "VLDB Endowment",
+      "authors": "Viktor Leis, Andrey Gubichev, Atanas Mirchev, Peter Boncz, Alfons Kemper, and Thomas Neumann"
+    },
+    {
+      "index": 2,
+      "title": "On the propagation of errors in the size of join results, volume 20",
+      "abstract": "",
+      "year": "1991",
+      "venue": "ACM",
+      "authors": "Yannis E Ioannidis and Stavros Christodoulakis"
+    },
+    {
+      "index": 3,
+      "title": "Sla definition for multi-tenant dbms and its impact on query optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "Shaoyi Yin, Abdelkader Hameurlain, and Franck Morvan"
+    },
+    {
+      "index": 4,
+      "title": "Predicting query execution time: Are optimizer cost models really unusable?",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE 29th International Conference on Data Engineering (ICDE)",
+      "authors": "Wentao Wu, Yun Chi, Shenghuo Zhu, Junichi Tatemura, Hakan Hacigümüs, and Jeffrey F Naughton"
+    },
+    {
+      "index": 5,
+      "title": "Access path selection in a relational database management system",
+      "abstract": "",
+      "year": "1979",
+      "venue": "ACM SIGMOD international conference on Management of data",
+      "authors": "P Griffiths Selinger, Morton M Astrahan, Donald D Chamberlin, Raymond A Lorie, and Thomas G Price"
+    },
+    {
+      "index": 6,
+      "title": "-the history of histograms (abridged)",
+      "abstract": "",
+      "year": "2003",
+      "venue": "VLDB Conference",
+      "authors": "Yannis Ioannidis"
+    },
+    {
+      "index": 7,
+      "title": "Equi-depth multidimensional histograms",
+      "abstract": "",
+      "year": "1988",
+      "venue": "ACM SIGMOD Record",
+      "authors": "M Muralikrishna and David J DeWitt"
+    },
+    {
+      "index": 8,
+      "title": "Two-level sampling for join size estimation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM International Conference on Management of Data",
+      "authors": "Yu Chen and Ke Yi"
+    },
+    {
+      "index": 9,
+      "title": "On random sampling over joins",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ACM SIGMOD Record",
+      "authors": "Surajit Chaudhuri, Rajeev Motwani, and Vivek Narasayya"
+    },
+    {
+      "index": 10,
+      "title": "Leo-db2’s learning optimizer",
+      "abstract": "",
+      "year": "2001",
+      "venue": "VLDB",
+      "authors": "Michael Stillger, Guy M Lohman, Volker Markl, and Mokhtar Kandil"
+    },
+    {
+      "index": 11,
+      "title": "An Approach Based on Bayesian Networks for Query Selectivity Estimation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Database Systems for Advanced Applications",
+      "authors": "Max Halford, Philippe Saint-Pierre, and Franck Morvan",
+      "orig_title": "An approach based on bayesian networks for query selectivity estimation",
+      "paper_id": "1907.06295v1"
+    },
+    {
+      "index": 12,
+      "title": "An introduction to Bayesian networks, volume 210",
+      "abstract": "",
+      "year": "1996",
+      "venue": "UCL press London",
+      "authors": "Finn V Jensen et al."
+    },
+    {
+      "index": 13,
+      "title": "The computational complexity of probabilistic inference using bayesian belief networks",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Artificial intelligence",
+      "authors": "Gregory F Cooper"
+    },
+    {
+      "index": 14,
+      "title": "Selectivity estimation using probabilistic models",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ACM SIGMOD Record",
+      "authors": "Lise Getoor, Benjamin Taskar, and Daphne Koller"
+    },
+    {
+      "index": 15,
+      "title": "Lightweight graphical models for selectivity estimation without independence assumptions",
+      "abstract": "",
+      "year": "2011",
+      "venue": "VLDB Endowment",
+      "authors": "Kostas Tzoumas, Amol Deshpande, and Christian S Jensen"
+    },
+    {
+      "index": 16,
+      "title": "Tpc-ds, taking decision support benchmarking to the next level",
+      "abstract": "",
+      "year": "2002",
+      "venue": "ACM SIGMOD international conference on Management of data",
+      "authors": "Meikel Poess, Bryan Smith, Lubor Kollar, and Paul Larson"
+    },
+    {
+      "index": 17,
+      "title": "Query optimization through the looking glass, and what we found running the join order benchmark",
+      "abstract": "",
+      "year": "2018",
+      "venue": "VLDB Journal",
+      "authors": "Viktor Leis, Bernhard Radke, Andrey Gubichev, Atanas Mirchev, Peter Boncz, Alfons Kemper, and Thomas Neumann"
+    },
+    {
+      "index": 18,
+      "title": "The optimization of queries in relational databases",
+      "abstract": "",
+      "year": "1981",
+      "venue": "",
+      "authors": "Robert Philip Kooi"
+    },
+    {
+      "index": 19,
+      "title": "A comparison of selectivity estimators for range queries on metric attributes",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ACM SIGMOD Record",
+      "authors": "Björn Blohsfeld, Dieter Korus, and Bernhard Seeger"
+    },
+    {
+      "index": 20,
+      "title": "Wavelet-based histograms for selectivity estimation",
+      "abstract": "",
+      "year": "1998",
+      "venue": "ACM SIGMoD Record",
+      "authors": "Yossi Matias, Jeffrey Scott Vitter, and Min Wang"
+    },
+    {
+      "index": 21,
+      "title": "Selectivity estimation without the attribute value independence assumption",
+      "abstract": "",
+      "year": "1997",
+      "venue": "VLDB",
+      "authors": "Viswanath Poosala and Yannis E Ioannidis"
+    },
+    {
+      "index": 22,
+      "title": "Self-tuning, gpu-accelerated kernel density models for multidimensional selectivity estimation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM SIGMOD International Conference on Management of Data",
+      "authors": "Max Heimel, Martin Kiefer, and Volker Markl"
+    },
+    {
+      "index": 23,
+      "title": "Stholes: a multidimensional workload-aware histogram",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Acm Sigmod Record",
+      "authors": "Nicolas Bruno, Surajit Chaudhuri, and Luis Gravano"
+    },
+    {
+      "index": 24,
+      "title": "Join size estimation subject to filter conditions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "VLDB Endowment",
+      "authors": "David Vengerov, Andre Cavalheiro Menck, Mohamed Zait, and Sunil P Chakkappen"
+    },
+    {
+      "index": 25,
+      "title": "Cardinality estimation done right: Index-based join sampling",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CIDR",
+      "authors": "Viktor Leis, Bernharde Radke, Andrey Gubichev, Alfons Kemper, and Thomas Neumann"
+    },
+    {
+      "index": 26,
+      "title": "Join synopses for approximate query answering",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ACM SIGMOD Record",
+      "authors": "Swarup Acharya, Phillip B Gibbons, Viswanath Poosala, and Sridhar Ramaswamy"
+    },
+    {
+      "index": 27,
+      "title": "Consistent selectivity estimation via maximum entropy",
+      "abstract": "",
+      "year": "2007",
+      "venue": "VLDB journal",
+      "authors": "Volker Markl, Peter J Haas, Marcel Kutsch, Nimrod Megiddo, Utkarsh Srivastava, and Tam Minh Tran"
+    },
+    {
+      "index": 28,
+      "title": "Improved selectivity estimation by combining knowledge from sampling and synopses",
+      "abstract": "",
+      "year": "2018",
+      "venue": "VLDB Endowment",
+      "authors": "Magnus Müller, Guido Moerkotte, and Oliver Kolb"
+    },
+    {
+      "index": 29,
+      "title": "Learning-based query performance modeling and prediction",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE 28th International Conference on Data Engineering (ICDE)",
+      "authors": "Mert Akdere, Ugur Çetintemel, Matteo Riondato, Eli Upfal, and Stanley B Zdonik"
+    },
+    {
+      "index": 30,
+      "title": "Cardinality estimation using neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Annual International Conference on Computer Science and Software Engineering",
+      "authors": "Henry Liu, Mingbin Xu, Ziting Yu, Vincent Corvinelli, and Calisto Zuzarte"
+    },
+    {
+      "index": 31,
+      "title": "Adaptive Cardinality Estimation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.08330",
+      "authors": "Oleg Ivanov and Sergey Bartunov",
+      "orig_title": "Adaptive cardinality estimation",
+      "paper_id": "1711.08330v1"
+    },
+    {
+      "index": 32,
+      "title": "Learned Cardinalities: Estimating Correlated Joins with Deep Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1809.00677",
+      "authors": "Andreas Kipf, Thomas Kipf, Bernhard Radke, Viktor Leis, Peter Boncz, and Alfons Kemper",
+      "orig_title": "Learned cardinalities: Estimating correlated joins with deep learning",
+      "paper_id": "1809.00677v2"
+    },
+    {
+      "index": 33,
+      "title": "Estimating Cardinalities with Deep Sketches",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Management of Data",
+      "authors": "Andreas Kipf, Dimitri Vorona, Jonas Müller, Thomas Kipf, Bernhard Radke, Viktor Leis, Peter Boncz, Thomas Neumann, and Alfons Kemper",
+      "orig_title": "Estimating cardinalities with deep sketches",
+      "paper_id": "1904.08223v1"
+    },
+    {
+      "index": 34,
+      "title": "Independence is good: Dependency-based histogram synopses for high-dimensional data",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ACM SIGMOD Record",
+      "authors": "Amol Deshpande, Minos Garofalakis, and Rajeev Rastogi"
+    },
+    {
+      "index": 35,
+      "title": "Integer linear programming for the bayesian network structure learning problem",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Artificial Intelligence",
+      "authors": "Mark Bartlett and James Cussens"
+    },
+    {
+      "index": 36,
+      "title": "Approximating discrete probability distributions with dependence trees",
+      "abstract": "",
+      "year": "1968",
+      "venue": "IEEE transactions on Information Theory",
+      "authors": "C Chow and Cong Liu"
+    },
+    {
+      "index": 37,
+      "title": "Probabilistic networks and expert systems: Exact computational methods for Bayesian networks",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Springer Science & Business Media",
+      "authors": "Robert G Cowell, Philip Dawid, Steffen L Lauritzen, and David J Spiegelhalter"
+    },
+    {
+      "index": 38,
+      "title": "The Steiner tree problem, volume 53",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Elsevier",
+      "authors": "Frank K Hwang, Dana S Richards, and Pawel Winter"
+    },
+    {
+      "index": 39,
+      "title": "Factor graphs and the sum-product algorithm",
+      "abstract": "",
+      "year": "2001",
+      "venue": "IEEE Transactions on information theory",
+      "authors": "Frank R Kschischang, Brendan J Frey, Hans-Andrea Loeliger, et al."
+    },
+    {
+      "index": 40,
+      "title": "Automatic database management system tuning through large-scale machine learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM International Conference on Management of Data",
+      "authors": "Dana Van Aken, Andrew Pavlo, Geoffrey J Gordon, and Bohan Zhang"
+    },
+    {
+      "index": 41,
+      "title": "An overview of query optimization in relational systems",
+      "abstract": "",
+      "year": "1998",
+      "venue": "ACM SIGACT-SIGMOD-SIGART symposium on Principles of database systems",
+      "authors": "Surajit Chaudhuri"
+    },
+    {
+      "index": 42,
+      "title": "Exact cardinality query optimization for optimizer testing",
+      "abstract": "",
+      "year": "2009",
+      "venue": "VLDB Endowment",
+      "authors": "Surajit Chaudhuri, Vivek Narasayya, and Ravi Ramamurthy"
+    },
+    {
+      "index": 43,
+      "title": "Adaptive selectivity estimation using query feedback, volume 23",
+      "abstract": "",
+      "year": "1994",
+      "venue": "ACM",
+      "authors": "Chungmin Melvin Chen and Nick Roussopoulos"
+    },
+    {
+      "index": 44,
+      "title": "Improved histograms for selectivity estimation of range predicates",
+      "abstract": "",
+      "year": "1996",
+      "venue": "ACM Sigmod Record",
+      "authors": "Viswanath Poosala, Peter J Haas, Yannis E Ioannidis, and Eugene J Shekita"
+    },
+    {
+      "index": 45,
+      "title": "Selectivity estimation for range predicates using lightweight models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "VLDB Endowment",
+      "authors": "Anshuman Dutt, Chi Wang, Azade Nazi, Srikanth Kandula, Vivek Narasayya, and Surajit Chaudhuri"
+    },
+    {
+      "index": 46,
+      "title": "Simple random sampling from relational databases",
+      "abstract": "",
+      "year": "1986",
+      "venue": "",
+      "authors": "Frank Olken and Doron Rotem"
+    },
+    {
+      "index": 47,
+      "title": "Preventing bad plans by bounding the impact of cardinality estimation errors",
+      "abstract": "",
+      "year": "2009",
+      "venue": "VLDB Endowment",
+      "authors": "Guido Moerkotte, Thomas Neumann, and Gabriele Steidl"
+    },
+    {
+      "index": 48,
+      "title": "On the shortest spanning subtree of a graph and the traveling salesman problem",
+      "abstract": "",
+      "year": "1956",
+      "venue": "American Mathematical society",
+      "authors": "Joseph B Kruskal"
+    }
+  ]
+}

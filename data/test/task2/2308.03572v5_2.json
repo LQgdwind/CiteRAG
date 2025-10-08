@@ -1,0 +1,387 @@
+{
+  "paper_id": "2308.03572v5",
+  "title": "Provably Efficient Learning in Partially Observable Contextual Bandit",
+  "sections": {
+    "task 1: transfer from contextual bandit to mab": "We first consider an off-policy learning problem between an contextual bandit expert and a MAB agent.\nContextual bandits   [ref]4 is a variation of MAB where the expert can observe extra contextual information W𝑊W associated with the reward signal Y𝑌Y.\nThe expert follows certain policy and summarizes its experiences as the joint distribution F^​(a,y,w)^𝐹𝑎𝑦𝑤\\hat{F}(a,y,w).\nHowever, there exists a latent confounder U𝑈U that affects the causal effects between actions and rewards, making the observed contextual bandit model incomplete.\nThe agent, who is observing the expert interacting with the environment,\nwants to be more efficient and reuse the observed F^​(a,y,w)^𝐹𝑎𝑦𝑤\\hat{F}(a,y,w) with the help of extra prior knowledge about U𝑈U, i.e., F^​(u)^𝐹𝑢\\hat{F}(u),\nto find the optimal policy faster. Causal bounds.\nThis transfer scenario is depicted in Figure 1,\nwhere the actions A𝐴A, outcomes Y𝑌Y, context W𝑊W and U𝑈U,\nand causal structures used by the expert and the agent are identical.\nIn the first task, the MAB agent is unable to observe contexts,\nbut we will also examine the case where the agent can partially observe contexts in the task 2 and 3.\nThe missing contexts may be due to privacy protection or legal restrictions.\nAs the new agent cannot observe W𝑊W or U𝑈U, its objective is to minimize regret as defined in equation (1). One can find the optimal action d​o​(A=a∗)𝑑𝑜𝐴superscript𝑎do(A=a^{*}) by evaluating 𝔼​[Y|d​o​(a)]𝔼delimited-[]conditional𝑌𝑑𝑜𝑎\\mathbb{E}[Y|do(a)].\nTherefore, the off-policy learning problem is equivalent to identifying the causal effect 𝔼​[Y|d​o​(a)]𝔼delimited-[]conditional𝑌𝑑𝑜𝑎\\mathbb{E}[Y|do(a)] given the observational distribution F​(a,y,w)𝐹𝑎𝑦𝑤{F}(a,y,w) and prior knowledge F​(u)𝐹𝑢F(u).\nAlthough U𝑈U is unobserved during online learning, its distribution can be usually known regardless of the model itself (e.g., U𝑈U stands for gender, gene\ntype, blood type, or age). Alternatively, if costs permit, one can estimate F​(u)𝐹𝑢{F}(u) by re-testing within a small sampled sub-population.\nHowever, even though W∪U𝑊𝑈W\\cup U is assumed to be sufficient,\nthe causal effects of the action A𝐴A on the reward Y𝑌Y is non-identifiable from incomplete experiences F​(a,y,w)𝐹𝑎𝑦𝑤{F}(a,y,w) and F​(u)𝐹𝑢{F}(u),\nbecause the back-door path A←U→Y←𝐴𝑈→𝑌A\\leftarrow U\\rightarrow Y is still unblocked.\nThis means that the causal effects of A𝐴A on Y𝑌Y cannot be estimated without bias, regardless of sample size. However, we can tight obtain bounds on the causal effects via an optimization problem when given a prior distribution F​(u)𝐹𝑢F(u) and F​(a,y,w)𝐹𝑎𝑦𝑤F(a,y,w).\nThe optimization problem is as follows: Here, the sup/inf is taken over all causal models ℳℳ\\mathcal{M}, and Fℳsubscript𝐹ℳF_{\\mathcal{M}} represents the distributions in the causal model ℳℳ\\mathcal{M}.\nDenote the solutions to (4) as h​(a)ℎ𝑎h(a) and l​(a)𝑙𝑎l(a), respectively.\nSince the optimization is performed over all compatible causal models, the resulting bounds are guaranteed to be tight.\nIt is worth noting that the sufficient and necessary condition for causal identification is that h​(a)ℎ𝑎h(a) is equal to l​(a)𝑙𝑎l(a).\nWe provide a formal statement of this result in the appendix.\nThis idea is similar to that proposed in other works, such as  [ref]42 . In Theorem 3.1, we provide a specific version of the optimization problem (4) to obtain bounds on the causal effects of actions on rewards.\nWe consider the estimation error ϵitalic-ϵ\\epsilon and distinguish between known and unknown variables by using F^^𝐹\\hat{F} to represent the observed distributions and F𝐹F to represent the unknown variables. Given a causal diagram 𝒢𝒢\\mathcal{G} and a distribution compatible with 𝒢𝒢\\mathcal{G}, let {W,U}𝑊𝑈\\{W,U\\} be a set of variables satisfying\nthe back-door criterion in 𝒢𝒢\\mathcal{G} relative to an ordered pair (A,Y)𝐴𝑌(A,Y), where {W,U}𝑊𝑈\\{W,U\\} is partially observable, i.e., only\nprobabilities F^​(a,y,w)^𝐹𝑎𝑦𝑤\\hat{F}(a,y,w) and F^​(u)^𝐹𝑢\\hat{F}(u) with the maximum estimation error ϵitalic-ϵ\\epsilon,\nthe causal effects of A𝐴A on Y𝑌Y are then bounded as follows: where l​(a0)𝑙subscript𝑎0l(a_{0}) and h​(a0)ℎsubscript𝑎0h(a_{0}) are solutions to the following functional optimization problem for any given a0subscript𝑎0a_{0} Here the inf/sup is taken with respect to all unknown cumulative distribution functions F​(a,y,w,u)𝐹𝑎𝑦𝑤𝑢F(a,y,w,u), F​(a,w,u)𝐹𝑎𝑤𝑢F(a,w,u), F​(y|a,w,u)𝐹conditional𝑦𝑎𝑤𝑢F(y|a,w,u), F​(w,u)𝐹𝑤𝑢F(w,u), F​(a,y,w)𝐹𝑎𝑦𝑤F(a,y,w) and F​(u)𝐹𝑢F(u). The functional optimization problem presented in Theorem 3.1 provides tight lower and upper bounds on the average causal effect l​(a0)𝑙subscript𝑎0l(a_{0}) and h​(a0)ℎsubscript𝑎0h(a_{0}), respectively,\nfor any given a0∈𝒜subscript𝑎0𝒜a_{0}\\in\\mathcal{A}.\nOur results generalize those of 9 to random variables with estimation error,\nwhile 9 only considers the case of discrete random variables without estimation error.\nMoreover, this optimization problem can be applied to both parametric and non-parametric cases. It is essential to consider constraints for all a∈𝒜𝑎𝒜a\\in\\mathcal{A}, rather than just the given a0subscript𝑎0a_{0} of interest,\nas only considering constraints for a0subscript𝑎0a_{0} would result in non-tight bounds.\nAs an example, the optimal solutions generated by the non-linear optimization problem in 9 may not belong to any valid causal models,\nleading to non-tight bounds.\nTherefore, one need to consider all values of the given random variable X𝑋X to obtain tight bounds,\neven if only causal bounds under a specific intervention d​o​(X=x)𝑑𝑜𝑋𝑥do(X=x) are required. The original optimization problem is challenging to solve due to its inefficiency and intractability.\nFirstly, the functional constraints for unknown distributions make the optimization problem intractable.\nSecondly, solving a non-linear optimization problem can often get trapped in local optima.\nIn some cases, narrow causal bounds that do not include the true causal effects may lead to critical false decisions.\nTo overcome these challenges, it is necessary to approximate the problem to make it easier to solve and to obtain global solutions with high probability. The optimization problem can be naturally simplified by probability mass functions for discrete random variables with bounded support.\nTo extend this approach to general random variables, we only consider random variables with bounded support\nand discretize 𝒜𝒜\\mathcal{A}, 𝒲𝒲\\mathcal{W}, 𝒰𝒰\\mathcal{U}, and 𝒴𝒴\\mathcal{Y} into n𝒜subscript𝑛𝒜n_{\\mathcal{A}}, n𝒲subscript𝑛𝒲n_{\\mathcal{W}}, n𝒰subscript𝑛𝒰n_{\\mathcal{U}}, and n𝒴subscript𝑛𝒴n_{\\mathcal{Y}} disjoint blocks, respectively.\nFor random variables that take in finite values,\nthey have natural discretization.\nWe first define and then integrate both sides of the first equality over 𝒜isubscript𝒜𝑖\\mathcal{A}_{i}, 𝒴jsubscript𝒴𝑗\\mathcal{Y}_{j}, and 𝒲ksubscript𝒲𝑘\\mathcal{W}_{k} to obtain This allows us to reformulate the first equality in terms of integration instead of the original pointwise equality. As the discretization becomes finer,\ni.e., d​i​a​m​(𝒜i)𝑑𝑖𝑎𝑚subscript𝒜𝑖diam(\\mathcal{A}_{i}), d​i​a​m​(𝒴j)𝑑𝑖𝑎𝑚subscript𝒴𝑗diam(\\mathcal{Y}_{j}), d​i​a​m​(𝒲k)𝑑𝑖𝑎𝑚subscript𝒲𝑘diam(\\mathcal{W}_{k}), and d​i​a​m​(𝒰l)𝑑𝑖𝑎𝑚subscript𝒰𝑙diam(\\mathcal{U}_{l}) approach zero for all (i,j,k,l)𝑖𝑗𝑘𝑙(i,j,k,l),\nthe approximation error converges to zero for good distributions.\nFor discrete and finite random variables,\nthe number of constraints is finite so the approximation error can be exactly zero for natural discretization.\nThe other equalities hold naturally if the first constraint is satisfied.\nFor the constraints for all u∈𝒰𝑢𝒰u\\in\\mathcal{U},\nwe integrate these constraints using the same approach as Compared with the original functional constraints in distributions, the linear constraints for xi​j​k​lsubscript𝑥𝑖𝑗𝑘𝑙x_{ijkl} are much easier to handle. After discretization, the objective of the original optimization problem is where yjsubscript𝑦𝑗y_{j} is chosen to be ∫y∈𝒴jy​𝑑y∫y∈𝒴j𝑑ysubscript𝑦subscript𝒴𝑗𝑦differential-d𝑦subscript𝑦subscript𝒴𝑗differential-d𝑦\\frac{\\int_{y\\in\\mathcal{Y}_{j}}ydy}{\\int_{y\\in\\mathcal{Y}_{j}}dy},\nas this option can reduce the approximation error (see the appendix for more details).\nIf 𝒴jsubscript𝒴𝑗\\mathcal{Y}_{j} is an interval, then the above choice of yjsubscript𝑦𝑗y_{j} is just the midpoint of 𝒴jsubscript𝒴𝑗\\mathcal{Y}_{j}, The first transfer learning task requires obtaining causal bounds from the number of n𝒜subscript𝑛𝒜n_{\\mathcal{A}} optimization problems.\nSince every optimization problem shares the same feasible region, it is efficient to solve all optimization problems in a unified way.\nTo obtain the global solutions, we use Monto-Carlo method to approximate the above discrete optimization problem. Monte-Carlo algorithm.\nMonte Carlo (MC) algorithms are a key approach for sampling causal models subject to constraints.\nHowever, efficiently sampling probability tables with row and column constraints can be challenging.\nAfter discretization, the problem of sampling xi​j​k​lsubscript𝑥𝑖𝑗𝑘𝑙x_{ijkl} is equivalent to sampling from a simplex 𝒟𝒟\\mathcal{D} defined by the linear constraints Let Similarly, we can define θlsubscript𝜃𝑙\\theta_{l} and θ^lsubscript^𝜃𝑙\\hat{\\theta}_{l}, so we rewrite the linear equations as The overall equalities provide n𝒜​n𝒴​n𝒲+n𝒰−1subscript𝑛𝒜subscript𝑛𝒴subscript𝑛𝒲subscript𝑛𝒰1n_{\\mathcal{A}}n_{\\mathcal{Y}}n_{\\mathcal{W}}+n_{\\mathcal{U}}-1 linearly independent constraints,\nas both types of equalities imply ∑i​j​k​lxi​j​k​l=1subscript𝑖𝑗𝑘𝑙subscript𝑥𝑖𝑗𝑘𝑙1\\sum_{ijkl}x_{ijkl}=1.\nSince there are n𝒜​n𝒴​n𝒲​n𝒰subscript𝑛𝒜subscript𝑛𝒴subscript𝑛𝒲subscript𝑛𝒰n_{\\mathcal{A}}n_{\\mathcal{Y}}n_{\\mathcal{W}}n_{\\mathcal{U}} unknown variables,\nwe need to determine the value of n𝒜​n𝒴​n𝒲​n𝒰−n𝒜​n𝒴​n𝒲−n𝒰+1subscript𝑛𝒜subscript𝑛𝒴subscript𝑛𝒲subscript𝑛𝒰subscript𝑛𝒜subscript𝑛𝒴subscript𝑛𝒲subscript𝑛𝒰1n_{\\mathcal{A}}n_{\\mathcal{Y}}n_{\\mathcal{W}}n_{\\mathcal{U}}-n_{\\mathcal{A}}n_{\\mathcal{Y}}n_{\\mathcal{W}}-n_{\\mathcal{U}}+1\nunknowns. Directly sampling xi​j​k​lsubscript𝑥𝑖𝑗𝑘𝑙x_{ijkl} from distributions supported on  01  and rejecting invalid samples that do not satisfy the inequality constraints can be sample-inefficient.\nTo address this issue, we can incorporate inequalities to shrink the support of each unknown variable. For instance, Li and Pearl 9 proposed using the bounds and in their optimization problem.\nHowever, the support of each unknown xi​j​k​lsubscript𝑥𝑖𝑗𝑘𝑙x_{ijkl} in 9: [max⁡{0,θi​j​k+θl−1},min⁡{θi​j​k,θl}]0subscript𝜃𝑖𝑗𝑘subscript𝜃𝑙1subscript𝜃𝑖𝑗𝑘subscript𝜃𝑙[\\max\\{0,\\theta_{ijk}+\\theta_{l}-1\\},\\min\\{\\theta_{ijk},\\theta_{l}\\}],\nis not as tight as those found by solving the linear programming problem (9): Clearly, the solutions generated by 9 may not satisfy all the constraints in (6),\nwhich further contributes to the lack of tightness in their approach.\nWe provide evidence for this claim by reporting the proportion of valid samples obtained with different sample spaces in Table 5 for the example discussed in Section 4. We also report the simulation results in Section 4 for causal bounds,\nwhich evidently support our arguments. While the individual bounds for xi​j​k​lsubscript𝑥𝑖𝑗𝑘𝑙x_{ijkl} obtained by (9) are tight,\nthe sample efficiency is still unsatisfactory.\nTo improve sample efficiency, we introduce the sampling algorithm based on sequential LP.\nSuppose that we find a linearly independent variable index set S:={n1,n2,⋯,n|S|}assign𝑆subscript𝑛1subscript𝑛2⋯subscript𝑛𝑆S:=\\{n_{1},n_{2},\\cdots,n_{|S|}\\} with cardinality n𝒜​n𝒴​n𝒲​n𝒰−n𝒜​n𝒴​n𝒲−n𝒰+1subscript𝑛𝒜subscript𝑛𝒴subscript𝑛𝒲subscript𝑛𝒰subscript𝑛𝒜subscript𝑛𝒴subscript𝑛𝒲subscript𝑛𝒰1n_{\\mathcal{A}}n_{\\mathcal{Y}}n_{\\mathcal{W}}n_{\\mathcal{U}}-n_{\\mathcal{A}}n_{\\mathcal{Y}}n_{\\mathcal{W}}-n_{\\mathcal{U}}+1 of (8).\nFor the first variable xn1subscript𝑥subscript𝑛1x_{n_{1}},\nwe solve (9) to find its support [ln1,hn1]subscript𝑙subscript𝑛1subscriptℎsubscript𝑛1[l_{n_{1}},h_{n_{1}}],\nand we sample a x^n1subscript^𝑥subscript𝑛1\\hat{x}_{n_{1}} from a user-given distribution truncated to [ln1,hn1]subscript𝑙subscript𝑛1subscriptℎsubscript𝑛1[l_{n_{1}},h_{n_{1}}].\nThen, for the nisubscript𝑛𝑖n_{i} step, the previous values of xn1,⋯,xni−1subscript𝑥subscript𝑛1⋯subscript𝑥subscript𝑛𝑖1x_{n_{1}},\\cdots,x_{n_{i-1}} have been determined by sampling.\nWe add the constraints for xnjsubscript𝑥subscript𝑛𝑗x_{n_{j}}, j=1,2,⋯,i−1𝑗12⋯𝑖1j=1,2,\\cdots,i-1, where it is equal to its corresponding value.\nTogether with new constraints in (9), we can find a support [lni,hni]subscript𝑙subscript𝑛𝑖subscriptℎsubscript𝑛𝑖[l_{n_{i}},h_{n_{i}}]\nand sample a valid value for xnisubscript𝑥subscript𝑛𝑖x_{n_{i}} by solving where x^njsubscript^𝑥subscript𝑛𝑗\\hat{x}_{n_{j}} is a sampled value for xnjsubscript𝑥subscript𝑛𝑗x_{n_{j}}.\nAfter |S|𝑆|S| steps, the remaining xi​j​k​lsubscript𝑥𝑖𝑗𝑘𝑙x_{ijkl} with its index (i,j,k,l)∉S𝑖𝑗𝑘𝑙𝑆(i,j,k,l)\\notin S can be solved by linear equations (8).\nThese sequential LP steps ensure that we always find valid samples in the simplex defined by (9). Sequentially solving LPs and sampling components of 𝐱𝐱\\mathbf{x} induce a distribution supported on the simplex defined by (​9​)italic-(9italic-)\\eqref{eq: linear programming to find support}.\nAlthough this is the most computationally extensive step, it can significantly improve the sample efficiency.\nIn comparison, the sample efficiency of directly sampling xi​j​k​lsubscript𝑥𝑖𝑗𝑘𝑙x_{ijkl} from distributions supported on  01  or using the bounds proposed in 9 is much lower,\nas shown in Table 5.\nWe will discuss our sampling method on general simplex in appendix. The remaining concern is the estimation error in RHS of (6).\nDenote Since θi​j​k∈ subscript𝜃𝑖𝑗𝑘01\\theta_{ijk}\\in , the variance of one sample is at most 1414\\frac{1}{4}.\nIf θi​j​ksubscript𝜃𝑖𝑗𝑘{\\theta}_{ijk} has n𝑛n i.i.d. samples, then its largest variance of θ^i​j​ksubscript^𝜃𝑖𝑗𝑘\\hat{\\theta}_{ijk} is 14​n14𝑛\\frac{1}{4n}.\nWe can simply set ϵ=12​nitalic-ϵ12𝑛\\epsilon=\\frac{1}{2\\sqrt{n}} if n𝑛n is given.\nWe can sample θlsubscript𝜃𝑙\\theta_{l} and θi​j​ksubscript𝜃𝑖𝑗𝑘\\theta_{ijk} from distributions with known parameters θ^lsubscript^𝜃𝑙\\hat{\\theta}_{l} and θ^i​j​ksubscript^𝜃𝑖𝑗𝑘\\hat{\\theta}_{ijk}: For example, if one want to reflect the concentration property,\nthen one can choose the truncate Gaussian distribution 𝒩​(θ^x,14​nx)𝒩subscript^𝜃𝑥14subscript𝑛𝑥\\mathcal{N}(\\hat{\\theta}_{x},\\frac{1}{4n_{x}}) for x=i​j​k𝑥𝑖𝑗𝑘x=ijk or x=l𝑥𝑙x=l.\nIf one expects the worst cases, then one can choose the uniform distribution for θxsubscript𝜃𝑥\\theta_{x} with discrepancy parameter ϵitalic-ϵ\\epsilon. The optimization problem (4) after discretization is If all referred random variables are discrete, the optimization (12) can be exactly the same as (4) for natural discretization.\nFor general random variables, it is still an open problem that whether the solution to (12) will converge to\nthe solution to (4) as the discretization becomes finer.\nHowever, we have the following probability convergence results for variables 𝐱:=(xi​j​k​l)assign𝐱subscript𝑥𝑖𝑗𝑘𝑙\\mathbf{x}:=(x_{ijkl}).\nDenote the solutions to (12) as l^​(a)^𝑙𝑎\\hat{l}(a) and h^​(a)^ℎ𝑎\\hat{h}(a).\nFor simplicity, we denote the induced sampling measure for 𝐱𝐱\\mathbf{x} as ℙssubscriptℙ𝑠\\mathbb{P}_{s}.\nThe existence and uniqueness can be easily proved by Kolmogorov’s extension theorem. Assume that\nthe sampling measure ℙssubscriptℙ𝑠\\mathbb{P}_{s} satisfies ∀𝐱∈𝒟for-all𝐱𝒟\\forall\\mathbf{x}\\in\\mathcal{D}, and ∀δ>0for-all𝛿0\\forall\\delta>0, where ℬ​(𝐱,δ)ℬ𝐱𝛿\\mathcal{B}(\\mathbf{x},\\delta) is a ball centered at 𝐱𝐱\\mathbf{x} with radius δ𝛿\\delta.\nIf the discrepancy parameter is set to 00,\nthen b(1)​(a)subscript𝑏1𝑎b_{(1)}(a) converges to l^​(a)^𝑙𝑎\\hat{l}(a) in probability\nand b(B)​(a)subscript𝑏𝐵𝑎b_{(B)}(a) converges to h^​(a)^ℎ𝑎\\hat{h}(a) in probability for B→∞→𝐵B\\to\\infty. The condition ℙs​(ℬ​(𝐱,δ)∩𝒟)>0subscriptℙ𝑠ℬ𝐱𝛿𝒟0\\mathbb{P}_{s}(\\mathcal{B}(\\mathbf{x},\\delta)\\cap\\mathcal{D})>0 means that\nthe sampling distribution can cover all feasible models.\nThis condition can be satisfied by various continuous distributions such as the uniform distribution, truncated Gaussian distribution, and others. Similar to [ref]42, we can establish a concentration result for our sampling algorithm using Chernoff’s bound.\nHowever, this result is not as useful as Proposition 3.1.\nFirstly, the concentration property relies on the distribution of causal bounds,\nwhich is often complex and difficult to know in practice.\nSecondly, people are usually more interested in convergence results than concentration results in approximation problems.\nFor example, if one has several l​(a)𝑙𝑎l(a) samples, it is more reasonable to use the minimum value among them rather than the average results. Regarding other statistical properties,\nMosteller  shows that if the distribution on causal bounds Fb​(x)subscript𝐹𝑏𝑥F_{b}(x) is continuous and has a density pb​(x)subscript𝑝𝑏𝑥p_{b}(x),\nthen the q𝑞q-th quantile b[B​q]subscript𝑏delimited-[]𝐵𝑞b_{[Bq]} asymptotically follows the normal distribution 𝒩​(Fb−1​(q),q​(1−q)B​[pb​(Fb−1​(q))]2)𝒩superscriptsubscript𝐹𝑏1𝑞𝑞1𝑞𝐵superscriptdelimited-[]subscript𝑝𝑏superscriptsubscript𝐹𝑏1𝑞2\\mathcal{N}(F_{b}^{-1}(q),\\frac{q(1-q)}{B[p_{b}(F_{b}^{-1}(q))]^{2}}). To accelerate the convergence speed of Algorithm 1,\nwe can incorporate an optimization procedure OPT(min/max, object, feasible domain 𝒟𝒟\\mathcal{D}, initial guess 𝐱0subscript𝐱0\\mathbf{x}_{0}).\nThe optimization procedure OPT takes as input the objective function to minimize/maximize, the feasible domain 𝒟𝒟\\mathcal{D}, and an initial guess 𝐱0subscript𝐱0\\mathbf{x}_{0}.\nThe procedure OPT seeks to find local optima 𝐱l​o​c∈𝒟subscript𝐱𝑙𝑜𝑐𝒟\\mathbf{x}_{loc}\\in\\mathcal{D} that optimizes the objective function locally.\nSpecifically, in each iteration of Algorithm 1, we use the sampled value 𝐱𝐱\\mathbf{x} as the initial guess 𝐱0subscript𝐱0\\mathbf{x}_{0} and feed it to OPT.\nThe output of OPT is then used as the updated estimate of causal bounds.\nThe modified algorithm with OPT can be found in the appendix.\nBy leveraging the optimization procedure, we can further enhance the result in Proposition 3.1 under mild assumptions on OPT. Assume that\nthe sampling measure ℙssubscriptℙ𝑠\\mathbb{P}_{s} satisfies ∀𝐱∈𝒟for-all𝐱𝒟\\forall\\mathbf{x}\\in\\mathcal{D}, and ∀δ>0for-all𝛿0\\forall\\delta>0, where ℬ​(𝐱,δ)ℬ𝐱𝛿\\mathcal{B}(\\mathbf{x},\\delta) is a ball centered at 𝐱𝐱\\mathbf{x} with radius δ𝛿\\delta.\nGiven a deterministic procedure OPT which satisfies for any local optima 𝐱l​o​csubscript𝐱𝑙𝑜𝑐\\mathbf{x}_{loc},\nthere exists δ>0𝛿0\\delta>0 such that for any initial guess 𝐱0∈ℬ​(𝐱l​o​c,δ)∩𝒟subscript𝐱0ℬsubscript𝐱𝑙𝑜𝑐𝛿𝒟\\mathbf{x}_{0}\\in\\mathcal{B}(\\mathbf{x}_{loc},\\delta)\\cap\\mathcal{D},\nOPT can output 𝐱l​o​csubscript𝐱𝑙𝑜𝑐\\mathbf{x}_{loc} as a result.\nIf the discrepancy parameter is set to 00,\nthen b(1)​(a)subscript𝑏1𝑎b_{(1)}(a) and b(B)​(a)subscript𝑏𝐵𝑎b_{(B)}(a) converge almost surely to l^​(a)^𝑙𝑎\\hat{l}(a) and h^​(a)^ℎ𝑎\\hat{h}(a) for B→∞→𝐵B\\to\\infty, respectively. This result suggests that the modified algorithm with OPT can converge to the optimal solution with higher rate,\nand the convergence speed can be accelerated compared to the original algorithm.\nIntuitively, the optimization procedure OPT makes the probability Fbsubscript𝐹𝑏F_{b} concentrate at local optima rather than spread over the whole feasible domain.\nAdditionally, optimization procedures can usually work effectively at local regions and guarantee local optimality for sufficiently close initial guesses.\nTherefore, the assumption on OPT is not so strict. MAB.\nWe now consider the first transfer learning task for |𝒜|<∞𝒜|\\mathcal{A}|<\\infty.\nThe algorithm proceeds as follows:\nfirst, we remove any arm a𝑎a for which h​(a)<maxi∈𝒜⁡l​(i)ℎ𝑎subscript𝑖𝒜𝑙𝑖h(a)<\\max_{i\\in\\mathcal{A}}l(i).\nNext, we truncate the upper confidence bound Ua​(t)subscript𝑈𝑎𝑡U_{a}(t) for the remaining actions using their respective causal bounds.\nSpecifically, we define the truncated upper confidence bound as U^a​(t)=min⁡{Ua​(t),h​(a)}subscript^𝑈𝑎𝑡subscript𝑈𝑎𝑡ℎ𝑎\\hat{U}_{a}(t)=\\min\\{U_{a}(t),h(a)\\}.\nThe algorithm then chooses the action with the highest truncated UCB and update the average reward of the chosen action. Consider a |𝒜|𝒜|\\mathcal{A}|-MAB problem with rewards bounded in  01 .\nFor each arm a∈𝒜𝑎𝒜a\\in\\mathcal{A}, its expected reward μasubscript𝜇𝑎\\mu_{a} is bounded by [l​(a),h​(a)]𝑙𝑎ℎ𝑎[l(a),h(a)].\nThen in the Algorithm 2, the number of draws 𝔼​[Na​(T)]𝔼delimited-[]subscript𝑁𝑎𝑇\\mathbb{E}[N_{a}(T)] for any sub-optimal arm is upper bounded as: As a simple corollary, the minimax upper bound is 𝒪​(|𝒜∗~|​T​log⁡T)𝒪~superscript𝒜𝑇𝑇\\mathcal{O}(\\sqrt{|\\widetilde{\\mathcal{A}^{*}}|T\\log T}),\nwhich also matches the lower bound Ω​(|𝒜∗~|​T)Ω~superscript𝒜𝑇\\Omega(\\sqrt{|\\widetilde{\\mathcal{A}^{*}}|T}) in transfer learning setting (see more details in appendix)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Contextual bandit learning with predictable rewards",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Artificial Intelligence and Statistics",
+      "authors": "A. Agarwal, M. Dudík, S. Kale, J. Langford, and R. Schapire"
+    },
+    {
+      "index": 1,
+      "title": "Bandits with unobserved confounders: A causal approach",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "E. Bareinboim, A. Forney, and J. Pearl"
+    },
+    {
+      "index": 2,
+      "title": "Transfer Learning for Contextual Multi-armed Bandits",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2211.12612",
+      "authors": "C. Cai, T. T. Cai, and H. Li",
+      "orig_title": "Transfer learning for contextual multi-armed bandits",
+      "paper_id": "2211.12612v2"
+    },
+    {
+      "index": 3,
+      "title": "Contextual bandits with linear payoff functions",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Fourteenth International Conference on Artificial Intelligence and Statistics",
+      "authors": "W. Chu, L. Li, L. Reyzin, and R. Schapire"
+    },
+    {
+      "index": 4,
+      "title": "Beyond Value-Function Gaps: Improved Instance-Dependent Regret Bounds for Episodic Reinforcement Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "C. Dann, T. V. Marinov, M. Mohri, and J. Zimmert",
+      "orig_title": "Beyond value-function gaps: Improved instance-dependent regret bounds for episodic reinforcement learning",
+      "paper_id": "2107.01264v2"
+    },
+    {
+      "index": 5,
+      "title": "An automated approach to causal inference in discrete settings",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "G. Duarte, N. Finkelstein, D. Knox, J. Mummolo, and I. Shpitser"
+    },
+    {
+      "index": 6,
+      "title": "Minimax theorems",
+      "abstract": "",
+      "year": "1953",
+      "venue": "National Academy of Sciences of the United States of America",
+      "authors": "K. Fan"
+    },
+    {
+      "index": 7,
+      "title": "Beyond ucb: Optimal and efficient contextual bandits with regression oracles",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "D. Foster and A. Rakhlin"
+    },
+    {
+      "index": 8,
+      "title": "Practical Contextual Bandits with Regression Oracles",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "D. Foster, A. Agarwal, M. Dudík, H. Luo, and R. Schapire",
+      "orig_title": "Practical contextual bandits with regression oracles",
+      "paper_id": "1803.01088v1"
+    },
+    {
+      "index": 9,
+      "title": "Instance-dependent complexity of contextual bandits and reinforcement learning: A disagreement-based perspective",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2010.03104",
+      "authors": "D. J. Foster, A. Rakhlin, D. Simchi-Levi, and Y. Xu"
+    },
+    {
+      "index": 10,
+      "title": "Dual Instrumental Method for Confounded Kernelized Bandits",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2209.03224",
+      "authors": "X. Gong and J. Zhang",
+      "orig_title": "Dual instrumental method for confounded kernelized bandits",
+      "paper_id": "2209.03224v1"
+    },
+    {
+      "index": 11,
+      "title": "Provably efficient offline reinforcement learning for partially observable Markov decision processes",
+      "abstract": "",
+      "year": "2022",
+      "venue": "39th International Conference on Machine Learning",
+      "authors": "H. Guo, Q. Cai, Y. Zhang, Z. Yang, and Z. Wang"
+    },
+    {
+      "index": 12,
+      "title": "Provably Efficient Reinforcement Learning with Linear Function Approximation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "C. Jin, Z. Yang, Z. Wang, and M. I. Jordan",
+      "orig_title": "Provably efficient reinforcement learning with linear function approximation",
+      "paper_id": "1907.05388v2"
+    },
+    {
+      "index": 13,
+      "title": "Instrument-armed bandits",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Algorithmic Learning Theory",
+      "authors": "N. Kallus"
+    },
+    {
+      "index": 14,
+      "title": "Causal Bandits: Learning Good Interventions via Causal Inference",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "F. Lattimore, T. Lattimore, and M. D. Reid",
+      "orig_title": "Causal bandits: Learning good interventions via causal inference",
+      "paper_id": "1606.03203v1"
+    },
+    {
+      "index": 15,
+      "title": "Bandit algorithms",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Cambridge University Press",
+      "authors": "T. Lattimore and C. Szepesvári"
+    },
+    {
+      "index": 16,
+      "title": "Sequential transfer in multi-armed bandit with finite set of models",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Lazaric, E. Brunskill, et al."
+    },
+    {
+      "index": 17,
+      "title": "Probabilities of causation with nonbinary treatment and effect",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2208.09568",
+      "authors": "A. Li and J. Pearl"
+    },
+    {
+      "index": 18,
+      "title": "Bounds on Causal Effects and Application to High Dimensional Data",
+      "abstract": "",
+      "year": "2022",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "A. Li and J. Pearl",
+      "orig_title": "Bounds on causal effects and application to high dimensional data",
+      "paper_id": "2106.12121v1"
+    },
+    {
+      "index": 19,
+      "title": "Unit Selection with Nonbinary Treatment and Effect",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2208.09569",
+      "authors": "A. Li and J. Pearl",
+      "orig_title": "Unit selection with nonbinary treatment and effect",
+      "paper_id": "2208.09569v1"
+    },
+    {
+      "index": 20,
+      "title": "Learning probabilities of causation from finite population data",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2210.08453",
+      "authors": "A. Li, S. Jiang, Y. Sun, and J. Pearl"
+    },
+    {
+      "index": 21,
+      "title": "Epsilon-identifiability of causal quantities",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2301.12022",
+      "authors": "A. Li, S. Mueller, and J. Pearl"
+    },
+    {
+      "index": 22,
+      "title": "A contextual-bandit approach to personalized news article recommendation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "19th international conference on World wide web",
+      "authors": "L. Li, W. Chu, J. Langford, and R. E. Schapire"
+    },
+    {
+      "index": 23,
+      "title": "Transferable contextual bandit for cross-domain recommendation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "B. Liu, Y. Wei, Y. Zhang, Z. Yan, and Q. Yang"
+    },
+    {
+      "index": 24,
+      "title": "Learning without knowing: Unobserved context in continuous transfer reinforcement learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Learning for Dynamics and Control",
+      "authors": "C. Liu, Y. Zhang, Y. Shen, and M. M. Zavlanos"
+    },
+    {
+      "index": 25,
+      "title": "Pessimism in the Face of Confounders: Provably Efficient Offline Reinforcement Learning in Partially Observable Markov Decision Processes",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "M. Lu, Y. Min, Z. Wang, and Z. Yang",
+      "orig_title": "Pessimism in the face of confounders: Provably efficient offline reinforcement learning in partially observable markov decision processes",
+      "paper_id": "2205.13589v3"
+    },
+    {
+      "index": 26,
+      "title": "On some useful “inefficient” statistics",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Springer",
+      "authors": "F. Mosteller"
+    },
+    {
+      "index": 27,
+      "title": "A regret bound for greedy partially observed stochastic contextual bandits",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Decision Awareness in Reinforcement Learning Workshop at ICML",
+      "authors": "H. Park and M. K. S. Faradonbeh"
+    },
+    {
+      "index": 28,
+      "title": "Analysis of Thompson Sampling for Partially Observable Contextual Multi-Armed Bandits",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Control Systems Letters",
+      "authors": "H. Park and M. K. S. Faradonbeh",
+      "orig_title": "Analysis of thompson sampling for partially observable contextual multi-armed bandits",
+      "paper_id": "2110.12175v2"
+    },
+    {
+      "index": 29,
+      "title": "Causal inference in statistics: An overview",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Statistics surveys",
+      "authors": "J. Pearl"
+    },
+    {
+      "index": 30,
+      "title": "The book of why",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of MultiDisciplinary Evaluation",
+      "authors": "S. Powell"
+    },
+    {
+      "index": 31,
+      "title": "A Minimax Learning Approach to Off-Policy Evaluation in Confounded Partially Observable Markov Decision Processes",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "C. Shi, M. Uehara, J. Huang, and N. Jiang",
+      "orig_title": "A minimax learning approach to off-policy evaluation in confounded partially observable markov decision processes",
+      "paper_id": "2111.06784v4"
+    },
+    {
+      "index": 32,
+      "title": "Scalable Computation of Causal Bounds",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "M. Shridharan and G. Iyengar",
+      "orig_title": "Scalable computation of causal bounds",
+      "paper_id": "2308.02709v1"
+    },
+    {
+      "index": 33,
+      "title": "Bypassing the monster: A faster and simpler optimal algorithm for contextual bandits under realizability",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Mathematics of Operations Research",
+      "authors": "D. Simchi-Levi and Y. Xu"
+    },
+    {
+      "index": 34,
+      "title": "Bandits with Partially Observable Confounded Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Uncertainty in Artificial Intelligence",
+      "authors": "G. Tennenholtz, U. Shalit, S. Mannor, and Y. Efroni",
+      "orig_title": "Bandits with partially observable confounded data",
+      "paper_id": "2006.06731v2"
+    },
+    {
+      "index": 35,
+      "title": "A general identification condition for causal effects",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Aaai/iaai",
+      "authors": "J. Tian and J. Pearl"
+    },
+    {
+      "index": 36,
+      "title": "Provably efficient reinforcement learning in partially observable dynamical systems",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ArXiv",
+      "authors": "M. Uehara, A. Sekhari, J. D. Lee, N. Kallus, and W. Sun"
+    },
+    {
+      "index": 37,
+      "title": "Provably Efficient Causal Reinforcement Learning with Confounded Observational Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "L. Wang, Z. Yang, and Z. Wang",
+      "orig_title": "Provably efficient causal reinforcement learning with confounded observational data",
+      "paper_id": "2006.12311v1"
+    },
+    {
+      "index": 38,
+      "title": "Deep Proxy Causal Learning and its Application to Confounded Bandit Policy Evaluation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "L. Xu, H. Kanagawa, and A. Gretton",
+      "orig_title": "Deep proxy causal learning and its application to confounded bandit policy evaluation",
+      "paper_id": "2106.03907v5"
+    },
+    {
+      "index": 39,
+      "title": "Transfer learning in multi-armed bandit: a causal approach",
+      "abstract": "",
+      "year": "2017",
+      "venue": "16th Conference on Autonomous Agents and MultiAgent Systems",
+      "authors": "J. Zhang and E. Bareinboim"
+    },
+    {
+      "index": 40,
+      "title": "Bounding causal effects on continuous outcome",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "J. Zhang and E. Bareinboim"
+    },
+    {
+      "index": 41,
+      "title": "Partial Counterfactual Identification from Observational and Experimental Data",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "J. Zhang, J. Tian, and E. Bareinboim",
+      "orig_title": "Partial counterfactual identification from observational and experimental data",
+      "paper_id": "2110.05690v1"
+    },
+    {
+      "index": 42,
+      "title": "A Comprehensive Survey on Transfer Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE",
+      "authors": "F. Zhuang, Z. Qi, K. Duan, D. Xi, Y. Zhu, H. Zhu, H. Xiong, and Q. He",
+      "orig_title": "A comprehensive survey on transfer learning",
+      "paper_id": "1911.02685v3"
+    }
+  ]
+}

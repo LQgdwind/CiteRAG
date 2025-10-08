@@ -1,0 +1,413 @@
+{
+  "paper_id": "2110.05805v1",
+  "title": "Real-Time Skeletonization for Sketch-Based Modeling1footnote 11footnote 1Only capitalize first word and proper nouns in the title.",
+  "sections": {
+    "introduction": "There is an increasing need for ready-to-animate models, which takes designers lots of time in shape modeling, skeleton creation, and weight painting. However, manually creating the skeleton is labor-intensive, and requires professional training. Sketch-based tools  liberate users from the troublesome of shape modeling, making 3D modeling accessible to novices. There are also lots of work focusing on automatic skeletonization [ref]6. However, they are computation expensive and far from real-time. The skeleton is extracted only after the entire mesh model is constructed and processed by the algorithm. In this paper, we present a real-time skeletonization method for sketch-based modeling, which enables simultaneous shape modeling and skeleton creation. A local skeleton and corresponding mesh are automatically created as soon as the polygon stroke is captured, then the subpart is connected to the existing subpart, finally a coarse-to-fine refinement strategy is provided to the user to control the skeleton complexity, see Fig. 1. Extracting an animatable skeleton in real-time is difficult with three major challenges: (i)𝑖(i) how to extract the local skeleton efficiently from an underlying shape; (i​i)𝑖𝑖(ii) how to establish the relationship among local skeletons in real-time; and (i​i​i)𝑖𝑖𝑖(iii) how to find the optimal skeleton structure suitable for animation. To solve the first challenge, we construct a straight skeleton  structure directly from the input polyline and fully utilize Douglas Peucker (DP) simplification  to accelerate the process. The straight skeleton is extracted by offsetting the polygon edges inward and recording the trace of vertices. We employ straight skeleton as our base skeletonization technique because the computation cost is almost negligible compared with other methods based on binary image 0, voxels 12, point clouds , and meshes . The simplicity of polygon data structure makes the algorithm a perfect candidate for immediate skeleton extraction. Our innovation is the full-fledged use of DP technique for speeding up animatable skeleton extraction. As shown in Fig. 1a, we simplify the dense sketch points (red) with DP, the simplified contour not only approximates the shape well but also generates the most concise input for the straight skeleton extraction algorithm. We further propose an efficient BoundedDP algorithm for extracting joints from the axis line of the straight skeleton. Both the axis curvature and silhouette shape are considered, which yields a good result of key joints. To solve the second challenge, we reuse the skeleton axis and joints extracted from the first step and develop a general cylinder around the axis as well as an inscribed ball around the joint to approximate the 3D shape. This approximation enables the real-time intersection test in the interactive modeling process. Once two 3D shapes are found intersecting with each other, we attach one skeleton to the other according to the modeling sequence. We set the independent subparts as roots, and all follow-up subparts are attached hierarchically according to the intersection relationship and the modeling order. The attached position is calculated from Euclidean distance between parent-skeleton bones and child-skeleton joints. To solve the third challenge, we equip users with four operations under three level-of-detail controls. As pointed by , animators need multi-level controls for skeleton complexity, and the fixed number of joints extracted solely from shape topology is not enough to capture user intention. For example, a hand may be represented by a single medial bone or a finer resolution of hierarchical finger joints. Our four operations provide users flexible control over skeleton complexity. Instead of manually inserting, deleting, and connecting bones, users only need to adjust four parameters to change the skeleton structure. The branch-level operation is based on DP algorithm, which allows users to tune the joints number for a single axis, such as the axis on a finger. For the subpart level and global level, we take inspiration from polygon mesh processing 345 and skeleton pruning 67 since a skeleton can be regarded as an acyclic graph structure (tree). The three operations are joints merging, branch pruning, and edge collapsing. Each operation corresponds to a control threshold that is calculated from the current geometric state of the skeleton. Users can explore different design ideas simply by playing around with these parameters. In summary, our contributions are four folds: (i)𝑖(i) a real-time skeletonization algorithm for immediately constructing an animatable skeleton from user sketch; (i​i)𝑖𝑖(ii) an efficient method for fast intersection test and sub-skeletons connection; (i​i​i)𝑖𝑖𝑖(iii) a flexible solution for multi-level of details skeleton control; (i​v)𝑖𝑣(iv) an easy-to-use sketch system to create animatable models."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Teddy: a sketching interface for 3d freeform design",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ACM SIGGRAPH 2006 Courses",
+      "authors": "Igarashi, T, Matsuoka, S, Tanaka, H"
+    },
+    {
+      "index": 1,
+      "title": "Optimal separable algorithms to compute the reverse euclidean distance transformation and discrete medial axis in arbitrary dimension",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "Coeurjolly, D, Montanvert, A"
+    },
+    {
+      "index": 2,
+      "title": "Skeleton extraction by mesh contraction",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ACM transactions on graphics (TOG)",
+      "authors": "Au, OKC, Tai, CL, Chu, HK, Cohen-Or, D, Lee, TY"
+    },
+    {
+      "index": 3,
+      "title": "Curve skeleton extraction from incomplete point cloud",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ACM SIGGRAPH 2009 papers",
+      "authors": "Tagliasacchi, A, Zhang, H, Cohen-Or, D"
+    },
+    {
+      "index": 4,
+      "title": "Mean curvature skeletons",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Computer Graphics Forum",
+      "authors": "Tagliasacchi, A, Alhashim, I, Olson, M, Zhang, H"
+    },
+    {
+      "index": 5,
+      "title": "Q-mat: Computing medial axis transform by quadratic error minimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Li, P, Wang, B, Sun, F, Guo, X, Zhang, C, Wang, W"
+    },
+    {
+      "index": 6,
+      "title": "RigNet: Neural Rigging for Articulated Characters",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:200500559",
+      "authors": "Xu, Z, Zhou, Y, Kalogerakis, E, Landreth, C, Singh, K",
+      "orig_title": "Rignet: Neural rigging for articulated characters",
+      "paper_id": "2005.00559v2"
+    },
+    {
+      "index": 7,
+      "title": "Straight skeletons for general polygonal figures in the plane",
+      "abstract": "",
+      "year": "1996",
+      "venue": "International computing and combinatorics conference",
+      "authors": "Aichholzer, O, Aurenhammer, F"
+    },
+    {
+      "index": 8,
+      "title": "Algorithms for the reduction of the number of points required to represent a digitized line or its caricature",
+      "abstract": "",
+      "year": "1973",
+      "venue": "Cartographica: the international journal for geographic information and geovisualization",
+      "authors": "Douglas, DH, Peucker, TK"
+    },
+    {
+      "index": 9,
+      "title": "A fast parallel algorithm for thinning digital patterns",
+      "abstract": "",
+      "year": "1984",
+      "venue": "",
+      "authors": "Zhang, TY, Suen, CY"
+    },
+    {
+      "index": 10,
+      "title": "Building skeleton models via 3-d medial surface axis thinning algorithms",
+      "abstract": "",
+      "year": "1994",
+      "venue": "CVGIP: Graphical Models and Image Processing",
+      "authors": "Lee, TC, Kashyap, RL, Chu, CN"
+    },
+    {
+      "index": 11,
+      "title": "Predicting Animation Skeletons for 3D Articulated Models via Volumetric Nets",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 International Conference on 3D Vision (3DV)",
+      "authors": "Xu, Z, Zhou, Y, Kalogerakis, E, Singh, K",
+      "orig_title": "Predicting animation skeletons for 3d articulated models via volumetric nets",
+      "paper_id": "1908.08506v1"
+    },
+    {
+      "index": 12,
+      "title": "Surface simplification using quadric error metrics",
+      "abstract": "",
+      "year": "1997",
+      "venue": "24th annual conference on Computer graphics and interactive techniques",
+      "authors": "Garland, M, Heckbert, PS"
+    },
+    {
+      "index": 13,
+      "title": "A remeshing approach to multiresolution modeling",
+      "abstract": "",
+      "year": "2004",
+      "venue": "2004 Eurographics/ACM SIGGRAPH symposium on Geometry processing",
+      "authors": "Botsch, M, Kobbelt, L"
+    },
+    {
+      "index": 14,
+      "title": "Polygon mesh processing",
+      "abstract": "",
+      "year": "2010",
+      "venue": "CRC press",
+      "authors": "Botsch, M, Kobbelt, L, Pauly, M, Alliez, P, Lévy, B"
+    },
+    {
+      "index": 15,
+      "title": "Skeleton pruning by contour approximation and the integer medial axis transform",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Computers & Graphics",
+      "authors": "Montero, AS, Lang, J"
+    },
+    {
+      "index": 16,
+      "title": "Towards automatic skeleton extraction with skeleton grafting",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "Yang, C, Indurkhya, B, See, J, Grzegorzek, M"
+    },
+    {
+      "index": 17,
+      "title": "3d skeletons: A state-of-the-art report",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Computer Graphics Forum",
+      "authors": "Tagliasacchi, A, Delame, T, Spagnuolo, M, Amenta, N, Telea, A"
+    },
+    {
+      "index": 18,
+      "title": "A hybrid thinning algorithm for 3d medical images",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Journal of computing and information technology",
+      "authors": "Palagyi, K, Kuba, A"
+    },
+    {
+      "index": 19,
+      "title": "A 3d 6-subiteration thinning algorithm for extracting medial lines",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Pattern Recognition Letters",
+      "authors": "Palágyi, K, Kuba, A"
+    },
+    {
+      "index": 20,
+      "title": "Directional 3d thinning using 8 subiterations",
+      "abstract": "",
+      "year": "1999",
+      "venue": "International Conference on Discrete Geometry for Computer Imagery",
+      "authors": "Palágyi, K, Kuba, A"
+    },
+    {
+      "index": 21,
+      "title": "A parallel 3d 12-subiteration thinning algorithm",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Graphical Models and Image Processing",
+      "authors": "Palágyi, K, Kuba, A"
+    },
+    {
+      "index": 22,
+      "title": "A sequential 3d thinning algorithm and its medical applications",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Biennial International Conference on Information Processing in Medical Imaging",
+      "authors": "Palágyi, K, Balogh, E, Kuba, A, Halmai, C, Erdőhelyi, B, Sorantin, E, et al."
+    },
+    {
+      "index": 23,
+      "title": "Three-dimensional topology preserving reduction on the 4-subfields",
+      "abstract": "",
+      "year": "2002",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Ma, CM, Wan, SY, Lee, JD"
+    },
+    {
+      "index": 24,
+      "title": "Curve-skeleton extraction using iterative least squares optimization",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "Wang, YS, Lee, TY"
+    },
+    {
+      "index": 25,
+      "title": "Implicit fairing of irregular meshes using diffusion and curvature flow",
+      "abstract": "",
+      "year": "1999",
+      "venue": "26th annual conference on Computer graphics and interactive techniques",
+      "authors": "Desbrun, M, Meyer, M, Schröder, P, Barr, AH"
+    },
+    {
+      "index": 26,
+      "title": "Efficient skeletonization of volumetric objects",
+      "abstract": "",
+      "year": "1999",
+      "venue": "IEEE Transactions on visualization and computer graphics",
+      "authors": "Zhou, Y, Toga, AW"
+    },
+    {
+      "index": 27,
+      "title": "Penalized-distance volumetric skeleton algorithm",
+      "abstract": "",
+      "year": "2001",
+      "venue": "IEEE Transactions on Visualization and computer Graphics",
+      "authors": "Bitter, I, Kaufman, AE, Sato, M"
+    },
+    {
+      "index": 28,
+      "title": "Skeleton extraction of 3d objects with radial basis functions",
+      "abstract": "",
+      "year": "2003",
+      "venue": "2003 Shape Modeling International",
+      "authors": "Ma, WC, Wu, FC, Ouhyoung, M"
+    },
+    {
+      "index": 29,
+      "title": "Robust centerline extraction framework using level sets",
+      "abstract": "",
+      "year": "2005",
+      "venue": "2005 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR’05)",
+      "authors": "Hassouna, MS, Farag, AA"
+    },
+    {
+      "index": 30,
+      "title": "Medial axis computation for planar free–form shapes",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Computer-Aided Design",
+      "authors": "Aichholzer, O, Aigner, W, Aurenhammer, F, Hackl, T, Jüttler, B, Rabl, M"
+    },
+    {
+      "index": 31,
+      "title": "Approximate medial axis as a voronoi subcomplex",
+      "abstract": "",
+      "year": "2002",
+      "venue": "seventh ACM symposium on Solid modeling and applications",
+      "authors": "Dey, TK, Zhao, W"
+    },
+    {
+      "index": 32,
+      "title": "Generalized cylinder decomposition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM Trans Graph",
+      "authors": "Zhou, Y, Yin, K, Huang, H, Zhang, H, Gong, M, Cohen-Or, D"
+    },
+    {
+      "index": 33,
+      "title": "Automatic rigging and animation of 3d characters",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM Transactions on graphics (TOG)",
+      "authors": "Baran, I, Popović, J"
+    },
+    {
+      "index": 34,
+      "title": "Rigmesh: automatic rigging for part-based shape modeling and deformation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Borosán, P, Jin, M, DeCarlo, D, Gingold, Y, Nealen, A"
+    },
+    {
+      "index": 35,
+      "title": "Prototype modeling from sketched silhouettes based on convolution surfaces",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Computer graphics forum",
+      "authors": "Tai, CL, Zhang, H, Fong, JCK"
+    },
+    {
+      "index": 36,
+      "title": "Sketch-based modeling with few strokes",
+      "abstract": "",
+      "year": "2005",
+      "venue": "21st spring conference on Computer graphics",
+      "authors": "Cherlin, JJ, Samavati, F, Sousa, MC, Jorge, JA"
+    },
+    {
+      "index": 37,
+      "title": "A sketch-based interface for detail-preserving mesh editing",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ACM SIGGRAPH 2005 Papers",
+      "authors": "Nealen, A, Sorkine, O, Alexa, M, Cohen-Or, D"
+    },
+    {
+      "index": 38,
+      "title": "Shapeshop: Sketch-based solid modeling with blobtrees",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM SIGGRAPH 2007 courses",
+      "authors": "Schmidt, R, Wyvill, B, Sousa, MC, Jorge, JA"
+    },
+    {
+      "index": 39,
+      "title": "Shape modeling by sketching using convolution surfaces",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM SIGGRAPH 2007 courses",
+      "authors": "Alexe, A, Barthe, L, Cani, MP, Gaildrat, V"
+    },
+    {
+      "index": 40,
+      "title": "Fibermesh: designing freeform surfaces with 3d curves",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM SIGGRAPH 2007 papers",
+      "authors": "Nealen, A, Igarashi, T, Sorkine, O, Alexa, M"
+    },
+    {
+      "index": 41,
+      "title": "A sketch-based method to control deformation in a skeletal implicit surface modeler",
+      "abstract": "",
+      "year": "2008",
+      "venue": "SBM",
+      "authors": "Sugihara, M, De Groot, E, Wyvill, B, Schmidt, R"
+    },
+    {
+      "index": 42,
+      "title": "Sketching of mirror-symmetric shapes",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "Cordier, F, Seo, H, Park, J, Noh, JY"
+    },
+    {
+      "index": 43,
+      "title": "Monster mash: a single-view approach to casual 3d modeling and animation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Dvorožňák, M, Sỳkora, D, Curtis, C, Curless, B, Sorkine-Hornung, O, Salesin, D"
+    },
+    {
+      "index": 44,
+      "title": "Straight skeleton implementation",
+      "abstract": "",
+      "year": "1998",
+      "venue": "spring conference on computer graphics",
+      "authors": "Felkel, P, Obdrzalek, S"
+    },
+    {
+      "index": 45,
+      "title": "A cgal implementation of the straight skeleton of a simple 2d polygon with holes",
+      "abstract": "",
+      "year": "2004",
+      "venue": "2nd CGAL User Workshop",
+      "authors": "Cacciola, F"
+    },
+    {
+      "index": 46,
+      "title": "Algorithm 447: efficient algorithms for graph manipulation",
+      "abstract": "",
+      "year": "1973",
+      "venue": "Communications of the ACM",
+      "authors": "Hopcroft, J, Tarjan, R"
+    },
+    {
+      "index": 47,
+      "title": "Triangle: Engineering a 2d quality mesh generator and delaunay triangulator",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Workshop on Applied Computational Geometry",
+      "authors": "Shewchuk, JR"
+    },
+    {
+      "index": 48,
+      "title": "Mesh arrangements for solid geometry",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Zhou, Q, Grinspun, E, Zorin, D, Jacobson, A"
+    },
+    {
+      "index": 49,
+      "title": "Bounded biharmonic weights for real-time deformation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ACM Trans Graph",
+      "authors": "Jacobson, A, Baran, I, Popovic, J, Sorkine, O"
+    }
+  ]
+}

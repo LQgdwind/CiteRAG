@@ -1,0 +1,419 @@
+{
+  "paper_id": "2208.03562v2",
+  "title": "Preconditioned Central Moment Lattice Boltzmann Method on a Rectangular Lattice Grid for Accelerated Computations of Inhomogeneous Flows",
+  "sections": {
+    "preconditioned rectangular central moment lattice boltzmann method (prc-lbm)": "In this section, we will present a robust and efficient implementation of a LB algorithm on rectangular lattice grids for solving preconditioned NS equations using and extending the results of the C-E analysis performed in the last section. In this regard, we note that the effect of the moment basis 𝗧𝗧\\bm{\\mathsf{T}} as defined in Eqs. (6) and (3.1) will be equivalently utilized in our implementation in a more modular fashion so the LB schemes based on the square lattice can be readily extended for utilizing rectangular lattice grids along with preconditioning and the necessary corrections. This involves using a simpler re-defined moment basis in conjunction with diagonal scaling matrices based on the grid aspect ratio for performing the pre- and post-collision transformations between the raw moments and distribution functions, and segregate the evolution of the trace of the diagonal parts of the second order moments from the others for achieving independent variations of bulk and shear viscosities , along with accounting for the corrections to eliminate the grid-anisotropy and non-GI truncation errors, only within the collision step under moment relaxations (see Ref. ). In other words, the linear combinations of moments as required are considered only for performing the collision step and not for any mappings. This represents an improvement over the implementation discussed over all the previous 2D rectangular LB schemes for the solution of the NS equations, including our recent work [ref]34, and is consistent with our more recent 3D formulation ), but extended here with a preconditioning strategy for convergence acceleration. Similar approach based on a natural independent moment set without involving the mixed moments has also been used in previous work   by using a block diagonal relaxation matrix  in the context of LB formulations using a square lattice."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Use of the Boltzmann equation to simulate lattice-gas automata",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Physical review letters",
+      "authors": "G. R. McNamara, G. Zanetti"
+    },
+    {
+      "index": 1,
+      "title": "The lattice Boltzmann equation: theory and applications",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Physics Reports",
+      "authors": "R. Benzi, S. Succi, M. Vergassola"
+    },
+    {
+      "index": 2,
+      "title": "The lattice Boltzmann method for nearly incompressible flows",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Journal of Computational Physics",
+      "authors": "P. Lallemand, L.-S. Luo, M. Krafczyk, W.-A. Yong"
+    },
+    {
+      "index": 3,
+      "title": "Lattice BGK models for navier-stokes equation",
+      "abstract": "",
+      "year": "1992",
+      "venue": "EPL (Europhysics Letters)",
+      "authors": "Y.-H. Qian, D. d’Humières, P. Lallemand"
+    },
+    {
+      "index": 4,
+      "title": "Multiple–relaxation–time lattice Boltzmann models in three dimensions",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Philosophical Transactions of the Royal Society of London. Series A: Mathematical, Physical and Engineering Sciences",
+      "authors": "D. d’Humieres"
+    },
+    {
+      "index": 5,
+      "title": "Cascaded digital lattice Boltzmann automata for high Reynolds number flow",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Physical Review E",
+      "authors": "M. Geier, A. Greiner, J. G. Korvink"
+    },
+    {
+      "index": 6,
+      "title": "The cumulant lattice Boltzmann equation in three dimensions: Theory and validation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Computers & Mathematics with Applications",
+      "authors": "M. Geier, M. Schönherr, A. Pasquali, M. Krafczyk"
+    },
+    {
+      "index": 7,
+      "title": "Perfect entropy functions of the lattice Boltzmann method",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Europhys. Lett.",
+      "authors": "I. V. Karlin, A. Ferrante, H. C. Öttinger"
+    },
+    {
+      "index": 8,
+      "title": "The lattice Boltzmann method",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Springer International Publishing",
+      "authors": "T. Krüger, H. Kusumaatmaja, A. Kuzmin, O. Shardt, G. Silva, E. M. Viggen"
+    },
+    {
+      "index": 9,
+      "title": "Theory of the lattice Boltzmann method: Dispersion, dissipation, isotropy, galilean invariance, and stability",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Physical Review E",
+      "authors": "P. Lallemand, L.-S. Luo"
+    },
+    {
+      "index": 10,
+      "title": "A simple lattice Boltzmann scheme for navier-stokes fluid flow",
+      "abstract": "",
+      "year": "1991",
+      "venue": "EPL (Europhysics Letters)",
+      "authors": "J. Koelman"
+    },
+    {
+      "index": 11,
+      "title": "Rectangular lattice-boltzmann schemes with bgk-collision operator",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Journal of Scientific Computing",
+      "authors": "L. A. Hegele Jr, K. Mattila, P. C. Philippi"
+    },
+    {
+      "index": 12,
+      "title": "A lattice-BGK model for the Navier-Stokes equations based on a rectangular grid",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Computers & Mathematics with Applications",
+      "authors": "C. Peng, Z. Guo, L.-P. Wang"
+    },
+    {
+      "index": 13,
+      "title": "Simulating anisotropic flows with isotropic lattice models via coordinate and velocity transformation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Journal of Modern Physics C",
+      "authors": "Z. Wang, J. Zhang"
+    },
+    {
+      "index": 14,
+      "title": "Lattice Boltzmann equation on a two-dimensional rectangular grid",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Journal of Computational Physics",
+      "authors": "M. Bouzidi, D. d’Humières, P. Lallemand, L.-S. Luo"
+    },
+    {
+      "index": 15,
+      "title": "MRT rectangular lattice Boltzmann method",
+      "abstract": "",
+      "year": "2012",
+      "venue": "International Journal of Modern Physics C",
+      "authors": "J. G. Zhou"
+    },
+    {
+      "index": 16,
+      "title": "A hydrodynamically-consistent MRT lattice Boltzmann model on a 2d rectangular grid",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Journal of Computational Physics",
+      "authors": "C. Peng, H. Min, Z. Guo, L.-P. Wang"
+    },
+    {
+      "index": 17,
+      "title": "Generalized local equilibrium in the cascaded lattice Boltzmann method",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Physical Review E",
+      "authors": "P. Asinari"
+    },
+    {
+      "index": 18,
+      "title": "Incorporating forcing terms in cascaded lattice boltzmann approach by method of central moments",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Physical Review E",
+      "authors": "K. N. Premnath, S. Banerjee"
+    },
+    {
+      "index": 19,
+      "title": "On the three-dimensional central moment lattice Boltzmann method",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of Statistical Physics",
+      "authors": "K. N. Premnath, S. Banerjee"
+    },
+    {
+      "index": 20,
+      "title": "Numerical study of the properties of the central moment lattice Boltzmann method",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Journal for Numerical Methods in Fluids",
+      "authors": "Y. Ning, K. N. Premnath, D. V. Patil"
+    },
+    {
+      "index": 21,
+      "title": "Non-orthogonal central moments relaxing to a discrete equilibrium: A d2q9 lattice Boltzmann model",
+      "abstract": "",
+      "year": "2017",
+      "venue": "EPL (Europhysics Letters)",
+      "authors": "A. De Rosis"
+    },
+    {
+      "index": 22,
+      "title": "Nonorthogonal central-moments-based lattice Boltzmann scheme in three dimensions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Physical Review E",
+      "authors": "A. De Rosis"
+    },
+    {
+      "index": 23,
+      "title": "Consistent forcing scheme in the cascaded lattice Boltzmann method",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Physical Review E",
+      "authors": "L. Fei, K. H. Luo"
+    },
+    {
+      "index": 24,
+      "title": "Three-dimensional cascaded lattice Boltzmann method: Improved implementation and consistent forcing scheme",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Physical Review E",
+      "authors": "L. Fei, K. H. Luo, Q. Li"
+    },
+    {
+      "index": 25,
+      "title": "Galilean-invariant preconditioned central-moment lattice Boltzmann method without cubic velocity errors for efficient steady flow simulations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Phys. Rev. E",
+      "authors": "F. Hajabdollahi, K. N. Premnath"
+    },
+    {
+      "index": 26,
+      "title": "Central moments-based cascaded lattice Boltzmann method for thermal convective flows in three-dimensions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Int. J. Heat Mass Transf.",
+      "authors": "F. Hajabdollahi, K. N. Premnath"
+    },
+    {
+      "index": 27,
+      "title": "Improving the stability of multiple-relaxation lattice Boltzmann methods with central moments",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Comput. Fluids",
+      "authors": "M. Chávez-Modena, E. Ferrer, G. Rubio"
+    },
+    {
+      "index": 28,
+      "title": "Cascaded lattice Boltzmann method based on central moments for axisymmetric thermal flows including swirling effects",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Journal of Heat and Mass Transfer",
+      "authors": "F. Hajabdollahi, K. N. Premnath, S. W. Welch"
+    },
+    {
+      "index": 29,
+      "title": "Mesoscopic simulation of three-dimensional pool boiling based on a phase-change cascaded lattice Boltzmann method",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Physics of Fluids",
+      "authors": "L. Fei, J. Yang, Y. Chen, H. Mo, K. H. Luo"
+    },
+    {
+      "index": 30,
+      "title": "Central moment lattice Boltzmann method using a pressure-based formulation for multiphase flows at high density ratios and including effects of surface tension and Marangoni stresses",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Journal of Computational Physics",
+      "authors": "F. Hajabdollahi, K. N. Premnath, S. W. Welch"
+    },
+    {
+      "index": 31,
+      "title": "Numerical investigation of the cascaded central moment lattice Boltzmann method for non-newtonian fluid flows",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Journal of Non-Newtonian Fluid Mechanics",
+      "authors": "S. Adam, K. N. Premnath"
+    },
+    {
+      "index": 32,
+      "title": "Cascaded lattice Boltzmann modeling and simulations of three-dimensional non-newtonian fluid flows",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Computer Physics Communications",
+      "authors": "S. Adam, F. Hajabdollahi, K. N. Premnath"
+    },
+    {
+      "index": 33,
+      "title": "Central moment lattice Boltzmann method on a rectangular lattice",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Physics of Fluids",
+      "authors": "E. Yahia, K. N. Premnath"
+    },
+    {
+      "index": 34,
+      "title": "Three-Dimensional Central Moment Lattice Boltzmann Method on a Cuboid Lattice for Anisotropic and Inhomogeneous Flows",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Fluids",
+      "authors": "E. Yahia, W. Schupbach, K. N. Premnath",
+      "orig_title": "Three-dimensional central moment lattice boltzmann method on a cuboid lattice for anisotropic and inhomogeneous flows",
+      "paper_id": "2107.14774v2"
+    },
+    {
+      "index": 35,
+      "title": "On the stability of a relative velocity lattice Boltzmann scheme for compressible navier–stokes equations",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Comptes Rendus Mécanique",
+      "authors": "F. Dubois, T. Février, B. Graille"
+    },
+    {
+      "index": 36,
+      "title": "Preconditioned methods for solving the incompressible and low speed compressible equations",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Journal of computational physics",
+      "authors": "E. Turkel"
+    },
+    {
+      "index": 37,
+      "title": "Preconditioning techniques in computational fluid dynamics",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Annual Review of Fluid Mechanics",
+      "authors": "E. Turkel"
+    },
+    {
+      "index": 38,
+      "title": "Preconditioned lattice-Boltzmann method for steady flows",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Physical Review E",
+      "authors": "Z. Guo, T. Zhao, Y. Shi"
+    },
+    {
+      "index": 39,
+      "title": "Steady state convergence acceleration of the generalized lattice Boltzmann equation with forcing term through preconditioning",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Journal of Computational Physics",
+      "authors": "K. N. Premnath, M. J. Pattison, S. Banerjee"
+    },
+    {
+      "index": 40,
+      "title": "Optimal preconditioning of lattice Boltzmann methods",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Journal of Computational Physics",
+      "authors": "S. Izquierdo, N. Fueyo"
+    },
+    {
+      "index": 41,
+      "title": "Preconditioned multiple-relaxation-time lattice Boltzmann equation model for incompressible flow in porous media",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Physical Review E",
+      "authors": "X. Meng, L. Wang, X. Yang, Z. Guo"
+    },
+    {
+      "index": 42,
+      "title": "Improving the low mach number steady state convergence of the cascaded lattice Boltzmann method by preconditioning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Computers & Mathematics with Applications",
+      "authors": "F. Hajabdollahi, K. N. Premnath"
+    },
+    {
+      "index": 43,
+      "title": "A preconditioned lattice Boltzmann flux solver for steady flows on unstructured hexahedral grids",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Computers & Fluids",
+      "authors": "B. Walsh, F. J. Boyle"
+    },
+    {
+      "index": 44,
+      "title": "Symmetrized operator split schemes for force and source modeling in cascaded lattice Boltzmann methods for flow and scalar transport",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Phys. Rev. E",
+      "authors": "F. Hajabdollahi, K. N. Premnath"
+    },
+    {
+      "index": 45,
+      "title": "The mathematical theory of non-uniform gases: an account of the kinetic theory of viscosity, thermal conduction and diffusion in gases",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Cambridge university press",
+      "authors": "S. Chapman, T. G. Cowling, D. Burnett"
+    },
+    {
+      "index": 46,
+      "title": "Designing correct fluid hydrodynamics on a rectangular grid using MRT lattice Boltzmann approach",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Computers & Mathematics with Applications",
+      "authors": "Y. Zong, C. Peng, Z. Guo, L.-P. Wang"
+    },
+    {
+      "index": 47,
+      "title": "Modeling incompressible thermal flows using a central-moments-based lattice Boltzmann method",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Int. J. Heat Mass Transf.",
+      "authors": "L. Fei, K. H. Luo, C. Lin, Q. Li"
+    },
+    {
+      "index": 48,
+      "title": "Cascaded lattice Boltzmann method for incompressible thermal flows with heat sources and general thermal boundary conditions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Computers & Fluids",
+      "authors": "L. Fei, K. H. Luo"
+    },
+    {
+      "index": 49,
+      "title": "Local vorticity computation approach in double distribution functions based lattice Boltzmann methods for flow and scalar transport",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Journal of Heat and Fluid Flow",
+      "authors": "F. Hajabdollahi, K. N. Premnath"
+    },
+    {
+      "index": 50,
+      "title": "High-Re solutions for incompressible flow using the navier-stokes equations and a multigrid method",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Journal of computational physics",
+      "authors": "U. Ghia, K. N. Ghia, C. Shin"
+    }
+  ]
+}

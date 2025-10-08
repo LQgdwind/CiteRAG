@@ -1,0 +1,407 @@
+{
+  "paper_id": "2205.08362v1",
+  "title": "LPC-AD: Fast and Accurate Multivariate Time Series Anomaly Detection via Latent Predictive Coding",
+  "sections": {
+    "introduction": "Multivariate time series serves as an important\nreference of the “health status” of many Internet applications\nsuch cloud computing, micro-service systems and the Internet routing network, to name a few.\nFor example, consider the cloud computing system,\nwhich has become a crucial infrastructure for many customized\nservices of companies and governments   .\nTo maintain a high quality of service of the cloud computing system,\nit is important to monitor the “health status” of the cloud system\nand perform troubleshooting in real-time   .\nTo achieve this, many performance metrics of a cloud computing system\nsuch as CPU usage, disk I/O rate, network packet loss rate,\netc., are monitored in real-time,\nwhich form a MTS   .\nFrom the MTS, system anomalies can be detected via machine learning\n[ref]4 2   7 .\nwhich greatly improves troubleshooting of the system. Real-world applications like cloud computing,\nmicro-service systems, etc., generate large amount and high dimensional\ntime series data and they needed to be processed by fast and accurate\nMTS anomaly detection methods.\nAlthough many machine learning algorithms were proposed to detect anomalies\nin MTS [ref]4 2    7 ,\nhow to achieve a fast training speed while retaining fairly high detection\naccuracy is underexplored.\nClassical methods like      \nhave a fast training speed, but their detection accuracy is not high,\ndue to low expressiveness capability of their model.\nUsing deep learning models, methods like\n   \nbreak the records of classical methods with\na surprisingly high detection accuracy\nthanks to high expressiveness of these models.\nIn the research line of modern methods,\nmost efforts were spent on developing sophisticated\nmodels to improve detection accuracy\n   .\nAs a consequence, these sophisticated models becomes more and more\ntime-consuming for training.\nRecently, the USAD [ref]4 and TranAD 7\nimprove the training speed,\nwhile retaining a fairly high accuracy.\nThese two algorithms follow the same architecture of adversarial training\n(refer to Section 2 for details) and their detection accuracy\ncan be low in some datasets (refer to Section 6 for details).\nThis paper aims to explore faster training speed\nand more accurate MTS anomaly detection methods. It is challenging to design fast and accurate\nMTS anomaly detection algorithms.\nFirst, the MTS training data is usually not associated with anomalous labels\nand there is no specification on the pattern of an anomaly in general\n[ref]4 7.\nSecond, the anomalous data points in MTS training data can mislead the trained model .\nThird, the MTS data is usually of high dimension and\nit has complex spatial and temporal dependence\n[ref]4 7,\nwhere the spatial dependence refers to the dependence among different time series.\nThis makes it difficult to learn the normal and abnormal pattern\nfrom the MTS.\nFourth, the MTS data is usually non-stationary,\n\nmaking it difficult to learn stable patterns.\nIn this paper, we propose an algorithm called LPC-AD to\naddress these challenges. The LPC-AD has a shorter training time\nthan SOTA deep learning methods\nthat focus on reducing training time, and it\nhas a higher detection accuracy than\nSOTA sophisticated deep learning based methods that\nfocus on enhancing detection accuracy.\nThese merits of LPC-AD are supported by novelty in the design\nand extensive empirical evaluation on four large real-world datasets. Novelty in the design.\nThough the LPC-AD falls into the research line of\nautoencoder based methods [ref]4  7  2\nthat learn the normal spatial and temporal\ndependence in the MTS data to detect anomaly\n(refer to Section 2 for details on this research line),\nit contributes several new ideas.\nUnlike previous works\n[ref]4  7  2\nwhich use autoencoder to capture spatial and\ntemporal dependence in many MTS,\nwe use autoencoder to reduce redundancy in the time series data.\nThrough this we obtain a low dimensional latent representation of the data.\nEvidence of redundancy in MTS can be found in   .\nAs our purpose is to reduce redundancy,\nsimple autoencoders such as vanilla LSTM based autoencoder suffice.\nTo capture temporal dependence in MTS,\nwe apply ideas from predictive coding ,\nwhich have been successfully applied to\nword representation,\nimage colorization,\nand visual representation learning , etc.\nNote that we are the first to explore predictive coding\nfor MTS anomaly detection.\nMore specifically, we use a predictor to capture temporal dependence\nbetween two consecutive sliding windows of the MTS.\nThe predictor aims to learn the normal dependence via\npredicting future latent variables from\nits preceding latent variables in the sliding window.\nHere, we do not need sophisticated prediction networks,\nas they may overfit the anomalous patterns in the training data.\nWe then use randomized perturbation to inject some noise\non the output of the predictor.\nFinally, we use the decoder to decode this perturbed prediction\nand use the absolute error between the decoded data and\nthe ground truth time series data to measure\nthe anomalous score of a data point.\nThe purpose of this perturbation is to avoid overfitting\nto the patterns of anomaly data points,\nas the decoder aims to learn the normal patterns.\nThis randomized perturbation approach has a theoretical foundation\nin online learning in the presence of adversarial data .\nAs an analogy, the anomalous data points in the time series\nare equivalent to the adversarial data in online learning.\nNote that this randomized perturbation only incurs a\nnegligible computational cost.\nCombining them all, we contribute a generic architecture called\nLPC-Reconstruct in the sense that\none can select different instances of\nthe above mentioned autoencoder network,\nthe predictor network and the randomized perturbation method\nto attain different tradeoffs between the training speed\nand detection accuracy. To illustrate, Figure 1 visualizes anomalies detected\nby LPC-AD-SA in the SMD dataset,\nwhere the LPC-AD-SA denotes an instance of\nLPC-AD (refer to Section 6 for more details).\nOnly two dimensions of the time series are shown for simplicity.\nIn Figure 1, the red curve corresponds\nto reconstructions by LPC-AD-SA.\nThe anomaly score is quantified by the absolute reconstruction error.\nThe red windows correspond to the anomalous windows labeled in the dataset.\nThe yellow windows correspond to anomalous windows detected by\nLPC-AD-SA.\nFrom Figure 1,\none can observe that LPC-AD-SA identifies all anomalous windows out.\nThe time series is well fitted by the reconstructions\noutside the anomalous windows,\nand is poorly fitted inside the anomalous windows. Extensive empirical validation.\nWe instantiate LPC-Reconstruct with the vanilla\nLSTM autoencoder, three simple predictors\n(i.e., linear predictor, LSTM enabled predictor and attention enabled predictor)\nand propose a simple randomized perturbation method based on Gaussian noise.\nWe conduct extensive experiments on four public datasets that\nare widely used for evaluating MTS anomaly\ndetection algorithms.\nExperiment findings are summarized into four folds.\nFirst, the LPC-AD reduces the training time of SOTA deep learning\nmethods that focus on fast training by as high as 38.2%.\nIt improves the detection accuracy of\nSOTA sophisticated deep learning based methods that\nfocus on high accuracy by as high as 18.9%.\nSecond, LPC-AD has a high sample efficiency,\ni.e., reducing the training data points by 75%,\nits detection accuracy only drops by less than 2%.\nThird, LPC-AD is robust to its hyper parameters\nin terms of accuracy, i.e., the variation of detection accuracy is at most\nthree percents when the hyper parameters varies in a fairly large range.\nFourth, ablation study shows the necessity of each component\nand the benefit of each component.\nThe highlights of our contributions include:\n A generic architecture LPC-Reconstruct,\nwhich is a novel combination of ideas from autoencoder,\npredictive coding and randomized perturbation. A simple instantiation of LPC-Reconstruct,\nwhich contributes a new randomized perturbation method to avoid\noverfitting of anomalous dependence patterns. Extensive empirical evaluations to justify superior performance and\nreveal fundamental understating of our method."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Perturbation techniques in online learning and optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Perturbations, Optimization, and Statistics",
+      "authors": "J. Abernethy, C. Lee, and A. Tewari"
+    },
+    {
+      "index": 1,
+      "title": "Wadi: a water distribution testbed for research in the design of secure cyber physical systems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "3rd International Workshop on Cyber-Physical Systems for Smart Water Networks",
+      "authors": "C. M. Ahmed, V. R. Palleti, and A. P. Mathur"
+    },
+    {
+      "index": 2,
+      "title": "Adaptive predictive coding of speech signals",
+      "abstract": "",
+      "year": "1970",
+      "venue": "Bell System Technical Journal",
+      "authors": "B. S. Atal and M. R. Schroeder"
+    },
+    {
+      "index": 3,
+      "title": "Usad: unsupervised anomaly detection on multivariate time series",
+      "abstract": "",
+      "year": "2020",
+      "venue": "26th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining",
+      "authors": "J. Audibert, P. Michiardi, F. Guyard, S. Marti, and M. A. Zuluaga"
+    },
+    {
+      "index": 4,
+      "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.0473",
+      "authors": "D. Bahdanau, K. Cho, and Y. Bengio",
+      "orig_title": "Neural machine translation by jointly learning to align and translate",
+      "paper_id": "1409.0473v7"
+    },
+    {
+      "index": 5,
+      "title": "Efficient anomaly detection by isolation using nearest neighbour ensemble",
+      "abstract": "",
+      "year": "2014",
+      "venue": "2014 IEEE International conference on data mining workshop",
+      "authors": "T. R. Bandaragoda, K. M. Ting, D. Albrecht, F. T. Liu, and J. R. Wells"
+    },
+    {
+      "index": 6,
+      "title": "Collective anomaly detection based on long short-term memory recurrent neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International conference on future data and security engineering",
+      "authors": "L. Bontemps, V. L. Cao, J. McDermott, and N.-A. Le-Khac"
+    },
+    {
+      "index": 7,
+      "title": "Anomaly detection in ecg time signals via deep long short-term memory networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 IEEE International Conference on Data Science and Advanced Analytics (DSAA)",
+      "authors": "S. Chauhan and L. Vig"
+    },
+    {
+      "index": 8,
+      "title": "Sdfvae: Static and dynamic factorized vae for anomaly detection of multivariate cdn kpis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Web Conference 2021",
+      "authors": "L. Dai, T. Lin, C. Liu, B. Jiang, Y. Liu, Z. Xu, and Z.-L. Zhang"
+    },
+    {
+      "index": 9,
+      "title": "Graph Neural Network-Based Anomaly Detection in Multivariate Time Series",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "A. Deng and B. Hooi",
+      "orig_title": "Graph neural network-based anomaly detection in multivariate time series",
+      "paper_id": "2106.06947v1"
+    },
+    {
+      "index": 10,
+      "title": "Unsupervised Visual Representation Learning by Context Prediction",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "C. Doersch, A. Gupta, and A. A. Efros",
+      "orig_title": "Unsupervised visual representation learning by context prediction",
+      "paper_id": "1505.05192v3"
+    },
+    {
+      "index": 11,
+      "title": "Hitanomaly: Hierarchical transformers for anomaly detection in system log",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Network and Service Management",
+      "authors": "S. Huang, Y. Liu, C. Fung, R. He, Y. Zhao, H. Yang, and Z. Luan"
+    },
+    {
+      "index": 12,
+      "title": "Detecting Spacecraft Anomalies Using LSTMs and Nonparametric Dynamic Thresholding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "24th ACM SIGKDD international conference on knowledge discovery & data mining",
+      "authors": "K. Hundman, V. Constantinou, C. Laporte, I. Colwell, and T. Soderstrom",
+      "orig_title": "Detecting spacecraft anomalies using lstms and nonparametric dynamic thresholding",
+      "paper_id": "1802.04431v3"
+    },
+    {
+      "index": 13,
+      "title": "Elle: Inferring Isolation Anomalies from Experimental Observations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.10554",
+      "authors": "K. Kingsbury and P. Alvaro",
+      "orig_title": "Elle: Inferring isolation anomalies from experimental observations",
+      "paper_id": "2003.10554v1"
+    },
+    {
+      "index": 14,
+      "title": "Linear gaussian state space modeling",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Smoothness priors analysis of time series",
+      "authors": "G. Kitagawa and W. Gersch"
+    },
+    {
+      "index": 15,
+      "title": "MAD-GAN: Multivariate Anomaly Detection for Time Series Data with Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Artificial Neural Networks",
+      "authors": "D. Li, D. Chen, B. Jin, L. Shi, J. Goh, and S.-K. Ng",
+      "orig_title": "Mad-gan: Multivariate anomaly detection for time series data with generative adversarial networks",
+      "paper_id": "1901.04997v1"
+    },
+    {
+      "index": 16,
+      "title": "opengauss: An autonomous database system",
+      "abstract": "",
+      "year": "2021",
+      "venue": "VLDB Endowment",
+      "authors": "G. Li, X. Zhou, J. Sun, X. Yu, Y. Han, L. Jin, W. Li, T. Wang, and S. Li"
+    },
+    {
+      "index": 17,
+      "title": "Multivariate time series anomaly detection and interpretation using hierarchical inter-metric and temporal embedding",
+      "abstract": "",
+      "year": "2021",
+      "venue": "27th ACM SIGKDD Conference on Knowledge Discovery & Data Mining",
+      "authors": "Z. Li, Y. Zhao, J. Han, Y. Su, R. Jiao, X. Wen, and D. Pei"
+    },
+    {
+      "index": 18,
+      "title": "MicroHECL: High-Efficient Root Cause Localization in Large-Scale Microservice Systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 IEEE/ACM 43rd International Conference on Software Engineering: Software Engineering in Practice (ICSE-SEIP)",
+      "authors": "D. Liu, C. He, X. Peng, F. Lin, C. Zhang, S. Gong, Z. Li, J. Ou, and Z. Wu",
+      "orig_title": "Microhecl: high-efficient root cause localization in large-scale microservice systems",
+      "paper_id": "2103.01782v1"
+    },
+    {
+      "index": 19,
+      "title": "Isolation forest",
+      "abstract": "",
+      "year": "2008",
+      "venue": "2008 eighth ieee international conference on data mining",
+      "authors": "F. T. Liu, K. M. Ting, and Z.-H. Zhou"
+    },
+    {
+      "index": 20,
+      "title": "Deep learning for universal linear embeddings of nonlinear dynamics",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Nature communications",
+      "authors": "B. Lusch, J. N. Kutz, and S. L. Brunton",
+      "orig_title": "Deep learning for universal linear embeddings of nonlinear dynamics",
+      "paper_id": "1712.09707v2"
+    },
+    {
+      "index": 21,
+      "title": "Diagnosing root causes of intermittent slow queries in cloud databases",
+      "abstract": "",
+      "year": "2020",
+      "venue": "VLDB Endowment",
+      "authors": "M. Ma, Z. Yin, S. Zhang, S. Wang, C. Zheng, X. Jiang, H. Hu, C. Luo, Y. Li, N. Qiu, et al."
+    },
+    {
+      "index": 22,
+      "title": "Lstm-based encoder-decoder for multi-sensor anomaly detection",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1607.00148",
+      "authors": "P. Malhotra, A. Ramakrishnan, G. Anand, L. Vig, P. Agarwal, and G. Shroff"
+    },
+    {
+      "index": 23,
+      "title": "Swat: A water treatment testbed for research and training on ics security",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 international workshop on cyber-physical systems for smart water networks (CySWater)",
+      "authors": "A. P. Mathur and N. O. Tippenhauer"
+    },
+    {
+      "index": 24,
+      "title": "Anomaly detection in video using predictive convolutional long short-term memory networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1612.00390",
+      "authors": "J. R. Medel and A. Savakis"
+    },
+    {
+      "index": 25,
+      "title": "Localizing failure root causes in a microservice through causality inference",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 IEEE/ACM 28th International Symposium on Quality of Service (IWQoS)",
+      "authors": "Y. Meng, S. Zhang, Y. Sun, R. Zhang, Z. Hu, Y. Zhang, C. Jia, Z. Wang, and D. Pei"
+    },
+    {
+      "index": 26,
+      "title": "Efficient estimation of word representations in vector space",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1301.3781",
+      "authors": "T. Mikolov, K. Chen, G. Corrado, and J. Dean"
+    },
+    {
+      "index": 27,
+      "title": "A Multimodal Anomaly Detector for Robot-Assisted Feeding Using an LSTM-based Variational Autoencoder",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Robotics and Automation Letters",
+      "authors": "D. Park, Y. Hoshi, and C. C. Kemp",
+      "orig_title": "A multimodal anomaly detector for robot-assisted feeding using an lstm-based variational autoencoder",
+      "paper_id": "1711.00614v1"
+    },
+    {
+      "index": 28,
+      "title": "An overview of anomaly detection techniques: Existing solutions and latest technological trends",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Computer networks",
+      "authors": "A. Patcha and J.-M. Park"
+    },
+    {
+      "index": 29,
+      "title": "A Dual-Stage Attention-Based Recurrent Neural Network for Time Series Prediction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1704.02971",
+      "authors": "Y. Qin, D. Song, H. Chen, W. Cheng, G. Jiang, and G. Cottrell",
+      "orig_title": "A dual-stage attention-based recurrent neural network for time series prediction",
+      "paper_id": "1704.02971v4"
+    },
+    {
+      "index": 30,
+      "title": "Estimate the implicit likelihoods of gans with application to anomaly detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Web Conference 2020",
+      "authors": "S. Ren, D. Li, Z. Zhou, and P. Li"
+    },
+    {
+      "index": 31,
+      "title": "Gaussian mixture models",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Encyclopedia of biometrics",
+      "authors": "D. A. Reynolds"
+    },
+    {
+      "index": 32,
+      "title": "Variational inference with normalizing flows",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International conference on machine learning",
+      "authors": "D. Rezende and S. Mohamed"
+    },
+    {
+      "index": 33,
+      "title": "Anomaly detection using autoencoders with nonlinear dimensionality reduction",
+      "abstract": "",
+      "year": "2014",
+      "venue": "MLSDA 2014 2nd Workshop on Machine Learning for Sensory Data Analysis, MLSDA’14",
+      "authors": "M. Sakurada and T. Yairi"
+    },
+    {
+      "index": 34,
+      "title": "Unsupervised learning of video representations using lstms",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International conference on machine learning",
+      "authors": "N. Srivastava, E. Mansimov, and R. Salakhudinov"
+    },
+    {
+      "index": 35,
+      "title": "Robust anomaly detection for multivariate time series through stochastic recurrent neural network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "25th ACM SIGKDD international conference on knowledge discovery & data mining",
+      "authors": "Y. Su, Y. Zhao, C. Niu, R. Liu, W. Sun, and D. Pei"
+    },
+    {
+      "index": 36,
+      "title": "TranAD: Deep Transformer Networks for Anomaly Detection in Multivariate Time Series Data",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2201.07284",
+      "authors": "S. Tuli, G. Casale, and N. R. Jennings",
+      "orig_title": "Tranad: Deep transformer networks for anomaly detection in multivariate time series data",
+      "paper_id": "2201.07284v6"
+    },
+    {
+      "index": 37,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 38,
+      "title": "Real-time sensor anomaly detection and recovery in connected automated vehicle sensors",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE transactions on intelligent transportation systems",
+      "authors": "Y. Wang, N. Masoud, and A. Khojandi"
+    },
+    {
+      "index": 39,
+      "title": "Unsupervised anomaly detection via variational auto-encoder for seasonal kpis in web applications",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 world wide web conference",
+      "authors": "H. Xu, W. Chen, N. Zhao, Z. Li, J. Bu, Z. Li, Y. Liu, Y. Zhao, D. Pei, Y. Feng, et al."
+    },
+    {
+      "index": 40,
+      "title": "Arima based network anomaly detection",
+      "abstract": "",
+      "year": "2010",
+      "venue": "2010 Second International Conference on Communication Software and Networks",
+      "authors": "A. H. Yaacob, I. K. Tan, S. F. Chien, and H. K. Tan"
+    },
+    {
+      "index": 41,
+      "title": "A Deep Neural Network for Unsupervised Anomaly Detection and Diagnosis in Multivariate Time Series Data",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI conference on artificial intelligence",
+      "authors": "C. Zhang, D. Song, Y. Chen, X. Feng, C. Lumezanu, W. Cheng, J. Ni, B. Zong, H. Chen, and N. V. Chawla",
+      "orig_title": "A deep neural network for unsupervised anomaly detection and diagnosis in multivariate time series data",
+      "paper_id": "1811.08055v1"
+    },
+    {
+      "index": 42,
+      "title": "Colorful Image Colorization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European conference on computer vision",
+      "authors": "R. Zhang, P. Isola, and A. A. Efros",
+      "orig_title": "Colorful image colorization",
+      "paper_id": "1603.08511v5"
+    },
+    {
+      "index": 43,
+      "title": "Multivariate Time-series Anomaly Detection via Graph Attention Network",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 IEEE International Conference on Data Mining (ICDM)",
+      "authors": "H. Zhao, Y. Wang, J. Duan, C. Huang, D. Cao, Y. Tong, B. Xu, J. Bai, J. Tong, and Q. Zhang",
+      "orig_title": "Multivariate time-series anomaly detection via graph attention network",
+      "paper_id": "2009.02040v1"
+    },
+    {
+      "index": 44,
+      "title": "Spatio-temporal autoencoder for video anomaly detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "25th ACM international conference on Multimedia",
+      "authors": "Y. Zhao, B. Deng, C. Shen, Y. Liu, H. Lu, and X.-S. Hua"
+    },
+    {
+      "index": 45,
+      "title": "Deep autoencoding gaussian mixture model for unsupervised anomaly detection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on learning representations",
+      "authors": "B. Zong, Q. Song, M. R. Min, W. Cheng, C. Lumezanu, D. Cho, and H. Chen"
+    }
+  ]
+}

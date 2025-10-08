@@ -1,0 +1,325 @@
+{
+  "paper_id": "2411.08735v2",
+  "title": "New advances in universal approximation with neural networks of minimal width",
+  "sections": {
+    "introduction": "Feed-forward neural networks (FNNs) are compositions of affine transformations and activation functions, which are applied dimension-wise to their respective vector inputs. Their structure makes them adaptable to transform inputs of any given dimension into outputs of any desired dimension. As FNNs have achieved promising results in applications across many different areas related to the approximation of multidimensional functions, the question arises whether these results are based on the strong theoretical approximation capabilities of the model structure. Indeed, this turned out to be true: a rich set of mathematical theorems, called universal approximation (UAP) results, have been proven, demonstrating that FNNs with suitable activation functions can approximate key function classes used in practice, specifically continuous and Lpsuperscript𝐿𝑝L^{p} functions. Mathematically, universal approximation results characterize the closure of a function class, corresponding to the neural network architecture, with respect to a chosen norm. This is usually either an Lpsuperscript𝐿𝑝L^{p} norm with p∈[1,∞)𝑝1p\\in[1,\\infty) for classes of Lpsuperscript𝐿𝑝L^{p} integrable functions, or the supremum norm for continuous functions on bounded sets. Usually, the corresponding function classes are restricted to arbitrary compact subsets of the input space. For example, if a neural network architecture is a Lpsuperscript𝐿𝑝L^{p} universal approximator, then the closure of the function class with respect to the Lpsuperscript𝐿𝑝L^{p} norm describing all possible architecture configurations, restricted to a compact set 𝒦𝒦\\mathcal{K}, is a superset of all Lpsuperscript𝐿𝑝L^{p} functions restricted to 𝒦𝒦\\mathcal{K}. Similarly, we call a function class a uniform universal approximator if its closure, with respect to the supremum norm, contains the target function class of continuous functions. If the approximation holds not only on compact sets but on the entire input space, it is referred to as a global universal approximation result. The classical results are the universal approximation theorems of Cybenko , Hornik et al. , and Pinkus . They analyze the universal approximation properties of the so-called shallow FNNs, which typically have either a single hidden layer or a uniformly bounded number of hidden layers, and can have arbitrary width, i.e. they can contain any number of neurons in the hidden layers. In 1988, Hornik et al.  proved that shallow FNNs with non-decreasing sigmoidal functions universally approximate the set of continuous functions. Independently, Cybenko  showed in 1889 that shallow FNNs with continuous sigmoidal activation functions universally approximate continuous functions and L1superscript𝐿1L^{1} integrable functions on compact sets. Moreover, in 1999, Pinkus  proved that shallow FNNs with a continuous activation function, arbitrary width, and uniformly bounded depth are universal approximators of continuous functions if and only if the activation function is non-polynomial. With the rise of deep neural networks, which have achieved even better results than classical shallow neural networks in various applications, universal approximation results for narrow FNNs have become a popular research topic. Narrow FNNs are neural networks of fixed width and arbitrary depth, i.e. they can have an arbitrary number of layers, but the number of neurons in each layer is upper bounded by the (maximal) width. In this context, for given activation functions, target function class, and chosen norm, the minimal (-maximal) width wminsubscript𝑤w_{\\min} refers to the lower bound on the (maximal) width such that the corresponding FNNs, utilizing these activations, can have the universal approximation property for the desired function class. To align with literature conventions, we will refer to wminsubscript𝑤w_{\\min} as minimal width. In this sense, wminsubscript𝑤w_{\\min} determines the thinnest architecture of a FNN with a given activation function to universally approximate the targeted function class. Additionally, for a fixed FNN, we introduce the minimal interior dimension dminsubscript𝑑d_{\\min}, which is the minimal number of neurons in a layer over all layers of the neural network. In this regard, an FNN with dminsubscript𝑑d_{\\min} smaller than the input and output dimension can be understood as an autoencoder as the network encodes all inputs into features of lower dimension until the layer where dminsubscript𝑑d_{\\min} is reached and then decodes these features back to higher dimensional output. Modern universal approximation results for narrow FNNs not only show that bounds for the width exist for the universal approximation property, but also specify concrete bounds on wminsubscript𝑤w_{\\min}.\nIt is important to note that to obtain an upper bound, approximations of arbitrary precision must be constructed for every function within the target function class. In contrast, proving a lower bound only requires finding a single function in the class that the FNN architecture cannot approximate if its width is below the bound. Consequently, proving upper bounds for the minimal width, is generally considered more challenging than proving lower bounds. An interesting property of universal approximation theorems is achieved when the minimal width allows for the construction of narrow networks with an invertible architecture. Invertible neural networks form bijective mappings, which require squared weight matrices, resulting in fixed-width layers across the entire network architecture including the input and output layer. This invertible structure enables generative learning via maximum likelihood training, as e.g. implemented in normalizing flows [ref]10  . Consequently, universal approximation results for narrow networks, if these bounds are sufficiently tight, can also implicitly demonstrate the universal approximation properties of normalizing flows through invertible neural network architectures. A suitable network architecture for this purpose is LU-Net , an invertible neural network specifically designed to resemble a “vanilla” design as closely as possible. In this way, LU-Net directly inherits the universal approximation properties established in theorems for narrow networks, while also retaining the generative capabilities of normalizing flows due to its invertible architecture. In recent years, several important UAP results have been presented for narrow FNNs of arbitrary depth. We present the state of the art Lpsuperscript𝐿𝑝L^{p} universal approximation results for narrow FNNs in Table 1, omitting results that have already been surpassed. Additionally, in this paragraph, we discuss most Lpsuperscript𝐿𝑝L^{p} UAP results, including relevant older ones that have been outclassed. In 2017, Lu et al.  showed upper and lower bounds for the minimum width of ReLU FNNs for global universal approximation of functions in L1​(ℝdx,ℝdy)superscript𝐿1superscriptℝsubscript𝑑𝑥superscriptℝsubscript𝑑𝑦L^{1}(\\mathbb{R}^{d_{x}},\\mathbb{R}^{d_{y}}), while , in 2020, Kidger and Lyons [ref]19 proved an upper bound on the minimum width of ReLU FNNs for the global universal approximation of functions in Lp​(ℝdx,ℝdy)superscript𝐿𝑝superscriptℝsubscript𝑑𝑥superscriptℝsubscript𝑑𝑦L^{p}(\\mathbb{R}^{d_{x}},\\mathbb{R}^{d_{y}}). Later in 2020, Park et al.  fully characterized the minimum width for FNNs with ReLU activations for global universal approximation of functions in Lp​(ℝdx,ℝdy)superscript𝐿𝑝superscriptℝsubscript𝑑𝑥superscriptℝsubscript𝑑𝑦L^{p}(\\mathbb{R}^{d_{x}},\\mathbb{R}^{d_{y}}) and concluded wmin=max⁡{2,dx,dy}subscript𝑤2subscript𝑑𝑥subscript𝑑𝑦w_{\\min}=\\max\\{2,d_{x},d_{y}\\}, achieving tighter bounds than those shown by Lu et al.  and Kidger and Lyons [ref]19. In addition, Park et al.  derived an upper bound on the minimum width wmin≤max⁡{dx+2,dy+1}subscript𝑤subscript𝑑𝑥2subscript𝑑𝑦1w_{\\min}\\leq\\max\\{d_{x}+2,d_{y}+1\\} for FNNs with continuous non-polynomial activation functions with respect to the universal approximation of Lp​(𝒦,ℝdy)superscript𝐿𝑝𝒦superscriptℝsubscript𝑑𝑦L^{p}(\\mathcal{K},\\mathbb{R}^{d_{y}}), where 𝒦⊂ℝdx𝒦superscriptℝsubscript𝑑𝑥\\mathcal{K}\\subset\\mathbb{R}^{d_{x}} is a compact set. Recently, in 2023, Cai [ref]5 showed that the minimal width for universal approximation of Lp​(𝒦,ℝdy)superscript𝐿𝑝𝒦superscriptℝsubscript𝑑𝑦L^{p}(\\mathcal{K},\\mathbb{R}^{d_{y}}) for compact 𝒦⊂ℝdx𝒦superscriptℝsubscript𝑑𝑥\\mathcal{K}\\subset\\mathbb{R}^{d_{x}} is lower bounded by max⁡{dx,dy}subscript𝑑𝑥subscript𝑑𝑦\\max\\{d_{x},d_{y}\\} . Moreover, they showed that FNNs with leaky ReLU (LReLU) activations achieve wmin=max⁡{2,dx,dy}subscript𝑤2subscript𝑑𝑥subscript𝑑𝑦w_{\\min}=\\max\\{2,d_{x},d_{y}\\}, and hence attain the optimal minimal width over all classes of activations if max⁡{dx,dy}≥2subscript𝑑𝑥subscript𝑑𝑦2\\max\\{d_{x},d_{y}\\}\\geq 2. Additionally, Cai [ref]5 considered FNNs with LReLU+ABS to obtain a minimum width of max⁡{dx,dy}subscript𝑑𝑥subscript𝑑𝑦\\max\\{d_{x},d_{y}\\}, therefore achieving the optimal minimal width even in the one-dimensional case. 1 Continuous non-polynomial functions f:ℝ→ℝ:𝑓→ℝℝf:\\mathbb{R}\\rightarrow\\mathbb{R} that are differentiable for at least one point z∈ℝ𝑧ℝz\\in\\mathbb{R} with f′​(z)≠0superscript𝑓′𝑧0f^{\\prime}(z)\\neq 0. 2 Requires the existence of a sequence of bijective functions that uniformly approximate the activation. ‡ The inequality only holds for compact sets 𝒦⊂ℝdx𝒦superscriptℝsubscript𝑑𝑥\\mathcal{K}\\subset\\mathbb{R}^{d_{x}} with non-empty interior, such that Proposition 10.5 is applicable. † The set of activation functions needs to be a subset of CLipmon​(ℝ,ℝ)superscriptsubscript𝐶LipmonℝℝC_{\\operatorname{Lip}}^{\\operatorname{mon}}(\\mathbb{R},\\mathbb{R}), i.e. all activations are Lipschitz continuous and monotone (for details see Definition 2.35 and 5). In Table 2, we provide an overview of state of the art for uniform universal approximation of continuous functions. In this regard, in 2018, Hanin and Sellke  derived lower and upper bounds for the minimal width required for universal approximation of continuous functions with ReLU FNNs. Moreover, in 2020, Kidger and Lyons [ref]19 obtained uniform universal approximators for the continuous functions, using FNNs that utilize either continuous non-polynomial or non-affine polynomial activations. Later in 2020, Park et al.  showed that FNNs with ReLU+STEP activations achieve a minimal width of wmin=max⁡{dx+1,dy}subscript𝑤subscript𝑑𝑥1subscript𝑑𝑦w_{\\min}=\\max\\{d_{x}+1,d_{y}\\}. Furthermore, in 2023, Cai [ref]5 established that the minimal width required for uniform universal approximation with FNNs, regardless of the activation function, is bounded from below by wmin∗:=max⁡{dx,dy}assignsuperscriptsubscript𝑤subscript𝑑𝑥subscript𝑑𝑦w_{\\min}^{*}:=\\max\\{d_{x},d_{y}\\}. Additionally, Cai [ref]5 showed that FNNs with ReLU+FLOOR activations achieve wmin=max⁡{2,dx,dy}subscript𝑤2subscript𝑑𝑥subscript𝑑𝑦w_{\\min}=\\max\\{2,d_{x},d_{y}\\} for uniform universal approximation of continuous functions, making them optimal when max⁡{dx,dy}≥2subscript𝑑𝑥subscript𝑑𝑦2\\max\\{d_{x},d_{y}\\}\\geq 2. Furthermore, they concluded that FNNs using UOE+FLOOR activations attain the minimal width wmin=max⁡{dx,dy}subscript𝑤subscript𝑑𝑥subscript𝑑𝑦w_{\\min}=\\max\\{d_{x},d_{y}\\} for universal approximation. It is worth noting that while this result indicates that UOE+FLOOR FNNs are optimal across all input and output dimensions in theory, UOE activations are primarily a theoretical construct and not readily practical. Therefore, ReLU+FLOOR FNNs offer a more feasible choice for practical applications, while being theoretically optimal for most choices of dimensions. Furthermore, in 2018, Johnson  derived the lower bound of dx+1subscript𝑑𝑥1d_{x}+1 for FNNs with uniformly continuous activations that can be uniformly approximated by bijective functions when the output dimension is dy=1subscript𝑑𝑦1d_{y}=1. Our 5 shows that dx+1subscript𝑑𝑥1d_{x}+1 is a lower bound for uniform universal approximation of continuous functions for FNNs with monotone Lipschitz continuous functions, provided the output dimension satisfies dx≥dysubscript𝑑𝑥subscript𝑑𝑦d_{x}\\geq d_{y}. This shows that a width of at least dx+1subscript𝑑𝑥1d_{x}+1 is required to achieve uniform universal approximation of continuous functions for almost all of the activation functions commonly used in practice  , when dx≥dysubscript𝑑𝑥subscript𝑑𝑦d_{x}\\geq d_{y}. Therefore 5 can be seen as a generalization of the universal approximation results from Johnson  to higher output dimensions dysubscript𝑑𝑦d_{y} if they’re smaller or equal than dxsubscript𝑑𝑥d_{x}. It is important to note that, in this case, the lower bound is tighter by one compared to the lower bound for arbitrary activations stated by Cai [ref]5. Our main contributions in this work are divided into four parts. In the first part, we prove 1 in Section 6, which shows the upper bound max⁡{2,dx,dy}2subscript𝑑𝑥subscript𝑑𝑦\\max\\{2,d_{x},d_{y}\\} for the universal approximation of Lp​(𝒦,ℝdy)superscript𝐿𝑝𝒦superscriptℝsubscript𝑑𝑦L^{p}(\\mathcal{K},\\mathbb{R}^{d_{y}}) on arbitrary compact sets 𝒦⊂ℝdx𝒦superscriptℝsubscript𝑑𝑥\\mathcal{K}\\subset\\mathbb{R}^{d_{x}} with FNNs equipped with leaky ReLU activations in 1. To formally prove this, we present a coding scheme in Section 3 to construct explicit approximations with leaky ReLU FNNs in Section 4 and Section 5. We note that the same result was originally established in [ref]5, but by a different approach that exploits the strong approximation properties of flow maps for ordinary differential equations , and approximating them with leaky ReLU FNNs . Therefore, the proof of Cai [ref]5 essentially relies on the strong approximation capabilities of neuralODE  corresponding to Theorem 2.3 of Li et al.  that is is is similar to the well-known Theorem 2. (i) of Brenier and Gangbo , which shows that diffeomorphisms are Lpsuperscript𝐿𝑝L^{p} universal approximators. In contrast, our proof of 1 relies only on basic results of analysis and also explicitly constructs the approximation sequences of neural networks via the coding scheme introduced by Park et al. . In the second part, we\nshow that LU decomposable neural networks with invertible leaky ReLU activations can universally approximate Lp​(𝒦,ℝd)superscript𝐿𝑝𝒦superscriptℝ𝑑L^{p}(\\mathcal{K},\\mathbb{R}^{d}) on arbitrary compact sets 𝒦⊂ℝd𝒦superscriptℝ𝑑\\mathcal{K}\\subset\\mathbb{R}^{d}, which we state formally in 2 and prove in Section 7.\nWith this result, we then analyze the properties of LU-Net  as a normalizing flow.\nMore specifically, we prove that LU-Net can transform an absolutely continuous source distribution into a sequence of distributions that converges in law to any predefined target distribution. We provide the latter statement in 3 and give the formal proof in Section 8. Similar results on distributional universal approximation have been obtained for other normalizing flows, in particular affine coupling flows [ref]10 and NeuralODE , see also 5   . In the third part we show that the set of smooth diffeomorphisms in the form of LU-decomposable almost leaky ReLU neural networks are universal approximators of Lp​(𝒦,ℝd)superscript𝐿𝑝𝒦superscriptℝ𝑑L^{p}(\\mathcal{K},\\mathbb{R}^{d}) on any compact set 𝒦⊂ℝd𝒦superscriptℝ𝑑\\mathcal{K}\\subset\\mathbb{R}^{d}, which is the statement of 4 that we prove in Section 9. This means that for any compact 𝒦⊂ℝd𝒦superscriptℝ𝑑\\mathcal{K}\\subset\\mathbb{R}^{d} and f∈Lp​(𝒦,ℝd)𝑓superscript𝐿𝑝𝒦superscriptℝ𝑑f\\in L^{p}(\\mathcal{K},\\mathbb{R}^{d}) there exists an approximating sequence of f𝑓f in Lpsuperscript𝐿𝑝L^{p} norm of smooth invertible LU-decomposable neural networks that are limits of sequences of LU-decomposable neural networks and whose inverses are also smooth LU-decomposable neural networks. In that sense, 4 identifies a dense subset of Lp​(𝒦,ℝd)superscript𝐿𝑝𝒦superscriptℝ𝑑L^{p}(\\mathcal{K},\\mathbb{R}^{d}) consisting of C∞superscript𝐶C^{\\infty} diffeomorphisms that can be approximated arbitrarily by leaky ReLU FNNs. Moreover, our Corollary 2.33 resulting from 4, immediately implies the well-known Theorem 2.5 (i) of Brenier and Gangbo , which shows that the set of diffeomorphisms is dense in Lp​(𝒦,ℝd)superscript𝐿𝑝𝒦superscriptℝ𝑑L^{p}(\\mathcal{K},\\mathbb{R}^{d}) for all compact sets 𝒦𝒦\\mathcal{K}. In the fourth part, we present 5, with the proof detailed in Section 10. Here, we establish that dx+1subscript𝑑𝑥1d_{x}+1 is a lower bound for universal approximation of continuous functions with FNNs that employ monotone Lipschitz continuous activation functions, whenever the input dimension dxsubscript𝑑𝑥d_{x} is greater or equal than the output dimension dysubscript𝑑𝑦d_{y}. The key idea in this proof is to show that homeomorphisms are not uniform universal approximators for continuous functions — a well-known result that we revisit in Section 10, though it is not among our primary contributions. 5 has important implications for neural network design. It implies that FNNs with common activation functions   — such as ReLU, LReLU, or sigmoid-like functions including hyperbolic tangent and the logistic sigmoid — cannot achieve uniform universal approximation of continuous functions if their width is restricted to the input dimension dxsubscript𝑑𝑥d_{x}, provided dx≥dysubscript𝑑𝑥subscript𝑑𝑦d_{x}\\geq d_{y}. Structure of the paper. Section 2 is split into five subchapters corresponding to the five main theorems, which each introduce the relevant notation for one of the theorems, explain the relevancy of them and list some strong corollaries that follow from them. Section 3 defines and motivates the coding scheme from Park et al. , which is essential for the proof of our main 1, and shows it’s approximation capabilities. Section 4 analyzes the capabilities of leaky ReLUs for the approxiamtion of piecewise linear functions and Section 5 gives several preliminary results that show how leaky ReLU FNNs can be used to approximate the parts of the coding scheme, which both is combined in Section 6 to prove 1. In Section 7 we prove 2 that generalizes 1 to L​U𝐿𝑈LU decomposable neural networks, which are INNs with L​U𝐿𝑈LU decomposable linear transformations. We apply this in Section 8 to obtain that the normalizing flow LU-Net has the distributional universal approximation property. Section 9 further generalizes 1 to obtain a set smooth diffeomorphisms in the form of INNs that universally approximate Lp​(ℝd,ℝd)superscript𝐿𝑝superscriptℝ𝑑superscriptℝ𝑑L^{p}(\\mathbb{R}^{d},\\mathbb{R}^{d}). In Section 10 we give a formal proof of 5, which shows that the minimal width for uniform universal approximation of the continuous functions C0​(ℝdx,ℝdy)superscript𝐶0superscriptℝsubscript𝑑𝑥superscriptℝsubscript𝑑𝑦C^{0}(\\mathbb{R}^{d_{x}},\\mathbb{R}^{d_{y}}) with FNNs using Lipschitz continuous and monotone activations must be at least dx+1subscript𝑑𝑥1d_{x}+1 when the input dimension dxsubscript𝑑𝑥d_{x} is greater than or equal to the output dimension dysubscript𝑑𝑦d_{y}. Furthermore, a comprehensive conclusion and outlook of the research on universal approximation for narrow neural networks is presented in Section 11. In the beginning of the appendix A a list of most abbreviations and notations, used in this paper, is given and moreover auxiliary definitions, some well-known results and proofs, necessary for the main proofs, are presented in the rest of the appendix."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Analysis III",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Grundstudium Mathematik. Birkhäuser Basel",
+      "authors": "H. Amann and J. Escher"
+    },
+    {
+      "index": 1,
+      "title": "Learning Deep Architectures for AI",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Y. Bengio"
+    },
+    {
+      "index": 2,
+      "title": "lpsuperscript𝑙𝑝l^{p} approximation of maps by diffeomorphisms",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Calculus of Variations and Partial Differential Equations",
+      "authors": "Y. Brenier and W. Gangbo"
+    },
+    {
+      "index": 3,
+      "title": "Functional Analysis, Sobolev Spaces and Partial Differential Equations",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Universitext. Springer New York",
+      "authors": "H. Brezis"
+    },
+    {
+      "index": 4,
+      "title": "Achieve the minimum width of neural networks for universal approximation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Y. Cai"
+    },
+    {
+      "index": 5,
+      "title": "LU-Net: Invertible Neural Networks Based on Matrix Factorization",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "R. Chan, S. Penquitt, and H. Gottschalk",
+      "orig_title": "Lu-net: Invertible neural networks based on matrix factorization",
+      "paper_id": "2302.10524v1"
+    },
+    {
+      "index": 6,
+      "title": "Neural Ordinary Differential Equations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in neural information processing systems",
+      "authors": "R. T. Chen, Y. Rubanova, J. Bettencourt, and D. K. Duvenaud",
+      "orig_title": "Neural ordinary differential equations",
+      "paper_id": "1806.07366v5"
+    },
+    {
+      "index": 7,
+      "title": "Approximation by superpositions of a sigmoidal function",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Mathematics of Control, Signals, and Systems (MCSS)",
+      "authors": "G. Cybenko"
+    },
+    {
+      "index": 8,
+      "title": "Activation functions and their characteristics in deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 Chinese Control And Decision Conference (CCDC)",
+      "authors": "B. Ding, H. Qian, and J. Zhou"
+    },
+    {
+      "index": 9,
+      "title": "Density estimation using Real NVP",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations",
+      "authors": "L. Dinh, J. Sohl-Dickstein, and S. Bengio",
+      "orig_title": "Density estimation using real NVP",
+      "paper_id": "1605.08803v3"
+    },
+    {
+      "index": 10,
+      "title": "Vanilla feedforward neural networks as a discretization of dynamic systems",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "Y. Duan, L. Li, G. Ji, and Y. Cai",
+      "orig_title": "Vanilla feedforward neural networks as a discretization of dynamical systems",
+      "paper_id": "2209.10909v3"
+    },
+    {
+      "index": 11,
+      "title": "Activation Functions in Deep Learning: A Comprehensive Survey and Benchmark",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "S. R. Dubey, S. K. Singh, and B. B. Chaudhuri",
+      "orig_title": "Activation functions in deep learning: A comprehensive survey and benchmark",
+      "paper_id": "2109.14545v3"
+    },
+    {
+      "index": 12,
+      "title": "Activation Functions in Deep Learning: A Comprehensive Survey and Benchmark",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "S. R. Dubey, S. K. Singh, and B. B. Chaudhuri",
+      "orig_title": "Activation functions in deep learning: A comprehensive survey and benchmark",
+      "paper_id": "2109.14545v3"
+    },
+    {
+      "index": 13,
+      "title": "Real Analysis",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "D. B. Emmanuele"
+    },
+    {
+      "index": 14,
+      "title": "Approximating Continuous Functions by ReLU Nets of Minimal Width",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "B. Hanin and M. Sellke",
+      "orig_title": "Approximating continuous functions by relu nets of minimal width",
+      "paper_id": "1710.11278v2"
+    },
+    {
+      "index": 15,
+      "title": "Analysis 2",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Springer-Lehrbuch. Springer Berlin Heidelberg",
+      "authors": "S. Hildebrandt"
+    },
+    {
+      "index": 16,
+      "title": "Multilayer feedforward networks are universal approximators",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Neural Networks",
+      "authors": "K. Hornik, M. Stinchcombe, and H. White"
+    },
+    {
+      "index": 17,
+      "title": "Deep, skinny neural networks are not universal approximators",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "J. Johnson"
+    },
+    {
+      "index": 18,
+      "title": "Universal Approximation with Deep Narrow Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "P. Kidger and T. Lyons",
+      "orig_title": "Universal approximation with deep narrow networks",
+      "paper_id": "1905.08539v2"
+    },
+    {
+      "index": 19,
+      "title": "Glow: Generative Flow with Invertible 1×1 Convolutions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in neural information processing systems",
+      "authors": "D. P. Kingma and P. Dhariwal",
+      "orig_title": "Glow: Generative flow with invertible 1x1 convolutions",
+      "paper_id": "1807.03039v2"
+    },
+    {
+      "index": 20,
+      "title": "Normalizing Flows: An Introduction and Review of Current Methods",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "I. Kobyzev, S. J. Prince, and M. A. Brubaker",
+      "orig_title": "Normalizing flows: An introduction and review of current methods",
+      "paper_id": "1908.09257v4"
+    },
+    {
+      "index": 21,
+      "title": "Deep Learning via Dynamical Systems: An Approximation Perspective",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Q. Li, T. Lin, and Z. Shen",
+      "orig_title": "Deep learning via dynamical systems: An approximation perspective",
+      "paper_id": "1912.10382v2"
+    },
+    {
+      "index": 22,
+      "title": "Linear Algebra",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer Undergraduate Mathematics Series. Springer International Publishing",
+      "authors": "J. Liesen and V. Mehrmann"
+    },
+    {
+      "index": 23,
+      "title": "The Expressive Power of Neural Networks: A View from the Width",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Z. Lu, H. Pu, F. Wang, Z. Hu, and L. Wang",
+      "orig_title": "The expressive power of neural networks: A view from the width",
+      "paper_id": "1709.02540v3"
+    },
+    {
+      "index": 24,
+      "title": "Distribution learning via neural differential equations: a nonparametric statistical perspective",
+      "abstract": "",
+      "year": "2024",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Y. Marzouk, Z. R. Ren, S. Wang, and J. Zech",
+      "orig_title": "Distribution learning via neural differential equations: a nonparametric statistical perspective",
+      "paper_id": "2309.01043v1"
+    },
+    {
+      "index": 25,
+      "title": "Neural networks and deep learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "M. A. Nielsen"
+    },
+    {
+      "index": 26,
+      "title": "Applied Nonlinear Functional Analysis",
+      "abstract": "",
+      "year": "2018",
+      "venue": "De Gruyter, Berlin, Boston",
+      "authors": "N. S. Papageorgiou and P. Winkert"
+    },
+    {
+      "index": 27,
+      "title": "Minimum width for universal approximation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "S. Park, C. Yun, J. Lee, and J. Shin"
+    },
+    {
+      "index": 28,
+      "title": "On the difficulty of training recurrent neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "30th International Conference on Machine Learning, ICML’13",
+      "authors": "R. Pascanu, T. Mikolov, and Y. Bengio"
+    },
+    {
+      "index": 29,
+      "title": "Approximation theory of the mlp model in neural networks",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Acta Numerica",
+      "authors": "A. Pinkus"
+    },
+    {
+      "index": 30,
+      "title": "Intermediate Calculus",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Undergraduate Texts in Mathematics. Springer New York",
+      "authors": "M. Protter and C. Morrey"
+    },
+    {
+      "index": 31,
+      "title": "Remarks on a Multivariate Transformation",
+      "abstract": "",
+      "year": "1952",
+      "venue": "The Annals of Mathematical Statistics",
+      "authors": "M. Rosenblatt"
+    },
+    {
+      "index": 32,
+      "title": "Neural ode control for classification, approximation, and transport",
+      "abstract": "",
+      "year": "2023",
+      "venue": "SIAM Review",
+      "authors": "D. Ruiz-Balet and E. Zuazua"
+    },
+    {
+      "index": 33,
+      "title": "Optimal transport for applied mathematicians",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Birkäuser, NY",
+      "authors": "F. Santambrogio"
+    },
+    {
+      "index": 34,
+      "title": "Coupling-based Invertible Neural Networks Are Universal Diffeomorphism Approximators",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "T. Teshima, I. Ishikawa, K. Tojo, K. Oono, M. Ikeda, and M. Sugiyama",
+      "orig_title": "Coupling-based invertible neural networks are universal diffeomorphism approximators",
+      "paper_id": "2006.11469v2"
+    },
+    {
+      "index": 35,
+      "title": "Optimal transport: old and new",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Springer",
+      "authors": "C. Villani et al."
+    }
+  ]
+}

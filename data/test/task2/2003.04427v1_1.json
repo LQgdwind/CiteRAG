@@ -1,0 +1,239 @@
+{
+  "paper_id": "2003.04427v1",
+  "title": "Transfer Reinforcement Learning under Unobserved Contextual Information",
+  "sections": {
+    "i introduction": "Reinforcement learning (RL) methods have been widely used to solve sequential decision making problems in unknown stochastic environments . Often, these methods require many samples from the environment to find an optimal control policy, which becomes impractical when they are used to control physical systems, such as vehicles or robots, for which sampling can be expensive. One solution to this problem is to use Transfer Learning (TL) . The goal in TL is to use the experience gained from solving prior source tasks to learn a policy for a new related target task using much fewer samples than if this new policy was learned from the beginning. TL methods can be classified depending on what specific knowledge is transferred from the source tasks to the target task. For example, the methods proposed in  [ref]4   focus on transferring value functions, transition functions, and policy functions between the source and target tasks. Specifically, the key idea in  is to transfer the value functions from prior tasks to a new task to provide a good initialization for the learning algorithm. On the other hand, in [ref]4 it is assumed that the source and target tasks share the same transition functions and only differ in the rewards, so that the transition features learnt from the source tasks can be transferred to the new task. In , a meta learning method is proposed to find a good initial policy for a new task, using experience from prior source tasks, which can be adapted to obtain the optimal policy using only a few samples. Along these lines,  assumes that the source and target tasks share the same hiearchical structure so that the skills learned to solve a low level problem can be directly transferred to the target task. In contrast to the methods proposed in  [ref]4  , the approaches discussed in   [ref]9 0 1 directly transfer the transition and reward samples from the source tasks to the target task. As discussed in [ref]9, transferring samples directly is more general compared to transferring value functions, transition functions, and policy functions, since it does not impose any requirements on the specific RL algorithm used to solve the source tasks. The reason is that every RL algorithm relies on transition and reward samples collected from the environment.\nSpecifically, the methods proposed in   [ref]9 augment the target task dataset with the samples from the source tasks so that fewer new samples are needed from the target task. Since the source and target tasks usually have different reward and transition distributions, transferring the source task data to the target task introduces bias in the esitmated value functions or policies  2.\nThe methods proposed in 0 1 rely on importance sampling to correct the bias introduced by using samples from source tasks. Since unbiased importance weights can result in large variance, biased weights are usually employed in practice to reduce the variance. Nevertheless, the computation of importance weights is expensive and requires fittting regression models for the rewards and transitions, as shown in 0 1. This introduces additional bias when the chosen regression model does not perfectly fit the true reward and transition functions. In this paper, we propose a new TL framework that, as in   [ref]9 0 1, relies on sample transfer between source and target tasks but, unlike   [ref]9 0 1, it does not introduce bias in the learnt value functions and policies.\nSpecifically, we assume the presence of context in the environment, and consider a contextual Markov Decision Process (MDP) 3, where the transition and reward functions are affected by this context that is subject to a fixed distribution. Moreover, we assume a demonstrator agent, who can observe the environmental context and can collect transition and reward samples using a context-aware policy. These samples, excluding the contextual information, are provided to a learner agent as the source task dataset. The target task is to let the learner agent, who cannot observe the context, find the optimal context-unaware policy in the same contextual MDP environment. In this problem, different contexts can be thought of as different source tasks. Compared to   [ref]9 0 1, since the context is hidden, the problem considered here is more challenging because the learner cannot identify which source task the transition and reward samples belong to. Therefore, the methods in   0 1 cannot be directly applied. Furthermore, since the source datasets are provided without contextual information, transferring these data using model-based RL methods like [ref]9 can cause significant bias. This is because hidden contexts make the reward and transition models non-identifiable,\nas it is well known in the causal inference literature 4. To remove bias from the estimated transition and reward models and enable the learner agent to learn an optimal policy using fewer new samples, we extend the discretization method developed in Section 8.2 in 4 so that we can derive causal bounds on the transition and reward functions using the source dataset. Then, given these causal bounds, we formulate two optimization problems that can be efficiently solved to obtain upper and lower bounds on the value functions, respectively. Using these value function bounds, we develop Causal Bound Constrained Q𝑄Q learning 5 and UCB-Q𝑄Q learning 6 7 8 algorithms that converge to the true value function without bias, unlike the methods in   [ref]9 0 1.\nThis is because, the true value functions are shown to lie within the proposed causal bounds and, therefore, projection of the value function iterates on the intervals defined by these bounds does not affect convergence of the Q𝑄Q learning and UCB-Q𝑄Q learning methods which are known to be unbiased.\nThe role of the causal bound constraints is to prevent these learning algorithms from returning poor value function estimates or exploring unnecessary states at the beginning of the learning process, reducing in this way the sampling complexity of our method. To the best of our knowledge, the most relevant work to the method proposed here is 9. Specifically, in 9 a multi-arm bandit problem is considered with binary action and reward spaces. Moreover, a similar method to the one proposed here is employed to compute causal bounds on the expected rewards of the bandit machines, which are used to improve on the performance of the UCB algorithm 0. Compared to 9, here we consider a\nsequential decision making problem on arbitrary discrete and finite action and reward spaces, which is more general. Moreover, we assume that the transition functions are also affected by the context and propose additional causal bounds for them. Note that the learning problem for the target task considered in this paper can be also thought of as a Partial-Observable Markov Decision Process (POMDP) problem. Therefore, the learner can apply any RL algorithm used for POMDPs, e.g., 1 2, to solve the problem by itself. Nevertheless, these methods are sample inefficient. Instead, here we use the source dataset given by the demonstrator to reduce the number of samples needed by the learner to find the optimal policy. The rest of this paper is organized as follows. In Section II, we define the proposed TL problem and discuss modeling bias due to the hidden context at the learner agent.\nIn Section III, we develop our proposed method to compute the causal bounds on the reward, transition, and value functions. In Section IV, we propose a Q𝑄Q learning and a UCB-Q𝑄Qlearning algorithm based on the value function bounds.\nIn Section V, we numerically validate the proposed TL algorithms and causal bounds on robot motion planning problems. Finally, in Section VI, we conclude the paper."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Reinforcement learning: An introduction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "MIT press",
+      "authors": "R. S. Sutton and A. G. Barto"
+    },
+    {
+      "index": 1,
+      "title": "Transfer learning for reinforcement learning domains: A survey",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "M. E. Taylor and P. Stone"
+    },
+    {
+      "index": 2,
+      "title": "Transfer learning via inter-task mappings for temporal difference learning",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "M. E. Taylor, P. Stone, and Y. Liu"
+    },
+    {
+      "index": 3,
+      "title": "Successor features for transfer in reinforcement learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Barreto, W. Dabney, R. Munos, J. J. Hunt, T. Schaul, H. P. van Hasselt, and D. Silver"
+    },
+    {
+      "index": 4,
+      "title": "Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "JMLR. org",
+      "authors": "C. Finn, P. Abbeel, and S. Levine",
+      "orig_title": "Model-agnostic meta-learning for fast adaptation of deep networks",
+      "paper_id": "1703.03400v3"
+    },
+    {
+      "index": 5,
+      "title": "Transfer in reinforcement learning via shared features",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "G. Konidaris, I. Scheidwasser, and A. Barto"
+    },
+    {
+      "index": 6,
+      "title": "Transfer of samples in batch reinforcement learning",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ACM",
+      "authors": "A. Lazaric, M. Restelli, and A. Bonarini"
+    },
+    {
+      "index": 7,
+      "title": "Transfer from multiple mdps",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Lazaric and M. Restelli"
+    },
+    {
+      "index": 8,
+      "title": "Transferring instances for model-based reinforcement learning",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Springer",
+      "authors": "M. E. Taylor, N. K. Jong, and P. Stone"
+    },
+    {
+      "index": 9,
+      "title": "Importance Weighted Transfer of Samples in Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "A. Tirinzoni, A. Sessa, M. Pirotta, and M. Restelli",
+      "orig_title": "Importance weighted transfer of samples in reinforcement learning",
+      "paper_id": "1805.10886v1"
+    },
+    {
+      "index": 10,
+      "title": "Transfer of samples in policy search via multiple importance sampling",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "A. Tirinzoni, M. Salvini, and M. Restelli"
+    },
+    {
+      "index": 11,
+      "title": "To transfer or not to transfer",
+      "abstract": "",
+      "year": "2005",
+      "venue": "NIPS 2005 workshop on transfer learning",
+      "authors": "M. T. Rosenstein, Z. Marx, L. P. Kaelbling, and T. G. Dietterich"
+    },
+    {
+      "index": 12,
+      "title": "Contextual Markov Decision Processes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1502.02259",
+      "authors": "A. Hallak, D. Di Castro, and S. Mannor",
+      "orig_title": "Contextual markov decision processes",
+      "paper_id": "1502.02259v1"
+    },
+    {
+      "index": 13,
+      "title": "Causality: models, reasoning and inference, 2nd ed.",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Cambridge University Press",
+      "authors": "J. Pearl"
+    },
+    {
+      "index": 14,
+      "title": "Q-learning",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Machine learning",
+      "authors": "C. J. Watkins and P. Dayan"
+    },
+    {
+      "index": 15,
+      "title": "Minimax Regret Bounds for Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "M. G. Azar, I. Osband, and R. Munos",
+      "orig_title": "Minimax regret bounds for reinforcement learning",
+      "paper_id": "1703.05449v2"
+    },
+    {
+      "index": 16,
+      "title": "Is q-learning provably efficient?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "C. Jin, Z. Allen-Zhu, S. Bubeck, and M. I. Jordan"
+    },
+    {
+      "index": 17,
+      "title": "Q-learning with UCB Exploration is Sample Efficient for Infinite-Horizon MDP",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1901.09311",
+      "authors": "K. Dong, Y. Wang, X. Chen, and L. Wang",
+      "orig_title": "Q-learning with ucb exploration is sample efficient for infinite-horizon mdp",
+      "paper_id": "1901.09311v2"
+    },
+    {
+      "index": 18,
+      "title": "Transfer learning in multi-armed bandits: a causal approach",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI Press",
+      "authors": "J. Zhang and E. Bareinboim"
+    },
+    {
+      "index": 19,
+      "title": "Finite-time analysis of the multiarmed bandit problem",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Machine learning",
+      "authors": "P. Auer, N. Cesa-Bianchi, and P. Fischer"
+    },
+    {
+      "index": 20,
+      "title": "Reinforcement learning algorithm for partially observable markov decision problems",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Advances in neural information processing systems",
+      "authors": "T. Jaakkola, S. P. Singh, and M. I. Jordan"
+    },
+    {
+      "index": 21,
+      "title": "Deep Recurrent Q-Learning for Partially Observable MDPs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 AAAI Fall Symposium Series",
+      "authors": "M. Hausknecht and P. Stone",
+      "orig_title": "Deep recurrent q-learning for partially observable mdps",
+      "paper_id": "1507.06527v4"
+    },
+    {
+      "index": 22,
+      "title": "Least-Squares Temporal Difference Learning for the Linear Quadratic Regulator",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "S. Tu and B. Recht",
+      "orig_title": "Least-squares temporal difference learning for the linear quadratic regulator",
+      "paper_id": "1712.08642v1"
+    },
+    {
+      "index": 23,
+      "title": "Model-based rl in contextual decision processes: Pac bounds and exponential improvements over model-free approaches",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Conference on Learning Theory",
+      "authors": "W. Sun, N. Jiang, A. Krishnamurthy, A. Agarwal, and J. Langford"
+    },
+    {
+      "index": 24,
+      "title": "A probabilistic production and inventory problem",
+      "abstract": "",
+      "year": "1963",
+      "venue": "Management Science",
+      "authors": "F. d’Epenoux"
+    },
+    {
+      "index": 25,
+      "title": "Introduction to linear optimization",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Athena Scientific",
+      "authors": "D. Bertsimas and J. N. Tsitsiklis"
+    },
+    {
+      "index": 26,
+      "title": "Near-optimal reinforcement learning in polynomial time",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Machine learning",
+      "authors": "M. Kearns and S. Singh"
+    }
+  ]
+}

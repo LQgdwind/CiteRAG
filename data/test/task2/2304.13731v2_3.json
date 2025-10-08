@@ -1,0 +1,407 @@
+{
+  "paper_id": "2304.13731v2",
+  "title": "Text-to-Audio Generation using Instruction-Tuned LLM and Latent Diffusion Model",
+  "sections": {
+    "textual-prompt encoder": "We use the pre-trained LLM Flan-T5-Large (780M)  as the text encoder (Et​e​x​tsubscript𝐸𝑡𝑒𝑥𝑡E_{text}) to obtain text encoding τ∈ℝL×dt​e​x​t𝜏superscriptℝ𝐿subscript𝑑𝑡𝑒𝑥𝑡\\tau\\in\\mathbb{R}^{L\\times d_{text}}, where L𝐿L and dt​e​x​tsubscript𝑑𝑡𝑒𝑥𝑡d_{text} are the token count and token-embedding size, respectively. Due to the pre-training of Flan-T5 models on a large-scale chain-of-thought- (CoT) and instruction-based dataset, Dai et al.  posit that they are able to learn a new task very well from the in-context information by mimicking gradient descent through attention weights. This property is missing in the older large models, such as RoBERTa [ref]19 (used by Liu et al. [ref]18) and T5 0 (used by Kreuk et al. ). Considering each input sample a distinct task, it might be reasonable to assume that the gradient-descent mimicking property could be pivotal in learning the mapping between textual and acoustic concepts without fine-tuning the text encoder. The richer pre-training may also allow the encoder to better emphasize the key details with less noise and enriched context. This again may lead to the better transformation of the relevant textual concepts into their acoustics counterparts. Consequently, we keep the text encoder frozen, assuming the subsequent reverse diffusion process (see Section 2.2) would be able to learn the inter-modality mapping well for audio prior to construction. We also suspect that fine-tuning Et​e​x​tsubscript𝐸𝑡𝑒𝑥𝑡E_{text} may degrade its in-context learning ability due to gradients from the audio modality that is out of distribution to the pre-training dataset. This is in contrast with Liu et al. [ref]18 that fine-tunes the pre-trained text encoder as a part of the text-audio joint-representation learning (CLAP) to allow audio prior reconstruction from text. In Section 3, we empirically show that such joint-representation learning may not be necessary for text-to-audio transformation."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "MusicLM: Generating Music From Text",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2301.11325",
+      "authors": "Andrea Agostinelli, Timo I Denk, Zalán Borsos, Jesse Engel, Mauro Verzetti, Antoine Caillon, Qingqing Huang, Aren Jansen, Adam Roberts, Marco Tagliasacchi, et al.",
+      "orig_title": "Musiclm: Generating music from text",
+      "paper_id": "2301.11325v1"
+    },
+    {
+      "index": 1,
+      "title": "Wavegrad: Estimating gradients for waveform generation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2009.00713",
+      "authors": "Nanxin Chen, Yu Zhang, Heiga Zen, Ron J Weiss, Mohammad Norouzi, and William Chan"
+    },
+    {
+      "index": 2,
+      "title": "Scaling Instruction-Finetuned Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Hyung Won Chung, Le Hou, Shayne Longpre, Barret Zoph, Yi Tay, William Fedus, Eric Li, Xuezhi Wang, Mostafa Dehghani, Siddhartha Brahma, Albert Webson, Shixiang Shane Gu, Zhuyun Dai, Mirac Suzgun, Xinyun Chen, Aakanksha Chowdhery, Sharan Narang, Gaurav Mishra, Adams Yu, Vincent Zhao, Yanping Huang, Andrew Dai, Hongkun Yu, Slav Petrov, Ed H. Chi, Jeff Dean, Jacob Devlin, Adam Roberts, Denny Zhou, Quoc V. Le, and Jason Wei",
+      "orig_title": "Scaling instruction-finetuned language models",
+      "paper_id": "2210.11416v5"
+    },
+    {
+      "index": 3,
+      "title": "Why can gpt learn in-context? language models secretly perform gradient descent as meta-optimizers",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ArXiv",
+      "authors": "Damai Dai, Yutao Sun, Li Dong, Yaru Hao, Zhifang Sui, and Furu Wei"
+    },
+    {
+      "index": 4,
+      "title": "Audio set: An ontology and human-labeled dataset for audio events",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE international conference on acoustics, speech and signal processing (ICASSP)",
+      "authors": "Jort F Gemmeke, Daniel PW Ellis, Dylan Freedman, Aren Jansen, Wade Lawrence, R Channing Moore, Manoj Plakal, and Marvin Ritter"
+    },
+    {
+      "index": 5,
+      "title": "Efficient Diffusion Training via Min-SNR Weighting Strategy",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Tiankai Hang, Shuyang Gu, Chen Li, Jianmin Bao, Dong Chen, Han Hu, Xin Geng, and Baining Guo",
+      "orig_title": "Efficient diffusion training via min-snr weighting strategy",
+      "paper_id": "2303.09556v3"
+    },
+    {
+      "index": 6,
+      "title": "Classifier-Free Diffusion Guidance",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS 2021 Workshop on Deep Generative Models and Downstream Applications",
+      "authors": "Jonathan Ho and Tim Salimans",
+      "orig_title": "Classifier-free diffusion guidance",
+      "paper_id": "2207.12598v1"
+    },
+    {
+      "index": 7,
+      "title": "FastDiff: A Fast Conditional Diffusion Model for High-Quality Speech Synthesis",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2204.09934",
+      "authors": "Rongjie Huang, Max WY Lam, Jun Wang, Dan Su, Dong Yu, Yi Ren, and Zhou Zhao",
+      "orig_title": "Fastdiff: A fast conditional diffusion model for high-quality speech synthesis",
+      "paper_id": "2204.09934v1"
+    },
+    {
+      "index": 8,
+      "title": "Image-to-Image Translation with Conditional Adversarial Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, and Alexei A. Efros",
+      "orig_title": "Image-to-image translation with conditional adversarial networks",
+      "paper_id": "1611.07004v3"
+    },
+    {
+      "index": 9,
+      "title": "Diff-TTS: A Denoising Diffusion Model for Text-to-Speech",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.01409",
+      "authors": "Myeonghun Jeong, Hyeongju Kim, Sung Jun Cheon, Byoung Jin Choi, and Nam Soo Kim",
+      "orig_title": "Diff-tts: A denoising diffusion model for text-to-speech",
+      "paper_id": "2104.01409v1"
+    },
+    {
+      "index": 10,
+      "title": "Fréchet audio distance: A reference-free metric for evaluating music enhancement algorithms",
+      "abstract": "",
+      "year": "2019",
+      "venue": "INTERSPEECH",
+      "authors": "Kevin Kilgour, Mauricio Zuluaga, Dominik Roblek, and Matthew Sharifi"
+    },
+    {
+      "index": 11,
+      "title": "Audiocaps: Generating captions for audios in the wild",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)",
+      "authors": "Chris Dongjoo Kim, Byeongchang Kim, Hyunmin Lee, and Gunhee Kim"
+    },
+    {
+      "index": 12,
+      "title": "Auto-encoding variational bayes",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "Diederik P. Kingma and Max Welling"
+    },
+    {
+      "index": 13,
+      "title": "HiFi-GAN: Generative Adversarial Networks for Efficient and High Fidelity Speech Synthesis",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Jungil Kong, Jaehyeon Kim, and Jaekyoung Bae",
+      "orig_title": "Hifi-gan: Generative adversarial networks for efficient and high fidelity speech synthesis",
+      "paper_id": "2010.05646v2"
+    },
+    {
+      "index": 14,
+      "title": "Decoupling Magnitude and Phase Estimation with Deep ResUNet for Music Source Separation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Society for Music Information Retrieval Conference",
+      "authors": "Qiuqiang Kong, Yin Cao, Haohe Liu, Keunwoo Choi, and Yuxuan Wang",
+      "orig_title": "Decoupling magnitude and phase estimation with deep resunet for music source separation",
+      "paper_id": "2109.05418v1"
+    },
+    {
+      "index": 15,
+      "title": "Diffwave: A versatile diffusion model for audio synthesis",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2009.09761",
+      "authors": "Zhifeng Kong, Wei Ping, Jiaji Huang, Kexin Zhao, and Bryan Catanzaro"
+    },
+    {
+      "index": 16,
+      "title": "Audiogen: Textually guided audio generation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ArXiv",
+      "authors": "Felix Kreuk, Gabriel Synnaeve, Adam Polyak, Uriel Singer, Alexandre D’efossez, Jade Copet, Devi Parikh, Yaniv Taigman, and Yossi Adi"
+    },
+    {
+      "index": 17,
+      "title": "AudioLDM: Text-to-Audio Generation with Latent Diffusion Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ArXiv",
+      "authors": "Haohe Liu, Zehua Chen, Yi Yuan, Xinhao Mei, Xubo Liu, Danilo P. Mandic, Wenwu Wang, and Mark D . Plumbley",
+      "orig_title": "AudioLDM: Text-to-audio generation with latent diffusion models",
+      "paper_id": "2301.12503v3"
+    },
+    {
+      "index": 18,
+      "title": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ArXiv",
+      "authors": "Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov",
+      "orig_title": "Roberta: A robustly optimized bert pretraining approach",
+      "paper_id": "1907.11692v1"
+    },
+    {
+      "index": 19,
+      "title": "Decoupled Weight Decay Regularization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.05101",
+      "authors": "Ilya Loshchilov and Frank Hutter",
+      "orig_title": "Decoupled weight decay regularization",
+      "paper_id": "1711.05101v3"
+    },
+    {
+      "index": 20,
+      "title": "A Study on Speech Enhancement Based on Diffusion Probabilistic Model",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 Asia-Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC)",
+      "authors": "Yen-Ju Lu, Yu Tsao, and Shinji Watanabe",
+      "orig_title": "A study on speech enhancement based on diffusion probabilistic model",
+      "paper_id": "2107.11876v2"
+    },
+    {
+      "index": 21,
+      "title": "Conditional Diffusion Probabilistic Model for Speech Enhancement",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICASSP 2022 - 2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "Yen-Ju Lu, Zhong-Qiu Wang, Shinji Watanabe, Alexander Richard, Cheng Yu, and Yu Tsao",
+      "orig_title": "Conditional diffusion probabilistic model for speech enhancement",
+      "paper_id": "2202.05256v1"
+    },
+    {
+      "index": 22,
+      "title": "Conditional Diffusion Probabilistic Model for Speech Enhancement",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICASSP 2022-2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "Yen-Ju Lu, Zhong-Qiu Wang, Shinji Watanabe, Alexander Richard, Cheng Yu, and Yu Tsao",
+      "orig_title": "Conditional diffusion probabilistic model for speech enhancement",
+      "paper_id": "2202.05256v1"
+    },
+    {
+      "index": 23,
+      "title": "WavCaps: A ChatGPT-Assisted Weakly-Labelled Audio Captioning Dataset for Audio-Language Multimodal Research",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2303.17395",
+      "authors": "Xinhao Mei, Chutong Meng, Haohe Liu, Qiuqiang Kong, Tom Ko, Chengqi Zhao, Mark D Plumbley, Yuexian Zou, and Wenwu Wang",
+      "orig_title": "Wavcaps: A chatgpt-assisted weakly-labelled audio captioning dataset for audio-language multimodal research",
+      "paper_id": "2303.17395v2"
+    },
+    {
+      "index": 24,
+      "title": "WaveNet: A Generative Model for Raw Audio",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1609.03499",
+      "authors": "Aaron van den Oord, Sander Dieleman, Heiga Zen, Karen Simonyan, Oriol Vinyals, Alex Graves, Nal Kalchbrenner, Andrew Senior, and Koray Kavukcuoglu",
+      "orig_title": "Wavenet: A generative model for raw audio",
+      "paper_id": "1609.03499v2"
+    },
+    {
+      "index": 25,
+      "title": "ESC: Dataset for Environmental Sound Classification",
+      "abstract": "",
+      "year": "2015",
+      "venue": "23rd Annual ACM Conference on Multimedia",
+      "authors": "Karol J. Piczak"
+    },
+    {
+      "index": 26,
+      "title": "Grad-tts: A diffusion probabilistic model for text-to-speech",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Vadim Popov, Ivan Vovk, Vladimir Gogoryan, Tasnima Sadekova, and Mikhail Kudinov"
+    },
+    {
+      "index": 27,
+      "title": "Diffusion-Based Voice Conversion with Fast Maximum Likelihood Sampling Scheme",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2109.13821",
+      "authors": "Vadim Popov, Ivan Vovk, Vladimir Gogoryan, Tasnima Sadekova, Mikhail Kudinov, and Jiansheng Wei",
+      "orig_title": "Diffusion-based voice conversion with fast maximum likelihood sampling scheme",
+      "paper_id": "2109.13821v2"
+    },
+    {
+      "index": 28,
+      "title": "SRTNET: TIME DOMAIN SPEECH ENHANCEMENT VIA STOCHASTIC REFINEMENT",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2210.16805",
+      "authors": "Zhibin Qiu, Mengfan Fu, Yinfeng Yu, LiLi Yin, Fuchun Sun, and Hao Huang",
+      "orig_title": "Srtnet: Time domain speech enhancement via stochastic refinement",
+      "paper_id": "2210.16805v1"
+    },
+    {
+      "index": 29,
+      "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu",
+      "orig_title": "Exploring the limits of transfer learning with a unified text-to-text transformer",
+      "paper_id": "1910.10683v4"
+    },
+    {
+      "index": 30,
+      "title": "Zero-Shot Text-to-Image Generation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ArXiv",
+      "authors": "Aditya Ramesh, Mikhail Pavlov, Gabriel Goh, Scott Gray, Chelsea Voss, Alec Radford, Mark Chen, and Ilya Sutskever",
+      "orig_title": "Zero-shot text-to-image generation",
+      "paper_id": "2102.12092v2"
+    },
+    {
+      "index": 31,
+      "title": "Hierarchical Text-Conditional Image Generation with CLIP Latents",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ArXiv",
+      "authors": "Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, and Mark Chen",
+      "orig_title": "Hierarchical text-conditional image generation with clip latents",
+      "paper_id": "2204.06125v1"
+    },
+    {
+      "index": 32,
+      "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Björn Ommer",
+      "orig_title": "High-resolution image synthesis with latent diffusion models",
+      "paper_id": "2112.10752v2"
+    },
+    {
+      "index": 33,
+      "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Medical Image Computing and Computer-Assisted Intervention – MICCAI 2015",
+      "authors": "Olaf Ronneberger, Philipp Fischer, and Thomas Brox",
+      "orig_title": "U-net: Convolutional networks for biomedical image segmentation",
+      "paper_id": "1505.04597v1"
+    },
+    {
+      "index": 34,
+      "title": "Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Chitwan Saharia, William Chan, Saurabh Saxena, Lala Li, Jay Whang, Emily L Denton, Kamyar Ghasemipour, Raphael Gontijo Lopes, Burcu Karagol Ayan, Tim Salimans, et al.",
+      "orig_title": "Photorealistic text-to-image diffusion models with deep language understanding",
+      "paper_id": "2205.11487v1"
+    },
+    {
+      "index": 35,
+      "title": "A dataset and taxonomy for urban sound research",
+      "abstract": "",
+      "year": "2014",
+      "venue": "22nd ACM international conference on Multimedia",
+      "authors": "Justin Salamon, Christopher Jacoby, and Juan Pablo Bello"
+    },
+    {
+      "index": 36,
+      "title": "Universal speech enhancement with score-based diffusion",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2206.03065",
+      "authors": "Joan Serrà, Santiago Pascual, Jordi Pons, R Oguz Araz, and Davide Scaini"
+    },
+    {
+      "index": 37,
+      "title": "Denoising diffusion implicit models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ArXiv",
+      "authors": "Jiaming Song, Chenlin Meng, and Stefano Ermon"
+    },
+    {
+      "index": 38,
+      "title": "Learning from Between-class Examples for Deep Sound Recognition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Yuji Tokozume, Yoshitaka Ushiku, and Tatsuya Harada",
+      "orig_title": "Learning from between-class examples for deep sound recognition",
+      "paper_id": "1711.10282v2"
+    },
+    {
+      "index": 39,
+      "title": "Musical genre classification of audio signals",
+      "abstract": "",
+      "year": "2002",
+      "venue": "IEEE Transactions on speech and audio processing",
+      "authors": "George Tzanetakis and Perry Cook"
+    },
+    {
+      "index": 40,
+      "title": "Tango",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Wikipedia",
+      "authors": "Wikipedia"
+    },
+    {
+      "index": 41,
+      "title": "Tango music",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Wikipedia",
+      "authors": "Wikipedia"
+    },
+    {
+      "index": 42,
+      "title": "Diffsound: Discrete Diffusion Model for Text-to-sound Generation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2207.09983",
+      "authors": "Dongchao Yang, Jianwei Yu, Helin Wang, Wen Wang, Chao Weng, Yuexian Zou, and Dong Yu",
+      "orig_title": "Diffsound: Discrete diffusion model for text-to-sound generation",
+      "paper_id": "2207.09983v2"
+    }
+  ]
+}

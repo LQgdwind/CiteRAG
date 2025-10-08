@@ -1,0 +1,443 @@
+{
+  "paper_id": "2009.06295v1",
+  "title": "Deep intrinsic decomposition trained on surreal scenes yet with realistic light effects",
+  "sections": {
+    "previous methods": "Traditional work in this domain was focused on introducing physical priors on reflectance and shading and use optimization approaches to solve the decomposition problem. Earlier solutions in this domain were based on Retinex theory  that was based on the idea that shading corresponds to smooth variations while reflectance to abrupt changes in images. Thresholding image gradient can result in two estimations of reflectance and shading . This method was introduced for grayscale images and used later in different works   2 3 4. Funt et al.5 extended this idea for color images by assuming that shading is invariant to chromaticity. Posterior researchers added more physical constraints to this inverse problem, like introducing sparsity of reflectance 6 7, or adding new priors on shape and lighting 8, or by adding higher-level color descriptors 9. In some works     both RGB and depth information were used to predict intrinsic images, they provided promising results, but the lack of larger ground-truths stops the evaluation of these approaches. Others works focused on illumination varying image sequences from static video cameras 2  [ref]25, in these cases reflectance is constant through all the images and this multiple image-based approaches reduce complexity of intrinsic decomposition, these are very specific application-dependent conditions that move away from the initial intrinsic problem from a single image. The broad success of Convolutional Neural Networks (CNN) in computer vision also tooks this community interest on solving this challenging task with supervised networks and by creating big and accurate amounts of data to train. The earlier approaches in this new framework started to appear in 2015. First, Narihira et al. [ref]26 which introduced Direct Intrinsics, a two level end-to-end regression network to get shading and reflectance from single image. Their two stage network was inspired by Eigen et al.  that predicted depth from single image. At first level, the network tries to learn more global perspective of the image and at second level it tries to get more fine details from both input and first stage output. Second, Zhou et al.  presented a network to get relative reflectance between image pixel pairs trained on user annotated data between patches to have similar, larger or less relative reflectance built in . The output of their network is a relative reflectance map for all image pairs, they used the same energy minimization function defined in  to get shading and reflectance from this map. And third, Shelhamer et al.  introduced a different methodology to use both depth and RGB to get intrinsic decompositon. They used fully convolutional network (FCN) 0 to predict depth from ground-truth image, and they used prior non deep learning methods designed in   to get shading and reflectance from both RGB input and predicted depth. In a similar approach, Kim et al. 1 extended the idea to predict depth and intrinsic decomposition jointly from a deep architecture called joint conditional random field (JCNF) that shares convolutional activation’s and layers between all 333 tasks. JCNF learns to predict intrinsic images and depth jointly in a more correlated gradient domain. Afterwards, Nestmeyer and Gehler 2 showed that prior knowledge on the problem domain can improve results for methods based on networks. They introduced a network which learns intrinsic decomposition based on the human judgements given in  and proposed a reflective filtering approach, that can be applied at the end of any network, improving prediction efficiency and computational cost. Recently, some researchers tried to solve this problem by using more sophisticated deep learning architectures such as GAN by 3. Letrry et al. in 4 were the first to predict intrinsic images using a deep adversarial network. At a first stage, CNN predicts only shading, and reflectance is considered to be element-wise division between the input and predicted shading. At a second stage, residual blocks are used to get final shading and reflectance from the first stage predictions. The novelty of this work is to introduce more physical constraint on loss term and merge data, gradient and adversarial losses together. Based on a different hypothesis that relies on the use of multiple images of the same scene, Ma et al.5 used a Siamese network (introduced by 6) to learn similar reflectance from multi illuminant images. The network is capable of learning to predict shading and reflectance from image pairs using partial supervision i.e. without need of reflectance and shading ground-truth data. Weak supervision shows significant improvement in their framework. But, at learning time, the network needs image pairs under different lighting which are not always available. On the other hand, Li and Snavely in 7 extended the previous work to train the network based on sequence of images from same scene with varying illumination. They collected a dataset of 145145145 indoor and 505050 outdoor scenes and trained a network, that present some bias towards indoor scenes. It shows good performance, but with some blurring effects in the shading predictions, since the network learnt the invariance. All images in the sequence keep the reflectance constant, but a varying shading. This assumption was already posed in an early work on intrinsic decomposition by Weiss 2. In spite of unsupervised approaches, there is a common agreement in the fact that CNN-based approaches enhance the need for bigger image datasets. With this aim, Shi et al.  introduced a large synthetic dataset and an encoder-decoder deep architecture to estimte shading, reflectance and specularity. This is the first deep learning architecture for non lambertian or non diffuse reflectance surfaces, where a specular component is added to the product model. This architecture presents one encoder and three decoders with shared connections. A similar approach was followed by Baslamisli et al.  that introduced another synthetic dataset and two different deep learning architectures named as IntrinsicNet and RetiNet to get shading and reflectance from a single image. IntrinsicNet is an encoder-decoder end-to-end network to predict shading and reflectance from a uniform architecture. The RetiNet has a more complicated scheme to incorporate traditional retinex theory  concepts in deep learning approaches. RetiNet is a two-stage network, where the first stage learns shading and reflectance gradients, and the second stage combines both input image and first stage gradient information to get final shading and reflectance. Their claim is the use of more physical constrains on deep networks for a specific application. Similarly, Li and Noah  introduced a new synthetic dataset of 20,0002000020,000 images called CGintrinsics and use a U-Net based network with two decoders to predict shading and reflectance from single image. This network generalize well on complex scenes, but not providing good results on MIT dataset. More recently, Fan et al. 8 introduced a multi-stage deep learning architecture. They use a pretrained Direct Intrinsics network [ref]26 to get rough shading and reflectance at a first stage. In parallel they use another network to get a guidance map from the input image edges. In a later stage they use both the first stage Intrinsic decomposition and the guidance map to build a smooth final reflectance. Shading is an element-wise division between input image and final stage smooth reflectance. This network model is complex and is dataset-dependent. All the above mentioned methods have been evaluated and some of them also trained on different available image datasets. In the next section we review existing datasets and we analyse and compare all of them, and we present our approach to synthesize a diverse datasets to tackle the intrinsic decomposition of light components."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Recovering intrinsic scene characteristics",
+      "abstract": "",
+      "year": "1978",
+      "venue": "Comput. Vis. Syst",
+      "authors": "H. Barrow and J. Tenenbaum"
+    },
+    {
+      "index": 1,
+      "title": "Ground-truth dataset and baseline evaluations for intrinsic image algorithms",
+      "abstract": "",
+      "year": "2009",
+      "venue": "International Conference on Computer Vision",
+      "authors": "R. Grosse, M. K. Johnson, E. H. Adelson, and W. T. Freeman"
+    },
+    {
+      "index": 2,
+      "title": "Intrinsic images in the wild",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM Trans. on Graphics (SIGGRAPH)",
+      "authors": "S. Bell, K. Bala, and N. Snavely"
+    },
+    {
+      "index": 3,
+      "title": "A naturalistic open source movie for optical flow evaluation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "European Conf. on Computer Vision (ECCV)",
+      "authors": "D. J. Butler, J. Wulff, G. B. Stanley, and M. J. Black"
+    },
+    {
+      "index": 4,
+      "title": "Learning non-lambertian object intrinsics across shapenet categories",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "J. Shi, Y. Dong, H. Su, and S. X. Yu"
+    },
+    {
+      "index": 5,
+      "title": "CNN based Learning using Reflection and Retinex Models for Intrinsic Image Decomposition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Computer Vision and Pattern Recognition",
+      "authors": "A. S. Baslamisli, H. Le, and T. Gevers",
+      "orig_title": "CNN based learning using reflection and retinex models for intrinsic image decomposition",
+      "paper_id": "1712.01056v2"
+    },
+    {
+      "index": 6,
+      "title": "Joint Learning of Intrinsic Images and Semantic Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision",
+      "authors": "A. S. Baslamisli, T. T. Groenestege, P. Das, H. A. Le, S. Karaoglu, and T. Gevers",
+      "orig_title": "Joint learning of intrinsic images and semantic segmentation",
+      "paper_id": "1807.11857v1"
+    },
+    {
+      "index": 7,
+      "title": "Cgintrinsics: Better intrinsic image decomposition through physically-based rendering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Z. Li and N. Snavely"
+    },
+    {
+      "index": 8,
+      "title": "ShapeNet: An Information-Rich 3D Model Repository",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "A. X. Chang, T. A. Funkhouser, L. J. Guibas, P. Hanrahan, Q. Huang, Z. Li, S. Savarese, M. Savva, S. Song, H. Su, J. Xiao, L. Yi, and F. Yu",
+      "orig_title": "Shapenet: An information-rich 3d model repository",
+      "paper_id": "1512.03012v1"
+    },
+    {
+      "index": 9,
+      "title": "Lightness and retinex theory",
+      "abstract": "",
+      "year": "1971",
+      "venue": "Journal of the Optical Society of America",
+      "authors": "E. H. Land and J. McCann"
+    },
+    {
+      "index": 10,
+      "title": "Determining lightness from an image",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Computer graphics and image processing",
+      "authors": "B. K. Horn"
+    },
+    {
+      "index": 11,
+      "title": "Deriving intrinsic images from image sequences",
+      "abstract": "",
+      "year": "2001",
+      "venue": "International Conference on Computer Vision",
+      "authors": "Y. Weiss"
+    },
+    {
+      "index": 12,
+      "title": "Recovering intrinsic images from a single image",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "M. F. Tappen, W. T. Freeman, and E. H. Adelson"
+    },
+    {
+      "index": 13,
+      "title": "Estimating intrinsic component images using non-linear regression",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "M. F. Tappen, E. H. Adelson, and W. T. Freeman"
+    },
+    {
+      "index": 14,
+      "title": "Recovering shading from color images",
+      "abstract": "",
+      "year": "1992",
+      "venue": "European Conference on Computer Vision",
+      "authors": "B. Funt, M. Drew, and M. Brockington"
+    },
+    {
+      "index": 15,
+      "title": "Recovering intrinsic images with a global sparsity prior on reflectance",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Neural Information Processing Systems",
+      "authors": "P. V. Gehler, C. Rother, M. Kiefel, L. Zhang, and B. Schölkopf"
+    },
+    {
+      "index": 16,
+      "title": "Intrinsic image decomposition using a sparse representation of reflectance",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "L. Shen, C. Yeo, and B.-S. Hua"
+    },
+    {
+      "index": 17,
+      "title": "Shape, Illumination, and Reflectance from Shading",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "J. T. Barron and J. Malik",
+      "orig_title": "Shape, illumination, and reflectance from shading",
+      "paper_id": "2010.03592v1"
+    },
+    {
+      "index": 18,
+      "title": "Names and shades of color for intrinsic image estimation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "M. Serra, O. Penacchio, R. Benavente, and M. Vanrell"
+    },
+    {
+      "index": 19,
+      "title": "Intrinsic scene properties from a single rgb-d image",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "J. T. Barron and J. Malik"
+    },
+    {
+      "index": 20,
+      "title": "Estimation of intrinsic image sequences from image depth video",
+      "abstract": "",
+      "year": "2012",
+      "venue": "European Conference on Computer Vision",
+      "authors": "K. J. Lee, Q. Zhao, X. Tong, M. Gong, S. Izadi, S. U. Lee, P. Tan, and S. Lin"
+    },
+    {
+      "index": 21,
+      "title": "A simple model for intrinsic image decomposition with depth cues",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Computer Vision (ICCV)",
+      "authors": "Q. Chen and V. Koltun"
+    },
+    {
+      "index": 22,
+      "title": "Intrinsic image decomposition using structure-texture separation and surface normals",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computer Vision – ECCV",
+      "authors": "J. Jeon, S. Cho, X. Tong, and S. Lee"
+    },
+    {
+      "index": 23,
+      "title": "Estimating intrinsic images from image sequences with biased illumination",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Computer Vision - ECCV",
+      "authors": "Y. Matsushita, S. Lin, S. B. Kang, and H.-Y. Shum"
+    },
+    {
+      "index": 24,
+      "title": "Intrinsic decomposition of image sequences from local temporal variations",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Computer Vision (ICCV)",
+      "authors": "P. Laffont and J. Bazin"
+    },
+    {
+      "index": 25,
+      "title": "Direct Intrinsics: Learning Albedo-Shading Decomposition by Convolutional Regression",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Computer Vision (ICCV)",
+      "authors": "T. Narihira, M. Maire, and S. X. Yu",
+      "orig_title": "Direct intrinsics: Learning albedo-shading decomposition by convolutional regression",
+      "paper_id": "1512.02311v1"
+    },
+    {
+      "index": 26,
+      "title": "Depth Map Prediction from a Single Image using a Multi-Scale Deep Network",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NIPS",
+      "authors": "D. Eigen, C. Puhrsch, and R. Fergus",
+      "orig_title": "Depth map prediction from a single image using a multi-scale deep network",
+      "paper_id": "1406.2283v1"
+    },
+    {
+      "index": 27,
+      "title": "Learning Data-driven Reflectance Priors for Intrinsic Image Decomposition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Computer Vision (ICCV)",
+      "authors": "T. Zhou, P. Krähenbühl, and A. A. Efros",
+      "orig_title": "Learning data-driven reflectance priors for intrinsic image decomposition",
+      "paper_id": "1510.02413v1"
+    },
+    {
+      "index": 28,
+      "title": "Scene intrinsics and depth from a single image",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Computer Vision (ICCV) Workshops",
+      "authors": "E. Shelhamer, J. T. Barron, and T. Darrell"
+    },
+    {
+      "index": 29,
+      "title": "Deep convolutional neural fields for depth estimation from a single image",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "F. Liu, C. Shen, and G. Lin"
+    },
+    {
+      "index": 30,
+      "title": "Unified Depth Prediction and Intrinsic Image Decomposition from a Single Image via Joint Convolutional Neural Fields",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "S. Kim, K. Park, K. Sohn, and S. Lin",
+      "orig_title": "Unified depth prediction and intrinsic image decomposition from a single image via joint convolutional neural fields",
+      "paper_id": "1603.06359v1"
+    },
+    {
+      "index": 31,
+      "title": "Reflectance adaptive filtering improves intrinsic image estimation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "T. Nestmeyer and P. V. Gehler"
+    },
+    {
+      "index": 32,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NIPS",
+      "authors": "I. J. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. C. Courville, and Y. Bengio"
+    },
+    {
+      "index": 33,
+      "title": "DARN: a Deep Adversarial Residual Network for Intrinsic Image Decomposition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Winter Conference on Applications of Computer Vision (WACV)",
+      "authors": "L. Lettry, K. Vanhoey, and L. V. Gool",
+      "orig_title": "Darn: A deep adversarial residual network for intrinsic image decomposition",
+      "paper_id": "1612.07899v2"
+    },
+    {
+      "index": 34,
+      "title": "Single image intrinsic decomposition without a single intrinsic image",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "W.-C. Ma, H. Chu, B. Zhou, R. Urtasun, and A. Torralba"
+    },
+    {
+      "index": 35,
+      "title": "Signature verification using a siamese time delay neural network",
+      "abstract": "",
+      "year": "1993",
+      "venue": "IJPRAI",
+      "authors": "J. Bromley, I. Guyon, Y. LeCun, E. Säckinger, and R. Shah"
+    },
+    {
+      "index": 36,
+      "title": "Learning Intrinsic Image Decomposition from Watching the World",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Z. Li and N. Snavely",
+      "orig_title": "Learning intrinsic image decomposition from watching the world",
+      "paper_id": "1804.00582v1"
+    },
+    {
+      "index": 37,
+      "title": "Revisiting Deep Intrinsic Image Decompositions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Q. Fan, J. Yang, G. Hua, B. Chen, and D. P. Wipf",
+      "orig_title": "Revisiting deep intrinsic image decompositions",
+      "paper_id": "1701.02965v8"
+    },
+    {
+      "index": 38,
+      "title": "Multi-view multi-illuminant intrinsic dataset",
+      "abstract": "",
+      "year": "2016",
+      "venue": "BMVC",
+      "authors": "S. Beigpour, M. L. Ha, S. Kunz, A. Kolb, and V. Blanz"
+    },
+    {
+      "index": 39,
+      "title": "Semantic scene completion from a single depth image",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "S. Song, F. Yu, A. Zeng, A. X. Chang, M. Savva, and T. Funkhouser"
+    },
+    {
+      "index": 40,
+      "title": "InteriorNet: Mega-scale Multi-sensor =–Photo-realistic Indoor Scenes Dataset",
+      "abstract": "",
+      "year": "2018",
+      "venue": "British Machine Vision Conference (BMVC)",
+      "authors": "W. Li, S. Saeedi, J. McCormac, R. Clark, D. Tzoumanikas, Q. Ye, Y. Huang, R. Tang, and S. Leutenegger",
+      "orig_title": "Interiornet: Mega-scale multi-sensor photo-realistic indoor scenes dataset",
+      "paper_id": "1809.00716v1"
+    },
+    {
+      "index": 41,
+      "title": "Color-based data augmentation for reflectance estimation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IS&T Color and Imaging Conference",
+      "authors": "H. Sial, S. Sancho-Asensio, R. Baldrich, R. Benavente, and M. Vanrell"
+    },
+    {
+      "index": 42,
+      "title": "Corel datasets",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 43,
+      "title": "Rethinking the inception architecture for computer vision",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "C. Szegedy, V. Vanhoucke, S. Ioffe, J. Shlens, and Z. Wojna"
+    },
+    {
+      "index": 44,
+      "title": "Keras",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "F. Chollet"
+    },
+    {
+      "index": 45,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 46,
+      "title": "Adam: A method for stochastic optimization.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CoRR",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 47,
+      "title": "Intrinsic images decomposition using a local and global sparse representation of reflectance",
+      "abstract": "",
+      "year": "2011",
+      "venue": "CVPR",
+      "authors": "L. Shen and C. Yeo"
+    },
+    {
+      "index": 48,
+      "title": "Intrinsic images by clustering",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Comput. Graph. Forum",
+      "authors": "E. Garces, A. Munoz, J. Lopez-Moreno, and D. Gutierrez"
+    },
+    {
+      "index": 49,
+      "title": "A closed-form solution to retinex with nonlocal texture constraints",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "Q. Zhao, P. Tan, Q. Dai, L. Shen, E. Wu, and S. Lin"
+    },
+    {
+      "index": 50,
+      "title": "An l1 image transform for edge-preserving smoothing and scene-level intrinsic decomposition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM Transactions on Graphics",
+      "authors": "S. Bi, X. Han, and Y. Yu"
+    }
+  ]
+}

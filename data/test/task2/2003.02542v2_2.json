@@ -1,0 +1,407 @@
+{
+  "paper_id": "2003.02542v2",
+  "title": "Efficient and Effective Similar Subtrajectory Search with Deep Reinforcement Learning",
+  "sections": {
+    "introduction": "Trajectory data, which corresponds to a type of data for capturing the traces of moving objects, is ubiquitous. It has been used for various types of analysis such as clustering  6  and similarity search     8 . The majority of existing studies take a trajectory as a whole for analysis     8 . Motivated by the phenomenon that two trajectories could be dissimilar to each other if each is considered a whole but similar if only some portion of each is considered, there have been a few studies, which take a portion of a trajectory as a basic entity for analysis  6  [ref]34 [ref]35. Some examples include subtrajectory clustering  6  and subtrajectory join [ref]34 [ref]35. For example, the subtrajectory clustering method in 6 first partitions raw trajectories into different subtrajectories using some principle and then groups those subtrajectories that are similar to one another into clusters. In this paper, we study a query with its goal to search for a portion of a trajectory from a database storing many trajectories called data trajectories, which is the most similar to a given trajectory called query trajectory. In this query, a portion of a trajectory, called subtrajectory, is considered as a basic entity and a query trajectory is taken as a whole for analysis.\nTherefore, it captures trajectory similarity in a finer-grained way than conventional similar trajectory search.\nFor instance, consider a data trajectory and a query trajectory.\nWhen considered as a whole, the data trajectory is not similar to the query trajectory based on some trajectory similarity measurement,\nbut some portion of it is very similar to the query trajectory.\nWith the conventional similar trajectory search query,\nthis data trajectory would be ruled out,\nthough a portion of it is very similar to the query trajectory, which is interesting. Moreover, in quite a few real-life applications, subtrajectories are naturally considered as basic units for analysis,\ne.g., subtrajectory search , subtrajectory join [ref]34, subtrajectory clustering , etc.\nOne application is the subtrajectory search query on sports play data.\nIn sports such as soccer and basketball, a common practice nowadays is to track the movements of players and/or the ball using some special-purpose camera and/or GPS devices .\nThe resulting trajectory data is used to capture the semantics of the plays and for different types of data analyses.\nOne typical task on such sports play data is to search for a portion/segment of play from a database of plays, with its trajectories of players and/or its trajectory of the ball similar to those and/or that of a given query play . This task is essentially one of searching for similar subtrajectories.\nAnother potential application is detour route detection.\nIt first collect those routes that have been reported by passengers to be detour routes and then searches for those subtrajectories of taxis’ routes, which are similar to a detour route.\nThe found subtrajectories are probably detour routes as well.\n A key problem that is involved in answering the query mentioned above is to find a subtrajectory of a data trajectory, which is the most similar to a given query trajectory. We call this problem the similar subtrajectory search (SimSub) problem.\nWhile there are many existing studies on the similar trajectory search problem with each trajectory considered a whole, there are very few studies on the SimSub problem.\nLet T𝑇T be a data trajectory involving n𝑛n points and Tqsubscript𝑇𝑞T_{q} be a query trajectory involving m𝑚m points. We design an exact algorithm, which enumerates all possible subtrajectories of T𝑇T, computes the similarity between each subtrajectory and the query trajectory, and returns the one with the greatest similarity.\nWe further adopt an incremental strategy for computing the similarities that are involved in the exact algorithm, which helps to improve the time complexity by O​(n)𝑂𝑛O(n).\nWe also follow some existing studies on subsequence matching 5  and design an algorithm, which considers only those subtrajectories with their sizes similar to that of the query trajectory and controlled by a user parameter. This would provide a controllable trade-off between efficiency and effectiveness. To push the efficiency further up, we propose several algorithms, which share the idea of splitting a data trajectory into some subtrajectories to be candidate solutions to the problem and differ in using different methods for splitting the data trajectory. Specifically, the process is to scan the points of a data trajectory one by one sequentially and for each one, it decides whether to split the data trajectory at the point. Some of them use pre-defined heuristics, e.g., a greedy one. Others model the process as a markov decision process (MDP)  and use deep reinforcement learning to learn an optimal policy for the MDP, which is then used for splitting the data trajectory.\nThese splitting-based algorithms have time complexities much lower than the exact algorithm in general, e.g., for measurements such as t2vec, each splitting-based algorithm runs in O​(n)𝑂𝑛O(n) time while the exact algorithm runs in O​(n​m)𝑂𝑛𝑚O(nm) time. The major contributions of this paper are as follows. We propose the SimSub problem, and this to the best of our knowledge, corresponds to the first systematic study on searching subtrajectories that are similar to a query trajectory.\nThe SimSub problem relies on a trajectory similarity measurement, and in this paper, we assume an abstract one, which could be instantiated with any existing measurement. We develop a suite of algorithms for the SimSub problem: (1) one exact algorithm, (2) one approximate algorithm, which provides a controllable trade-off between efficiency and effectiveness, and (3) several splitting-based algorithms including both heuristics-based ones and deep reinforcement learning based ones. These algorithms should cover a wide spectrum of application scenarios in terms of efficiency and effectiveness requirements. Third, we conducted extensive experiments, which verified that splitting-based algorithms in general have good efficiency and among them, the algorithms based on deep reinforcement learning achieve the best effectiveness and efficiency. Organization. We review the related work in Section 2 and provide the problem definition and\nsome preliminaries in Section 3.\nSection 4 presents all non-learning based algorithms and\nSection 5 presents the deep reinforcement learning based algorithms.\nWe report our experimental results in Section 6 and conclude this paper and discuss some future work in Section 7."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Subtrajectory clustering: Models and algorithms",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM SIGMOD-SIGACT-SIGAI Symposium on Principles of Database Systems",
+      "authors": "P. K. Agarwal, K. Fox, K. Munagala, A. Nath, J. Pan, and E. Taylor"
+    },
+    {
+      "index": 1,
+      "title": "Computing the fréchet distance between two polygonal curves",
+      "abstract": "",
+      "year": "1995",
+      "venue": "International Journal of Computational Geometry & Applications",
+      "authors": "H. Alt and M. Godau"
+    },
+    {
+      "index": 2,
+      "title": "Approximate embedding-based subsequence matching of time series",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ACM SIGMOD international conference on Management of data",
+      "authors": "V. Athitsos, P. Papapetrou, M. Potamias, G. Kollios, and D. Gunopulos"
+    },
+    {
+      "index": 3,
+      "title": "R-max-a general polynomial time algorithm for near-optimal reinforcement learning",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "R. I. Brafman and M. Tennenholtz"
+    },
+    {
+      "index": 4,
+      "title": "Detecting commuting patterns by clustering subtrajectories",
+      "abstract": "",
+      "year": "2011",
+      "venue": "International Journal of Computational Geometry & Applications",
+      "authors": "K. Buchin, M. Buchin, J. Gudmundsson, M. Löffler, and J. Luo"
+    },
+    {
+      "index": 5,
+      "title": "On the marriage of lp-norms and edit distance",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Thirtieth international conference on Very large data bases-Volume 30",
+      "authors": "L. Chen and R. Ng"
+    },
+    {
+      "index": 6,
+      "title": "Robust and fast similarity search for moving object trajectories",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ACM SIGMOD international conference on Management of data",
+      "authors": "L. Chen, M. T. Özsu, and V. Oria"
+    },
+    {
+      "index": 7,
+      "title": "Learning phrase representations using rnn encoder-decoder for statistical machine translation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1406.1078",
+      "authors": "K. Cho, B. Van Merriënboer, C. Gulcehre, D. Bahdanau, F. Bougares, H. Schwenk, and Y. Bengio"
+    },
+    {
+      "index": 8,
+      "title": "Fast subsequence matching in time-series databases, volume 23",
+      "abstract": "",
+      "year": "1994",
+      "venue": "ACM",
+      "authors": "C. Faloutsos, M. Ranganathan, and Y. Manolopoulos"
+    },
+    {
+      "index": 9,
+      "title": "Fast fuzzy subsequence matching algorithms on time-series",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Expert Systems with Applications",
+      "authors": "X. Gong, S. Fong, and Y.-W. Si"
+    },
+    {
+      "index": 10,
+      "title": "Ranked subsequence matching in time-series databases",
+      "abstract": "",
+      "year": "2007",
+      "venue": "33rd international conference on Very large data bases",
+      "authors": "W.-S. Han, J. Lee, Y.-S. Moon, and H. Jiang"
+    },
+    {
+      "index": 11,
+      "title": "Near-optimal reinforcement learning in polynomial time",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Machine learning",
+      "authors": "M. Kearns and S. Singh"
+    },
+    {
+      "index": 12,
+      "title": "Exact indexing of dynamic time warping",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Knowledge and information systems",
+      "authors": "E. Keogh and C. A. Ratanamahatana"
+    },
+    {
+      "index": 13,
+      "title": "An index-based approach for similarity search supporting time warping in large sequence databases",
+      "abstract": "",
+      "year": "2001",
+      "venue": "17th International Conference on Data Engineering",
+      "authors": "S.-W. Kim, S. Park, and W. W. Chu"
+    },
+    {
+      "index": 14,
+      "title": "Efficient top-k algorithms for approximate substring matching",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM SIGMOD International Conference on Management of Data",
+      "authors": "Y. Kim and K. Shim"
+    },
+    {
+      "index": 15,
+      "title": "Trajectory clustering: a partition-and-group framework",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM SIGMOD international conference on Management of data",
+      "authors": "J.-G. Lee, J. Han, and K.-Y. Whang"
+    },
+    {
+      "index": 16,
+      "title": "Qtune: A query-aware database tuning system with deep reinforcement learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proceedings of the VLDB Endowment",
+      "authors": "G. Li, X. Zhou, S. Li, and B. Gao"
+    },
+    {
+      "index": 17,
+      "title": "Deep representation learning for trajectory similarity computation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE 34th International Conference on Data Engineering (ICDE)",
+      "authors": "X. Li, K. Zhao, G. Cong, C. S. Jensen, and W. Wei"
+    },
+    {
+      "index": 18,
+      "title": "Direction-preserving trajectory simplification",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Proceedings of the VLDB Endowment",
+      "authors": "C. Long, R. C.-W. Wong, and H. Jagadish"
+    },
+    {
+      "index": 19,
+      "title": "Ksq: Top-k similarity query on uncertain trajectories",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "C. Ma, H. Lu, L. Shou, and G. Chen"
+    },
+    {
+      "index": 20,
+      "title": "Playing atari with deep reinforcement learning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.5602",
+      "authors": "V. Mnih, K. Kavukcuoglu, D. Silver, A. Graves, I. Antonoglou, D. Wierstra, and M. Riedmiller"
+    },
+    {
+      "index": 21,
+      "title": "Human-level control through deep reinforcement learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature",
+      "authors": "V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G. Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski, et al."
+    },
+    {
+      "index": 22,
+      "title": "Duality-based subsequence matching in time-series databases",
+      "abstract": "",
+      "year": "2001",
+      "venue": "17th International Conference on Data Engineering",
+      "authors": "Y.-S. Moon, K.-Y. Whang, and W.-K. Loh"
+    },
+    {
+      "index": 23,
+      "title": "Extracting optimal performance from dynamic time warping",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+      "authors": "A. Mueen and E. Keogh"
+    },
+    {
+      "index": 24,
+      "title": "Efficient searches for similar subsequences of different lengths in sequence databases",
+      "abstract": "",
+      "year": "2000",
+      "venue": "16th International Conference on Data Engineering (Cat. No. 00CB37073)",
+      "authors": "S. Park, W. W. Chu, J. Yoon, and C. Hsu"
+    },
+    {
+      "index": 25,
+      "title": "Markov Decision Processes.: Discrete Stochastic Dynamic Programming",
+      "abstract": "",
+      "year": "2014",
+      "venue": "John Wiley & Sons",
+      "authors": "M. L. Puterman"
+    },
+    {
+      "index": 26,
+      "title": "Searching and mining trillions of time series subsequences under dynamic time warping",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ACM SIGKDD international conference on Knowledge discovery and data mining",
+      "authors": "T. Rakthanmanon, B. Campana, A. Mueen, G. Batista, B. Westover, Q. Zhu, J. Zakaria, and E. Keogh"
+    },
+    {
+      "index": 27,
+      "title": "Addressing big data time series: Mining trillions of time series subsequences under dynamic time warping",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM Transactions on Knowledge Discovery from Data (TKDD)",
+      "authors": "T. Rakthanmanon, B. Campana, A. Mueen, G. Batista, B. Westover, Q. Zhu, J. Zakaria, and E. Keogh"
+    },
+    {
+      "index": 28,
+      "title": "Indexing and matching trajectories under inconsistent sampling rates",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE 31st International Conference on Data Engineering",
+      "authors": "S. Ranu, P. Deepak, A. D. Telang, P. Deshpande, and S. Raghavan"
+    },
+    {
+      "index": 29,
+      "title": "Learning representations by back-propagating errors",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Cognitive modeling",
+      "authors": "D. E. Rumelhart, G. E. Hinton, R. J. Williams, et al."
+    },
+    {
+      "index": 30,
+      "title": "Stream monitoring under the time warping distance",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE 23rd International Conference on Data Engineering",
+      "authors": "Y. Sakurai, C. Faloutsos, and M. Yamamuro"
+    },
+    {
+      "index": 31,
+      "title": "Chalkboarding: A new spatiotemporal query paradigm for sports play retrieval",
+      "abstract": "",
+      "year": "2016",
+      "venue": "21st International Conference on Intelligent User Interfaces",
+      "authors": "L. Sha, P. Lucey, Y. Yue, P. Carr, C. Rohlf, and I. Matthews"
+    },
+    {
+      "index": 32,
+      "title": "Reinforcement learning: An introduction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "MIT press",
+      "authors": "R. S. Sutton and A. G. Barto"
+    },
+    {
+      "index": 33,
+      "title": "Distributed Subtrajectory Join on Massive Datasets",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1903.07748",
+      "authors": "P. Tampakis, C. Doulkeridis, N. Pelekis, and Y. Theodoridis",
+      "orig_title": "Distributed subtrajectory join on massive datasets",
+      "paper_id": "1903.07748v1"
+    },
+    {
+      "index": 34,
+      "title": "Scalable Distributed Subtrajectory Clustering",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.06956",
+      "authors": "P. Tampakis, N. Pelekis, C. Doulkeridis, and Y. Theodoridis",
+      "orig_title": "Scalable distributed subtrajectory clustering",
+      "paper_id": "1906.06956v2"
+    },
+    {
+      "index": 35,
+      "title": "SkinnerDB: Regret-Bounded Query Evaluation via Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Proceedings of the VLDB Endowment",
+      "authors": "I. Trummer, S. Moseley, D. Maram, S. Jo, and J. Antonakakis",
+      "orig_title": "Skinnerdb: regret-bounded query evaluation via reinforcement learning",
+      "paper_id": "1901.05152v1"
+    },
+    {
+      "index": 36,
+      "title": "Discovering similar multidimensional trajectories",
+      "abstract": "",
+      "year": "2002",
+      "venue": "18th international conference on data engineering",
+      "authors": "M. Vlachos, G. Kollios, and D. Gunopulos"
+    },
+    {
+      "index": 37,
+      "title": "Fast large-scale trajectory clustering",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proceedings of the VLDB Endowment",
+      "authors": "S. Wang, Z. Bao, J. S. Culpepper, T. Sellis, and X. Qin"
+    },
+    {
+      "index": 38,
+      "title": "Torch: A search engine for trajectory data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "41st International ACM SIGIR Conference on Research & Development in Information Retrieval",
+      "authors": "S. Wang, Z. Bao, J. S. Culpepper, Z. Xie, Q. Liu, and X. Qin"
+    },
+    {
+      "index": 39,
+      "title": "Adaptive dynamic bipartite graph matching: A reinforcement learning approach",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE 35th International Conference on Data Engineering (ICDE)",
+      "authors": "Y. Wang, Y. Tong, C. Long, P. Xu, K. Xu, and W. Lv"
+    },
+    {
+      "index": 40,
+      "title": "Effective and efficient sports play retrieval with deep representation learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM SIGKDD International Conference on Knowledge Discovery & Data Mining",
+      "authors": "Z. Wang, C. Long, G. Cong, and C. Ju"
+    },
+    {
+      "index": 41,
+      "title": "Efficient and effective similar subtrajectory search with deep reinforcement learning (technical report)",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Z. Wang, C. Long, G. Cong, and Y. Liu"
+    },
+    {
+      "index": 42,
+      "title": "Q-learning",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Machine learning",
+      "authors": "C. J. Watkins and P. Dayan"
+    },
+    {
+      "index": 43,
+      "title": "Eds: a segment-based distance measure for sub-trajectory similarity search",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM SIGMOD International Conference on Management of Data",
+      "authors": "M. Xie"
+    },
+    {
+      "index": 44,
+      "title": "Computing trajectory similarity in linear time: A generic seed-guided neural metric learning approach",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE 35th International Conference on Data Engineering (ICDE)",
+      "authors": "D. Yao, G. Cong, C. Zhang, and J. Bi"
+    },
+    {
+      "index": 45,
+      "title": "Efficient retrieval of similar time sequences under time warping",
+      "abstract": "",
+      "year": "1998",
+      "venue": "14th International Conference on Data Engineering",
+      "authors": "B.-K. Yi, H. V. Jagadish, and C. Faloutsos"
+    },
+    {
+      "index": 46,
+      "title": "Distributed in-memory trajectory similarity search and join on road network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE 35th international conference on data engineering (ICDE)",
+      "authors": "H. Yuan and G. Li"
+    },
+    {
+      "index": 47,
+      "title": "An end-to-end automatic cloud database tuning system using deep reinforcement learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 International Conference on Management of Data",
+      "authors": "J. Zhang, Y. Liu, K. Zhou, G. Li, Z. Xiao, B. Cheng, J. Xing, Y. Wang, T. Cheng, L. Liu, et al."
+    },
+    {
+      "index": 48,
+      "title": "Bed-tree: an all-purpose index structure for string similarity search based on edit distance",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ACM SIGMOD International Conference on Management of data",
+      "authors": "Z. Zhang, M. Hadjieleftheriou, B. C. Ooi, and D. Srivastava"
+    }
+  ]
+}

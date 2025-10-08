@@ -1,0 +1,411 @@
+{
+  "paper_id": "2110.08613v1",
+  "title": "Enabling Large-Reach TLBs for High-Throughput Processors by Exploiting Memory Subregion Contiguity",
+  "sections": {
+    "vii related work": "To improve the efficiency of address translation, modern processors and OSes   support multiple page sizes. As large pages can increase the coverage of TLB (e.g., each 2MB page TLB entry can cover 512 base pages), TLB hit ratio can be improved significantly. To support multiple page sizes, processors usually maintain separate TLBs for each page size (e.g., Intel Sandybridge, Haswell and Skylake architectures maintain separate L1 TLBs for 4KB, 2MB and 1GB page sizes  [ref]44 ). To improve utilization of separate TLBs, Cox el al.  propose MIX TLBs that accommodates multiple page sizes in the same TLB. However, MIX TLBs relies on the contiguity of consecutive large pages. The unified TLB in this paper also supports multiple page sizes, and the difference is that our unified TLB mainly targets the internal contiguity of virtual large page frames. In some architectures, multiple page sizes can also be accommodated in the same fully-associative TLB. For example, in ARM architecture , each main TLB entry contains a page size field to indicate different page sizes, but the fully-associative TLB determines the number of TLB entries is limited. TLB coalescing is another important technique to reduce the overhead of address translation. TLB coalescing is mainly to increase the reach of TLB by coalescing translations of consecutive pages in a single TLB entry. Direct Segments  and RMM  can coalesce contiguous memory regions with unlimited sizes. However, Direct Segments only support one single contiguous region for each application. Although RMM can support multiple contiguous regions, it requires the OS to allocate a few contiguous regions as large as possible; besides it needs large and\npower-hungry Range TLBs, which may be prohibitive given\nthe area and power budgets of accelerators . Above methods require to modify the default memory allocation policy in OS (e.g., using eager paging) to allocate contiguous memory regions. Eager paging is not necessary in Hybrid TLB , but the TLB shootdowns can severely hurt performance. Other works (such as CoLT , Sub-block TLB  and Cluster TLB ) coalesce translations of multiple pages with none or less OS modifications, but they usually only coalesce very limited translations (e.g., 4-8). MESC can coalesce 64-512 translations in a single TLB entry. Mosaic  makes a trade-off between TLB reach and demand paging performance for discrete GPUs, but the internal contiguity of large page frames, which is exploited in MESC, is not considered. How to reduce TLB miss penalty is also a hot topic to improve the efficiency of address translation.\nShin et al.  discover that the order of servicing page table walk requests plays an important role in improving GPU performance for irregular applications. They propose a novel page table walk scheduling mechanism combining shortest-job-first (SJF) and bach policies and improve the performance of irregular applications significantly. Virtual caching      has been proposed for a long time for CPUs to reduce the latency and energy of address translation as data can be read directly from cache using virtual addresses. Yoon et al.  observe that many translation requests that miss in GPU TLBs can obtain corresponding data, which can be read using the translated physical addresses, in the GPU cache hierarchy. Thus, to avoid the unnecessary TLB lookups and page table walks, they apply virtual caching to GPUs. However, the problems of synonyms, multi-processing and cache coherence     are complex to implement."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Heterogeneous computing meets Near-Memory acceleration and High-Level synthesis in the Post-Moore era",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Micro",
+      "authors": "N. S. Kim, D. Chen, J. Xiong, and W. H. Wen-mei"
+    },
+    {
+      "index": 1,
+      "title": "It’s Time to Redefine Moore’s Law Again",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Computer",
+      "authors": "E. P. DeBenedictis"
+    },
+    {
+      "index": 2,
+      "title": "HSA Foundation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "http://www.hsafoundation.com",
+      "authors": "HSA"
+    },
+    {
+      "index": 3,
+      "title": "General Purpose Operating System Support for Multiple Page Sizes",
+      "abstract": "",
+      "year": "1998",
+      "venue": "USENIX Annual Technical Conference (USENIX ATC)",
+      "authors": "N. Ganapathy and C. Schimmel"
+    },
+    {
+      "index": 4,
+      "title": "Concurrent support of multiple page sizes on a skewed associative TLB",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE TOC",
+      "authors": "A. Seznec"
+    },
+    {
+      "index": 5,
+      "title": "Colt: Coalesced large-reach tlbs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Intl. Symp. on Microarchitecture (MICRO)",
+      "authors": "B. Pham, V. Vaidyanathan, A. Jaleel, and A. Bhattacharjee"
+    },
+    {
+      "index": 6,
+      "title": "Efficient virtual memory for big memory servers",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Intl. Symp. on Computer Architecture (ISCA)",
+      "authors": "A. Basu, J. Gandhi, J. Chang, M. D. Hill, and M. M. Swift"
+    },
+    {
+      "index": 7,
+      "title": "Increasing TLB reach by exploiting clustering in page translations",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Intl. Symp. on High Performance Computer Architecture (HPCA)",
+      "authors": "B. Pham, A. Bhattacharjee, Y. Eckert, and G. H. Loh"
+    },
+    {
+      "index": 8,
+      "title": "Redundant memory mappings for fast access to large memories",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Intl. Symp. on Computer Architecture (ISCA)",
+      "authors": "V. Karakostas, J. Gandhi, F. Ayar, A. Cristal, M. D. Hill, K. S. McKinley, M. Nemirovsky, M. M. Swift, and O. Ünsal"
+    },
+    {
+      "index": 9,
+      "title": "Efficient address translation for architectures with multiple page sizes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Intl. Symp. on Architectural Support for Programming Languages and Operating Systems (ASPLOS)",
+      "authors": "G. Cox and A. Bhattacharjee"
+    },
+    {
+      "index": 10,
+      "title": "Hybrid tlb coalescing: Improving tlb translation coverage under diverse fragmented memory allocations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Intl. Symp. on Computer Architecture (ISCA)",
+      "authors": "C. H. Park, T. Heo, J. Jeong, and J. Huh"
+    },
+    {
+      "index": 11,
+      "title": "Architectural support for address translation on GPUs: Designing memory management units for CPU/GPUs with unified address spaces",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Intl. Symp. on Architectural Support for Programming Languages and Operating Systems (ASPLOS)",
+      "authors": "B. Pichai, L. Hsu, and A. Bhattacharjee"
+    },
+    {
+      "index": 12,
+      "title": "Supporting x86-64 address translation for 100s of GPU lanes",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Intl. Symp. on High Performance Computer Architecture (HPCA)",
+      "authors": "J. Power, M. D. Hill, and D. A. Wood"
+    },
+    {
+      "index": 13,
+      "title": "Observations and opportunities in architecting shared virtual memory for heterogeneous systems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Intl. Symp. on Performance Analysis of Systems and Software (ISPASS)",
+      "authors": "J. Vesely, A. Basu, M. Oskin, G. H. Loh, and A. Bhattacharjee"
+    },
+    {
+      "index": 14,
+      "title": "Big data causing big (TLB) problems: taming random memory accesses on the GPU",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Intl. Work. on Data Management on New Hardware (DaMoN)",
+      "authors": "T. Karnagel, T. Ben-Nun, M. Werner, D. Habich, and W. Lehner"
+    },
+    {
+      "index": 15,
+      "title": "Filtering translation bandwidth with virtual caching",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Intl. Symp. on Architectural Support for Programming Languages and Operating Systems (ASPLOS)",
+      "authors": "H. Yoon, J. Lowe-Power, and G. S. Sohi"
+    },
+    {
+      "index": 16,
+      "title": "Mosaic: a GPU memory manager with application-transparent support for multiple page sizes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Intl. Symp. on Microarchitecture (MICRO)",
+      "authors": "R. Ausavarungnirun, J. Landgraf, V. Miller, S. Ghose, J. Gandhi, C. J. Rossbach, and O. Mutlu"
+    },
+    {
+      "index": 17,
+      "title": "Devirtualizing Memory in Heterogeneous Systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Intl. Symp. on Architectural Support for Programming Languages and Operating Systems (ASPLOS)",
+      "authors": "S. Haria, M. D. Hill, and M. M. Swift"
+    },
+    {
+      "index": 18,
+      "title": "Scheduling Page Table Walks for Irregular GPU Applications",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Intl. Symp. on Computer Architecture (ISCA)",
+      "authors": "S. Shin, G. Cox, M. Oskin, G. H. Loh, Y. Solihin, A. Bhattacharjee, and A. Basu"
+    },
+    {
+      "index": 19,
+      "title": "Transparent hugepage support",
+      "abstract": "",
+      "year": "2010",
+      "venue": "KVM forum",
+      "authors": "A. Arcangeli"
+    },
+    {
+      "index": 20,
+      "title": "Huge pages part 1 (Introduction)",
+      "abstract": "",
+      "year": "2010",
+      "venue": "https://lwn.net/Articles/374424/",
+      "authors": "M. Gorman"
+    },
+    {
+      "index": 21,
+      "title": "Coordinated and Efficient Huge Page Management with Ingens",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX Symp. on Operating Systems Design and Implementations (OSDI)",
+      "authors": "Y. Kwon, H. Yu, S. Peter, C. J. Rossbach, and E. Witchel"
+    },
+    {
+      "index": 22,
+      "title": "gem5-gpu: A heterogeneous cpu-gpu simulator",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Computer Architecture Letters",
+      "authors": "J. Power, J. Hestness, M. S. Orr, M. D. Hill, and D. A. Wood"
+    },
+    {
+      "index": 23,
+      "title": "Polybench: The polyhedral benchmark suite",
+      "abstract": "",
+      "year": "2012",
+      "venue": "http://www. cs. ucla. edu/pouchet/software/polybench",
+      "authors": "L.-N. Pouchet"
+    },
+    {
+      "index": 24,
+      "title": "Rodinia: A benchmark suite for heterogeneous computing",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Intl. Symp. on Workload Characterization (IISWC)",
+      "authors": "S. Che, M. Boyer, J. Meng, D. Tarjan, J. W. Sheaffer, S.-H. Lee, and K. Skadron"
+    },
+    {
+      "index": 25,
+      "title": "Pannotia: Understanding irregular GPGPU graph applications",
+      "abstract": "",
+      "year": "2013",
+      "venue": "International Symposium on Workload Characterization (IISWC)",
+      "authors": "S. Che, B. M. Beckmann, S. K. Reinhardt, and K. Skadron"
+    },
+    {
+      "index": 26,
+      "title": "Die-stacked DRAM caches for servers: hit ratio, latency, or bandwidth? have it all with footprint cache",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Intl. Symp. on Computer Architecture (ISCA)",
+      "authors": "D. Jevdjic, S. Volos, and B. Falsafi"
+    },
+    {
+      "index": 27,
+      "title": "Traffic management: a holistic approach to memory placement on NUMA systems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Intl. Symp. on Architectural Support for Programming Languages and Operating Systems (ASPLOS)",
+      "authors": "M. Dashti, A. Fedorova, J. Funston, F. Gaud, R. Lachaize, B. Lepers, V. Quema, and M. Roth"
+    },
+    {
+      "index": 28,
+      "title": "Thermostat: Application-transparent Page Management for Two-tiered Main Memory",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Intl. Symp. on Architectural Support for Programming Languages and Operating Systems (ASPLOS)",
+      "authors": "N. Agarwal and T. F. Wenisch"
+    },
+    {
+      "index": 29,
+      "title": "Banshee: Bandwidth-efficient DRAM caching via software/hardware cooperation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Intl. Symp. on Microarchitecture (MICRO)",
+      "authors": "X. Yu, C. J. Hughes, N. Satish, O. Mutlu, and S. Devadas"
+    },
+    {
+      "index": 30,
+      "title": "Towards high performance paged memory for GPUs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Intl. Symp. on High Performance Computer Architecture (HPCA)",
+      "authors": "T. Zheng, D. Nellans, A. Zulfiqar, M. Stephenson, and S. W. Keckler"
+    },
+    {
+      "index": 31,
+      "title": "Memory compaction",
+      "abstract": "",
+      "year": "2010",
+      "venue": "https://lwn.net/Articles/368869/",
+      "authors": "J. Corbet"
+    },
+    {
+      "index": 32,
+      "title": "Proactive compaction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "https://lwn.net/Articles/717656/",
+      "authors": "——"
+    },
+    {
+      "index": 33,
+      "title": "Making Huge Pages Actually Useful",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Intl. Symp. on Architectural Support for Programming Languages and Operating Systems (ASPLOS)",
+      "authors": "A. Panwar, A. Prasad, and K. Gopinath"
+    },
+    {
+      "index": 34,
+      "title": "Disabling Transparent Hugepages in Hadoop cluster",
+      "abstract": "",
+      "year": "2018",
+      "venue": "https://tinyurl.com/y7f5xy8n",
+      "authors": "Cloudera"
+    },
+    {
+      "index": 35,
+      "title": "Disabling Transparent Hugepages for oracle database",
+      "abstract": "",
+      "year": "2017",
+      "venue": "https://tinyurl.com/y875csfg",
+      "authors": "Oracle"
+    },
+    {
+      "index": 36,
+      "title": "Disabling Transparent Hugepages for MongoDB database",
+      "abstract": "",
+      "year": "2012",
+      "venue": "https://tinyurl.com/zy9xyou",
+      "authors": "MongoDB"
+    },
+    {
+      "index": 37,
+      "title": "Prediction-based superpage-friendly TLB designs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Intl. Symp. on High Performance Computer Architecture (HPCA)",
+      "authors": "M.-M. Papadopoulou, X. Tong, A. Seznec, and A. Moshovos"
+    },
+    {
+      "index": 38,
+      "title": "Surpassing the TLB performance of superpages with less operating system support",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": "M. Talluri and M. D. Hill"
+    },
+    {
+      "index": 39,
+      "title": "Optimizing NUCA organizations and wiring alternatives for large caches with CACTI 6.0",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Intl. Symp. on Microarchitecture (MICRO)",
+      "authors": "N. Muralimanohar, R. Balasubramonian, and N. Jouppi"
+    },
+    {
+      "index": 40,
+      "title": "Energy-efficient address translation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Intl. Symp. on High Performance Computer Architecture (HPCA)",
+      "authors": "V. Karakostas, J. Gandhi, A. Cristal, M. D. Hill, K. S. McKinley, M. Nemirovsky, M. M. Swift, and O. S. Unsal"
+    },
+    {
+      "index": 41,
+      "title": "numactl v2. 0.11",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "C. Wickman, C. Lameter, and L. Schermerhorn"
+    },
+    {
+      "index": 42,
+      "title": "Intel Haswell",
+      "abstract": "",
+      "year": "2018",
+      "venue": "https://www.7-cpu.com/cpu/Haswell.html",
+      "authors": "Intel"
+    },
+    {
+      "index": 43,
+      "title": "Intel Skylake",
+      "abstract": "",
+      "year": "2018",
+      "venue": "https://www.7-cpu.com/cpu/Skylake.html",
+      "authors": "——"
+    },
+    {
+      "index": 44,
+      "title": "Main Text",
+      "abstract": "",
+      "year": "2018",
+      "venue": "https://tinyurl.com/yd76fq8g",
+      "authors": "ARM",
+      "orig_title": "Main TLB",
+      "paper_id": "2211.15456v1"
+    },
+    {
+      "index": 45,
+      "title": "An in-cache address translation mechanism",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Intl. Symp. on Computer Architecture (ISCA)",
+      "authors": "D. A. Wood, S. J. Eggers, G. Gibson, M. D. Hill, and J. M. Pendleton"
+    },
+    {
+      "index": 46,
+      "title": "Reducing memory reference energy with opportunistic virtual caching",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Intl. Symp. on Computer Architecture (ISCA)",
+      "authors": "A. Basu, M. D. Hill, and M. M. Swift"
+    },
+    {
+      "index": 47,
+      "title": "A new perspective for efficient virtual-cache coherence",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Intl. Symp. on Computer Architecture (ISCA)",
+      "authors": "S. Kaxiras and A. Ros"
+    },
+    {
+      "index": 48,
+      "title": "Efficient synonym filtering and scalable delayed translation for hybrid virtual caching",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Intl. Symp. on Computer Architecture (ISCA)",
+      "authors": "C. H. Park, T. Heo, and J. Huh"
+    },
+    {
+      "index": 49,
+      "title": "Revisiting virtual L1 caches: A practical design using dynamic synonym remapping",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Intl. Symp. on High Performance Computer Architecture (HPCA)",
+      "authors": "H. Yoon and G. S. Sohi"
+    }
+  ]
+}

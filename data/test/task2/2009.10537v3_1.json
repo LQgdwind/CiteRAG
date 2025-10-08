@@ -1,0 +1,507 @@
+{
+  "paper_id": "2009.10537v3",
+  "title": "EI-MTD: Moving Target Defense for Edge Intelligence against Adversarial Attacks",
+  "sections": {
+    "introduction": "Artificial intelligence (AI) based on deep learning has been successfully applied in various fields, ranging from facial recognition , natural language processing [ref]2, to computer vision . With the vigorous development of AI, people are increasingly relying on the convenient services provided by intelligent life, hoping to enjoy intelligent services anytime and anywhere. In the past few years, the advancement of edge computing has moved from theory to application and various applications have been developed to improve our daily lives. The maturity of deep learning techniques and edge computing systems , , and the increasing demand for intelligent life ,  promote the development and realization of edge intelligence (EI). The current EI is based on deep learning models, i.e., deep neural networks (DNNs) that are deployed to devices on edge of networks (such as an intelligent camera of monitoring systems) to realize real-time applications such as target recognition and anomaly detection. At present, the security of EI becomes a wide concerned problem. Most previous work focuses on data privacy of EI, however, it does not pay enough attention to adversarial attacks. The previous work shows that DNNs are extremely vulnerable to adversarial examples . In image classification scenarios, an adversarial example is an input image added by some well-designed tiny perturbations to fool a DNN that is referenced as a target model. A special property of adversarial examples is transferability, implying that adversarial examples that successfully fool one model can also be misclassified by other models with a high probability . Theoretically, with this transferability property, the adversary crafts adversarial examples on a local substitute model without knowing any information about the target model 0, which is one kind of black-box attacks. Practically, the adversary attempts to find a proper substitute model close to the target model by repeated queries 1, 2, which can finally obtain a higher attack success rate approximate to white-box attacks that the adversary fully knew the information on the target model 3. Due to the limited resources on edge nodes including edge devices and edge servers, model compression is considered as an effective way to reduce the model size for EI 4, 5. However, adversarial attacks make the situation more challenging since Madry et. al 6 observed that the robustness of DNNs is positively correlated to the model size. L. Wu et. al 3 revealed that if the target model has a smaller model size, an adversarial example is easier to achieve a higher transfer rate. Thus, compressed models on edge nodes become more vulnerable to adversarial examples. Besides, although many methods are proposed to defend against adversarial attacks 6, 7, 8, 9, they merely work well on a cloud data center with abundant GPUs, which is not applicable to edge nodes. Therefore, the limitation of resources aggravates the vulnerability of EI in the face of adversarial attacks. Based on the above statement, we summarized the challenges for EI to address in adversarial settings as follows: (1) how to prevent the adversary from finding a proper substitute model, (2) how to reduce the transferability of adversarial attacks without compromising accuracy, and (3) how to defend against adversarial examples for edge nodes with limited resources. For the first challenge, we change the setting from a static target model to a dynamic setting that randomly schedules a model for classification services. Since the adversary does not know the true model served for them, they cannot estimate which candidate substitute model approximates the target model. For the second challenge, we attempt to increase the diversity of different models deployed on edge nodes. We use the gradient of a loss function as a basis of the difference measure since the current attacks mainly use gradients to craft adversarial examples. For the third challenge, we utilize transfer learning to distill the knowledge from a robust teacher model with a large size on the cloud data center to student models with small size. The benefit of this approach is that the classification knowledge and robustness are transferred as well as the size of models is compressed.These aforementioned techniques are not independent but supplement each other. They are integrated into our proposed defense framework represented as EI-MTD (Edge Intelligence with Moving Target Defense). Although there are several MTDs proposed for adversarial attacks, they are not aimed at the defense of EI. Sailik et. al in  proposed an MTDeep to defend DNN models, while our approach is different from them in two aspects. First, MTDeep merely focuses on cloud data centers, which does not suitable for EI with limited resources. Second, for obtaining differential configurations, their member models include CNNs, MLPs, and HRNNs, while we use the same type of DNNs. The benefit of our method is that all member models can perfectly serve some specific tasks such as facial recognition. Furthermore, we use differential knowledge distillation to realize the diversity of member models is more efficient than MTDeep. Similar to Sailik, Roy et. al in  proposed MTD against adversarial attacks in a cloud computing scenario which is also not suitable for EI. In addition, their member models are heterogeneous, including SVMs, logistic regression and CNNs which cannot fully utilize the advanced deep learning techniques. Song et. al in  designed an fMTD for embedded deep visual sensing systems against adversarial examples. Since their fMTD is only limited to a single device, it cannot be well extended to EI with many nodes. Moreover, they “fork” member models by retraining the perturbed base model, which cannot effectively guarantee the diversity of member models to overcome transferability. The main innovations and contributions of our work can be summarized as follows: To the best of our knowledge, we are the first to propose a defense mechanism, namely EI-MTD for EI against adversarial attacks. We propose a dynamic scheduling policy by means of the Bayesian Stackelberg game to defend against black-box adversarial attacks. This method perfectly combines the inference architecture of EI, i.e., a deep learning model independently performs inference on an edge node, to dynamic execution. This dynamic scheduling mechanism is completely transparent to users and easy to be implemented without damaging accuracy. To prevent transferability, we propose differential knowledge distillation to increase the diversity of member models on edge nodes. Different from the Hinton’s knowledge distillation for a single model, we distillate K𝐾K student models simultaneously with a common loss function combined with a differential regularization term. In addition, this method overcomes the limitation of resources due to its effect on transferring robust knowledge and compressing models. We built an EI simulation platform with several GPU servers, PC, and Raspberry pi to evaluate our EI-MTD. A real image dataset ILSVRC2012  is used for our experiments. All the adversarial examples are generated with typical attack methods: FGSM , PGD 6,I-FGSM , and M-DI2-FGSM . Extensive experimental results show that EI-MTD can increase ∼∼\\thicksim43% accuracy against black-box adversarial attacks generated with the state-of-the-art M-DI2-FGSM. The rest of the paper is organized as follows. In Section 2, we introduce the preliminary of DNNs, adversarial examples, knowledge distillation, and the Bayesian Stackelberg game, etc. In Section 3, the assumptions are presented and the problems we need to address are defined. In Section 4, the key techniques including differential knowledge distillation and scheduling policy in EI-MTD are described in detail. In Section 5, extensive experimental results are discussed and some interesting conclusions are obtained. In Section 6, related work about adversarial attacks and countermeasures is presented. In Section 7, we make a conclusion and discuss some future work."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "DeepID3: Face Recognition with Very Deep Neural Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1502.00873",
+      "authors": "Yi Sun, Ding Liang, Xiaogang Wang, and Xiaoou Tang",
+      "orig_title": "DeepID3: Face Recognition with Very Deep Neural Networks",
+      "paper_id": "1502.00873v1"
+    },
+    {
+      "index": 1,
+      "title": "A unified architecture for natural language processing: Deep neural networks with multitask learning",
+      "abstract": "",
+      "year": "2008",
+      "venue": "25th international conference on Machine learning",
+      "authors": "Ronan Collobert, and Jason Weston"
+    },
+    {
+      "index": 2,
+      "title": "What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Alex Kendall, and Yarin Gal",
+      "orig_title": "What uncertainties do we need in bayesian deep learning for computer vision?",
+      "paper_id": "1703.04977v2"
+    },
+    {
+      "index": 3,
+      "title": "Collaborative Mobile Edge Computing in 5G Networks: New Paradigms, Scenarios, and Challenges",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Communications Magazine",
+      "authors": "Tuyen X. Tran, Abolfazl Hajisami, Parul Pandey, and Dario Pompili",
+      "orig_title": "Collaborative mobile edge computing in 5G networks: New paradigms, scenarios, and challenges",
+      "paper_id": "1612.03184v2"
+    },
+    {
+      "index": 4,
+      "title": "Mobile edge computing—A key technology towards 5G",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ETSI white paper",
+      "authors": "Yun Chao Hu, Milan Patel, Dario Sabella, Nurit Sprecher and Valerie Young"
+    },
+    {
+      "index": 5,
+      "title": "Smart city and the applications",
+      "abstract": "",
+      "year": "2011",
+      "venue": "2011 international conference on electronics, communications and control (ICECC)",
+      "authors": "Kehua Su, Jie Li, and Hongbo Fu"
+    },
+    {
+      "index": 6,
+      "title": "Smart city and IoT",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Future Generation Computer Systems",
+      "authors": "Tai-hoon Kim, Carlos Ramos, and Sabah Mohammed"
+    },
+    {
+      "index": 7,
+      "title": "Intriguing properties of neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.6199",
+      "authors": "Christian Szegedy, Wojciech Zaremba, Ilya Sutskever, Joan Bruna, Dumitru Erhan, Ian Goodfellow, and Rob Fergus"
+    },
+    {
+      "index": 8,
+      "title": "Transferability in Machine Learning: from Phenomena to Black-Box Attacks using Adversarial Samples",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1605.07277",
+      "authors": "Nicolas Papernot, Patrick McDaniel, and Ian Goodfellow",
+      "orig_title": "Transferability in machine learning: from phenomena to black-box attacks using adversarial samples",
+      "paper_id": "1605.07277v1"
+    },
+    {
+      "index": 9,
+      "title": "Practical Black-Box Attacks against Machine Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 ACM on Asia conference on computer and communications security",
+      "authors": "Nicolas Papernot, Patrick McDaniel, Ian Goodfellow, Somesh Jha, Z.Berkay Celik, and Ananthram Swami",
+      "orig_title": "Practical black-box attacks against machine learning",
+      "paper_id": "1602.02697v4"
+    },
+    {
+      "index": 10,
+      "title": "Decision-Based Adversarial Attacks: Reliable Attacks Against Black-Box Machine Learning Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1712.04248",
+      "authors": "Wieland Brendel, Jonas Rauber, and Matthias Bethge",
+      "orig_title": "Decision-based adversarial attacks: Reliable attacks against black-box machine learning models",
+      "paper_id": "1712.04248v2"
+    },
+    {
+      "index": 11,
+      "title": "Black-box Adversarial Attacks with Limited Queries and Information",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1804.08598",
+      "authors": "Andrew Ilyas, Logan Engstrom, Anish Athalye, and Jessy Lin",
+      "orig_title": "Black-box Adversarial Attacks with Limited Queries and Information",
+      "paper_id": "1804.08598v3"
+    },
+    {
+      "index": 12,
+      "title": "Understanding and Enhancing the Transferability of Adversarial Examples",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.09707",
+      "authors": "Lei Wu, Zhanxing Zhu, Cheng Tai, and Weinan E",
+      "orig_title": "Understanding and Enhancing the Transferability of Adversarial Examples",
+      "paper_id": "1802.09707v1"
+    },
+    {
+      "index": 13,
+      "title": "Squeeze-and-Excitation Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition(CVPR)",
+      "authors": "Jie Hu, Li Shen, and Gang Sun",
+      "orig_title": "Squeeze-and-excitation networks",
+      "paper_id": "1709.01507v4"
+    },
+    {
+      "index": 14,
+      "title": "Deep compression: Compressing deep neural networks with pruning, trained quantization and huffman coding",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1510.00149",
+      "authors": "Song Han, Huizi Mao, and William J. Dally"
+    },
+    {
+      "index": 15,
+      "title": "Towards Deep Learning Models Resistant to Adversarial Attacks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1706.06083",
+      "authors": "Aleksander Madry, Aleksandar Makelov, Ludwig Schmidt, Dimitris Tsipras, and Adrian Vladu",
+      "orig_title": "Towards deep learning models resistant to adversarial attacks",
+      "paper_id": "1706.06083v4"
+    },
+    {
+      "index": 16,
+      "title": "A Learning and Masking Approach to Secure Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Decision and Game Theory for Security",
+      "authors": "Linh Nguyen, Sky Wang, and Arunesh Sinha",
+      "orig_title": "A learning and masking approach to secure learning",
+      "paper_id": "1709.04447v4"
+    },
+    {
+      "index": 17,
+      "title": "Adversarial Training for Free!",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Ali Shafahi, Mahyar Najibi, Amin Ghiasi, Zheng Xu, John Dickerson, Christoph Studer, Larry S. Davis, Gavin Taylor, and Tom Goldstein"
+    },
+    {
+      "index": 18,
+      "title": "Fast is better than free: Revisiting adversarial training",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2001.03994",
+      "authors": "Eric Wong, Leslie Rice, and J. Zico Kolter",
+      "orig_title": "Fast is better than free: Revisiting adversarial training",
+      "paper_id": "2001.03994v1"
+    },
+    {
+      "index": 19,
+      "title": "Explaining and Harnessing Adversarial Examples",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6572",
+      "authors": "Ian J. Goodfellow, Jonathon Shlens, and Christian Szegedy",
+      "orig_title": "Explaining and harnessing adversarial examples",
+      "paper_id": "1412.6572v3"
+    },
+    {
+      "index": 20,
+      "title": "MTDeep: Boosting the Security of Deep Neural Nets Against Adversarial Attacks with Moving Target Defense",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Decision and Game Theory for Security",
+      "authors": "Sailik Sengupta, Tathagata Chakraborti, and Subbarao Kambhampati"
+    },
+    {
+      "index": 21,
+      "title": "A moving target defense against adversarial machine learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "4th ACM/IEEE Symposium on Edge Computing",
+      "authors": "Abhishek Roy, Anshuman Chhabra, Charles A. Kamhoua, and Prasant Mohapatra"
+    },
+    {
+      "index": 22,
+      "title": "Moving Target Defense for Embedded Deep Visual Sensing against Adversarial Examples",
+      "abstract": "",
+      "year": "2019",
+      "venue": "17th Conference on Embedded Networked Sensor Systems",
+      "authors": "Qun Song, Zhenyu Yan, and Rui Tan",
+      "orig_title": "Moving target defense for embedded deep visual sensing against adversarial examples",
+      "paper_id": "1905.13148v1"
+    },
+    {
+      "index": 23,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International journal of computer vision",
+      "authors": "Olga Russakovsky, Jia Deng, Hao Su, Jonathan Krause, Sanjeev Satheesh, Sean Ma, Zhiheng Huang, Andrej Karpathy, Aditya Khosla, Michael Bernstein, Alexander C. Berg, and Li Fei-Fei",
+      "orig_title": "Imagenet large scale visual recognition challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 24,
+      "title": "Adversarial examples in the physical world",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1607.02533",
+      "authors": "Alexey Kurakin, Ian Goodfellow, and Samy Bengio",
+      "orig_title": "Adversarial examples in the physical world",
+      "paper_id": "1607.02533v4"
+    },
+    {
+      "index": 25,
+      "title": "Improving Transferability of Adversarial Examples with Input Diversity",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Cihang Xie, Zhishuai Zhang, Yuyin Zhou, Song Bai, Jianyu Wang, Zhou Ren, and Alan L. Yuille",
+      "orig_title": "Improving transferability of adversarial examples with input diversity",
+      "paper_id": "1803.06978v4"
+    },
+    {
+      "index": 26,
+      "title": "Distilling the Knowledge in a Neural Network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1503.02531",
+      "authors": "Geoffrey Hinton, Oriol Vinyals, and Jeff Dean",
+      "orig_title": "Distilling the knowledge in a neural network",
+      "paper_id": "1503.02531v1"
+    },
+    {
+      "index": 27,
+      "title": "Playing games for security: An efficient exact algorithm for solving Bayesian Stackelberg games",
+      "abstract": "",
+      "year": "2008",
+      "venue": "International Joint Conference on Autonomous Agents & Multiagent Systems",
+      "authors": "Praveen Paruchuri, Jonathan P. Pearce, Janusz Marecki, Milind Tambe, and Sarit Kraus"
+    },
+    {
+      "index": 28,
+      "title": "Robustness to adversarial examples through an ensemble of specialists",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1702.06856",
+      "authors": "Mahdieh Abbasi, Christian Gagné"
+    },
+    {
+      "index": 29,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 30,
+      "title": "A generalized Nash solution for two-person bargaining games with incomplete information",
+      "abstract": "",
+      "year": "1972",
+      "venue": "Management science",
+      "authors": "John C. Harsanyi, Reinhard Selten"
+    },
+    {
+      "index": 31,
+      "title": "MobileNetV2: Inverted Residuals and Linear Bottlenecks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Mark Sandler, Andrew Howard, Menglong Zhu, Andrey Zhmoginov, and Liang-Chieh Chen",
+      "orig_title": "Mobilenetv2: Inverted residuals and linear bottlenecks",
+      "paper_id": "1801.04381v4"
+    },
+    {
+      "index": 32,
+      "title": "ShuffleNet V2: Practical Guidelines for Efficient CNN Architecture Design",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European conference on computer vision (ECCV)",
+      "authors": "Ningning Ma, Xiangyu Zhang, Hai-Tao Zheng, and Jian Sun",
+      "orig_title": "Shufflenet v2: Practical guidelines for efficient cnn architecture design",
+      "paper_id": "1807.11164v1"
+    },
+    {
+      "index": 33,
+      "title": "SqueezeNet: AlexNet-level accuracy with 50x fewer parameters and <0.5MB model size",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1602.07360",
+      "authors": "Forrest N. Iandola, Song Han, Matthew W. Moskewicz, Khalid Ashraf, William J. Dally, and Kurt Keutzer",
+      "orig_title": "SqueezeNet: AlexNet-level accuracy with 50x fewer parameters and¡ 0.5 MB model size",
+      "paper_id": "1602.07360v4"
+    },
+    {
+      "index": 34,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1556",
+      "authors": "Karen Simonyan, and Andrew Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 35,
+      "title": "The space of transferable adversarial examples",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1704.03453",
+      "authors": "Florian Tramèr, Nicolas Papernot, Ian Goodfellow, Dan Boneh, and Patrick McDaniel"
+    },
+    {
+      "index": 36,
+      "title": "Towards evaluating the robustness of neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE Symposium on Security and Privacy (SP)",
+      "authors": "Nicholas Carlini, and David Wagner"
+    },
+    {
+      "index": 37,
+      "title": "DEEPSEC: A Uniform Platform for Security Analysis of Deep Learning Models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 IEEE Symposium on Security and Privacy (SP)",
+      "authors": "Xiang Ling, Shouling Ji, Jiaxu Zou, Jiannan Wang, Chunming Wu, Bo Li and Ting Wang"
+    },
+    {
+      "index": 38,
+      "title": "Prior Convictions: Black-Box Adversarial Attacks with Bandits and Priors",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1807.07978",
+      "authors": "Andrew Ilyas, Logan Engstrom, and Aleksander Madry",
+      "orig_title": "Prior convictions: Black-box adversarial attacks with bandits and priors",
+      "paper_id": "1807.07978v3"
+    },
+    {
+      "index": 39,
+      "title": "Robust physical-world attacks on deep learning visual classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Kevin Eykholt, Ivan Evtimov, Earlence Fernandes, Bo Li, Amir Rahmati, Chaowei Xiao, Atul Prakash, Tadayoshi Kohno, and Dawn Song"
+    },
+    {
+      "index": 40,
+      "title": "Accessorize to a crime: Real and stealthy attacks on state-of-the-art face recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "Mahmood Sharif, Sruti Bhagavatula, Lujo Bauer, and Michael K. Reiter"
+    },
+    {
+      "index": 41,
+      "title": "Countering Adversarial Images using Input Transformations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.00117",
+      "authors": "Chuan Guo, Mayank Rana, Moustapha Cisse, Laurens van der Maaten",
+      "orig_title": "Countering adversarial images using input transformations",
+      "paper_id": "1711.00117v3"
+    },
+    {
+      "index": 42,
+      "title": "Thermometer encoding: One hot way to resist adversarial examples",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Jacob Buckman, Aurko Roy, Colin Raffel, and Ian Goodfellow"
+    },
+    {
+      "index": 43,
+      "title": "On Detecting Adversarial Perturbations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1702.04267",
+      "authors": "Jan Hendrik Metzen, Tim Genewein, Volker Fischer, and Bastian Bischoff",
+      "orig_title": "On detecting adversarial perturbations",
+      "paper_id": "1702.04267v2"
+    },
+    {
+      "index": 44,
+      "title": "Detecting Adversarial Samples from Artifacts",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1703.00410",
+      "authors": "Reuben Feinman, Ryan R. Curtin, Saurabh Shintre, and Andrew B. Gardner",
+      "orig_title": "Detecting adversarial samples from artifacts",
+      "paper_id": "1703.00410v3"
+    },
+    {
+      "index": 45,
+      "title": "Provable Defenses against Adversarial Examples via the Convex Outer Adversarial Polytope",
+      "abstract": "",
+      "year": "2018",
+      "venue": "35th International Conference on Machine Learning",
+      "authors": "Eric Wong, and Zico Kolter",
+      "orig_title": "Provable defenses against adversarial examples via the convex outer adversarial polytope",
+      "paper_id": "1711.00851v3"
+    },
+    {
+      "index": 46,
+      "title": "Semidefinite relaxations for certifying robustness to adversarial examples",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Neural Information Processing Systems 31(NIPS 2018)",
+      "authors": "Aditi Raghunathan, Jacob Steinhardt, and Percy Liang",
+      "orig_title": "Semidefinite relaxations for certifying robustness to adversarial examples",
+      "paper_id": "1811.01057v1"
+    },
+    {
+      "index": 47,
+      "title": "Training for faster adversarial robustness verification via inducing relu stability",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1809.03008",
+      "authors": "Kai Y. Xiao, Vincent Tjeng, Nur Muhammad Shafiullah, and Aleksander Madry"
+    },
+    {
+      "index": 48,
+      "title": "Provable robustness of relu networks via maximization of linear regions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Machine Learning Research",
+      "authors": "Francesco Croce, Maksym Andriushchenko, and Matthias Hein"
+    },
+    {
+      "index": 49,
+      "title": "Distillation as a defense to adversarial perturbations against deep neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 IEEE Symposium on Security and Privacy (SP)",
+      "authors": "Nicolas Papernot, Patrick McDaniel, Xi Wu, Somesh Jha, and Ananthram Swami"
+    },
+    {
+      "index": 50,
+      "title": "Efficient Defenses Against Adversarial Attacks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "10th ACM Workshop on Artificial Intelligence and Security",
+      "authors": "Valentina Zantedeschi, Maria-Irina Nicolae, Ambrish Rawat",
+      "orig_title": "Efficient defenses against adversarial attacks",
+      "paper_id": "1707.06728v2"
+    },
+    {
+      "index": 51,
+      "title": "Mitigating Adversarial Effects Through Randomization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.01991",
+      "authors": "Cihang Xie, Jianyu Wang, Zhishuai Zhang, Zhou Ren, and Alan Yuille",
+      "orig_title": "Mitigating adversarial effects through randomization",
+      "paper_id": "1711.01991v3"
+    },
+    {
+      "index": 52,
+      "title": "Stochastic activation pruning for robust adversarial defense",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1803.01442",
+      "authors": "Guneet S. Dhillon, Kamyar Azizzadenesheli, Zachary C. Lipton, Jeremy Bernstein, Jean Kossaifi, Aran Khanna, and Anima Anandkumar",
+      "orig_title": "Stochastic activation pruning for robust adversarial defense",
+      "paper_id": "1803.01442v1"
+    },
+    {
+      "index": 53,
+      "title": "RANDOM MASK: Towards Robust Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2007.14249",
+      "authors": "Tiange Luo, Tianle Cai, Mengxiao Zhang, Siyu Chen, and Liwei Wang",
+      "orig_title": "RANDOM MASK: Towards Robust Convolutional Neural Networks",
+      "paper_id": "2007.14249v1"
+    }
+  ]
+}

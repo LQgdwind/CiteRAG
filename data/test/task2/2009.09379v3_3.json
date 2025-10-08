@@ -1,0 +1,485 @@
+{
+  "paper_id": "2009.09379v3",
+  "title": "Exploring the Generalizability of Spatio-Temporal Traffic Prediction: Meta-Modeling and an Analytic Framework",
+  "sections": {
+    "introduction": "The Spatio-Temporal Traffic Prediction (STTP) problem refers to the problem that resides in many urban predictive applications related to both spatial and temporal human mobility dynamics, e.g., the predictions of taxi demand , metro human flow , electrical vehicle charging usage , and traffic speed . The STTP problems play a vital role in today’s smart city management and organization, e.g., traffic monitoring and emergency response. Traditionally, STTP is often formulated as a time series prediction problem, where statistical methods such as ARIMA (AutoRegressive Integrated Moving Average)   are widely used. In recent years, with the advance of machine learning, especially deep learning techniques, a variety of new models have been developed for STTP. Today, researchers can be quickly overwhelmed by numerous STTP related papers that continuously emerge in top-tier conferences and journals    [ref]8 . However, most efforts focus on the sophisticated application-specific model design and then test their models on limited data of one or few specialized applications, e.g., ridesharing [ref]8, bikesharing  0, and highway traffic speed . Although the proposed models can conceptually be applied to other STTP scenarios, whether the performance can still be as good as their specialized applications remains unclear. In other words, it becomes rather difficult to analyze whether an STTP model can be quickly generalized over various scenarios. Indeed, the generalizability is a fundamental and key property of an STTP model, and significantly determines the potential impact scope. In this regard, it is highly urgent to require a general analytic framework that can help investigate and compare different application-driven STTP models. Furthermore, the insights derived from the analytic framework can guide researchers to justify the generalizability of these models, and then design new models with better generalizability. To fill this research gap, this paper makes efforts from the following aspects: 1) To make different application-driven STTP approaches comparable, we propose an analytic framework, called STAnalytic, to investigate the STTP approaches from their considered high-level spatial and temporal factors. Particularly, STAnalytic maps an STTP model into a two-level hierarchical analysis process where the first level is spatial and temporal perspective, and the second level is knowledge and modeling perspective. Then, every STTP model can be analyzed as two research questions: (1) “what effort is done from temporal and spatial perspective?”; and (2) “which spatial/temporal knowledge is considered with which modeling techniques?”. This qualitative analysis can provide useful insights about whether an STTP model can be well generalized to various scenarios even before we run quantitative experiments over the model. 2) To elaborate the effectiveness of STAnalytic in terms of helping design generalizable STTP models, we propose a spatio-temporal meta-model, called STMeta, based on the analysis results of the STTP over state-of-the-art in literature    [ref]8. STMeta is a “model of model” (meta-model) which has a hierarchical structure to flexibly and efficiently integrate generalizable temporal and spatial knowledge identified by STAnalytic from literature. With state-of-the-art deep learning techniques such as graph convolution 1 and attention mechanisms 2, we implement three variants of STMeta and verify their generalizable effectiveness via multiple real-life STTP benchmark datasets (listed next). 3) To alleviate the issue that today’s STTP research studies usually conduct experiments on certain specific applications and do not justify the generalizability among various applications quantitatively, we build  a set of STTP benchmark datasets  including five scenarios, i.e., ridesharing, bikesharing, metro, electric vehicle charging, and traffic speed. The datasets cover ten cities, where the longest time duration spans four years and the largest number of traffic data records is more than 400 million. We have released our code and data repository111https://github.com/uctb/UCTB. To summarize, this paper makes the following contributions: 1) We develop an analytic framework, namely STAnalytic, following which existing STTP approaches can be qualitatively explored. To the best of our knowledge, this is one of the first studies that propose such an analytic framework for the STTP problem. 2) We design a meta-model called STMeta based on the insights derived from STAnalytic over state-of-the-art research    [ref]8. STMeta can flexibly and efficiently take into account multiple spatial and temporal knowledge for building an STTP model. 3) We build a set of real-life STTP benchmark datasets covering five scenarios and ten cities. The benchmark results verify that STMeta generally outperforms state-of-the-art approaches. After analyzing the results, we provide several design guidelines to develop STTP approaches with better generalizability."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Deep spatio-temporal residual networks for citywide crowd flows prediction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI",
+      "authors": "J. Zhang, Y. Zheng, and D. Qi"
+    },
+    {
+      "index": 1,
+      "title": "Forecasting the short-term metro passenger flow with empirical mode decomposition and neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Transportation Research Part C: Emerging Technologies",
+      "authors": "Y. Wei and M.-C. Chen"
+    },
+    {
+      "index": 2,
+      "title": "Spatial and temporal model of electric vehicle charging demand",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Transactions on Smart Grid",
+      "authors": "S. Bae and A. Kwasinski"
+    },
+    {
+      "index": 3,
+      "title": "Diffusion convolutional recurrent neural network: Data-driven traffic forecasting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Y. Li, R. Yu, C. Shahabi, and Y. Liu"
+    },
+    {
+      "index": 4,
+      "title": "Urban freeway traffic flow prediction: application of seasonal autoregressive integrated moving average and exponential smoothing models",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Transportation Research Record",
+      "authors": "B. M. Williams, P. K. Durvasula, and D. E. Brown"
+    },
+    {
+      "index": 5,
+      "title": "Short-term prediction of traffic volume in urban arterials",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Journal of Transportation Engineering",
+      "authors": "M. M. Hamed, H. R. Al-Masaeid, and Z. M. B. Said"
+    },
+    {
+      "index": 6,
+      "title": "Geoman: Multi-level attention networks for geo-sensory time series prediction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IJCAI",
+      "authors": "Y. Liang, S. Ke, J. Zhang, X. Yi, and Y. Zheng"
+    },
+    {
+      "index": 7,
+      "title": "Spatiotemporal multi-graph convolution network for ride-hailing demand forecasting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "X. Geng, Y. Li, L. Wang, L. Zhang, Q. Yang, J. Ye, and Y. Liu"
+    },
+    {
+      "index": 8,
+      "title": "Bike Flow Prediction with Multi-Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGSPATIAL",
+      "authors": "D. Chai, L. Wang, and Q. Yang",
+      "orig_title": "Bike flow prediction with multi-graph convolutional networks",
+      "paper_id": "1807.10934v1"
+    },
+    {
+      "index": 9,
+      "title": "Mobility modeling and prediction in bike-sharing systems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MobiSys",
+      "authors": "Z. Yang, J. Hu, Y. Shu, P. Cheng, J. Chen, and T. Moscibroda"
+    },
+    {
+      "index": 10,
+      "title": "Convolutional neural networks on graphs with fast localized spectral filtering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NeurIPS",
+      "authors": "M. Defferrard, X. Bresson, and P. Vandergheynst"
+    },
+    {
+      "index": 11,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 12,
+      "title": "Predicting Citywide Crowd Flows in Irregular Regions Using Multi-View Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "J. Sun, J. Zhang, Q. Li, X. Yi, Y. Liang, and Y. Zheng",
+      "orig_title": "Predicting citywide crowd flows in irregular regions using multi-view graph convolutional networks",
+      "paper_id": "1903.07789v2"
+    },
+    {
+      "index": 13,
+      "title": "Predicting citywide crowd flows using deep spatio-temporal residual networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Artif. Intell.",
+      "authors": "J. Zhang, Y. Zheng, D. Qi, R. Li, X. Yi, and T. Li"
+    },
+    {
+      "index": 14,
+      "title": "Spatio-Temporal Graph Convolutional Networks: A Deep Learning Framework for Traffic Forecasting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IJCAI",
+      "authors": "B. Yu, H. Yin, and Z. Zhu",
+      "orig_title": "Spatio-temporal graph convolutional networks: a deep learning framework for traffic forecasting",
+      "paper_id": "1709.04875v4"
+    },
+    {
+      "index": 15,
+      "title": "Gman: A graph multi-attention network for traffic prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "C. Zheng, X. Fan, C. Wang, and J. Qi"
+    },
+    {
+      "index": 16,
+      "title": "Time series analysis",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Princeton university press",
+      "authors": "J. D. Hamilton"
+    },
+    {
+      "index": 17,
+      "title": "Long short-term memory neural network for traffic speed prediction using remote microwave sensor data",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Transportation Research Part C: Emerging Technologies",
+      "authors": "X. Ma, Z. Tao, Y. Wang, H. Yu, and Y. Wang"
+    },
+    {
+      "index": 18,
+      "title": "Predicting short-term traffic flow by long short-term memory recurrent neural network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Smart City/SocialCom/SustainCom",
+      "authors": "Y. Tian and L. Pan"
+    },
+    {
+      "index": 19,
+      "title": "Improving traffic flow prediction with weather information in connected cars: A deep learning approach",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Vehicular Technology",
+      "authors": "A. Koesdwiady, R. Soua, and F. Karray"
+    },
+    {
+      "index": 20,
+      "title": "Forecasting the subway passenger flow under event occurrences with social media",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems",
+      "authors": "M. Ni, Q. He, and J. Gao"
+    },
+    {
+      "index": 21,
+      "title": "XGBoost: A Scalable Tree Boosting System",
+      "abstract": "",
+      "year": "2016",
+      "venue": "KDD",
+      "authors": "T. Chen and C. Guestrin",
+      "orig_title": "Xgboost: A scalable tree boosting system",
+      "paper_id": "1603.02754v3"
+    },
+    {
+      "index": 22,
+      "title": "Learning to forget: continual prediction with lstm.",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Neural computation",
+      "authors": "F. Gers, J. Schmidhuber, and F. Cummins"
+    },
+    {
+      "index": 23,
+      "title": "Modeling and forecasting vehicular traffic flow as a seasonal arima process: Theoretical basis and empirical results",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Journal of transportation engineering",
+      "authors": "B. M. Williams and L. A. Hoel"
+    },
+    {
+      "index": 24,
+      "title": "Attention based spatial-temporal graph convolutional networks for traffic flow forecasting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "S. Guo, Y. Lin, N. Feng, C. Song, and H. Wan"
+    },
+    {
+      "index": 25,
+      "title": "Graph WaveNet for Deep Spatial-Temporal Graph Modeling",
+      "abstract": "",
+      "year": "2019",
+      "venue": "The 28th International Joint Conference on Artificial Intelligence (IJCAI)",
+      "authors": "Z. Wu, S. Pan, G. Long, J. Jiang, and C. Zhang",
+      "orig_title": "Graph wavenet for deep spatial-temporal graph modeling",
+      "paper_id": "1906.00121v1"
+    },
+    {
+      "index": 26,
+      "title": "Adaptive Graph Convolutional Recurrent Network for Traffic Forecasting",
+      "abstract": "",
+      "year": "2020",
+      "venue": "34th Conference on Neural Information Processing Systems",
+      "authors": "L. Bai, L. Yao, C. Li, X. Wang, and C. Wang",
+      "orig_title": "Adaptive graph convolutional recurrent network for traffic forecasting",
+      "paper_id": "2007.02842v2"
+    },
+    {
+      "index": 27,
+      "title": "Gman: A graph multi-attention network for traffic prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "C. Zheng, X. Fan, C. Wang, and J. Qi"
+    },
+    {
+      "index": 28,
+      "title": "Spatial-temporal synchronous graph convolutional networks: A new framework for spatial-temporal network data forecasting",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "C. Song, Y. Lin, S. Guo, and H. Wan"
+    },
+    {
+      "index": 29,
+      "title": "Hypergraph convolutional recurrent neural network",
+      "abstract": "",
+      "year": "2020",
+      "venue": "KDD",
+      "authors": "J. Yi and J. Park"
+    },
+    {
+      "index": 30,
+      "title": "Discovering urban functional zones using latent activity trajectories",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "N. J. Yuan, Y. Zheng, X. Xie, Y. Wang, K. Zheng, and H. Xiong"
+    },
+    {
+      "index": 31,
+      "title": "Fine-grained preference-aware location search leveraging crowdsourced digital footprints from lbsns",
+      "abstract": "",
+      "year": "2013",
+      "venue": "UbiComp",
+      "authors": "D. Yang, D. Zhang, Z. Yu, and Z. Yu"
+    },
+    {
+      "index": 32,
+      "title": "Cross-City Transfer Learning for Deep Spatio-Temporal Prediction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IJCAI",
+      "authors": "L. Wang, X. Geng, X. Ma, F. Liu, and Q. Yang",
+      "orig_title": "Cross-city transfer learning for deep spatio-temporal prediction",
+      "paper_id": "1802.00386v2"
+    },
+    {
+      "index": 33,
+      "title": "Citytransfer: Transferring inter-and intra-city knowledge for chain store site recommendation based on multi-source urban data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies",
+      "authors": "B. Guo, J. Li, V. W. Zheng, Z. Wang, and Z. Yu"
+    },
+    {
+      "index": 34,
+      "title": "Deep Multi-View Spatial-Temporal Network for Taxi Demand Prediction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "H. Yao, F. Wu, J. Ke, X. Tang, Y. Jia, S. Lu, P. Gong, J. Ye, and Z. Li",
+      "orig_title": "Deep multi-view spatial-temporal network for taxi demand prediction",
+      "paper_id": "1802.08714v2"
+    },
+    {
+      "index": 35,
+      "title": "Fine-grained urban event detection and characterization based on tensor cofactorization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Human-Machine Systems",
+      "authors": "L. Chen, J. Jakubowicz, D. Yang, D. Zhang, and G. Pan"
+    },
+    {
+      "index": 36,
+      "title": "Cityspectrum: a non-negative tensor factorization approach",
+      "abstract": "",
+      "year": "2014",
+      "venue": "UbiComp",
+      "authors": "Z. Fan, X. Song, and R. Shibasaki"
+    },
+    {
+      "index": 37,
+      "title": "Deepstd: Mining spatio-temporal disturbances of multiple context factors for citywide traffic flow prediction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems",
+      "authors": "C. Zheng, X. Fan, C. Wen, L. Chen, C. Wang, and J. Li"
+    },
+    {
+      "index": 38,
+      "title": "Understanding the variability of speed distributions under mixed traffic conditions caused by holiday traffic",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Transportation Research Part C: Emerging Technologies",
+      "authors": "J. Jun"
+    },
+    {
+      "index": 39,
+      "title": "Dynamic cluster-based over-demand prediction in bike sharing systems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "UbiComp",
+      "authors": "L. Chen, D. Zhang, L. Wang, D. Yang, X. Ma, S. Li, Z. Wu, G. Pan, T.-M.-T. Nguyen, and J. Jakubowicz"
+    },
+    {
+      "index": 40,
+      "title": "Graph Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "P. Veličković, G. Cucurull, A. Casanova, A. Romero, P. Lio, and Y. Bengio",
+      "orig_title": "Graph attention networks",
+      "paper_id": "1710.10903v3"
+    },
+    {
+      "index": 41,
+      "title": "Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.3555",
+      "authors": "J. Chung, C. Gulcehre, K. Cho, and Y. Bengio",
+      "orig_title": "Empirical evaluation of gated recurrent neural networks on sequence modeling",
+      "paper_id": "1412.3555v1"
+    },
+    {
+      "index": 42,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 43,
+      "title": "Traffic prediction in a bike-sharing system",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIGSPATIAL",
+      "authors": "Y. Li, Y. Zheng, H. Zhang, and L. Chen"
+    },
+    {
+      "index": 44,
+      "title": "Limits of predictability in human mobility",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Science",
+      "authors": "C. Song, Z. Qu, N. Blumm, and A. L. Barabási"
+    },
+    {
+      "index": 45,
+      "title": "Short-Term Forecasting of Passenger Demand under On-Demand Ride Services: A Spatio-Temporal Deep Learning Approach",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Transportation Research Part C-emerging Technologies",
+      "authors": "J. Ke, H. Zheng, H. Yang, and X. M. Chen",
+      "orig_title": "Short-term forecasting of passenger demand under on-demand ride services: A spatio-temporal deep learning approach",
+      "paper_id": "1706.06279v1"
+    },
+    {
+      "index": 46,
+      "title": "Urban traffic prediction from spatio-temporal data using deep meta learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "KDD",
+      "authors": "Z. Pan, Y. Liang, W. Wang, Y. Yu, Y. Zheng, and J. Zhang"
+    },
+    {
+      "index": 47,
+      "title": "Traffic flow prediction with big data: A deep learning approach",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Trans. on Intelligent Transportation Systems",
+      "authors": "Y. Lv, Y. Duan, W. Kang, Z. Li, and F.-Y. Wang"
+    },
+    {
+      "index": 48,
+      "title": "Flow prediction in spatio-temporal networks based on multitask deep learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "J. Zhang, Y. Zheng, J. Sun, and D. Qi"
+    },
+    {
+      "index": 49,
+      "title": "Revisiting Spatial-Temporal Similarity: A Deep Learning Framework for Traffic Prediction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "H. Yao, X. Tang, H. Wei, G. Zheng, and Z. Li",
+      "orig_title": "Revisiting spatial-temporal similarity: A deep learning framework for traffic prediction",
+      "paper_id": "1803.01254v2"
+    },
+    {
+      "index": 50,
+      "title": "A survey of mobile phone sensing",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Communications Magazine",
+      "authors": "N. D. Lane, E. Miluzzo, H. Lu, D. Peebles, T. Choudhury, and A. T. Campbell"
+    },
+    {
+      "index": 51,
+      "title": "Smiler: A semi-lazy time series prediction system for sensors",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIGMOD",
+      "authors": "J. Zhou and A. K. Tung"
+    },
+    {
+      "index": 52,
+      "title": "Deep Learning for Sensor-based Activity Recognition: A Survey",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Pattern Recognition Letters",
+      "authors": "J. Wang, Y. Chen, S. Hao, X. Peng, and L. Hu",
+      "orig_title": "Deep learning for sensor-based activity recognition: A survey",
+      "paper_id": "1707.03502v2"
+    },
+    {
+      "index": 53,
+      "title": "Deepmove: Predicting human mobility with attentional recurrent networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "WWW",
+      "authors": "J. Feng, Y. Li, C. Zhang, F. Sun, F. Meng, A. Guo, and D. Jin"
+    },
+    {
+      "index": 54,
+      "title": "Predicting human mobility via variational attention",
+      "abstract": "",
+      "year": "2019",
+      "venue": "WWW",
+      "authors": "Q. Gao, F. Zhou, G. Trajcevski, K. Zhang, T. Zhong, and F. Zhang"
+    },
+    {
+      "index": 55,
+      "title": "A bias and variance analysis for multistep-ahead time series forecasting",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE transactions on neural networks and learning systems",
+      "authors": "S. B. Taieb and A. F. Atiya"
+    }
+  ]
+}

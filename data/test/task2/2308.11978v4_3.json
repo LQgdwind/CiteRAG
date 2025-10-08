@@ -1,0 +1,497 @@
+{
+  "paper_id": "2308.11978v4",
+  "title": "Will More Expressive Graph Neural Networks do Better on Generative Tasks?",
+  "sections": {
+    "c.1 gnn architectures": "The graph convolution operation of the original GCN   can be defined as follows: where ci​jsubscript𝑐𝑖𝑗c_{ij} is a normalisation constant for each edge ℰi​jsubscriptℰ𝑖𝑗\\mathcal{E}_{ij} which originates from using the symmetrically normalised adjacency matrix D−12​AD−12superscriptD12superscriptAD12\\textbf{D}^{-\\frac{1}{2}}\\textbf{A}\\textbf{D}^{-\\frac{1}{2}}, W(l)superscriptW𝑙\\textbf{W}^{(l)} is a learnable weight matrix, and σ𝜎\\sigma is a non-linear activation function. R-GCN  [ref]6 makes use of the relational data of the graphs, and extends the graph convolution operation to the following: let ℛℛ\\mathcal{R} be the edge relation type (for molecular graphs, this can be the bond type), then where 𝒩irsubscriptsuperscript𝒩𝑟𝑖\\mathcal{N}^{r}_{i} denotes the set of neighbouring nodes of node i𝑖i under relation r∈ℛ𝑟ℛr\\in\\mathcal{R}, ci,rsubscript𝑐𝑖𝑟c_{i,r} is a problem-specific normalisation constant that can either be learnt or chosen in advance and Wr(l)superscriptsubscriptW𝑟𝑙\\textbf{W}_{r}^{(l)} denotes the learnable matrix for edge type r𝑟r. It has been shown that neither GCN nor R-GCN is as expressive as the 1-WL test [ref]29. Each GIN  [ref]29 layer updates the node features as follows: where ϕ(l)superscriptitalic-ϕ𝑙\\phi^{(l)} is an MLP, and ϵ(l)superscriptitalic-ϵ𝑙\\epsilon^{(l)} is a learnable scalar. GIN is provably as expressive as the 1-WL test,\nwhich makes it one of the maximally-expressive GNNs (proof in [ref]29). The PNA  operator defines its aggregation function ⨁direct-sum\\bigoplus as a combination of neighbourhood-aggregators and degree-scalers, as defined by the following equation, with ⊗tensor-product\\otimes being the tensor product: The PNA operator can then be inserted into the standard MPNN framework, obtaining the PNA layer: where ϕ(l)superscriptitalic-ϕ𝑙\\phi^{(l)} and ψ(l)superscript𝜓𝑙\\psi^{(l)} are MLPs. According to the theorem that in order to discriminate between multisets of size n𝑛n whose underlying set is R𝑅R, at least n𝑛n aggregators are needed (proof in ), PNA pushes its expressivity closer towards the 1-WL limit than GIN, by including more aggregators, thereby increasing the probability that at least one of the aggregators can distinguish different graphs. GSN  adopts a feature-augmented message passing style by counting the appearance of certain graph substructures and encoding them into the features. The feature augmentation of GSN then works as follows: let 𝒢={G1,⋯,GK}𝒢subscript𝐺1⋯subscript𝐺𝐾\\mathcal{G}=\\left\\{G_{1},\\cdots,G_{K}\\right\\} be a set of pre-computed small (connected) graphs. For each Gk=(𝒱k,ℰk)subscript𝐺𝑘subscript𝒱𝑘subscriptℰ𝑘G_{k}=(\\mathcal{V}_{k},\\mathcal{E}_{k}) in 𝒢𝒢\\mathcal{G}, we first find its isomorphic subgraphs Gk′=(𝒱k′,ℰk′)superscriptsubscript𝐺𝑘′superscriptsubscript𝒱𝑘′superscriptsubscriptℰ𝑘′G_{k}^{\\prime}=(\\mathcal{V}_{k}^{\\prime},\\mathcal{E}_{k}^{\\prime}) in G=(𝒱,ℰ)𝐺𝒱ℰG=(\\mathcal{V},\\mathcal{E}). Then, for each node i∈V𝑖𝑉i\\in V and 1≤k≤K1𝑘𝐾1\\leq k\\leq K, we count the number of subgraphs Gk′superscriptsubscript𝐺𝑘′G_{k}^{\\prime} node i𝑖i belongs to, as defined by the equation below: We then obtain the node structural features for each node i∈𝒱𝑖𝒱i\\in\\mathcal{V}: xi𝒱=[xG1𝒱​(i),⋯,xGk𝒱​(i)]∈ℕKsubscriptsuperscriptx𝒱𝑖subscriptsuperscript𝑥𝒱subscript𝐺1𝑖⋯subscriptsuperscript𝑥𝒱subscript𝐺𝑘𝑖superscriptℕ𝐾\\textbf{x}^{\\mathcal{V}}_{i}=\\left[x^{\\mathcal{V}}_{G_{1}}(i),\\cdots,x^{\\mathcal{V}}_{G_{k}}(i)\\right]\\in\\mathbb{N}^{K}. Similarly, we can derive the edge structural features for each edge (i,j)∈ℰ𝑖𝑗ℰ(i,j)\\in\\mathcal{E}: xi​jℰ=[xG1ℰ​(i,j),⋯,xGkℰ​(i,j)]∈ℕKsubscriptsuperscriptxℰ𝑖𝑗subscriptsuperscript𝑥ℰsubscript𝐺1𝑖𝑗⋯subscriptsuperscript𝑥ℰsubscript𝐺𝑘𝑖𝑗superscriptℕ𝐾\\textbf{x}^{\\mathcal{E}}_{ij}=\\left[x^{\\mathcal{E}}_{G_{1}}(i,j),\\cdots,x^{\\mathcal{E}}_{G_{k}}(i,j)\\right]\\in\\mathbb{N}^{K} by counting the numbers of subgraphs it belongs to: The augmented features can then be inserted into the messages and follow the standard MPNN, obtaining two variants of GSN layer, GSN-v (vertex-count) and GSN-e (edge-count): where ϕ(l)superscriptitalic-ϕ𝑙\\phi^{(l)} and ψ(l)superscript𝜓𝑙\\psi^{(l)} are MLPs and ⨁direct-sum\\bigoplus is a permutation-invariant local neighbourhood aggregation function, such as sum, mean or max. It can be proved that GSN is strictly more expressive than the 1-WL test, when Gksubscript𝐺𝑘G_{k} is any graph except for the star graphs (i.e., one center nodes connected to one of multiple outer nodes) of any size, and structural features are inferred by subgraph matching (proof in ). This essentially suggests that GSN is more expressive than R-GCN which is at most as expressive as the 1-WL test in general. GearNet  uses an R-GCN [ref]6 as a fundamental framework to develop a node features and edge features message passing mechanism. Each GearNet layer updates the node features as follows: where ℛℛ\\mathcal{R} is the edge relation type, 𝒩irsubscriptsuperscript𝒩𝑟𝑖\\mathcal{N}^{r}_{i} denotes the set of neighbouring nodes of node i𝑖i under relation r∈ℛ𝑟ℛr\\in\\mathcal{R}, BN denotes a batch normalisation layer, Wr(l)superscriptsubscriptW𝑟𝑙\\textbf{W}_{r}^{(l)} is the learnable convolutional kernel matrix for edge type r𝑟r, and σ𝜎\\sigma is a non-linear activation function. To model the interactions between edges, we first construct a relational graph G′=(𝒱′,ℰ′,ℛ′)superscript𝐺′superscript𝒱′superscriptℰ′superscriptℛ′G^{\\prime}=\\left(\\mathcal{V}^{\\prime},\\mathcal{E}^{\\prime},\\mathcal{R}^{\\prime}\\right) among edges. Each node in the graph G′superscript𝐺′G^{\\prime} corresponds to an edge in the original graph. G′superscript𝐺′G^{\\prime} links edge (i,j,r1)𝑖𝑗subscript𝑟1(i,j,r_{1}) in the original graph to edge (w,k,r2)𝑤𝑘subscript𝑟2(w,k,r_{2}) if and only if j=w𝑗𝑤j=w and i≠k𝑖𝑘i\\neq k. The type of this edge is determined by the angle between (i,j,r1)𝑖𝑗subscript𝑟1(i,j,r_{1}) and (w,k,r2)𝑤𝑘subscript𝑟2(w,k,r_{2}). The angular information reflects the relative position between two edges that determines the strength of their interaction . Similar to R-GCN, the GearNet edge message passing layer is defined as: Similar as Eq. (12), the message function for edge (i,j,r1)𝑖𝑗subscript𝑟1(i,j,r_{1}) will be updated by aggregating features from its neighbours 𝒩′(i,j,r1)rsubscriptsuperscriptsuperscript𝒩′𝑟𝑖𝑗subscript𝑟1\\mathcal{N^{\\prime}}^{r}_{(i,j,r_{1})}, where 𝒩′(i,j,r1)r={(w,k,r2)∈𝒱′|((w,k,r2),(i,j,r1),r)∈ℰ′}subscriptsuperscriptsuperscript𝒩′𝑟𝑖𝑗subscript𝑟1conditional-set𝑤𝑘subscript𝑟2superscript𝒱′𝑤𝑘subscript𝑟2𝑖𝑗subscript𝑟1𝑟superscriptℰ′\\mathcal{N^{\\prime}}^{r}_{(i,j,r_{1})}=\\{(w,k,r_{2})\\in\\mathcal{V}^{\\prime}|((w,k,r_{2}),(i,j,r_{1}),r)\\in\\mathcal{E}^{\\prime}\\}. Finally, the entire GearNet message passing layer can be expressed as: where FC denotes a linear transformation on the message function. GearNet is more expressive than R-GCN for its sparse edge message passing mechanism which encodes spatial information of a graph. In order to generalise the standard averaging or max-pooling aggregators in GNNs, GAT  applies attention-based neighbourhood aggregation as its aggregation function to obtain sufficient expressive power to transform the input features into higher-level features. The normalised masked attention coefficient for node i𝑖i is defined as: where a is a learnable weight vector, representing the attention mechanism a𝑎a: a single-layer feedforward neural network, W is a learnable input linear transformation’s weight matrix and ∥∥\\| represents concatenation operation. Each K𝐾K multi-head attention GAT layer updates the node features as follows: where ∥∥\\| represents concatenation, αi​jksuperscriptsubscript𝛼𝑖𝑗𝑘\\alpha_{ij}^{k} are normalised attention coefficients computed by the k𝑘k-th attention mechanism (ak)superscript𝑎𝑘(a^{k}), and WksuperscriptW𝑘\\textbf{W}^{k} is the corresponding input linear transformation’s weight matrix. GAT computes a representation for every node as a weighted average of its neighbours through the attention mechanism, which is more flexible than the neighbourhood aggregation in R-GCN. GATv2 [ref]7 adopts a strictly more expressive dynamic graph attention mechanism [ref]7 in its aggregation function to learn the graph representation. The graph attention variant that has a universal approximator attention function. The normalised masked dynamic attention coefficient for node i𝑖i is defined as: where a is a learnable weight vector, representing the attention mechanism a𝑎a: a single-layer feedforward neural network, W is a learnable input linear transformation’s weight matrix and ∥∥\\| represents concatenation operation. Each K𝐾K multi-head attention GATv2 layer updates the node features as follows: where ∥∥\\| represents concatenation, αi​jksuperscriptsubscript𝛼𝑖𝑗𝑘\\alpha_{ij}^{k} are normalised dynamic attention coefficients computed by the k𝑘k-th attention mechanism (ak)superscript𝑎𝑘(a^{k}), and WksuperscriptW𝑘\\textbf{W}^{k} is the corresponding input linear transformation’s weight matrix. It has been proved that GATv2 – a graph attention variant that has a universal approximator attention function, and is thus strictly more expressive than GAT (proof in [ref]7)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Molecular De-Novo Design through Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Cheminformatics",
+      "authors": "Marcus Olivecrona, Thomas Blaschke, Ola Engkvist, and Hongming Chen",
+      "orig_title": "Molecular de-novo design through deep reinforcement learning",
+      "paper_id": "1704.07555v2"
+    },
+    {
+      "index": 1,
+      "title": "Estimation of the size of drug-like chemical space based on GDB-17 data",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Journal of Computer-Aided Molecular Design",
+      "authors": "Pavel G Polishchuk, Timur I Madzhidov, and Alexandre Varnek"
+    },
+    {
+      "index": 2,
+      "title": "Graph Convolutional Policy Network for Goal-Directed Molecular Graph Generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "Jiaxuan You, Bowen Liu, Rex Ying, Vijay Pande, and Jure Leskovec",
+      "orig_title": "Graph Convolutional Policy Network for Goal-Directed Molecular Graph Generation",
+      "paper_id": "1806.02473v3"
+    },
+    {
+      "index": 3,
+      "title": "GraphAF: a Flow-based Autoregressive Model for Molecular Graph Generation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Chence Shi, Minkai Xu, Zhaocheng Zhu, Weinan Zhang, Ming Zhang, and Jian Tang",
+      "orig_title": "GraphAF: a Flow-based Autoregressive Model for Molecular Graph Generation",
+      "paper_id": "2001.09382v2"
+    },
+    {
+      "index": 4,
+      "title": "GraphEBM: Molecular Graph Generation with Energy-Based Models",
+      "abstract": "",
+      "year": "2021a",
+      "venue": "ICLR",
+      "authors": "Meng Liu, Keqiang Yan, Bora Oztekin, and Shuiwang Ji",
+      "orig_title": "GraphEBM: Molecular Graph Generation with Energy-Based Models",
+      "paper_id": "2102.00546v2"
+    },
+    {
+      "index": 5,
+      "title": "Modeling Relational Data with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "The Semantic Web: 15th International Conference",
+      "authors": "Michael Schlichtkrull, Thomas N. Kipf, Peter Bloem, Rianne van den Berg, Ivan Titov, and Max Welling"
+    },
+    {
+      "index": 6,
+      "title": "How Attentive are Graph Attention Networks?",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICLR",
+      "authors": "Shaked Brody, Uri Alon, and Eran Yahav",
+      "orig_title": "How Attentive are Graph Attention Networks?",
+      "paper_id": "2105.14491v3"
+    },
+    {
+      "index": 7,
+      "title": "Improving Graph Neural Network Expressivity via Subgraph Isomorphism Counting",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Giorgos Bouritsas, Fabrizio Frasca, Stefanos Zafeiriou, and Michael M. Bronstein",
+      "orig_title": "Improving Graph Neural Network Expressivity via Subgraph Isomorphism Counting",
+      "paper_id": "2006.09252v3"
+    },
+    {
+      "index": 8,
+      "title": "Protein Representation Learning by Geometric Structure Pretraining",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICLR",
+      "authors": "Zuobai Zhang, Minghao Xu, Arian Jamasb, Vijil Chenthamarakshan, Aurelie Lozano, Payel Das, and Jian Tang"
+    },
+    {
+      "index": 9,
+      "title": "Sample Efficiency Matters: A Benchmark for Practical Molecular Optimization",
+      "abstract": "",
+      "year": "2022a",
+      "venue": "NeurIPS",
+      "authors": "Wenhao Gao, Tianfan Fu, Jimeng Sun, and Connor W. Coley",
+      "orig_title": "Sample Efficiency Matters: A Benchmark for Practical Molecular Optimization",
+      "paper_id": "2206.12411v2"
+    },
+    {
+      "index": 10,
+      "title": "Amortized Tree Generation for Bottom-up Synthesis Planning and Synthesizable Molecular Design",
+      "abstract": "",
+      "year": "2022b",
+      "venue": "ICLR",
+      "authors": "Wenhao Gao, Rocío Mercado, and Connor W Coley",
+      "orig_title": "Amortized tree generation for bottom-up synthesis planning and synthesizable molecular design",
+      "paper_id": "2110.06389v2"
+    },
+    {
+      "index": 11,
+      "title": "Augmenting Genetic Algorithms with Deep Neural Networks for Exploring the Chemical Space",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "AkshatKumar Nigam, Pascal Friederich, Mario Krenn, and Alán Aspuru-Guzik",
+      "orig_title": "Augmenting genetic algorithms with deep neural networks for exploring the chemical space",
+      "paper_id": "1909.11655v4"
+    },
+    {
+      "index": 12,
+      "title": "A fresh look at de novo molecular design benchmarks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS 2021 AI for Science Workshop",
+      "authors": "Austin Tripp, Gregor NC Simm, and José Miguel Hernández-Lobato"
+    },
+    {
+      "index": 13,
+      "title": "Automatic Chemical Design Using a Data-Driven Continuous Representation of Molecules",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACS central science",
+      "authors": "Rafael Gómez-Bombarelli, Jennifer N Wei, David Duvenaud, José Miguel Hernández-Lobato, Benjamín Sánchez-Lengeling, Jorge Aguilera-Iparraguirre Dennis Sheberla, Timothy D Hirzel, Ryan P Adams, and Alán Aspuru-Guzik",
+      "orig_title": "Automatic chemical design using a data-driven continuous representation of molecules",
+      "paper_id": "1610.02415v3"
+    },
+    {
+      "index": 14,
+      "title": "A graph-based genetic algorithm and generative model/monte carlo tree search for the exploration of chemical space",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Chemical science",
+      "authors": "Jan H Jensen"
+    },
+    {
+      "index": 15,
+      "title": "GuacaMol: Benchmarking Models for De Novo Molecular Design",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Journal of Chemical Information and Modeling",
+      "authors": "Nathan Brown, Marco Fiscato, Marwin H.S. Segler, and Alain C. Vaucher",
+      "orig_title": "GuacaMol: Benchmarking Models for de Novo Molecular Design",
+      "paper_id": "1811.09621v2"
+    },
+    {
+      "index": 16,
+      "title": "Barking up the right tree: an approach to search over molecule synthesis DAGs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "John Bradshaw, Brooks Paige, Matt J Kusner, Marwin Segler, and José Miguel Hernández-Lobato",
+      "orig_title": "Barking up the right tree: an approach to search over molecule synthesis dags",
+      "paper_id": "2012.11522v1"
+    },
+    {
+      "index": 17,
+      "title": "Optimization of Molecules via Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Scientific reports",
+      "authors": "Zhenpeng Zhou, Steven Kearnes, Li Li, Richard N Zare, and Patrick Riley",
+      "orig_title": "Optimization of molecules via deep reinforcement learning",
+      "paper_id": "1810.08678v3"
+    },
+    {
+      "index": 18,
+      "title": "Differentiable Scaffolding Tree for Molecular Optimization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICLR",
+      "authors": "Tianfan Fu, Wenhao Gao, Cao Xiao, Jacob Yasonik, Connor W. Coley, and Jimeng Sun",
+      "orig_title": "Differentiable Scaffolding Tree for Molecular Optimization",
+      "paper_id": "2109.10469v2"
+    },
+    {
+      "index": 19,
+      "title": "A review of Bayesian optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE",
+      "authors": "Bobak Shahriari, Kevin Swersky, Ziyu Wang, Ryan P Adams, and Nando De Freitas"
+    },
+    {
+      "index": 20,
+      "title": "Auto-encoding variational Bayes",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICLR",
+      "authors": "Diederik P Kingma and Max Welling"
+    },
+    {
+      "index": 21,
+      "title": "Bayesian learning via stochastic gradient langevin dynamics",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICML",
+      "authors": "Max Welling and Yee W Teh"
+    },
+    {
+      "index": 22,
+      "title": "ZINC 15–ligand discovery for everyone",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Journal of chemical information and modeling",
+      "authors": "Teague Sterling and John J Irwin"
+    },
+    {
+      "index": 23,
+      "title": "Quantum chemistry structures and properties of 134 kilo molecules",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Scientific data",
+      "authors": "Raghunathan Ramakrishnan, Pavlo O Dral, Matthias Rupp, and O Anatole von Lilienfeld"
+    },
+    {
+      "index": 24,
+      "title": "Enumeration of 166 billion organic small molecules in the chemical universe database GDB-17",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Journal of Chemical Information and Modeling",
+      "authors": "Lars Ruddigkeit, Ruud van Deursen, Lorenz C. Blum, and Jean-Louis Reymond"
+    },
+    {
+      "index": 25,
+      "title": "TorchDrug: A Powerful and Flexible Machine Learning Platform for Drug Discovery",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2202.08320",
+      "authors": "Zhaocheng Zhu, Chence Shi, Zuobai Zhang, Shengchao Liu, Minghao Xu, Xinyu Yuan, Yangtian Zhang, Junkun Chen, Huiyu Cai, Jiarui Lu, Chang Ma, Runcheng Liu, Louis-Pascal Xhonneux, Meng Qu, and Jian Tang",
+      "orig_title": "TorchDrug: A Powerful and Flexible Machine Learning Platform for Drug Discovery",
+      "paper_id": "2202.08320v1"
+    },
+    {
+      "index": 26,
+      "title": "DIG: A Turnkey Library for Diving into Graph Deep Learning Research",
+      "abstract": "",
+      "year": "2021b",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Meng Liu, Youzhi Luo, Limei Wang, Yaochen Xie, Hao Yuan, Shurui Gui, Haiyang Yu, Zhao Xu, Jingtun Zhang, Yi Liu, Keqiang Yan, Haoran Liu, Cong Fu, Bora M Oztekin, Xuan Zhang, and Shuiwang Ji",
+      "orig_title": "DIG: A Turnkey Library for Diving into Graph Deep Learning Research",
+      "paper_id": "2103.12608v3"
+    },
+    {
+      "index": 27,
+      "title": "Automatic differentiation in PyTorch",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS 2017 Workshop Autodiff",
+      "authors": "Adam Paszke, Sam Gross, Soumith Chintala, Gregory Chanan, Edward Yang, Zachary DeVito, Zeming Lin, Alban Desmaison, Luca Antiga, and Adam Lerer"
+    },
+    {
+      "index": 28,
+      "title": "How Powerful are Graph Neural Networks?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Keyulu Xu, Weihua Hu, Jure Leskovec, and Stefanie Jegelka",
+      "orig_title": "How Powerful are Graph Neural Networks?",
+      "paper_id": "1810.00826v3"
+    },
+    {
+      "index": 29,
+      "title": "Graph Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Petar Veličković, Guillem Cucurull, Arantxa Casanova, Adriana Romero, Pietro Liò, and Yoshua Bengio",
+      "orig_title": "Graph Attention Networks",
+      "paper_id": "1710.10903v3"
+    },
+    {
+      "index": 30,
+      "title": "Principal Neighbourhood Aggregation for Graph Nets",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "Gabriele Corso, Luca Cavalleri, Dominique Beaini, Pietro Liò, and Petar Veličković",
+      "orig_title": "Principal Neighbourhood Aggregation for Graph Nets",
+      "paper_id": "2004.05718v5"
+    },
+    {
+      "index": 31,
+      "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "32nd International Conference on Machine Learning",
+      "authors": "Sergey Ioffe and Christian Szegedy"
+    },
+    {
+      "index": 32,
+      "title": "Deep Learning using Rectified Linear Units (ReLU)",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1803.08375",
+      "authors": "Abien Fred Agarap",
+      "orig_title": "Deep Learning using Rectified Linear Units (ReLU)",
+      "paper_id": "1803.08375v2"
+    },
+    {
+      "index": 33,
+      "title": "Proximal Policy Optimization Algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1707.06347",
+      "authors": "John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov"
+    },
+    {
+      "index": 34,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference for Learning Representations",
+      "authors": "Diederik P. Kingma and Jimmy Ba"
+    },
+    {
+      "index": 35,
+      "title": "Optuna: A Next-generation Hyperparameter Optimization Framework",
+      "abstract": "",
+      "year": "2019",
+      "venue": "25th ACM SIGKDD international conference on knowledge discovery and data mining",
+      "authors": "Takuya Akiba, Shotaro Sano, Toshihiko Yanase, Takeru Ohta, and Masanori Koyama",
+      "orig_title": "Optuna: A Next-generation Hyperparameter Optimization Framework",
+      "paper_id": "1907.10902v1"
+    },
+    {
+      "index": 36,
+      "title": "Grammar Variational Autoencoder",
+      "abstract": "",
+      "year": "2017",
+      "venue": "34th International Conference on Machine Learning",
+      "authors": "Matt J. Kusner, Brooks Paige, and José Miguel Hernández-Lobato"
+    },
+    {
+      "index": 37,
+      "title": "Quantifying the chemical beauty of drugs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Nature Chemistry",
+      "authors": "G. Richard Bickerton, Gaia V. Paolini, Jérémy Besnard, Sorel Muresan, and Andrew L. Hopkins"
+    },
+    {
+      "index": 38,
+      "title": "Estimation of synthetic accessibility score of drug-like molecules based on molecular complexity and fragment contributions",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Journal of Cheminformatics",
+      "authors": "Peter Ertl and Ansgar Schuffenhauer"
+    },
+    {
+      "index": 39,
+      "title": "Therapeutics data commons: Machine learning datasets and tasks for therapeutics",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS Track Datasets and Benchmarks",
+      "authors": "Kexin Huang, Tianfan Fu, Wenhao Gao, Yue Zhao, Yusuf Roohani, Jure Leskovec, Connor W Coley, Cao Xiao, Jimeng Sun, and Marinka Zitnik"
+    },
+    {
+      "index": 40,
+      "title": "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Journal of Cheminformatics",
+      "authors": "Dávid Bajusz, Anita Rácz, and Károly Héberger"
+    },
+    {
+      "index": 41,
+      "title": "ChEMBL: a large-scale bioactivity database for drug discovery",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Nucleic Acids Research",
+      "authors": "Anna Gaulton, Louisa J. Bellis, A. Patricia Bento, Jon Chambers, Mark Davies, Anne Hersey, Yvonne Light, Shaun McGlinchey, David Michalovich, Bissan Al-Lazikani, and John P. Overington"
+    },
+    {
+      "index": 42,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Thomas N. Kipf and Max Welling",
+      "orig_title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 43,
+      "title": "On the expressive power of Graph Neural Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Graph Neural Networks: Foundations, Frontiers, and Applications",
+      "authors": "Pan Li and Jure Leskovec",
+      "orig_title": "The Expressive Power of Graph Neural Networks",
+      "paper_id": "2401.01626v2"
+    },
+    {
+      "index": 44,
+      "title": "Approximation by superpositions of a sigmoidal function",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Mathematics of control, signals and systems",
+      "authors": "George Cybenko"
+    },
+    {
+      "index": 45,
+      "title": "Approximation Theory of the MLP Model in Neural Networks",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Acta Numerica",
+      "authors": "Allan Pinkus"
+    },
+    {
+      "index": 46,
+      "title": "Beyond generative models: superfast traversal, optimization, novelty, exploration and discovery (STONED) algorithm for molecules using SELFIES",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Chemical science",
+      "authors": "AkshatKumar Nigam, Robert Pollice, Mario Krenn, Gabriel dos Passos Gomes, and Alan Aspuru-Guzik"
+    },
+    {
+      "index": 47,
+      "title": "MARS: Markov Molecular Sampling for Multi-objective Drug Discovery",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Yutong Xie, Chence Shi, Hao Zhou, Yuwei Yang, Weinan Zhang, Yong Yu, and Lei Li",
+      "orig_title": "MARS: Markov molecular sampling for multi-objective drug discovery",
+      "paper_id": "2103.10432v1"
+    },
+    {
+      "index": 48,
+      "title": "Accelerating High-Throughput Virtual Screening Through Molecular Pool-Based Active Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Chemical science",
+      "authors": "David E Graff, Eugene I Shakhnovich, and Connor W Coley",
+      "orig_title": "Accelerating high-throughput virtual screening through molecular pool-based active learning",
+      "paper_id": "2012.07127v1"
+    },
+    {
+      "index": 49,
+      "title": "MIMOSA: Multi-constraint molecule sampling for molecule optimization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI",
+      "authors": "Tianfan Fu, Cao Xiao, Xinhao Li, Lucas M Glass, and Jimeng Sun"
+    },
+    {
+      "index": 50,
+      "title": "Improving screening efficiency through iterative screening using docking and conformal prediction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of chemical information and modeling",
+      "authors": "Fredrik Svensson, Ulf Norinder, and Andreas Bender"
+    },
+    {
+      "index": 51,
+      "title": "GFlowNet Foundations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "Yoshua Bengio, Tristan Deleu, Edward J. Hu, Salem Lahlou, Mo Tiwari, and Emmanuel Bengio",
+      "orig_title": "GFlowNet foundations",
+      "paper_id": "2111.09266v4"
+    },
+    {
+      "index": 52,
+      "title": "Deep Molecular Dreaming: Inverse machine learning for de-novo molecular design and interpretability with surjective representations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Machine Learning: Science and Technology",
+      "authors": "Cynthia Shen, Mario Krenn, Sagi Eppel, and Alan Aspuru-Guzik",
+      "orig_title": "Deep molecular dreaming: Inverse machine learning for de-novo molecular design and interpretability with surjective representations",
+      "paper_id": "2012.09712v1"
+    },
+    {
+      "index": 53,
+      "title": "Junction Tree Variational Autoencoder for Molecular Graph Generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Wengong Jin, Regina Barzilay, and Tommi Jaakkola",
+      "orig_title": "Junction tree variational autoencoder for molecular graph generation",
+      "paper_id": "1802.04364v4"
+    }
+  ]
+}

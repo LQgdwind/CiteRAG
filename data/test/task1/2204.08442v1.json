@@ -1,0 +1,541 @@
+{
+  "paper_id": "2204.08442v1",
+  "title": "Deep Equilibrium Optical Flow Estimation",
+  "abstract": "Abstract\nMany recent state-of-the-art (SOTA) optical flow models use finite-step recurrent update operations to emulate traditional algorithms by encouraging iterative refinements toward a stable flow estimation.\nHowever, these RNNs impose large computation and memory overheads, and are not directly trained to model such “stable estimation”. They can converge poorly and thereby suffer from performance degradation.\nTo combat these drawbacks, we propose deep equilibrium (DEQ) flow estimators, an approach that directly solves for the flow as the infinite-level fixed point of an implicit layer (using any black-box solver) [2], and differentiates through this fixed point analytically (thus requiring O​(1)𝑂1O(1) training memory).\nThis implicit-depth approach is not predicated on any specific model, and thus can be applied to a wide range of SOTA flow estimation model designs (e.g., RAFT [1] and GMA [3]).\nThe use of these DEQ flow estimators allows us to compute the flow faster using, e.g., fixed-point reuse and inexact gradients, consumes 4∼6×4\\sim 6\\times less training memory than the recurrent counterpart, and achieves better results with the same computation budget.\nIn addition, we propose a novel, sparse fixed-point correction scheme to stabilize our DEQ flow estimators, which addresses a longstanding challenge for DEQ models in general.\nWe test our approach in various realistic settings and show that it improves SOTA methods on Sintel and KITTI datasets with substantially better computational and memory efficiency.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "RAFT: Recurrent All-Pairs Field Transforms for Optical Flow",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European conference on computer vision",
+      "authors": "Zachary Teed and Jia Deng",
+      "orig_title": "Raft: Recurrent all-pairs field transforms for optical flow",
+      "paper_id": "2003.12039v3"
+    },
+    {
+      "index": 1,
+      "title": "Deep Equilibrium Models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neural Information Processing Systems (NeurIPS)",
+      "authors": "Shaojie Bai, J. Zico Kolter, and Vladlen Koltun",
+      "orig_title": "Deep equilibrium models",
+      "paper_id": "1909.01377v2"
+    },
+    {
+      "index": 2,
+      "title": "Learning to Estimate Hidden Motions with Global Motion Aggregation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "authors": "Shihao Jiang, Dylan Campbell, Yao Lu, Hongdong Li, and Richard Hartley",
+      "orig_title": "Learning to estimate hidden motions with global motion aggregation",
+      "paper_id": "2104.02409v3"
+    },
+    {
+      "index": 3,
+      "title": "An iterative image registration technique with an application to stereo vision",
+      "abstract": "",
+      "year": "1981",
+      "venue": "",
+      "authors": "Bruce D Lucas, Takeo Kanade, et al."
+    },
+    {
+      "index": 4,
+      "title": "Determining optical flow",
+      "abstract": "",
+      "year": "1981",
+      "venue": "Artificial intelligence",
+      "authors": "Berthold KP Horn and Brian G Schunck"
+    },
+    {
+      "index": 5,
+      "title": "FlowNet: Learning Optical Flow with Convolutional Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Alexey Dosovitskiy, Philipp Fischer, Eddy Ilg, Philip Hausser, Caner Hazirbas, Vladimir Golkov, Patrick Van Der Smagt, Daniel Cremers, and Thomas Brox",
+      "orig_title": "Flownet: Learning optical flow with convolutional networks",
+      "paper_id": "1504.06852v2"
+    },
+    {
+      "index": 6,
+      "title": "Maskflownet: Asymmetric feature matching with learnable occlusion mask",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Shengyu Zhao, Yilun Sheng, Yue Dong, Eric I Chang, Yan Xu, et al."
+    },
+    {
+      "index": 7,
+      "title": "A Lightweight Optical Flow CNN — Revisiting Data Fidelity and Regularization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1903.07414",
+      "authors": "Tak-Wai Hui, Xiaoou Tang, and Chen Change Loy",
+      "orig_title": "A lightweight optical flow cnn–revisiting data fidelity and regularization",
+      "paper_id": "1903.07414v3"
+    },
+    {
+      "index": 8,
+      "title": "Learning phrase representations using rnn encoder-decoder for statistical machine translation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Conference on Empirical Methods in Natural Language Processing (EMNLP 2014)",
+      "authors": "Kyunghyun Cho, B van Merrienboer, Caglar Gulcehre, F Bougares, H Schwenk, and Yoshua Bengio"
+    },
+    {
+      "index": 9,
+      "title": "Autoflow: Learning a better training set for optical flow",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Deqing Sun, Daniel Vlasic, Charles Herrmann, V. Jampani, Michael Krainin, Huiwen Chang, Ramin Zabih, William T. Freeman, and Ce Liu"
+    },
+    {
+      "index": 10,
+      "title": "Normalized Convolution Upsampling for Refined Optical Flow Estimation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2102.06979",
+      "authors": "Abdelrahman Eldesokey and Michael Felsberg",
+      "orig_title": "Normalized convolution upsampling for refined optical flow estimation",
+      "paper_id": "2102.06979v1"
+    },
+    {
+      "index": 11,
+      "title": "Learning Optical Flow from a Few Matches",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Shihao Jiang, Yao Lu, Hongdong Li, and Richard I. Hartley",
+      "orig_title": "Learning optical flow from a few matches",
+      "paper_id": "2104.02166v1"
+    },
+    {
+      "index": 12,
+      "title": "Backpropagation through time: what it does and how to do it",
+      "abstract": "",
+      "year": "1990",
+      "venue": "IEEE",
+      "authors": "Paul J Werbos"
+    },
+    {
+      "index": 13,
+      "title": "Multiscale Deep Equilibrium Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Neural Information Processing Systems (NeurIPS)",
+      "authors": "Shaojie Bai, Vladlen Koltun, and J. Zico Kolter",
+      "orig_title": "Multiscale Deep Equilibrium Models",
+      "paper_id": "2006.08656v2"
+    },
+    {
+      "index": 14,
+      "title": "Monotone operator equilibrium networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Neural Information Processing Systems (NeurIPS)",
+      "authors": "Ezra Winston and J. Zico Kolter",
+      "orig_title": "Monotone operator equilibrium networks",
+      "paper_id": "2006.08591v2"
+    },
+    {
+      "index": 15,
+      "title": "On the Theory of Implicit Deep Learning: Global Convergence with Implicit Layers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Kenji Kawaguchi",
+      "orig_title": "On the Theory of Implicit Deep Learning: Global Convergence with Implicit Layers",
+      "paper_id": "2102.07346v2"
+    },
+    {
+      "index": 16,
+      "title": "Deep implicit layers tutorial - neural ODEs, deep equilibirum models, and beyond",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Neural Information Processing Systems Tutorial",
+      "authors": "J. Zico Kolter, David Duvenaud, and Matthew Johnson"
+    },
+    {
+      "index": 17,
+      "title": "A Class of Methods for Solving Nonlinear Simultaneous Equations",
+      "abstract": "",
+      "year": "1965",
+      "venue": "Mathematics of computation",
+      "authors": "Charles G Broyden"
+    },
+    {
+      "index": 18,
+      "title": "Iterative procedures for nonlinear integral equations",
+      "abstract": "",
+      "year": "1965",
+      "venue": "Journal of the ACM (JACM)",
+      "authors": "Donald G. Anderson"
+    },
+    {
+      "index": 19,
+      "title": "Optical flow estimation",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Handbook of mathematical models in computer vision",
+      "authors": "David Fleet and Yair Weiss"
+    },
+    {
+      "index": 20,
+      "title": "Is Attention Better Than Matrix Decomposition?",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Zhengyang Geng, Meng-Hao Guo, Hongxu Chen, Xia Li, Ke Wei, and Zhouchen Lin"
+    },
+    {
+      "index": 21,
+      "title": "Fixed Point Networks: Implicit Depth Models with Jacobian-Free Backprop",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.12803",
+      "authors": "Samy Wu Fung, Howard Heaton, Qiuwei Li, Daniel McKenzie, Stanley J. Osher, and Wotao Yin"
+    },
+    {
+      "index": 22,
+      "title": "On Training Implicit Models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ArXiv",
+      "authors": "Zhengyang Geng, Xin-Yu Zhang, Shaojie Bai, Yisen Wang, and Zhouchen Lin",
+      "orig_title": "On training implicit models",
+      "paper_id": "2111.05177v4"
+    },
+    {
+      "index": 23,
+      "title": "Learning optical flow from still images",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Filippo Aleotti, Matteo Poggi, and Stefano Mattoccia"
+    },
+    {
+      "index": 24,
+      "title": "Neural Ordinary Differential Equations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Neural Information Processing Systems (NeurIPS)",
+      "authors": "Tian Qi Chen, Yulia Rubanova, Jesse Bettencourt, and David K Duvenaud",
+      "orig_title": "Neural ordinary differential equations",
+      "paper_id": "1806.07366v5"
+    },
+    {
+      "index": 25,
+      "title": "Stabilizing Equilibrium Models by Jacobian Regularization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Shaojie Bai, Vladlen Koltun, and J. Zico Kolter"
+    },
+    {
+      "index": 26,
+      "title": "Vision meets robotics: The kitti dataset",
+      "abstract": "",
+      "year": "2013",
+      "venue": "The International Journal of Robotics Research",
+      "authors": "Andreas Geiger, Philip Lenz, Christoph Stiller, and Raquel Urtasun"
+    },
+    {
+      "index": 27,
+      "title": "A framework for the robust estimation of optical flow",
+      "abstract": "",
+      "year": "1993",
+      "venue": "International Conference on Computer Vision",
+      "authors": "Michael J Black and Padmanabhan Anandan"
+    },
+    {
+      "index": 28,
+      "title": "A duality based approach for realtime tv-l1 optical flow",
+      "abstract": "",
+      "year": "2007",
+      "venue": "DAGM-Symposium",
+      "authors": "Christopher Zach, Thomas Pock, and Horst Bischof"
+    },
+    {
+      "index": 29,
+      "title": "An improved algorithm for tv-l 1 optical flow",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Statistical and Geometrical Approaches to Visual Motion Analysis",
+      "authors": "Andreas Wedel, Thomas Pock, Christopher Zach, Horst Bischof, and Daniel Cremers"
+    },
+    {
+      "index": 30,
+      "title": "Large displacement optical flow: Descriptor matching in variational motion estimation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Thomas Brox and Jitendra Malik"
+    },
+    {
+      "index": 31,
+      "title": "Discrete optimization for optical flow",
+      "abstract": "",
+      "year": "2015",
+      "venue": "GCPR",
+      "authors": "Moritz Menze, Christian Heipke, and Andreas Geiger"
+    },
+    {
+      "index": 32,
+      "title": "Full Flow: Optical Flow Estimation By Global Optimization over Regular Grids",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Qifeng Chen and Vladlen Koltun",
+      "orig_title": "Full flow: Optical flow estimation by global optimization over regular grids",
+      "paper_id": "1604.03513v1"
+    },
+    {
+      "index": 33,
+      "title": "Accurate optical flow via direct cost volume processing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Jia Xu, René Ranftl, and Vladlen Koltun"
+    },
+    {
+      "index": 34,
+      "title": "Pwc-net: Cnns for optical flow using pyramid, warping, and cost volume",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Deqing Sun, Xiaodong Yang, Ming-Yu Liu, and Jan Kautz"
+    },
+    {
+      "index": 35,
+      "title": "Models Matter, So Does Training: An Empirical Study of CNNs for Optical Flow Estimation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1809.05571",
+      "authors": "Deqing Sun, Xiaodong Yang, Ming-Yu Liu, and Jan Kautz",
+      "orig_title": "Models matter, so does training: An empirical study of cnns for optical flow estimation",
+      "paper_id": "1809.05571v1"
+    },
+    {
+      "index": 36,
+      "title": "LiteFlowNet: A Lightweight Convolutional Neural Network for Optical Flow Estimation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Tak-Wai Hui, Xiaoou Tang, and Chen Change Loy",
+      "orig_title": "Liteflownet: A lightweight convolutional neural network for optical flow estimation",
+      "paper_id": "1805.07036v1"
+    },
+    {
+      "index": 37,
+      "title": "FlowNet 2.0: Evolution of Optical Flow Estimation with Deep Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Eddy Ilg, Nikolaus Mayer, Tonmoy Saikia, Margret Keuper, Alexey Dosovitskiy, and Thomas Brox",
+      "orig_title": "Flownet 2.0: Evolution of optical flow estimation with deep networks",
+      "paper_id": "1612.01925v1"
+    },
+    {
+      "index": 38,
+      "title": "Volumetric correspondence networks for optical flow",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Gengshan Yang and Deva Ramanan"
+    },
+    {
+      "index": 39,
+      "title": "Optical flow estimation using a spatial pyramid network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Anurag Ranjan and Michael J Black"
+    },
+    {
+      "index": 40,
+      "title": "Separable flow: Learning motion cost volumes for optical flow estimation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "authors": "Feihu Zhang, Oliver J. Woodford, Victor Adrian Prisacariu, and Philip H.S. Torr"
+    },
+    {
+      "index": 41,
+      "title": "Learning Optical Flow from a Few Matches",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Shihao Jiang, Yao Lu, Hongdong Li, and Richard Hartley",
+      "orig_title": "Learning optical flow from a few matches",
+      "paper_id": "2104.02166v1"
+    },
+    {
+      "index": 42,
+      "title": "OptNet: Differentiable Optimization as a Layer in Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Brandon Amos and J. Zico Kolter",
+      "orig_title": "OptNet: Differentiable optimization as a layer in neural networks",
+      "paper_id": "1703.00443v5"
+    },
+    {
+      "index": 43,
+      "title": "Implicit deep learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv:1908.06315",
+      "authors": "Laurent El Ghaoui, Fangda Gu, Bertrand Travacca, and Armin Askari"
+    },
+    {
+      "index": 44,
+      "title": "Augmented Neural ODEs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neural Information Processing Systems (NeurIPS)",
+      "authors": "Emilien Dupont, Arnaud Doucet, and Yee Whye Teh",
+      "orig_title": "Augmented neural ODEs",
+      "paper_id": "1904.01681v3"
+    },
+    {
+      "index": 45,
+      "title": "Implicit Normalizing Flows",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Cheng Lu, Jianfei Chen, Chongxuan Li, Qiuhao Wang, and Jun Zhu",
+      "orig_title": "Implicit normalizing flows",
+      "paper_id": "2103.09527v1"
+    },
+    {
+      "index": 46,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Neural Information Processing Systems (NeurIPS)",
+      "authors": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 47,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 48,
+      "title": "Implicit Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2009.06211",
+      "authors": "Fangda Gu, Heng Chang, Wenwu Zhu, Somayeh Sojoudi, and Laurent El Ghaoui",
+      "orig_title": "Implicit graph neural networks",
+      "paper_id": "2009.06211v3"
+    },
+    {
+      "index": 49,
+      "title": "Convergent graph solvers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.01680",
+      "authors": "Junyoung Park, Jinhyun Choo, and Jinkyoo Park"
+    },
+    {
+      "index": 50,
+      "title": "EIGNN: Efficient Infinite-Depth Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Juncheng Liu, Kenji Kawaguchi, Bryan Hooi, Yiwei Wang, and Xiaokui Xiao",
+      "orig_title": "EIGNN: Efficient infinite-depth graph neural networks",
+      "paper_id": "2202.10720v1"
+    },
+    {
+      "index": 51,
+      "title": "The implicit function theorem: History, theory, and applications",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Springer",
+      "authors": "Steven G Krantz and Harold R Parks"
+    },
+    {
+      "index": 52,
+      "title": "Learning differential equations that are easy to solve",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Neural Information Processing Systems (NeurIPS)",
+      "authors": "Jacob Kelly, Jesse Bettencourt, Matthew James Johnson, and David Duvenaud",
+      "orig_title": "Learning differential equations that are easy to solve",
+      "paper_id": "2007.04504v2"
+    },
+    {
+      "index": 53,
+      "title": "A stochastic estimator of the trace of the influence matrix for laplacian smoothing splines",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Communications in Statistics-Simulation and Computation",
+      "authors": "Michael F Hutchinson"
+    },
+    {
+      "index": 54,
+      "title": "A naturalistic open source movie for optical flow evaluation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "European conference on computer vision",
+      "authors": "Daniel J Butler, Jonas Wulff, Garrett B Stanley, and Michael J Black"
+    },
+    {
+      "index": 55,
+      "title": "A Large Dataset to Train Convolutional Networks for Disparity, Optical Flow, and Scene Flow Estimation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Nikolaus Mayer, Eddy Ilg, Philip Hausser, Philipp Fischer, Daniel Cremers, Alexey Dosovitskiy, and Thomas Brox",
+      "orig_title": "A large dataset to train convolutional networks for disparity, optical flow, and scene flow estimation",
+      "paper_id": "1512.02134v1"
+    },
+    {
+      "index": 56,
+      "title": "The hci benchmark suite: Stereo and flow ground truth with uncertainties for urban autonomous driving",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR Workshop",
+      "authors": "Daniel Kondermann, Rahul Nair, Katrin Honauer, Karsten Krispin, Jonas Andrulis, Alexander Brock, Burkhard Gussefeld, Mohsen Rahimimoghaddam, Sabine Hofmann, Claus Brenner, et al."
+    },
+    {
+      "index": 57,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neural Information Processing Systems (NeurIPS)",
+      "authors": "Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala",
+      "orig_title": "PyTorch: An Imperative Style, High-performance Deep Learning Library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 58,
+      "title": "Neural deep equilibrium solvers",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Shaojie Bai, Vladlen Koltun, and J Zico Kolter"
+    },
+    {
+      "index": 59,
+      "title": "A stochastic estimator of the trace of the influence matrix for laplacian smoothing splines",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Communications in Statistics-Simulation and Computation",
+      "authors": "Michael F Hutchinson"
+    }
+  ]
+}

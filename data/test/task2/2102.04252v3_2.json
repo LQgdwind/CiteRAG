@@ -1,0 +1,445 @@
+{
+  "paper_id": "2102.04252v3",
+  "title": "HINT: Hierarchical Interaction Network for Clinical Trial Outcome Prediction",
+  "sections": {
+    "input embedding module": "In this section, we describe the raw data and input representation learning.\nRaw data used for trial outcome prediction come from three different sources, namely (1) drug molecules, (2) disease information and (3) trial protocols. 1. Drug molecules are important for predicting trial outcomes. The drug molecules are represented by SMILES strings or molecule graphs. There are many existing works in embedding drug molecules into latent vectors including knowledge base approach such as Morgan fingerprint and its variants , or representation learning methods for SMILES strings [ref]43 and molecule graphs    .\nHINT supports all three types of molecule embeddings. Formally, we represent all molecules 𝕄={m1,⋯,mNm}𝕄subscript𝑚1⋯subscript𝑚subscript𝑁𝑚\\mathbb{M}=\\{m_{1},\\cdots,m_{N_{m}}\\} as drug (molecule) embedding where fm​(⋅)subscript𝑓𝑚⋅f_{m}(\\cdot) is the molecule embedding function and we average all molecule embeddings from a trial to get the drug embedding vector.\nOur experiments show that average is a better aggregation function than summation for drug embedding.\nThe molecule embedding function fmsubscript𝑓𝑚f_{m} can be any of the above drug embedding methods. HINT supports Morgan fingerprint , SMILES encoder [ref]43, graph message passing neural network (MPNN) 6  for creating the drug embedding. 2. Disease information can also affect the trial outcome.\nFor example, drugs in oncology have much lower approval rate than ones in infectious diseases .\nThe disease information comes from its description and its corresponding ontology such as disease hierarchies like International Classification of Diseases (ICD) . Formally, we represent all diseases 𝔻={d1,⋯,dNd}𝔻subscript𝑑1⋯subscript𝑑subscript𝑁𝑑\\mathbb{D}=\\{d_{1},\\cdots,d_{N_{d}}\\} (Eq. 2) as disease embedding, where GRAM​(di)GRAMsubscript𝑑𝑖\\text{GRAM}(d_{i}) represent an embedding of disease disubscript𝑑𝑖d_{i} using GRAM (graph-based attention model) .\nGRAM is designed to leverage the hierarchical information inherent to medical ontologies and succesfully used in predictive phenotyping  [ref]18. Specifically, the representation of current disease disubscript𝑑𝑖d_{i} is a convex combination of the basic embeddings (𝐞∈ℝd𝐞superscriptℝ𝑑\\mathbf{e}\\in\\mathbb{R}^{d}) of itself and its ancestors, i.e, where αj​i∈ℝ+subscript𝛼𝑗𝑖subscriptℝ\\alpha_{ji}\\in\\mathbb{R}_{+} represents the attention weight and we have where g1​(⋅)subscript𝑔1⋅g_{1}(\\cdot) is a feed-forward network with a single hidden layer, following . Ancestors​(i)Ancestors𝑖\\text{Ancestors}(i) represents the set of all the ancestors of i𝑖i.\nAn ancestor of code represent a higher-level category of the current code.\nFor example, in ICD 10 code , “D41” (urinary organs neoplasm) and “D41.2” (ureter neoplasm) are the ancestors of “D41.20” (right ureter neoplasm).\n“C34” (malignant neoplasm of bronchus and lung) and “C34.9” (malignant neoplasm of unspecified part of bronchus or lung) are the ancestors of “C34.91” (malignant neoplasm of unspecified part of right bronchus or lung). 3. Trial protocol is a document that describes how a clinical trial will be conducted, includes eligibility criteria, which describes the patient recruitment requirements.\nEligibility criteria contain both inclusion and exclusion criteria denoted by Eq. (3), where 𝐜iIsubscriptsuperscript𝐜𝐼𝑖{\\bm{\\mathbf{c}}}^{I}_{i} and 𝐜jEsubscriptsuperscript𝐜𝐸𝑗{\\bm{\\mathbf{c}}}^{E}_{j} denote the i𝑖i-th and j𝑗j-th sentence in inclusion and exclusion criteria, respectively. To convert the criteria sentences into embedding vectors, we apply\nClinical-BERT  5 which is a domain-specific version of BERT . Then we use 4 one-dimensional convolutional layers  0 (denoted Conv1d) with different kernel sizes (k1,⋯,k4subscript𝑘1⋯subscript𝑘4k_{1},\\cdots,k_{4}) to capture semantics at 4 different granularity level. Specifically, 𝐒Isuperscript𝐒𝐼\\mathbf{S}^{I} and 𝐒Esuperscript𝐒𝐸\\mathbf{S}^{E} are fed into four one-dimensional convolutional layers and the output are concatenated as Then a one-layer fully connected neural network (denoted by FC​(⋅)FC⋅\\text{FC}(\\cdot)) is used to build the protocol embedding 𝐡psubscript𝐡𝑝\\mathbf{h}_{p} based on the concatenation of 𝐩Isuperscript𝐩𝐼\\mathbf{p}^{I} and 𝐩Esuperscript𝐩𝐸\\mathbf{p}^{E}, Thus, the protocol embedding is written as"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Blood-brain barrier permeation models: discriminating between potential cns and non-cns drugs including p-glycoprotein substrates",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Journal of chemical information and computer sciences",
+      "authors": "Marc Adenot and Roger Lahana"
+    },
+    {
+      "index": 1,
+      "title": "Publicly Available Clinical BERT Embeddings",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.03323",
+      "authors": "Emily Alsentzer, John R Murphy, Willie Boag, Wei-Hung Weng, Di Jin, Tristan Naumann, and Matthew McDermott",
+      "orig_title": "Publicly available clinical bert embeddings",
+      "paper_id": "1904.03323v3"
+    },
+    {
+      "index": 2,
+      "title": "Welcome to the icd-10 code for sarcopenia",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Journal of cachexia, sarcopenia and muscle",
+      "authors": "Stefan D Anker et al."
+    },
+    {
+      "index": 3,
+      "title": "Integrated deep learned transcriptomic and structure-based predictor of clinical trials outcomes",
+      "abstract": "",
+      "year": "2016",
+      "venue": "BioRxiv",
+      "authors": "Artem V Artemov et al."
+    },
+    {
+      "index": 4,
+      "title": "Doctor2Vec: Dynamic Doctor Representation Learning for Clinical Trial Recruitment",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "S. Biswal et al.",
+      "orig_title": "Doctor2vec: Dynamic doctor representation learning for clinical trial recruitment",
+      "paper_id": "1911.10395v1"
+    },
+    {
+      "index": 5,
+      "title": "Molecular fingerprint similarity search in virtual screening",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Methods",
+      "authors": "Adrià Cereto-Massagué et al."
+    },
+    {
+      "index": 6,
+      "title": "Bootstrap methods",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": "Michael R Chernick et al."
+    },
+    {
+      "index": 7,
+      "title": "GRAM: Graph-based Attention Model for Healthcare Representation Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "KDD",
+      "authors": "Edward Choi et al.",
+      "orig_title": "Gram: graph-based attention model for healthcare representation learning",
+      "paper_id": "1611.07012v3"
+    },
+    {
+      "index": 8,
+      "title": "Convolutional embedding of attributed molecular graphs for physical property prediction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of chemical information and modeling",
+      "authors": "Connor W Coley, Regina Barzilay, William H Green, Tommi S Jaakkola, and Klavs F Jensen"
+    },
+    {
+      "index": 9,
+      "title": "Discriminative embeddings of latent variable models for structured data",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML",
+      "authors": "Hanjun Dai et al."
+    },
+    {
+      "index": 10,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NAACL-HLT",
+      "authors": "Jacob Devlin et al.",
+      "orig_title": "Bert: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 11,
+      "title": "Admetlab: a platform for systematic admet evaluation based on a comprehensively collected admet database",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of cheminformatics",
+      "authors": "Jie Dong et al."
+    },
+    {
+      "index": 12,
+      "title": "Interpretable Molecular Graph Generation via Monotonic Constraints",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2203.00412",
+      "authors": "Yuanqi Du, Xiaojie Guo, Amarda Shehu, and Liang Zhao",
+      "orig_title": "Interpretable molecular graph generation via monotonic constraints",
+      "paper_id": "2203.00412v1"
+    },
+    {
+      "index": 13,
+      "title": "Application of kpca and adaboost algorithm in classification of functional magnetic resonance imaging of alzheimer’s disease",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Neural Computing and Applications",
+      "authors": "Zhao Fan, Fanyu Xu, Cai Li, and Lili Yao"
+    },
+    {
+      "index": 14,
+      "title": "Fundamentals of clinical trials",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer",
+      "authors": "Lawrence M Friedman, Curt D Furberg, David L DeMets, David M Reboussin, and Christopher B Granger"
+    },
+    {
+      "index": 15,
+      "title": "Differentiable Scaffolding Tree for Molecular Optimization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Tianfan Fu, Wenhao Gao, Cao Xiao, Jacob Yasonik, Connor W Coley, and Jimeng Sun",
+      "orig_title": "Differentiable scaffolding tree for molecular optimization",
+      "paper_id": "2109.10469v2"
+    },
+    {
+      "index": 16,
+      "title": "MIMOSA: Multi-constraint molecule sampling for molecule optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "Tianfan Fu, Cao Xiao, Xinhao Li, Lucas M Glass, and Jimeng Sun"
+    },
+    {
+      "index": 17,
+      "title": "Probabilistic and dynamic molecule-disease interaction modeling for drug discovery",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM SIGKDD Conference on Knowledge Discovery & Data Mining",
+      "authors": "Tianfan Fu, Cao Xiao, Cheng Qian, Lucas M Glass, and Jimeng Sun"
+    },
+    {
+      "index": 18,
+      "title": "CORE: Automatic Molecule Optimization Using Copy & Refine Strategy",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "Tianfan Fu, Cao Xiao, and Jimeng Sun",
+      "orig_title": "Core: Automatic molecule optimization using copy & refine strategy",
+      "paper_id": "1912.05910v1"
+    },
+    {
+      "index": 19,
+      "title": "COMPOSE: Cross-Modal Pseudo-Siamese Network for Patient Trial Matching",
+      "abstract": "",
+      "year": "2020",
+      "venue": "KDD",
+      "authors": "Junyi Gao, Cao Xiao, Lucas M Glass, and Jimeng Sun",
+      "orig_title": "Compose: Cross-modal pseudo-siamese network for patient trial matching",
+      "paper_id": "2006.08765v1"
+    },
+    {
+      "index": 20,
+      "title": "A data-driven approach to predicting successes and failures of clinical trials",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Cell chemical biology",
+      "authors": "Kaitlyn M Gayvert, Neel S Madhukar, and Olivier Elemento"
+    },
+    {
+      "index": 21,
+      "title": "Modeling admet",
+      "abstract": "",
+      "year": "2016",
+      "venue": "In Silico Methods for Predicting Drug Toxicity",
+      "authors": "Jayeeta Ghosh et al."
+    },
+    {
+      "index": 22,
+      "title": "Clinical development success rates for investigational drugs",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Nat. Biotechnol.",
+      "authors": "Michael Hay et al."
+    },
+    {
+      "index": 23,
+      "title": "Predicting successes and failures of clinical trials with an ensemble ls-svr",
+      "abstract": "",
+      "year": "2020",
+      "venue": "medRxiv",
+      "authors": "Zhen Yu Hong, Jooyong Shim, Woo Chan Son, and Changha Hwang"
+    },
+    {
+      "index": 24,
+      "title": "ClinicalBERT: Modeling Clinical Notes and Predicting Hospital Readmission",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv:1904.05342",
+      "authors": "Kexin Huang et al.",
+      "orig_title": "Clinicalbert: Modeling clinical notes and predicting hospital readmission",
+      "paper_id": "1904.05342v3"
+    },
+    {
+      "index": 25,
+      "title": "DeepPurpose: A Deep Learning Library for Drug-Target Interaction Prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Bioinformatics",
+      "authors": "Kexin Huang et al.",
+      "orig_title": "Deeppurpose: a deep learning library for drug–target interaction prediction",
+      "paper_id": "2004.08919v3"
+    },
+    {
+      "index": 26,
+      "title": "Junction Tree Variational Autoencoder for Molecular Graph Generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Wengong Jin, Regina Barzilay, and Tommi Jaakkola",
+      "orig_title": "Junction tree variational autoencoder for molecular graph generation",
+      "paper_id": "1802.04364v4"
+    },
+    {
+      "index": 27,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "Diederik P Kingma and Jimmy Ba"
+    },
+    {
+      "index": 28,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Thomas N Kipf and Max Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 29,
+      "title": "4 ways to fix the clinical trial: clinical trials are crumbling under modern economic and scientific pressures. nature looks at ways they might be saved",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Nature",
+      "authors": "Heidi Ledford"
+    },
+    {
+      "index": 30,
+      "title": "Machine learning with statistical imputation for predicting drug approvals",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Harvard Data Science Review",
+      "authors": "Andrew W. Lo, Kien Wei Siah, and Chi Heem Wong"
+    },
+    {
+      "index": 31,
+      "title": "Prediction models of human plasma protein binding rate and oral bioavailability derived by using ga–cg–svm method",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of pharmaceutical and biomedical analysis",
+      "authors": "Chang-Ying Ma et al."
+    },
+    {
+      "index": 32,
+      "title": "How much do clinical trials cost?",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Nat. Rev. Drug Discov.",
+      "authors": "Linda Martin et al."
+    },
+    {
+      "index": 33,
+      "title": "Clinical trial methodology",
+      "abstract": "",
+      "year": "1978",
+      "venue": "Nature",
+      "authors": "Richard Peto"
+    },
+    {
+      "index": 34,
+      "title": "e-drug3d: 3d structure collections dedicated to drug repurposing and fragment-based drug design",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Bioinformatics",
+      "authors": "Emilie Pihan et al."
+    },
+    {
+      "index": 35,
+      "title": "Predicting phase 3 clinical trial results by modeling phase 2 clinical trial subject level data using deep learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proceedings of Machine Learning Research",
+      "authors": "Youran Qi and Qi Tang"
+    },
+    {
+      "index": 36,
+      "title": "Evaluation of a Machine Learning Model Based on Pretreatment Symptoms and Electroencephalographic Features to Predict Outcomes of Antidepressant Treatment in Adults With Depression: A Prespecified Secondary Analysis of a Randomized Clinical Trial",
+      "abstract": "",
+      "year": "2020",
+      "venue": "JAMA Network Open",
+      "authors": "Pranav Rajpurkar et al."
+    },
+    {
+      "index": 37,
+      "title": "Toxcast chemical landscape: paving the road to 21st century toxicology",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Chemical research in toxicology",
+      "authors": "Ann M Richard et al."
+    },
+    {
+      "index": 38,
+      "title": "Training very deep networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NIPS",
+      "authors": "Rupesh Kumar Srivastava et al."
+    },
+    {
+      "index": 39,
+      "title": "Clinical development success rates 2006–2015",
+      "abstract": "",
+      "year": "2016",
+      "venue": "BIO Industry Analysis",
+      "authors": "David W Thomas, Justin Burns, John Audette, Adam Carroll, Corey Dow-Hygelund, and Michael Hay"
+    },
+    {
+      "index": 40,
+      "title": "A deep neural network approach to predicting clinical outcomes of neuroblastoma patients",
+      "abstract": "",
+      "year": "2019",
+      "venue": "bioRxiv",
+      "authors": "Léon-Charles Tranchevent, Francisco Azuaje, and Jagath C. Rajapakse"
+    },
+    {
+      "index": 41,
+      "title": "Comprehensive characterization of cytochrome p450 isozyme selectivity across chemical libraries",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Nature biotechnology",
+      "authors": "Henrike Veith, Noel Southall, Ruili Huang, Tim James, Darren Fayne, Natalia Artemenko, Min Shen, James Inglese, Christopher P Austin, David G Lloyd, et al."
+    },
+    {
+      "index": 42,
+      "title": "SMILES-BERT: large scale unsupervised pre-training for molecular property prediction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM BCB",
+      "authors": "Sheng Wang et al."
+    },
+    {
+      "index": 43,
+      "title": "Bitcoin Transaction Forecasting with Deep Network Representation Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Emerging Topics in Computing",
+      "authors": "Wenqi Wei, Qi Zhang, and Ling Liu",
+      "orig_title": "Bitcoin transaction forecasting with deep network representation learning",
+      "paper_id": "2007.07993v2"
+    },
+    {
+      "index": 44,
+      "title": "Drugbank 5.0: a major update to the drugbank database for 2018",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Nucleic acids research",
+      "authors": "David S Wishart et al."
+    },
+    {
+      "index": 45,
+      "title": "Identifying the status of genetic lesions in cancer clinical trial documents using machine learning",
+      "abstract": "",
+      "year": "2012",
+      "venue": "BMC genomics",
+      "authors": "Yonghui Wu et al."
+    },
+    {
+      "index": 46,
+      "title": "Stochastic gradient boosted distributed decision trees",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CIKM",
+      "authors": "Jerry Ye, Jyh-Herng Chow, Jiang Chen, and Zhaohui Zheng"
+    },
+    {
+      "index": 47,
+      "title": "End-to-end convolutional semantic embeddings",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Quanzeng You, Zhengyou Zhang, and Jiebo Luo"
+    },
+    {
+      "index": 48,
+      "title": "Patient-trial matching with deep embedding and entailment prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "WWW",
+      "authors": "Xingyao Zhang et al."
+    },
+    {
+      "index": 49,
+      "title": "PyHealth: A Python Library for Health Predictive Models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2101.04209",
+      "authors": "Yue Zhao, Zhi Qiao, Cao Xiao, Lucas Glass, and Jimeng Sun",
+      "orig_title": "Pyhealth: A python library for health predictive models",
+      "paper_id": "2101.04209v1"
+    },
+    {
+      "index": 50,
+      "title": "Network representation learning: From preprocessing, feature extraction to node embedding",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Computing Surveys (CSUR)",
+      "authors": "Jingya Zhou, Ling Liu, Wenqi Wei, and Jianxi Fan"
+    }
+  ]
+}

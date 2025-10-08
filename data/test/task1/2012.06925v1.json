@@ -1,0 +1,501 @@
+{
+  "paper_id": "2012.06925v1",
+  "title": "A GPU-Accelerated Fast Summation Method Based on Barycentric Lagrange Interpolation and Dual Tree Traversal",
+  "abstract": "Abstract\nWe present the barycentric Lagrange dual tree traversal (BLDTT)\nfast summation method for particle interactions.\nThe scheme replaces well-separated particle-particle interactions\nby adaptively chosen\nparticle-cluster, cluster-particle, and cluster-cluster approximations\ngiven by barycentric Lagrange interpolation at proxy particles\non a Chebyshev grid in each cluster.\nThe BLDTT is kernel-independent\nand\nthe approximations can be efficiently mapped onto GPUs,\nwhere target particles provide an outer level of parallelism\nand\nsource particles provide an inner level of parallelism.\nWe present an OpenACC GPU implementation of the BLDTT\nwith MPI remote memory access for distributed memory parallelization.\nThe performance of the GPU-accelerated BLDTT is demonstrated for\ncalculations with different\nproblem sizes, particle distributions, geometric domains,\nand interaction kernels,\nas well as for unequal target and source particles.\nComparison with our earlier particle-cluster\nbarycentric Lagrange treecode (BLTC)\ndemonstrates the superior performance of the BLDTT.\nIn particular,\non a single GPU for problem sizes ranging from N𝑁N=1E5 to 1E8,\nthe BLTC has O​(N​log⁡N)𝑂𝑁𝑁O(N\\log N) scaling,\nwhile the BLDTT has O​(N)𝑂𝑁O(N) scaling.\nIn addition,\nMPI strong scaling results are presented for the BLTC and BLDTT\nusing N𝑁N=64E6 particles on up to 32 GPUs.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Computer Simulation Using Particles",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Taylor & Francis",
+      "authors": "R. W. Hockney, J. W. Eastwood"
+    },
+    {
+      "index": 1,
+      "title": "A smooth particle mesh Ewald method",
+      "abstract": "",
+      "year": "1995",
+      "venue": "J. Chem. Phys.",
+      "authors": "U. Essmann, L. Perera, M. Berkowitz, T. Darden, H. Lee, L. Pederson"
+    },
+    {
+      "index": 2,
+      "title": "An efficient program for many-body simulation",
+      "abstract": "",
+      "year": "1985",
+      "venue": "SIAM J. Sci. Stat. Comput.",
+      "authors": "A. W. Appel"
+    },
+    {
+      "index": 3,
+      "title": "A hierarchical O​(N​log⁡N)𝑂𝑁𝑁O(N\\log N) force-calculation algorithm",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Nature",
+      "authors": "J. E. Barnes, P. Hut"
+    },
+    {
+      "index": 4,
+      "title": "A fast algorithm for particle simulations",
+      "abstract": "",
+      "year": "1987",
+      "venue": "J. Comput. Phys.",
+      "authors": "L. Greengard, V. Rokhlin"
+    },
+    {
+      "index": 5,
+      "title": "A fast adaptive multipole algorithm in three dimensions",
+      "abstract": "",
+      "year": "1999",
+      "venue": "J. Comput. Phys.",
+      "authors": "H. Cheng, L. Greengard, V. Rokhlin"
+    },
+    {
+      "index": 6,
+      "title": "On the fast matrix multiplication in the boundary element method by panel clustering",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Numer. Math.",
+      "authors": "W. Hackbusch, Z. P. Nowak"
+    },
+    {
+      "index": 7,
+      "title": "Hierarchical Matrices: Algorithms and Analysis",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Spring",
+      "authors": "W. Hackbusch"
+    },
+    {
+      "index": 8,
+      "title": "Multilevel summation method for electrostatic force evaluation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "J. Chem. Theory Comput.",
+      "authors": "D. J. Hardy, Z. Wu, J. C. Phillips, J. E. Stone, R. D. Skeel, K. Schulten"
+    },
+    {
+      "index": 9,
+      "title": "A particle method and adaptive treecode for vortex sheet motion in three-dimensional flow",
+      "abstract": "",
+      "year": "2001",
+      "venue": "J. Comput. Phys.",
+      "authors": "K. Lindsay, R. Krasny"
+    },
+    {
+      "index": 10,
+      "title": "A hierarchical O​(N)𝑂𝑁O(N) force calculation algorithm",
+      "abstract": "",
+      "year": "2002",
+      "venue": "J. Comput. Phys.",
+      "authors": "W. Dehnen"
+    },
+    {
+      "index": 11,
+      "title": "The order of Appel’s algorithm",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Inf. Process. Lett.",
+      "authors": "K. Esselink"
+    },
+    {
+      "index": 12,
+      "title": "A task parallel implementation of fast multipole methods",
+      "abstract": "",
+      "year": "2012",
+      "venue": "2012 SC Companion: High Performance Computing, Networking Storage and Analysis",
+      "authors": "K. Taura, J. Nakashima, R. Yokota, N. Maruyama"
+    },
+    {
+      "index": 13,
+      "title": "An FMM based on dual tree traversal for many-core architectures",
+      "abstract": "",
+      "year": "2013",
+      "venue": "J. Algorithm Comput. Technol.",
+      "authors": "R. Yokota"
+    },
+    {
+      "index": 14,
+      "title": "A fast multipole method for stellar dynamics",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Comput. Astrophys. Cosmol.",
+      "authors": "W. Dehnen"
+    },
+    {
+      "index": 15,
+      "title": "Parallel dual tree traversal on multi-core and many-core architectures for astrophysical N-body simulations",
+      "abstract": "",
+      "year": "2014",
+      "venue": "20th Int. Eur. Conf. Parallel Distrib. Comput. (Euro-Par 2014)",
+      "authors": "B. Lange, P. Fortin"
+    },
+    {
+      "index": 16,
+      "title": "Optimizing the accuracy and efficiency of fast hierarchical multipole expansions for MD simulations",
+      "abstract": "",
+      "year": "2012",
+      "venue": "J. Chem. Theory Comput.",
+      "authors": "K. Lorenzen, M. Schwörer, P. Tröster, S. Mates, P. Tavan"
+    },
+    {
+      "index": 17,
+      "title": "The fast multipole method and point dipole moment polarizable force fields",
+      "abstract": "",
+      "year": "2015",
+      "venue": "J. Chem. Phys.",
+      "authors": "J. Coles, M. Masella"
+    },
+    {
+      "index": 18,
+      "title": "A new version of the fast multipole method for screened Coulomb interactions in three dimensions",
+      "abstract": "",
+      "year": "2002",
+      "venue": "J. Comput. Phys.",
+      "authors": "L. Greengard, J. Huang"
+    },
+    {
+      "index": 19,
+      "title": "An adaptive treecode for computing nonbonded potential energy in classical molecular systems",
+      "abstract": "",
+      "year": "2001",
+      "venue": "J. Comput. Chem.",
+      "authors": "Z.-H. Duan, R. Krasny"
+    },
+    {
+      "index": 20,
+      "title": "A Cartesian treecode for screened Coulomb interactions",
+      "abstract": "",
+      "year": "2009",
+      "venue": "J. Comput. Phys.",
+      "authors": "P. Li, H. Johnston, R. Krasny"
+    },
+    {
+      "index": 21,
+      "title": "An implementation of the fast multipole method without multipoles",
+      "abstract": "",
+      "year": "1992",
+      "venue": "SIAM J. Sci. Stat. Comput.",
+      "authors": "C. R. Anderson"
+    },
+    {
+      "index": 22,
+      "title": "Yet another fast multipole method without multipoles–pseudoparticle multipole method",
+      "abstract": "",
+      "year": "1999",
+      "venue": "J. Comput. Phys.",
+      "authors": "J. Makino"
+    },
+    {
+      "index": 23,
+      "title": "A kernel-independent adaptive fast multipole algorithm in two and three dimensions",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. Comput. Phys.",
+      "authors": "L. Ying, G. Biros, D. Zorin"
+    },
+    {
+      "index": 24,
+      "title": "The black-box fast multipole method",
+      "abstract": "",
+      "year": "2009",
+      "venue": "J. Comput. Phys.",
+      "authors": "W. Fong, E. Darve"
+    },
+    {
+      "index": 25,
+      "title": "Barycentric Lagrange interpolation",
+      "abstract": "",
+      "year": "2004",
+      "venue": "SIAM Rev.",
+      "authors": "J.-P. Berrut, L. N. Trefethen"
+    },
+    {
+      "index": 26,
+      "title": "A kernel-independent treecode based on barycentric Lagrange interpolation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Commun. Comput. Phys.",
+      "authors": "L. Wang, R. Krasny, S. Tlupova",
+      "orig_title": "A kernel-independent treecode based on barycentric Lagrange interpolation",
+      "paper_id": "1902.02250v2"
+    },
+    {
+      "index": 27,
+      "title": "Fast low-rank kernel matrix factorization using skeletonized interpolation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SIAM J. Sci. Comput.",
+      "authors": "L. Cambier, E. Darve"
+    },
+    {
+      "index": 28,
+      "title": "Interpolative decomposition via proxy points for kernel matrices",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIAM J. Matrix Anal. Appl.",
+      "authors": "X. Xing, E. Chow"
+    },
+    {
+      "index": 29,
+      "title": "H2Pack: High-performance ℋ2superscriptℋ2\\mathcal{H}^{2} matrix package for kernel matrices using the proxy point method",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Trans. Math. Softw.",
+      "authors": "H. Huang, X. Xing, E. Chow"
+    },
+    {
+      "index": 30,
+      "title": "A new parallel kernel-independent fast multipole method",
+      "abstract": "",
+      "year": "2003",
+      "venue": "2003 ACM/IEEE Conf. Supercomput. (SC03)",
+      "authors": "L. Ying, G. Biros, D. Zorin, H. Langston"
+    },
+    {
+      "index": 31,
+      "title": "A massively parallel adaptive fast multipole method on heterogeneous architectures",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Commun. ACM",
+      "authors": "I. Lashuk, A. Chandramowlishwaran, M. H. Langston, T.-A. Nguyen, R. Sampath, A. Shringarpure, R. Vuduc, L. Ying, D. Zorin, G. Biros"
+    },
+    {
+      "index": 32,
+      "title": "A kernel-independent FMM in general dimensions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Int. Conf. High Perf. Comput. Networking, Storage Anal. (SC15)",
+      "authors": "W. B. March, B. Xiao, S. Tharakan, C. D. Yu, G. Biros"
+    },
+    {
+      "index": 33,
+      "title": "PVFMM: A parallel kernel independent FMM for particle and volume potentials",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Commun. Comput. Phys.",
+      "authors": "D. Malhotra, G. Biros"
+    },
+    {
+      "index": 34,
+      "title": "Algorithm 967: A distributed-memory fast multipole method for volume potentials",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Trans. Math. Softw.",
+      "authors": "D. Malhotra, G. Biros"
+    },
+    {
+      "index": 35,
+      "title": "Optimization of the parallel black-box fast multipole method on CUDA",
+      "abstract": "",
+      "year": "2012",
+      "venue": "2012 Innov. Parallel Comput. (InPar)",
+      "authors": "T. Takahashi, C. Cecka, E. Darve"
+    },
+    {
+      "index": 36,
+      "title": "N-body simulation on GPUs",
+      "abstract": "",
+      "year": "2006",
+      "venue": "2006 ACM/IEEE Conf. Supercomput. (SC06)",
+      "authors": "E. Elsen, M. Houston, V. Vishal, E. Darve, P. Hanrahan, V. Pande"
+    },
+    {
+      "index": 37,
+      "title": "Fast N𝑁{N}-body simulation with CUDA",
+      "abstract": "",
+      "year": "2009",
+      "venue": "GPU Gems, Vol. 3",
+      "authors": "L. Nyland, M. Harris, J. Prins"
+    },
+    {
+      "index": 38,
+      "title": "42 TFlops hierarchical N-body simulations on GPUs with applications in both astrophysics and turbulence",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Int. Conf. High Perf. Comput. Networking, Storage Anal. (SC09)",
+      "authors": "T. Hamada, T. Narumi, R. Yokota, K. Yasuoka, K. Nitadori, M. Taiji"
+    },
+    {
+      "index": 39,
+      "title": "An efficient CUDA implementation of the tree-based Barnes Hut n𝑛n-body algorithm",
+      "abstract": "",
+      "year": "2011",
+      "venue": "GPU Computing Gems Emerald Edition, Morgan Kaufmann/Elsevier",
+      "authors": "M. Burtscher, K. Pingali"
+    },
+    {
+      "index": 40,
+      "title": "Comparing the treecode with FMM on GPUs for vortex particle simulations of a leapfrogging vortex ring",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Comput. Fluids.",
+      "authors": "R. Yokota, L. A. Barba"
+    },
+    {
+      "index": 41,
+      "title": "Biomolecular electrostatics using a fast multipole BEM on up to 512 GPUs and a billion unknowns",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Comput. Phys. Commun.",
+      "authors": "R. Yokota, J. P. Bardhan, M. G. Knepley, L. A. Barba, T. Hamada"
+    },
+    {
+      "index": 42,
+      "title": "A sparse octree gravitational n𝑛n-body code that runs entirely on the GPU processor",
+      "abstract": "",
+      "year": "2012",
+      "venue": "J. Comput. Phys.",
+      "authors": "J. Bédorf, E. Gaburov, S. P. Zwart"
+    },
+    {
+      "index": 43,
+      "title": "24.77 Pflops on a Gravitational Tree-Code to Simulate the Milky Way Galaxy with 18600 GPUs",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Int. Conf. High Perf. Comput. Networking, Storage Anal. (SC14)",
+      "authors": "J. Bédorf, E. Gaburov, M. S. Fujii, K. Nitadori, T. Ishiyama, S. P. Zwart",
+      "orig_title": "24.77 Pflops on a gravitational tree-code to simulate the Milky Way Galaxy with 1860 GPUs",
+      "paper_id": "1412.0659v1"
+    },
+    {
+      "index": 44,
+      "title": "Hierarchical Matrix Operations on GPUs: Matrix-Vector Multiplication and Compression",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Trans. Math. Softw.",
+      "authors": "W. Boukaram, G. Turkiyyah, D. Keyes",
+      "orig_title": "Hierarchical matrix operations on GPUs: Matrix-vector multiplication and compression",
+      "paper_id": "1902.01829v1"
+    },
+    {
+      "index": 45,
+      "title": "Randomized GPU algorithms for the construction of hierarchical matrices from matrix-vector operations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SIAM J. Sci. Comput.",
+      "authors": "W. Boukaram, G. Turkiyyah, D. Keyes"
+    },
+    {
+      "index": 46,
+      "title": "A GPU-accelerated barycentric Lagrange treecode",
+      "abstract": "",
+      "year": "2020",
+      "venue": "21st IEEE Int. Workshop Parallel Distrib. Sci. Eng. Comput. (PDSEC 2020)",
+      "authors": "N. Vaughn, L. Wilson, R. Krasny"
+    },
+    {
+      "index": 47,
+      "title": "Hierarchical N𝑁N-body simulations with autotuning for heterogeneous systems",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Comput. Sci. Eng.",
+      "authors": "R. Yokota, L. A. Barba"
+    },
+    {
+      "index": 48,
+      "title": "Dual tree traversal on integrated GPUs for astrophysical N-body simulations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Int. J. High Perform. Comput. Appl.",
+      "authors": "P. Fortin, M. Touche"
+    },
+    {
+      "index": 49,
+      "title": "BaryTree (2020)",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "N. Vaugh, L. Wilson, R. Krasny"
+    },
+    {
+      "index": 50,
+      "title": "Lagrangian interpolation at the Chebyshev points xn,ν≡cos⁡(ν​π/n),ν=0​(1)​nformulae-sequencesubscript𝑥𝑛𝜈𝜈𝜋𝑛𝜈01𝑛x_{n,\\nu}\\equiv\\cos(\\nu\\pi/n),\\nu=0(1)n; some unnoted advantages",
+      "abstract": "",
+      "year": "1972",
+      "venue": "Comput. J.",
+      "authors": "H. E. Salzer"
+    },
+    {
+      "index": 51,
+      "title": "Astrophysical N-body simulations using hierarchical tree data structures",
+      "abstract": "",
+      "year": "1992",
+      "venue": "1992 ACM/IEEE Conf. Supercomput. (SC92)",
+      "authors": "M. S. Warren, J. K. Salmon"
+    },
+    {
+      "index": 52,
+      "title": "The Zoltan Project (2020)",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "The Zoltan Project Team"
+    },
+    {
+      "index": 53,
+      "title": "The Zoltan and Isorropia parallel toolkits for combinatorial scientific computing: Partitioning, ordering, and coloring",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Sci. Program.",
+      "authors": "E. G. Boman, U. V. Catalyurek, C. Chevalier, K. D. Devine"
+    },
+    {
+      "index": 54,
+      "title": "On the problem of distribution in globular star clusters",
+      "abstract": "",
+      "year": "1911",
+      "venue": "Mon. Not. R. Astr. Soc.",
+      "authors": "H. C. Plummer"
+    },
+    {
+      "index": 55,
+      "title": "A completely analytical family of anisotropic Plummer models",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Mon. Not. R. Astr. Soc.",
+      "authors": "H. Dejonghe"
+    },
+    {
+      "index": 56,
+      "title": "Cartesian treecode algorithms for electrostatic interactions in molecular dynamics simulations",
+      "abstract": "",
+      "year": "2010",
+      "venue": "University of Michigan",
+      "authors": "H. A. Boateng"
+    },
+    {
+      "index": 57,
+      "title": "Comparison of treecodes for computing electrostatic potentials in charged particle systems with disjoint targets and sources",
+      "abstract": "",
+      "year": "2013",
+      "venue": "J. Comput. Chem.",
+      "authors": "H. A. Boateng, R. Krasny"
+    },
+    {
+      "index": 58,
+      "title": "A treecode based on barycentric hermite interpolation for electrostatic particle interactions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Comput. Math. Biophys.",
+      "authors": "R. Krasny, L. Wang"
+    },
+    {
+      "index": 59,
+      "title": "A treecode-accelerated boundary integral Poisson–Boltzmann solver for electrostatics of solvated biomolecules",
+      "abstract": "",
+      "year": "2013",
+      "venue": "J. Comput. Phys.",
+      "authors": "W. Geng, R. Krasny"
+    },
+    {
+      "index": 60,
+      "title": "Treecode-accelerated Green iteration for Kohn–Sham density functional theory",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv e-prints",
+      "authors": "N. Vaughn, V. Gavini, R. Krasny"
+    }
+  ]
+}

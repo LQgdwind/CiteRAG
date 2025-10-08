@@ -1,0 +1,467 @@
+{
+  "paper_id": "2307.01610v1",
+  "title": "Overconfidence is a Dangerous Thing: Mitigating Membership Inference Attacks by Enforcing Less Confident Prediction",
+  "sections": {
+    "iv-a experimental setup": "Datasets.\nWe consider five common benchmark datasets, and we describe them below. Purchase100 [ref]37 includes 197,324 shopping records of customers, each with 600 binary features indicating whether a specific item is purchased.\nThe goal is to predict the customer’s shopping habits (100 different classes in total). Texas100 [ref]37 contains 67,330 hospital discharge records, each containing 6,170 binary features indicating whether the patient has a particular symptom or not.\nThe data is divided into 100 classes, and the goal is to predict the treatment given the patient’s symptoms. Location30 [ref]37 contains the location “check-in” records of different individuals. It has 5,010 data records with 446 binary features, each of which corresponds to a certain loation type and indicates whether the individual has visited that particular location. The goal is to predict the user’s geosocial type (30 classes in total). CIFAR100  is an image classification dataset that has 60,000 images in 100 object classes. Each image has a size of 32×\\times32×\\times3. CIFAR10  is similar to CIFAR100 that also contains 60,000 images but with 10 different object classes. We follow [ref]36 to use the fully-connected (FC) networks on Purchase100, Texas100 and Location30, and a DenseNet-12  on CIFAR100 and CIFAR10 (Appendix A-H conducts evaluation on more network architectures, including ResNet-18 , MobileNet  and ShuffleNet ).\nPurchase100 is trained with 20,000 samples, Texas100 with 15,000 samples, Location30 with 1,500 samples, CIFAR100 and CIFAR10 are with 25,000 samples. Section V-B reports additional experiments on more training sizes (from 2,500 to 50,000). Attacks.\nWe consider all nine attacks as in Section II-C.\nFor NN-based attack, we use the black-box NSH attack from Nasr et al. , which uses the model loss, logit values from the target model, and the ground-truth label to train an attack inference model.\nWe consider the loss-based attack from Yeom et al.  and confidence-, entropy- and modified-entropy-based attacks as in Song et al. .\nFor LiRA [ref]3, we train 128 shadow models for each defense (64 IN and OUT models each), where each shadow model is trained following the same procedure as the targeted defense (as per our threat model).\nE.g., for HAMP, this means the shadow model is trained with the same high-entropy soft labels and the entropy-based regularization as the defense model, and the shadow model also performs the same output modification as HAMP does. We consider the boundary and augmentation attacks from Choquette et al. .\nFor the boundary attack on the two image datasets, we use the CW2 attack  to generate adversarial samples and derive the perturbation magnitude threshold to distinguish members and non-members.\nLikewise, for the other three non-image datasets that contain binary features, we compute the sample’s robustness to random noise instead of adversarial perturbation.\nFor each sample x𝑥x, we generate hundreds of noisy variants of x𝑥x, and the number of correctly classified noisy variants of x𝑥x is used to determine a threshold that best distinguishes between members and non-members.\nFor augmentation attack, we consider image translation as the augmentation method, and we similarly consider different degrees of translation to find the best attack. HAMP configuration.\nγ,α𝛾𝛼\\gamma,\\alpha are the two parameters in configuring HAMP (for generating high-entropy soft labels and controlling the strength of regularization respectively).\nWe perform grid search to select the parameters (γ∈[0.5,0.99],α∈[0.0001,0.5]formulae-sequence𝛾0.50.99𝛼0.00010.5\\gamma\\in[0.5,0.99],\\alpha\\in[0.0001,0.5]), and select the one with small train-validation gap and high validation accuracy.\nWe also conduct evaluation to study how HAMP’s performance varies under different parameters (please see Appendix A-E). For the testing-time defense, we generate random samples (e.g., random pixels in  ) and perform output modification as in Section III-D. There are no any other requirements. Our code is available at https://github.com/DependableSystemsLab/MIA_defense_HAMP. Related defenses.\nWe consider seven major defenses: AdvReg , MemGuard , DMP [ref]36, SELENA , Early stopping  , Label Smoothing (LS)  and DP-SGD .\nWe follow the original work to set up the defenses unless otherwise stated (more details in Appendix A-A). Evaluation metrics.\nAn ideal privacy defense should provide strong protection for both members and non-members, for which we follow the best practice [ref]3 to consider (1) attack true positive rate (TPR) evaluated at 0.1% false positive rate (FPR), which evaluates the protection for members, and (2) attack true negative rate (TNR) at 0.1% false negative rate (FNR), which quantifies the protection for non-members. Result organization.\nTable I reports the model accuracy for every defense.\nFig. 3 compares each defense in terms of their membership privacy and model utility.\nEach defense is evaluated with multiple attacks, and we report the ones that achieve the highest attack TPR or TNR (detailed results for each attack are in Appendix A-K).\nFig. 4 presents the average attack AUC (area under curve) by each defense, and the full ROC curves are in Appendix A-J.\nWe leave the comparison with early stopping in Appendix A-D due to space constraint.\nSection V-A presents an ablation study, and Appendix A-F reports training and inference overhead evaluation.\nWe next discuss the results by comparing HAMP with other defenses."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Pytorch opacus",
+      "abstract": "",
+      "year": "",
+      "venue": "https://github.com/pytorch/opacus",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Deep Learning with Differential Privacy",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM SIGSAC conference on computer and communications security",
+      "authors": "M. Abadi, A. Chu, I. Goodfellow, H. B. McMahan, I. Mironov, K. Talwar, and L. Zhang",
+      "orig_title": "Deep learning with differential privacy",
+      "paper_id": "1607.00133v2"
+    },
+    {
+      "index": 2,
+      "title": "Membership Inference Attacks From First Principles",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Symposium on Security and Privacy (SP)",
+      "authors": "N. Carlini, S. Chien, M. Nasr, S. Song, A. Terzis, and F. Tramer",
+      "orig_title": "Membership inference attacks from first principles",
+      "paper_id": "2112.03570v2"
+    },
+    {
+      "index": 3,
+      "title": "Extracting Training Data from Large Language Models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "USENIX Security Symposium (USENIX Security 21)",
+      "authors": "N. Carlini, F. Tramer, E. Wallace, M. Jagielski, A. Herbert-Voss, K. Lee, A. Roberts, T. Brown, D. Song, U. Erlingsson et al.",
+      "orig_title": "Extracting training data from large language models",
+      "paper_id": "2012.07805v2"
+    },
+    {
+      "index": 4,
+      "title": "Towards evaluating the robustness of neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE symposium on security and privacy (sp)",
+      "authors": "N. Carlini and D. Wagner"
+    },
+    {
+      "index": 5,
+      "title": "Overfitting in neural nets: Backpropagation, conjugate gradient, and early stopping",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Advances in neural information processing systems",
+      "authors": "R. Caruana, S. Lawrence, and L. Giles"
+    },
+    {
+      "index": 6,
+      "title": "Gan-leaks: A taxonomy of membership inference attacks against generative models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM SIGSAC conference on computer and communications security",
+      "authors": "D. Chen, N. Yu, Y. Zhang, and M. Fritz"
+    },
+    {
+      "index": 7,
+      "title": "Label-Only Membership Inference Attacks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "C. A. Choquette-Choo, F. Tramer, N. Carlini, and N. Papernot",
+      "orig_title": "Label-only membership inference attacks",
+      "paper_id": "2007.14321v3"
+    },
+    {
+      "index": 8,
+      "title": "Knowledge Cross-Distillation for Membership Privacy",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2111.01363",
+      "authors": "R. Chourasia, B. Enkhtaivan, K. Ito, J. Mori, I. Teranishi, and H. Tsuchida",
+      "orig_title": "Knowledge cross-distillation for membership privacy",
+      "paper_id": "2111.01363v3"
+    },
+    {
+      "index": 9,
+      "title": "Model inversion attacks that exploit confidence information and basic countermeasures",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM SIGSAC conference on computer and communications security",
+      "authors": "M. Fredrikson, S. Jha, and T. Ristenpart"
+    },
+    {
+      "index": 10,
+      "title": "Privacy in pharmacogenetics: An end-to-end case study of personalized warfarin dosing",
+      "abstract": "",
+      "year": "2014",
+      "venue": "USENIX Security Symposium (USENIX Security 14)",
+      "authors": "M. Fredrikson, E. Lantz, S. Jha, S. Lin, D. Page, and T. Ristenpart"
+    },
+    {
+      "index": 11,
+      "title": "Property inference attacks on fully connected neural networks using permutation invariant representations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM SIGSAC conference on computer and communications security",
+      "authors": "K. Ganju, Q. Wang, W. Yang, C. A. Gunter, and N. Borisov"
+    },
+    {
+      "index": 12,
+      "title": "Logan: Membership inference attacks against generative models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Privacy Enhancing Technologies (PoPETs)",
+      "authors": "J. Hayes, L. Melis, G. Danezis, and E. De Cristofaro"
+    },
+    {
+      "index": 13,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 14,
+      "title": "Mobilenets: Efficient convolutional neural networks for mobile vision applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1704.04861",
+      "authors": "A. G. Howard, M. Zhu, B. Chen, D. Kalenichenko, W. Wang, T. Weyand, M. Andreetto, and H. Adam"
+    },
+    {
+      "index": 15,
+      "title": "Densely connected convolutional networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "G. Huang, Z. Liu, L. Van Der Maaten, and K. Q. Weinberger"
+    },
+    {
+      "index": 16,
+      "title": "Practical Blind Membership Inference Attack via Differential Comparisons",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2101.01341",
+      "authors": "B. Hui, Y. Yang, H. Yuan, P. Burlina, N. Z. Gong, and Y. Cao",
+      "orig_title": "Practical blind membership inference attack via differential comparisons",
+      "paper_id": "2101.01341v2"
+    },
+    {
+      "index": 17,
+      "title": "Revisiting Membership Inference Under Realistic Assumptions",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Privacy Enhancing Technologies",
+      "authors": "B. Jayaraman, L. Wang, K. Knipmeyer, Q. Gu, and D. Evans",
+      "orig_title": "Revisiting membership inference under realistic assumptions",
+      "paper_id": "2005.10881v5"
+    },
+    {
+      "index": 18,
+      "title": "Memguard: Defending against black-box membership inference attacks via adversarial examples",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM SIGSAC conference on computer and communications security",
+      "authors": "J. Jia, A. Salem, M. Backes, Y. Zhang, and N. Z. Gong"
+    },
+    {
+      "index": 19,
+      "title": "When does data augmentation help with membership inference attacks?",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Y. Kaya and T. Dumitras"
+    },
+    {
+      "index": 20,
+      "title": "The megaface benchmark: 1 million faces for recognition at scale",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "I. Kemelmacher-Shlizerman, S. M. Seitz, D. Miller, and E. Brossard"
+    },
+    {
+      "index": 21,
+      "title": "Machine learning applications in cancer prognosis and prediction",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Computational and structural biotechnology journal",
+      "authors": "K. Kourou, T. P. Exarchos, K. P. Exarchos, M. V. Karamouzis, and D. I. Fotiadis"
+    },
+    {
+      "index": 22,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "A. Krizhevsky, G. Hinton et al."
+    },
+    {
+      "index": 23,
+      "title": "A simple weight decay can improve generalization",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Krogh and J. A. Hertz"
+    },
+    {
+      "index": 24,
+      "title": "Stolen memories: Leveraging model memorization for calibrated white-box membership inference",
+      "abstract": "",
+      "year": "2020",
+      "venue": "USENIX Security Symposium (USENIX Security 20)",
+      "authors": "K. Leino and M. Fredrikson"
+    },
+    {
+      "index": 25,
+      "title": "Membership Inference Attacks and Defenses in Classification Models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM Conference on Data and Application Security and Privacy",
+      "authors": "J. Li, N. Li, and B. Ribeiro",
+      "orig_title": "Membership inference attacks and defenses in classification models",
+      "paper_id": "2002.12062v3"
+    },
+    {
+      "index": 26,
+      "title": "Membership Leakage in Label-Only Exposures",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "Z. Li and Y. Zhang",
+      "orig_title": "Membership leakage in label-only exposures",
+      "paper_id": "2007.15528v3"
+    },
+    {
+      "index": 27,
+      "title": "EncoderMI: Membership Inference against Pre-trained Encoders in Contrastive Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "H. Liu, J. Jia, W. Qu, and N. Z. Gong",
+      "orig_title": "Encodermi: Membership inference against pre-trained encoders in contrastive learning",
+      "paper_id": "2108.11023v1"
+    },
+    {
+      "index": 28,
+      "title": "Machine Learning with Membership Privacy using Adversarial Regularization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "M. Nasr, R. Shokri, and A. Houmansadr",
+      "orig_title": "Machine learning with membership privacy using adversarial regularization",
+      "paper_id": "1807.05852v1"
+    },
+    {
+      "index": 29,
+      "title": "Comprehensive Privacy Analysis of Deep Learning: Passive and Active White-box Inference Attacks against Centralized and Federated Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE symposium on security and privacy (SP)",
+      "authors": "M. Nasr, R. Shokri, and A. Houmansadr",
+      "orig_title": "Comprehensive privacy analysis of deep learning: Passive and active white-box inference attacks against centralized and federated learning",
+      "paper_id": "1812.00910v2"
+    },
+    {
+      "index": 30,
+      "title": "The application of data mining techniques in financial fraud detection: A classification framework and an academic review of literature",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Decision support systems",
+      "authors": "E. W. Ngai, Y. Hu, Y. H. Wong, Y. Chen, and X. Sun"
+    },
+    {
+      "index": 31,
+      "title": "Semi-supervised Knowledge Transfer for Deep Learning from Private Training Data",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1610.05755",
+      "authors": "N. Papernot, M. Abadi, U. Erlingsson, I. Goodfellow, and K. Talwar",
+      "orig_title": "Semi-supervised knowledge transfer for deep learning from private training data",
+      "paper_id": "1610.05755v4"
+    },
+    {
+      "index": 32,
+      "title": "Tempered Sigmoid Activations for Deep Learning with Differential Privacy",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "N. Papernot, A. Thakurta, S. Song, S. Chien, and Ú. Erlingsson",
+      "orig_title": "Tempered sigmoid activations for deep learning with differential privacy",
+      "paper_id": "2007.14191v1"
+    },
+    {
+      "index": 33,
+      "title": "Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1511.06434",
+      "authors": "A. Radford, L. Metz, and S. Chintala",
+      "orig_title": "Unsupervised representation learning with deep convolutional generative adversarial networks",
+      "paper_id": "1511.06434v2"
+    },
+    {
+      "index": 34,
+      "title": "Membership inference attack against differentially private deep learning model.",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Trans. Data Priv.",
+      "authors": "M. A. Rahman, T. Rahman, R. Laganière, N. Mohammed, and Y. Wang"
+    },
+    {
+      "index": 35,
+      "title": "Membership Privacy for Machine Learning Models Through Knowledge Transfer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "V. Shejwalkar and A. Houmansadr",
+      "orig_title": "Membership privacy for machine learning models through knowledge transfer",
+      "paper_id": "1906.06589v3"
+    },
+    {
+      "index": 36,
+      "title": "Membership Inference Attacks Against Machine Learning Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Symposium on Security and Privacy (SP)",
+      "authors": "R. Shokri, M. Stronati, C. Song, and V. Shmatikov",
+      "orig_title": "Membership inference attacks against machine learning models",
+      "paper_id": "1610.05820v2"
+    },
+    {
+      "index": 37,
+      "title": "Systematic Evaluation of Privacy Risks of Machine Learning Models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "USENIX Security Symposium (USENIX Security 21)",
+      "authors": "L. Song and P. Mittal",
+      "orig_title": "Systematic evaluation of privacy risks of machine learning models",
+      "paper_id": "2003.10595v2"
+    },
+    {
+      "index": 38,
+      "title": "Dropout: a simple way to prevent neural networks from overfitting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "The journal of machine learning research",
+      "authors": "N. Srivastava, G. Hinton, A. Krizhevsky, I. Sutskever, and R. Salakhutdinov"
+    },
+    {
+      "index": 39,
+      "title": "Rethinking the inception architecture for computer vision",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "C. Szegedy, V. Vanhoucke, S. Ioffe, J. Shlens, and Z. Wojna"
+    },
+    {
+      "index": 40,
+      "title": "Mitigating Membership Inference Attacks by Self-Distillation Through a Novel Ensemble Architecture",
+      "abstract": "",
+      "year": "2022",
+      "venue": "USENIX Security Symposium (USENIX Security 22)",
+      "authors": "X. Tang, S. Mahloujifar, L. Song, V. Shejwalkar, M. Nasr, A. Houmansadr, and P. Mittal",
+      "orig_title": "Mitigating membership inference attacks by Self-Distillation through a novel ensemble architecture",
+      "paper_id": "2110.08324v1"
+    },
+    {
+      "index": 41,
+      "title": "Truth Serum: Poisoning Machine Learning Models to Reveal Their Secrets",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "F. Tramèr, R. Shokri, A. San Joaquin, H. Le, M. Jagielski, S. Hong, and N. Carlini",
+      "orig_title": "Truth serum: Poisoning machine learning models to reveal their secrets",
+      "paper_id": "2204.00032v2"
+    },
+    {
+      "index": 42,
+      "title": "Stealing Machine Learning Models via Prediction APIs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX Security Symposium (USENIX Security 16)",
+      "authors": "F. Tramèr, F. Zhang, A. Juels, M. K. Reiter, and T. Ristenpart",
+      "orig_title": "Stealing machine learning models via prediction apis",
+      "paper_id": "1609.02943v2"
+    },
+    {
+      "index": 43,
+      "title": "Data-free model extraction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "J.-B. Truong, P. Maini, R. J. Walls, and N. Papernot"
+    },
+    {
+      "index": 44,
+      "title": "Modeling tabular data using conditional gan",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neural Information Processing Systems",
+      "authors": "L. Xu, M. Skoularidou, A. Cuesta-Infante, and K. Veeramachaneni"
+    },
+    {
+      "index": 45,
+      "title": "Defending Model Inversion and Membership Inference Attacks via Prediction Purification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2005.03915",
+      "authors": "Z. Yang, B. Shao, B. Xuan, E.-C. Chang, and F. Zhang",
+      "orig_title": "Defending model inversion and membership inference attacks via prediction purification",
+      "paper_id": "2005.03915v2"
+    },
+    {
+      "index": 46,
+      "title": "Enhanced membership inference attacks against machine learning models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2111.09679",
+      "authors": "J. Ye, A. Maddi, S. K. Murakonda, V. Bindschaedler, and R. Shokri"
+    },
+    {
+      "index": 47,
+      "title": "Privacy risk in machine learning: Analyzing the connection to overfitting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE 31st Computer Security Foundations Symposium (CSF)",
+      "authors": "S. Yeom, I. Giacomelli, M. Fredrikson, and S. Jha"
+    },
+    {
+      "index": 48,
+      "title": "Membership inference attacks against recommender systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "M. Zhang, Z. Ren, Z. Wang, P. Ren, Z. Chen, P. Hu, and Y. Zhang"
+    },
+    {
+      "index": 49,
+      "title": "ShuffleNet: An Extremely Efficient Convolutional Neural Network for Mobile Devices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "X. Zhang, X. Zhou, M. Lin, and J. Sun",
+      "orig_title": "Shufflenet: An extremely efficient convolutional neural network for mobile devices",
+      "paper_id": "1707.01083v2"
+    },
+    {
+      "index": 50,
+      "title": "Inference Attacks Against Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "USENIX Security Symposium (USENIX Security)",
+      "authors": "Z. Zhang, M. Chen, M. Backes, Y. Shen, and Y. Zhang",
+      "orig_title": "Inference attacks against graph neural networks",
+      "paper_id": "2110.02631v1"
+    }
+  ]
+}

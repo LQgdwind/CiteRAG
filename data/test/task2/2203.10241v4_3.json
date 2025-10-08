@@ -1,0 +1,431 @@
+{
+  "paper_id": "2203.10241v4",
+  "title": "Intersection Queries for Flat Semi-Algebraic Objects in Three Dimensions and Related ProblemsAn abridged preliminary version of this work appeared in the Proceedings of the 38th Symposium on Computational Geometry (SoCG), 2022. Work by P. K. A. partially supported by NSF grants IIS-18-14493 and CCF-20-07556. Work by B. A. partially supported by NSF Grants CCF-15-40656 and CCF-20-08551, and by Grant 2014/170 from the US-Israel Binational Science Foundation. Work by E. E. partially supported by NSF CAREER under Grant CCF:AF-1553354 and by Grants 824/17 and 800/22 from the Israel Science Foundation. Work by M. K. partially supported by Grant 1884/16 from the Israel Science Foundation, and by Grants 2019715 and CCF-20-08551 from the US-Israel Binational Science Foundation/US National Science Foundation. Work by M. S. partially supported by Grant 260/18 from the Israel Science Foundation.",
+  "sections": {
+    "our results": "We present efficient data structures for (Q1)–(Q3) instances of intersection searching that perform significantly better than the best known methods, which one can obtain using the range-searching technique mentioned above.\nWe stress that for most settings such data structures have not been studied yet.\nTo further illustrate the versatility of our approach, we present a data structure for segment-intersection\nsearching amid a set of spherical caps, as an illustration to the case when input objects are not planar. As for previously studied intersection-searching problems such as segment-segment intersection searching\nin ℝ2superscriptℝ2\\mathbb{R}^{2} or segment-triangle intersection searching in ℝ3superscriptℝ3\\mathbb{R}^{3},\nwe aim to develop faster data structures by\nexpressing the arc-plate intersection condition (for Q1-instances, say) as a semi-algebraic predicate in which each atomic\npredicate uses only few of the parameters of a plate or of an arc,\nthereby attaining a small reduced parametric dimension.\n(The total number of parameters needed to represent a plate\nis typically quite large because of the parameters needed to specify its boundary.)\nFor instance, if the input (resp. query) objects are plates, then ideally we would like to reduce\ntosubscript𝑡𝑜{t_{o}} (resp. tqsubscript𝑡𝑞{t_{q}}) to 333, the number of parameters needed to represent the plane containing the plate,\nand eliminate the dependence on the parameters needed to represent the boundary.\nSeveral technical challenges arise in accomplishing this goal because the arc-plate intersection predicate could be quite complex, for example, because an arc may intersect a plate several times. One of the main technical contributions of this work is to develop a general approach that\naddresses this challenge by combining the polynomial-partitioning technique with a battery of tools\nfrom range searching and real algebraic geometry.\nThe most interesting among these tools is the construction of a carefully tailored\ncylindrical algebraic decomposition (CAD) (see   ) in a suitable parametric space. We\nexploit for this purpose the full power of CAD (see below). Other more efficient\ndecomposition schemes, such as vertical decomposition, do not seem to work.\nThese tools enable us to reduce the original intersection-searching problem to simpler ones and to eliminate the asymptotic dependence on the boundary parameters completely in many cases, thereby improving tosubscript𝑡𝑜{t_{o}} and tqsubscript𝑡𝑞{t_{q}} significantly, e.g., to three for the case of\nplates. Another major contribution of this paper is the description of the multi-level data structure (mentioned above) for a fairly general semi-algebraic-predicate searching that allows space/query-time trade-off,\nusing the recent techniques for semi-algebraic range searching based on the\npolynomial partition method   (see Appendix A). Although this approach is\nsimilar to the multi-level partition trees described in  , extending it\nto polynomial-partitioning based data structures is nontrivial and, as far as we know,\nit has not been described in any previous paper.333We comment that the recent work in  presents a space/query-time trade-off for point objects and semi-algebraic queries, but the analysis presented in this paper is much more general and subsumes the\nbounds obtained in .\nWe regard the careful and detailed presentation of this general machinery, as presented in Appendix A, as another major contribution of this paper, and hope (or rather convinced) that it will find additional applications to other problems. Table 1 summarizes the main results of the paper.\nFor simplicity, we mostly focus on answering intersection-detection queries,\nwhere we want to determine whether a query object intersects any input object of 𝒯𝒯\\mathscr{T}.\nOur data structures extend to answering intersection-reporting queries, where we wish to\nreport all objects of 𝒯𝒯\\mathscr{T} that the query object intersects.\nBy combining our intersection-detection data structures with the\nparametric-search framework of Agarwal and Matoušek , we can also answer extremal intersection\nqueries with one degree of freedom. For example, we can answer arc-shooting queries, an extension of well studied ray-shooting queries, amid a set of plates, where\nfor a directed query arc γ𝛾\\gamma, the goal is to find the first intersection point of γ𝛾\\gamma\nwith the plates as we walk along γ𝛾\\gamma.\nMost of the data structures extend to answering intersection-counting queries as well,\nwithin the same asymptotic time bound.444More generally, we can use the so-called semi-group model, i.e., the setup where given a semigroup (S,+)𝑆(S,+), each\ninput object is assigned a weight which is an element of S𝑆S. For a query object γ𝛾\\gamma, the query procedure\nreturns the “sum” of weights of the\ninput objects intersected by the query object. For example, if the\nsemigroup is (ℝ,max)ℝ(\\mathbb{R},\\max), it returns the maximum-weight input plate/arc intersected by a query arc/plate.\n\nIn the table, and elsewhere in the paper, when we say that an intersection query can be\nanswered in O∗​(t​(n))superscript𝑂𝑡𝑛O^{*}(t(n)) time, we mean\nthat detection, counting, and extremal queries can be answered in O∗​(t​(n))superscript𝑂𝑡𝑛O^{*}(t(n)) time\nand reporting queries in O∗​(t​(n))+O​(k)superscript𝑂𝑡𝑛𝑂𝑘O^{*}(t(n))+O(k) time, where k𝑘k is the output size.\nWe note that we use an enhanced version of the real RAM model of\ncomputation  for our algorithms, in which we assume that various operations on\npolynomials of fixed constant degree can be performed in O​(1)𝑂1O(1) time. In the rest of this section, we describe the specific results we obtain, compare them with the best-known\nbounds or rather with best bounds achievable with known (recent) techniques, and briefly sketch the key ideas\nthat lead to the improved bounds.\nBut we first need a definition: We refer to a connected path γ𝛾\\gamma as a parametrized (algebraic) arc if it is the restriction of a real algebraic curve σ:I→ℝ3:𝜎→𝐼superscriptℝ3\\sigma\\colon I\\rightarrow\\mathbb{R}^{3}, where I𝐼I is either the real axis or the unit circle,\nto a subinterval [a,b]⊆I𝑎𝑏𝐼[a,b]\\subseteq I.\nThe parametric dimension t𝑡t of γ𝛾\\gamma is the number of real parameters needed\nto describe γ𝛾\\gamma.\nTwo of these parameters, namely a𝑎a, b𝑏b, specify the respective endpoints σ​(a)𝜎𝑎\\sigma(a) and σ​(b)𝜎𝑏\\sigma(b).\nWe assume that the degree of the polynomials defining σ𝜎\\sigma is also bounded by some constant, the dependence on which will only show up in the constants hiding in the O∗​(⋅)superscript𝑂⋅O^{*}(\\cdot) notation.\nSee Section 2 for a more detailed discussion on the parametrization of algebraic arcs.555Many of the data structures described in this paper work even with an implicit representation of the query arcs, i.e.,\nthe curve supporting a query arc is described as an equation F​(x,y,z)=0𝐹𝑥𝑦𝑧0F(x,y,z)=0, where F∈ℝ​[x,y,z]𝐹ℝ𝑥𝑦𝑧F\\in\\mathbb{R}[x,y,z] is a\npolynomial. It is known that any algebraic curve in ℝ3superscriptℝ3\\mathbb{R}^{3} can be described as f​(x,y)=0𝑓𝑥𝑦0f(x,y)=0 and\nz=g1​(x,y)/g2​(x,y)𝑧subscript𝑔1𝑥𝑦subscript𝑔2𝑥𝑦z=g_{1}(x,y)/g_{2}(x,y), where f,g1,g2𝑓subscript𝑔1subscript𝑔2f,g_{1},g_{2} are polynomials and g2≢0not-equivalent-tosubscript𝑔20g_{2}\\not\\equiv 0, and that such a\nrepresentation can be computed efficiently [ref]2 . However, for simplicity, throughout this paper we\nassume that we have a uni-parametric representation of the query arcs.\n"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Automatic parameterization of rational curves and surfaces III: algebraic plane curves",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Comput. Aided Geom. Des.",
+      "authors": "S. S. Abhyankar and C. L. Bajaj"
+    },
+    {
+      "index": 1,
+      "title": "Automatic parameterization of rational curves and surfaces IV: algebraic space curves",
+      "abstract": "",
+      "year": "1989",
+      "venue": "ACM Trans. Graph.",
+      "authors": "S. S. Abhyankar and C. L. Bajaj"
+    },
+    {
+      "index": 2,
+      "title": "Lower Bounds for Semialgebraic Range Searching and Stabbing Problems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "37th Intl. Sympos. Comput. Geom.",
+      "authors": "P. Afshani and P. Cheng",
+      "orig_title": "Lower bounds for semialgebraic range searching and stabbing problems",
+      "paper_id": "2012.00704v3"
+    },
+    {
+      "index": 3,
+      "title": "On Semialgebraic Range Reporting",
+      "abstract": "",
+      "year": "2022",
+      "venue": "38th Intl. Sympos. Comput. Geom.",
+      "authors": "P. Afshani and P. Cheng",
+      "orig_title": "On semialgebraic range reporting",
+      "paper_id": "2203.07096v2"
+    },
+    {
+      "index": 4,
+      "title": "Lower Bounds for Intersection Reporting among Flat Objects",
+      "abstract": "",
+      "year": "2023",
+      "venue": "39th Intl. Sympos. Comput. Geom.",
+      "authors": "P. Afshani and P. Cheng",
+      "orig_title": "Lower bounds for intersection reporting among flat objects",
+      "paper_id": "2302.11433v1"
+    },
+    {
+      "index": 5,
+      "title": "Ray shooting and other applications of spanning trees with low stabbing number",
+      "abstract": "",
+      "year": "1992",
+      "venue": "SIAM J. Comput.",
+      "authors": "P. K. Agarwal"
+    },
+    {
+      "index": 6,
+      "title": "Simplex range searching and its variants: A review",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journey through Discrete Mathematics: A Tribute to Jiří Matoušek",
+      "authors": "P. K. Agarwal"
+    },
+    {
+      "index": 7,
+      "title": "An efficient algorithm for generalized polynomial partitioning and its applications",
+      "abstract": "",
+      "year": "2021",
+      "venue": "SIAM J. Comput.",
+      "authors": "P. K. Agarwal, B. Aronov, E. Ezra, and J. Zahl"
+    },
+    {
+      "index": 8,
+      "title": "Stabbing triangulations by lines in 3D",
+      "abstract": "",
+      "year": "1995",
+      "venue": "11th Annu. Sympos. on Computational Geometry",
+      "authors": "P. K. Agarwal, B. Aronov, and S. Suri"
+    },
+    {
+      "index": 9,
+      "title": "Geometric range searching and its relatives",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Advances in Discrete and Computational Geometry",
+      "authors": "P. K. Agarwal and J. Erickson"
+    },
+    {
+      "index": 10,
+      "title": "On range searching with semialgebraic sets",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "P. K. Agarwal and J. Matousek"
+    },
+    {
+      "index": 11,
+      "title": "Ray shooting and parameric search",
+      "abstract": "",
+      "year": "1993",
+      "venue": "SIAM J. Comput.",
+      "authors": "P. K. Agarwal and J. Matoušek"
+    },
+    {
+      "index": 12,
+      "title": "On range searching with semialgebraic sets II",
+      "abstract": "",
+      "year": "2013",
+      "venue": "SIAM J. Comput.",
+      "authors": "P. K. Agarwal, J. Matoušek, and M. Sharir"
+    },
+    {
+      "index": 13,
+      "title": "Ray shooting amidst convex polyhedra and polyhedral terrains in three dimensions",
+      "abstract": "",
+      "year": "1996",
+      "venue": "SIAM J. Comput.",
+      "authors": "P. K. Agarwal and M. Sharir"
+    },
+    {
+      "index": 14,
+      "title": "Efficient algorithms for approximating polygonal chains",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "P. K. Agarwal and K. R. Varadarajan"
+    },
+    {
+      "index": 15,
+      "title": "Constructive polynomial partitioning for algebraic curves in ℝ3superscriptℝ3\\mathbb{R}^{3} with applications",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIAM J. Comput.",
+      "authors": "B. Aronov, E. Ezra, and J. Zahl"
+    },
+    {
+      "index": 16,
+      "title": "Approximating minimum-weight triangulations in three dimensions",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "B. Aronov and S. Fortune"
+    },
+    {
+      "index": 17,
+      "title": "Eliminating depth cycles among triangles in three dimensions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "B. Aronov, E. Y. Miller, and M. Sharir"
+    },
+    {
+      "index": 18,
+      "title": "Algorithms in Real Algebraic Geometry",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Springer, Berlin",
+      "authors": "S. Basu, R. Pollack, and M.-F. Roy"
+    },
+    {
+      "index": 19,
+      "title": "Multidimensional divide-and-conquer",
+      "abstract": "",
+      "year": "1980",
+      "venue": "Commun. ACM",
+      "authors": "J. L. Bentley"
+    },
+    {
+      "index": 20,
+      "title": "Parametrization of algebraic space curves",
+      "abstract": "",
+      "year": "1997",
+      "venue": "J. Pure Applied Algebra.",
+      "authors": "T. G. Berry"
+    },
+    {
+      "index": 21,
+      "title": "Fast searching in a real algebraic manifold with applications to geometric complexity",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Intl. Joint Conf. Theory and Practice of Software Development",
+      "authors": "B. Chazelle"
+    },
+    {
+      "index": 22,
+      "title": "Quantifier elimination for the elementary theory of real closed fields by cylindrical algebraic decomposition",
+      "abstract": "",
+      "year": "1975",
+      "venue": "2nd GI Conf. Automata Theory and Formal Languages",
+      "authors": "G. E. Collins"
+    },
+    {
+      "index": 23,
+      "title": "Ideals, Varieties and Algorithms: An Introduction to Computational Algebraic Geometry and Commutative Algebra",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer, Berlin",
+      "authors": "D. Cox, J. Little, and D. O’Shea"
+    },
+    {
+      "index": 24,
+      "title": "Computational Geometry: Algorithms and Applications, 3rd Edition",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Springer, Berlin",
+      "authors": "M. de Berg, O. Cheong, M. J. van Kreveld, and M. H. Overmars"
+    },
+    {
+      "index": 25,
+      "title": "Efficient ray shooting and hidden surface removal",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Algorithmica",
+      "authors": "M. de Berg, D. Halperin, M. H. Overmars, J. Snoeyink, and M. J. van Kreveld"
+    },
+    {
+      "index": 26,
+      "title": "Space searching for intersecting objects",
+      "abstract": "",
+      "year": "1987",
+      "venue": "J. Algorithms",
+      "authors": "D. P. Dobkin and H. Edelsbrunner"
+    },
+    {
+      "index": 27,
+      "title": "Fast detection of polyhedral intersection",
+      "abstract": "",
+      "year": "1983",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "D. P. Dobkin and D. G. Kirkpatrick"
+    },
+    {
+      "index": 28,
+      "title": "Intersection searching amid tetrahedra in 4-space and efficient continuous collision detection",
+      "abstract": "",
+      "year": "2022",
+      "venue": "30th Annual European Symposium on Algorithms",
+      "authors": "E. Ezra and M. Sharir"
+    },
+    {
+      "index": 29,
+      "title": "On ray shooting for triangles in 3-space and related problems",
+      "abstract": "",
+      "year": "",
+      "venue": "SIAM J. Comput.",
+      "authors": "E. Ezra and M. Sharir"
+    },
+    {
+      "index": 30,
+      "title": "Complexity of finding irreducible components of a semialgebraic set",
+      "abstract": "",
+      "year": "1995",
+      "venue": "J. Complex.",
+      "authors": "A. Galligo and N. N. V. Jr."
+    },
+    {
+      "index": 31,
+      "title": "Polynomial partitioning for a set of varieties",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Math. Proc. Camb. Phil. Soc.",
+      "authors": "L. Guth"
+    },
+    {
+      "index": 32,
+      "title": "Ruled Surface Theory and Incidence Geometry, pages 449–466",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Springer, Berlin",
+      "authors": "L. Guth"
+    },
+    {
+      "index": 33,
+      "title": "On the Erdős distinct distances problem in the plane",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Annals Math.",
+      "authors": "L. Guth and N. H. Katz"
+    },
+    {
+      "index": 34,
+      "title": "A pedestrian approach to ray shooting: Shoot a ray, take a walk",
+      "abstract": "",
+      "year": "1995",
+      "venue": "J. Algorithms",
+      "authors": "J. Hershberger and S. Suri"
+    },
+    {
+      "index": 35,
+      "title": "Polynomial factorization 1987–1991",
+      "abstract": "",
+      "year": "1992",
+      "venue": "1st Latin American Sympos. Theoretical Informatics",
+      "authors": "E. Kaltofen"
+    },
+    {
+      "index": 36,
+      "title": "Range searching with efficient hiearchical cutting",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "J. Matousek"
+    },
+    {
+      "index": 37,
+      "title": "Geometric range searching",
+      "abstract": "",
+      "year": "1994",
+      "venue": "ACM Comput. Surv.",
+      "authors": "J. Matousek"
+    },
+    {
+      "index": 38,
+      "title": "Randomized optimal algorithm for slope selection",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Inf. Process. Lett.",
+      "authors": "J. Matoušek"
+    },
+    {
+      "index": 39,
+      "title": "Multilevel polynomial partitions and simplified range searching",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "J. Matoušek and Z. Patáková"
+    },
+    {
+      "index": 40,
+      "title": "Puiseux expansion for space curves",
+      "abstract": "",
+      "year": "1980",
+      "venue": "Manuscripta Mathematica",
+      "authors": "J. Maurer"
+    },
+    {
+      "index": 41,
+      "title": "Morse Theory",
+      "abstract": "",
+      "year": "1963",
+      "venue": "Princeton University Press, Princeton",
+      "authors": "J. Milnor"
+    },
+    {
+      "index": 42,
+      "title": "Ray shooting amidst spheres in 3 dimensions and related problems",
+      "abstract": "",
+      "year": "1997",
+      "venue": "SIAM J. Comput.",
+      "authors": "S. Mohaban and M. Sharir"
+    },
+    {
+      "index": 43,
+      "title": "Ray shooting on triangles in 3-space",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Algorithmica",
+      "authors": "M. Pellegrini"
+    },
+    {
+      "index": 44,
+      "title": "Ray shooting and lines in space",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Handbook on Discrete and Computational Geometry",
+      "authors": "M. Pellegrini"
+    },
+    {
+      "index": 45,
+      "title": "Approximate parametrization of plane algebraic curves by linear systems of curves",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Comput. Aided Geom. Des.",
+      "authors": "S. Pérez-Díaz, J. R. Sendra, S. L. Rueda, and J. Sendra"
+    },
+    {
+      "index": 46,
+      "title": "Computational Geometry: An Introduction",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Springer, Berlin",
+      "authors": "F. P. Preparata and M. I. Shamos"
+    },
+    {
+      "index": 47,
+      "title": "On the piano movers’ problem: II. General techniques for computing topological properties of real algebraic manifolds",
+      "abstract": "",
+      "year": "1983",
+      "venue": "Advances in Appl. Math.",
+      "authors": "J. T. Schwartz and M. Sharir"
+    },
+    {
+      "index": 48,
+      "title": "Radical parametrizations of algebraic curves by adjoint curves",
+      "abstract": "",
+      "year": "2011",
+      "venue": "J. Symb. Comput.",
+      "authors": "J. R. Sendra and D. Sevilla"
+    },
+    {
+      "index": 49,
+      "title": "Ray shooting and stone throwing with near-linear storage",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Comput. Geom. Theory Appls.",
+      "authors": "M. Sharir and H. Shaul"
+    },
+    {
+      "index": 50,
+      "title": "Algebraic Curves",
+      "abstract": "",
+      "year": "1962",
+      "venue": "Dover Books, New York",
+      "authors": "R. J. Walker"
+    },
+    {
+      "index": 51,
+      "title": "A general approach to d-dimensional geometric queries",
+      "abstract": "",
+      "year": "1985",
+      "venue": "17th Annu. ACM Symp. Theory of Computing",
+      "authors": "A. C. Yao and F. F. Yao"
+    }
+  ]
+}

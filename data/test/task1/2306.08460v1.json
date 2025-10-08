@@ -1,0 +1,563 @@
+{
+  "paper_id": "2306.08460v1",
+  "title": "Improving Generalization in Meta-Learning via Meta-Gradient Augmentation",
+  "abstract": "Abstract\nMeta-learning methods typically follow a two-loop framework, where each loop potentially suffers from notorious overfitting, hindering rapid adaptation and generalization to new tasks. Existing schemes solve it by enhancing the mutual-exclusivity or diversity of training samples, but these data manipulation strategies are data-dependent and insufficiently flexible. This work alleviates overfitting in meta-learning from the perspective of gradient regularization and proposes a data-independent Meta-Gradient Augmentation (MGAug) method. The key idea is to first break the rote memories by network pruning to address memorization overfitting in the inner loop, and then the gradients of pruned sub-networks naturally form the high-quality augmentation of the meta-gradient to alleviate learner overfitting in the outer loop. Specifically, we explore three pruning strategies, including random width pruning, random parameter pruning, and a newly proposed catfish pruning that measures a Meta-Memorization Carrying Amount (MMCA) score for each parameter and prunes high-score ones to break rote memories as much as possible. The proposed MGAug is theoretically guaranteed by the generalization bound from the PAC-Bayes framework. In addition, we extend a lightweight version, called MGAug-MaxUp, as a trade-off between performance gains and resource overhead. Extensive experiments on multiple few-shot learning benchmarks validate MGAug’s effectiveness and significant improvement over various meta-baselines. The code is publicly available at https://github.com/xxLifeLover/Meta-Gradient-Augmentation.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Meta-Learning in Neural Networks: A Survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "T. M. Hospedales, A. Antoniou, P. Micaelli, and A. J. Storkey",
+      "orig_title": "Meta-learning in neural networks: A survey",
+      "paper_id": "2004.05439v2"
+    },
+    {
+      "index": 1,
+      "title": "A Survey of Deep Meta-Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Artif. Intell. Rev.",
+      "authors": "M. Huisman, J. N. van Rijn, and A. Plaat",
+      "orig_title": "A survey of deep meta-learning",
+      "paper_id": "2010.03522v2"
+    },
+    {
+      "index": 2,
+      "title": "Consistent meta-regularization for better meta-knowledge in few-shot learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Trans. Neural Networks Learn. Syst.",
+      "authors": "P. Tian, W. Li, and Y. Gao"
+    },
+    {
+      "index": 3,
+      "title": "Meta-transfer learning through hard tasks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "Q. Sun, Y. Liu, Z. Chen, T. Chua, and B. Schiele"
+    },
+    {
+      "index": 4,
+      "title": "Domain-specific priors and meta learning for few-shot first-person action recognition",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "H. Coskun, M. Z. Zia, B. Tekin, F. Bogo, N. Navab, F. Tombari, and H. S. Sawhney"
+    },
+    {
+      "index": 5,
+      "title": "Meta-Learning Representations for Continual Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "K. Javed and M. White",
+      "orig_title": "Meta-learning representations for continual learning",
+      "paper_id": "1905.12588v2"
+    },
+    {
+      "index": 6,
+      "title": "Look-ahead meta learning for continual learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "G. Gupta, K. Yadav, and L. Paull"
+    },
+    {
+      "index": 7,
+      "title": "Domain Adaptive Dialog Generation via Meta Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACL",
+      "authors": "K. Qian and Z. Yu",
+      "orig_title": "Domain adaptive dialog generation via meta learning",
+      "paper_id": "1906.03520v2"
+    },
+    {
+      "index": 8,
+      "title": "Learning to transfer: Unsupervised domain translation via meta-learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "J. Lin, Y. Wang, Z. Chen, and T. He"
+    },
+    {
+      "index": 9,
+      "title": "Adversarially Robust Few-Shot Learning: A Meta-Learning Approach",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "M. Goldblum, L. Fowl, and T. Goldstein",
+      "orig_title": "Adversarially robust few-shot learning: A meta-learning approach",
+      "paper_id": "1910.00982v3"
+    },
+    {
+      "index": 10,
+      "title": "Unraveling Meta-Learning: Understanding Feature Representations for Few-Shot Tasks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "M. Goldblum, S. Reich, L. Fowl, R. Ni, V. Cherepanova, and T. Goldstein",
+      "orig_title": "Unraveling meta-learning: Understanding feature representations for few-shot tasks",
+      "paper_id": "2002.06753v3"
+    },
+    {
+      "index": 11,
+      "title": "Towards Understanding Generalization in Gradient-Based Meta-Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "S. Guiroy, V. Verma, and C. J. Pal",
+      "orig_title": "Towards understanding generalization in gradient-based meta-learning",
+      "paper_id": "1907.07287v1"
+    },
+    {
+      "index": 12,
+      "title": "Improving Generalization in Meta-learning via Task Augmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "H. Yao, L. Huang, L. Zhang, Y. Wei, L. Tian, J. Zou, J. Huang, and Z. Li",
+      "orig_title": "Improving generalization in meta-learning via task augmentation",
+      "paper_id": "2007.13040v3"
+    },
+    {
+      "index": 13,
+      "title": "Meta-Learning Requires Meta-Augmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "J. Rajendran, A. Irpan, and E. Jang",
+      "orig_title": "Meta-learning requires meta-augmentation",
+      "paper_id": "2007.05549v2"
+    },
+    {
+      "index": 14,
+      "title": "Meta-learning without memorization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "M. Yin, G. Tucker, M. Zhou, S. Levine, and C. Finn"
+    },
+    {
+      "index": 15,
+      "title": "Task Augmentation by Rotating for Meta-Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "J. Liu, F. Chao, and C. Lin",
+      "orig_title": "Task augmentation by rotating for meta-learning",
+      "paper_id": "2003.00804v1"
+    },
+    {
+      "index": 16,
+      "title": "Data Augmentation for Meta-Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "R. Ni, M. Goldblum, A. Sharaf, K. Kong, and T. Goldstein",
+      "orig_title": "Data augmentation for meta-learning",
+      "paper_id": "2010.07092v2"
+    },
+    {
+      "index": 17,
+      "title": "Optimization as a model for few-shot learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "S. Ravi and H. Larochelle"
+    },
+    {
+      "index": 18,
+      "title": "Task agnostic meta-learning for few-shot learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "M. A. Jamal and G.-J. Qi"
+    },
+    {
+      "index": 19,
+      "title": "Regularization via structural label smoothing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AISTATS",
+      "authors": "W. Li, G. Dasarathy, and V. Berisha"
+    },
+    {
+      "index": 20,
+      "title": "GradAug: A New Regularization Method for Deep Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "T. Yang, S. Zhu, and C. Chen",
+      "orig_title": "Gradaug: A new regularization method for deep neural networks",
+      "paper_id": "2006.07989v2"
+    },
+    {
+      "index": 21,
+      "title": "Regularizing Meta-Learning via Gradient Dropout",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACCV",
+      "authors": "H. Tseng, Y. Chen, Y. Tsai, S. Liu, Y. Lin, and M. Yang",
+      "orig_title": "Regularizing meta-learning via gradient dropout",
+      "paper_id": "2004.05859v1"
+    },
+    {
+      "index": 22,
+      "title": "Dropout: a simple way to prevent neural networks from overfitting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "J. Mach. Learn. Res.",
+      "authors": "N. Srivastava, G. E. Hinton, A. Krizhevsky, I. Sutskever, and R. Salakhutdinov"
+    },
+    {
+      "index": 23,
+      "title": "MaxUp: A Simple Way to Improve Generalization of Neural Network Training",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "C. Gong, T. Ren, M. Ye, and Q. Liu",
+      "orig_title": "Maxup: A simple way to improve generalization of neural network training",
+      "paper_id": "2002.09024v1"
+    },
+    {
+      "index": 24,
+      "title": "On Mixup Regularization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "L. Carratino, M. Cissé, R. Jenatton, and J. Vert",
+      "orig_title": "On mixup regularization",
+      "paper_id": "2006.06049v3"
+    },
+    {
+      "index": 25,
+      "title": "Rethinking Data Augmentation for Image Super-resolution: A Comprehensive Analysis and a New Strategy",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "J. Yoo, N. Ahn, and K. Sohn",
+      "orig_title": "Rethinking data augmentation for image super-resolution: A comprehensive analysis and a new strategy",
+      "paper_id": "2004.00448v2"
+    },
+    {
+      "index": 26,
+      "title": "Towards a better understanding of label smoothing in neural machine translation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AACL/IJCNLP",
+      "authors": "Y. Gao, W. Wang, C. Herold, Z. Yang, and H. Ney"
+    },
+    {
+      "index": 27,
+      "title": "Shake-Shake regularization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "X. Gastaldi",
+      "orig_title": "Shake-shake regularization",
+      "paper_id": "1705.07485v2"
+    },
+    {
+      "index": 28,
+      "title": "ShakeDrop Regularization for Deep Residual Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "Y. Yamada, M. Iwamura, T. Akiba, and K. Kise",
+      "orig_title": "Shakedrop regularization for deep residual learning",
+      "paper_id": "1802.02375v3"
+    },
+    {
+      "index": 29,
+      "title": "Meta Dropout: Learning to Perturb Latent Features for Generalization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "H. Lee, T. Nam, E. Yang, and S. J. Hwang",
+      "orig_title": "Meta dropout: Learning to perturb latent features for generalization",
+      "paper_id": "1905.12914v3"
+    },
+    {
+      "index": 30,
+      "title": "Meta-learning with network pruning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "H. Tian, B. Liu, X. Yuan, and Q. Liu"
+    },
+    {
+      "index": 31,
+      "title": "Generalization Bounds For Meta-Learning: An Information-Theoretic Analysis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "Q. Chen, C. Shui, and M. Marchand",
+      "orig_title": "Generalization bounds for meta-learning: An information-theoretic analysis",
+      "paper_id": "2109.14595v2"
+    },
+    {
+      "index": 32,
+      "title": "Learning from very few samples: A survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "J. Lu, P. Gong, J. Ye, and C. Zhang"
+    },
+    {
+      "index": 33,
+      "title": "Gradient-Based Meta-Learning with Learned Layerwise Metric and Subspace",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Y. Lee and S. Choi",
+      "orig_title": "Gradient-based meta-learning with learned layerwise metric and subspace",
+      "paper_id": "1801.05558v3"
+    },
+    {
+      "index": 34,
+      "title": "Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "C. Finn, P. Abbeel, and S. Levine",
+      "orig_title": "Model-agnostic meta-learning for fast adaptation of deep networks",
+      "paper_id": "1703.03400v3"
+    },
+    {
+      "index": 35,
+      "title": "Meta-SGD: Learning to Learn Quickly for Few-Shot Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Z. Li, F. Zhou, F. Chen, and H. Li",
+      "orig_title": "Meta-sgd: Learning to learn quickly for few shot learning",
+      "paper_id": "1707.09835v2"
+    },
+    {
+      "index": 36,
+      "title": "Prototypical Networks for Few-shot Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS",
+      "authors": "J. Snell, K. Swersky, and R. S. Zemel",
+      "orig_title": "Prototypical networks for few-shot learning",
+      "paper_id": "1703.05175v2"
+    },
+    {
+      "index": 37,
+      "title": "Meta-learning with differentiable closed-form solvers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "L. Bertinetto, J. F. Henriques, P. H. S. Torr, and A. Vedaldi",
+      "orig_title": "Meta-learning with differentiable closed-form solvers",
+      "paper_id": "1805.08136v3"
+    },
+    {
+      "index": 38,
+      "title": "Meta-Learning with Differentiable Convex Optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "K. Lee, S. Maji, A. Ravichandran, and S. Soatto",
+      "orig_title": "Meta-learning with differentiable convex optimization",
+      "paper_id": "1904.03758v2"
+    },
+    {
+      "index": 39,
+      "title": "Understanding Black-box Predictions via Influence Functions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "P. W. Koh and P. Liang",
+      "orig_title": "Understanding black-box predictions via influence functions",
+      "paper_id": "1703.04730v3"
+    },
+    {
+      "index": 40,
+      "title": "SNIP: Single-shot Network Pruning based on Connection Sensitivity",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "N. Lee, T. Ajanthan, and P. H. S. Torr",
+      "orig_title": "Snip: single-shot network pruning based on connection sensitivity",
+      "paper_id": "1810.02340v2"
+    },
+    {
+      "index": 41,
+      "title": "Pruning neural networks without any data by iteratively conserving synaptic flow",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "H. Tanaka, D. Kunin, D. L. K. Yamins, and S. Ganguli"
+    },
+    {
+      "index": 42,
+      "title": "Pruning Neural Networks at Initialization: Why Are We Missing the Mark?",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "J. Frankle, G. K. Dziugaite, D. Roy, and M. Carbin",
+      "orig_title": "Pruning neural networks at initialization: Why are we missing the mark?",
+      "paper_id": "2009.08576v2"
+    },
+    {
+      "index": 43,
+      "title": "Picking winning tickets before training by preserving gradient flow",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "C. Wang, G. Zhang, and R. B. Grosse"
+    },
+    {
+      "index": 44,
+      "title": "The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "J. Frankle and M. Carbin",
+      "orig_title": "The lottery ticket hypothesis: Finding sparse, trainable neural networks",
+      "paper_id": "1803.03635v5"
+    },
+    {
+      "index": 45,
+      "title": "Snip-fsl: Finding task-specific lottery jackpots for few-shot learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Knowl. Based Syst.",
+      "authors": "R. Wang, H. Sun, X. Nie, and Y. Yin"
+    },
+    {
+      "index": 46,
+      "title": "The Lottery Tickets Hypothesis for Supervised and Self-supervised Pre-training in Computer Vision Models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "T. Chen, J. Frankle, S. Chang, S. Liu, Y. Zhang, M. Carbin, and Z. Wang",
+      "orig_title": "The lottery tickets hypothesis for supervised and self-supervised pre-training in computer vision models",
+      "paper_id": "2012.06908v2"
+    },
+    {
+      "index": 47,
+      "title": "A pac-bayesian tutorial with A dropout bound",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "D. A. McAllester"
+    },
+    {
+      "index": 48,
+      "title": "Meta-Learning by Adjusting Priors Based on Extended PAC-Bayes Theory",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "R. Amit and R. Meir",
+      "orig_title": "Meta-learning by adjusting priors based on extended pac-bayes theory",
+      "paper_id": "1711.01244v8"
+    },
+    {
+      "index": 49,
+      "title": "Analyzing Lottery Ticket Hypothesis from PAC-Bayesian Theory Perspective",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CoRR",
+      "authors": "K. Sakamoto and I. Sato",
+      "orig_title": "Analyzing lottery ticket hypothesis from pac-bayesian theory perspective",
+      "paper_id": "2205.07320v3"
+    },
+    {
+      "index": 50,
+      "title": "Matching Networks for One Shot Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NIPS",
+      "authors": "O. Vinyals, C. Blundell, T. Lillicrap, K. Kavukcuoglu, and D. Wierstra",
+      "orig_title": "Matching networks for one shot learning",
+      "paper_id": "1606.04080v2"
+    },
+    {
+      "index": 51,
+      "title": "The caltech-ucsd birds-200-2011 dataset.",
+      "abstract": "",
+      "year": "2011",
+      "venue": "California Institute of Technology",
+      "authors": "C. Wah, S. Branson, P. Welinder, P. Perona, and S. Belongie"
+    },
+    {
+      "index": 52,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR",
+      "authors": "J. Deng, W. Dong, R. Socher, L. Li, K. Li, and L. Fei-Fei"
+    },
+    {
+      "index": 53,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 54,
+      "title": "A closer look at few-shot classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "W. Chen, Y. Liu, Z. Kira, Y. F. Wang, and J. Huang"
+    },
+    {
+      "index": 55,
+      "title": "Introducing hat graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Cogn. Res. Princ. Implic.",
+      "authors": "J. K. Witt"
+    },
+    {
+      "index": 56,
+      "title": "Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Int. J. Comput. Vis.",
+      "authors": "R. R. Selvaraju, M. Cogswell, A. Das, R. Vedantam, D. Parikh, and D. Batra",
+      "orig_title": "Grad-cam: Visual explanations from deep networks via gradient-based localization",
+      "paper_id": "1610.02391v4"
+    },
+    {
+      "index": 57,
+      "title": "On First-Order Meta-Learning Algorithms",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "A. Nichol, J. Achiam, and J. Schulman",
+      "orig_title": "On first-order meta-learning algorithms",
+      "paper_id": "1803.02999v3"
+    },
+    {
+      "index": 58,
+      "title": "Fast Context Adaptation via Meta-Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "L. M. Zintgraf, K. Shiarlis, V. Kurin, K. Hofmann, and S. Whiteson",
+      "orig_title": "Fast context adaptation via meta-learning",
+      "paper_id": "1810.03642v4"
+    },
+    {
+      "index": 59,
+      "title": "Pac-bayesian model averaging",
+      "abstract": "",
+      "year": "1999",
+      "venue": "COLT",
+      "authors": "D. A. McAllester"
+    }
+  ]
+}

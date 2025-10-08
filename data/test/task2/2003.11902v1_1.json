@@ -1,0 +1,437 @@
+{
+  "paper_id": "2003.11902v1",
+  "title": "Implementing a GPU-based parallel MAX-MIN Ant System",
+  "sections": {
+    "introduction": "Ant Colony Optimization (ACO) is a population-based metaheuristic\ninspired by the social behavior of ants .\nIt has been successfully applied in solving many NP-hard problems,\nincluding the Traveling Salesman Problem (TSP),\nthe Quadratic Assignment Problem,\nand the Sequential Ordering Problem   .\nBeing metaheuristic, the ACO does not guarantee\nfinding an optimum solution, however it is often able to offer\nsatisfactory approximate solutions within an acceptable\ntime compared to exact methods .\nHowever, even metaheuristics can be prohibitively time consuming\nif faced with a large enough problem instance.\nFor this reason, a lot of research attention has been devoted both to\nimproving the effectiveness of the ACO search process,\nand to speeding up its execution .\nThe idea of applying GPU-based computing to the ACO\nis an example of the latter.\nIn recent years, the use of graphics processing units (GPUs)\nto speed up scientific computations has become commonplace.\nThis has been, in part, dictated by the slow-down in Moore’s law,\nand the progress made in the GPU architecture development, which has resulted\nin more computing capacity, flexibility, and ease-of-use .\nIn fact, currently a significant proportion of the world’s fastest supercomputers\nis equipped with GPUs to accelerate their computations .\nStill, the efficient use of the computing capacity offered by GPUs\nremains a difficult task . In an ACO, a population of agents (ants) construct, in parallel,\na set of solutions to the optimization problem begin tackled.\nUnfortunately, the inherent parallel nature of the ACO\ndoes not translate easily into an efficient GPU-based parallel\nimplementation   [ref]39.\nThe difficulties arise partly from the fact that not all of the ACO\ncomputations are independent, e.g., pheromone trail updates; as well as from the\ncomputing restrictions inflicted by GPU architectures.\nAlthough considerable research attention has been devoted to using GPUs to\nspeed up the ACO-based algorithms, both the improved computational capabilities\nof successive generations of GPUs as well as novel algorithmic ideas, offer new\nopportunities for greater progress. In this paper, we present a GPU-based parallel implementation of the MAX-MIN\nAnt System (MMAS), which is one of the best-performing ACO\nvariants for solving various optimization problems including\nthe production-distribution scheduling problem ,\nthe blocks relocation problem ,\nthe routing and scheduling of home health care caregivers\nproblem , and the traveling purchaser\nproblem .\nBuilding on existing research we show how each of\nthe essential MMAS components can be parallelized to allow the efficient use of\nthe significant computing power offered by the current generation of GPUs. The main contributions presented in this paper can be summarized as follows: We present a novel parallel implementation of the next node (proportional) selection\nprocedure used in the MMAS and other ACO algorithms.\nThe implementation is based on the weighted reservoir sampling algorithm and\nfits well within the parallel computing model of contemporary GPU architectures. We present a novel, memory-efficient implementation of the tabu list structure\nused by the ACO solution construction process. The implementation\nallows for the better utilization of fast, but very size limited, shared memory\nof GPUs. Combining these novel ideas and the solutions from the literature, we\npresent a total of six MMAS variants and evaluate\ntheir computational efficiency based on two subsequent generations\nof Nvidia GPUs, namely Pascal and Volta. The computational evaluation based on a set of TSP instances ranging from 198\nto 3,795 cities\nshows that the proposed GPU-based MMAS is competitive with\nstate-of-the-art GPU-based   \nand multi-core CPU-based  parallel ACO implementations.\nThe times obtained were up to 7.18x and 21.79x smaller, respectively. Acknowledging, that the ACO algorithms are typically paired with\nan efficient, problem-specific local search (LS) method, we\ncombine the proposed GPU-based MMAS with a parallelized 2-opt heuristic.\nThe computational experiments that consider the TSP instances of up to 18,512\nnodes show that the proposed implementation is able to generate\nhigh-quality solutions, i.e., within 1% from an optimum, in a relatively\nshort time. The remainder of this paper is organized as follows. In Section 2\nwe provide a brief description of the MAX-MIN Ant System and short piece on the\ncharacteristics of\ngeneral-purpose GPU computations. Section 3 summarizes the existing\nwork on applying GPUs in speeding up ACO computations, including the MMAS.\nOur main ideas on the efficient implementation of the GPU-based MMAS are presented\nin Section 4; while\nSection  presents an analysis of the computational\nexperiments we conducted in order to evaluate the proposals, and compare them with the work\ndescribed in the literature.\nFinally, we summarize our findings and provide a few ideas for future work\nin Section 6."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "CUDA C Programming Guide",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "The Traveling Salesman Problem: A Computational Study",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Princeton University Press",
+      "authors": "David L. Applegate, Robert E. Bixby, Vasek Chvatal, and William J. Cook"
+    },
+    {
+      "index": 2,
+      "title": "MAX-MIN ant system on GPU with CUDA",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Innovative Computing, Information and Control (ICICIC)",
+      "authors": "Hongtao Bai, Dantong OuYang, Ximing Li, Lili He, and Haihong Yu"
+    },
+    {
+      "index": 3,
+      "title": "Fast algorithms for geometric traveling salesman problems",
+      "abstract": "",
+      "year": "1992",
+      "venue": "INFORMS Journal on Computing",
+      "authors": "Jon Louis Bentley"
+    },
+    {
+      "index": 4,
+      "title": "Comparing gpu-parallelized metaheuristics to branch-and-bound for batch plants optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "The Journal of Supercomputing",
+      "authors": "Andrey Borisenko and Sergei Gorlatch"
+    },
+    {
+      "index": 5,
+      "title": "Strategies for accelerating ant colony optimization algorithms on graphical processing units",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE Congress on Evolutionary Computation, CEC 2007",
+      "authors": "Alejandro Catalá, Javier Jaén Martínez, and José A. Mocholí"
+    },
+    {
+      "index": 6,
+      "title": "Enhancing data parallelism for ant colony optimization on gpus",
+      "abstract": "",
+      "year": "2013",
+      "venue": "J. Parallel Distrib. Comput.",
+      "authors": "José M. Cecilia, José M. García, Andy Nisbet, Martyn Amos, and Manuel Ujaldon"
+    },
+    {
+      "index": 7,
+      "title": "High-throughput ant colony optimization on graphics processing units",
+      "abstract": "",
+      "year": "2018",
+      "venue": "J. Parallel Distrib. Comput.",
+      "authors": "José M. Cecilia, Antonio Llanes, José L. Abellán, Juan Gómez-Luna, Li-Wen Chang, and Wen-Mei W. Hwu"
+    },
+    {
+      "index": 8,
+      "title": "An artificial bee colony algorithm with a modified choice function for the traveling salesman problem",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Swarm and Evolutionary Computation",
+      "authors": "Shin Siang Choong, Li-Pei Wong, and Chee Peng Lim"
+    },
+    {
+      "index": 9,
+      "title": "Ant colony system with communication strategies",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Inf. Sci.",
+      "authors": "Shu-Chuan Chu, John F. Roddick, and Jeng-Shyang Pan"
+    },
+    {
+      "index": 10,
+      "title": "Candidate set parallelization strategies for ant colony optimization on the GPU",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Algorithms and Architectures for Parallel Processing - ICA3PP 2013",
+      "authors": "Laurence Dawson and Iain A. Stewart"
+    },
+    {
+      "index": 11,
+      "title": "Improving ant colony optimization performance on the GPU using CUDA",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Congress on Evolutionary Computation, CEC 2013",
+      "authors": "Laurence Dawson and Iain A. Stewart"
+    },
+    {
+      "index": 12,
+      "title": "A hybrid memetic-ant colony optimization algorithm for the home health care problem with time window, synchronization and working time balancing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Swarm and Evolutionary Computation",
+      "authors": "Jérémy Decerle, Olivier Grunder, Amir Hajjam El Hassani, and Oussama Barakat"
+    },
+    {
+      "index": 13,
+      "title": "Parallel ant colony optimization on graphics processing units",
+      "abstract": "",
+      "year": "2013",
+      "venue": "J. Parallel Distrib. Comput.",
+      "authors": "Audrey Delévacq, Pierre Delisle, Marc Gravel, and Michaël Krajecki"
+    },
+    {
+      "index": 14,
+      "title": "Ant colony optimization",
+      "abstract": "",
+      "year": "2004",
+      "venue": "MIT Press",
+      "authors": "Marco Dorigo and Thomas Stützle"
+    },
+    {
+      "index": 15,
+      "title": "Ant system: optimization by a colony of cooperating agents",
+      "abstract": "",
+      "year": "1996",
+      "venue": "IEEE Trans. Systems, Man, and Cybernetics, Part B",
+      "authors": "Marco Dorigo, Vittorio Maniezzo, and Alberto Colorni"
+    },
+    {
+      "index": 16,
+      "title": "Weighted random sampling with a reservoir",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Inf. Process. Lett.",
+      "authors": "Pavlos S. Efraimidis and Paul G. Spirakis"
+    },
+    {
+      "index": 17,
+      "title": "Fundamentals of Computational Swarm Intelligence",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Wiley",
+      "authors": "Andries Petrus Engelbrecht"
+    },
+    {
+      "index": 18,
+      "title": "General k-opt submoves for the lin-kernighan TSP heuristic",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Math. Program. Comput.",
+      "authors": "Keld Helsgaun"
+    },
+    {
+      "index": 19,
+      "title": "Nonparametric statistical methods, Third Edition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "John Wiley & Sons",
+      "authors": "Myles Hollander, Douglas A Wolfe, and Eric Chicken"
+    },
+    {
+      "index": 20,
+      "title": "Effective heuristics for ant colony optimization to handle large-scale problems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Swarm and Evolutionary Computation",
+      "authors": "Hassan Ismkhan"
+    },
+    {
+      "index": 21,
+      "title": "Integrated production and transportation on parallel batch machines to minimize total weighted delivery time",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Computers & OR",
+      "authors": "Zhao-Hong Jia, Xue-Xue Zhuo, Joseph Y.-T. Leung, and Kai Li"
+    },
+    {
+      "index": 22,
+      "title": "Dissecting the NVIDIA volta GPU architecture via microbenchmarking",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Zhe Jia, Marco Maggioni, Benjamin Staiger, and Daniele Paolo Scarpazza"
+    },
+    {
+      "index": 23,
+      "title": "An efficient ant colony optimization algorithm for the blocks relocation problem",
+      "abstract": "",
+      "year": "2019",
+      "venue": "European Journal of Operational Research",
+      "authors": "Raka Jovanovic, Milan Tuba, and Stefan Voß"
+    },
+    {
+      "index": 24,
+      "title": "Swarm intelligence",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Handbook of Nature-Inspired and Innovative Computing",
+      "authors": "James Kennedy"
+    },
+    {
+      "index": 25,
+      "title": "Programming Massively Parallel Processors - A Hands-on Approach",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Morgan Kaufmann",
+      "authors": "David Blair Kirk and Wen-mei W. Hwu"
+    },
+    {
+      "index": 26,
+      "title": "Analysis of independent roulette selection in parallel ant colony optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Genetic and Evolutionary Computation Conference, GECCO 2017",
+      "authors": "Huw Lloyd and Martyn Amos"
+    },
+    {
+      "index": 27,
+      "title": "Ant colony optimization: A component-wise overview",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Handbook of Heuristics",
+      "authors": "Manuel López-Ibáñez, Thomas Stützle, and Marco Dorigo"
+    },
+    {
+      "index": 28,
+      "title": "A parallel bees algorithm implementation on GPU",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Journal of Systems Architecture - Embedded Systems Design",
+      "authors": "Guo-Heng Luo, Sheng-Kai Huang, Yue-Shan Chang, and Shyan-Ming Yuan"
+    },
+    {
+      "index": 29,
+      "title": "Parallel ant colony optimization for the traveling salesman problem",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Ant Colony Optimization and Swarm Intelligence, ANTS 2006",
+      "authors": "Max Manfrin, Mauro Birattari, Thomas Stützle, and Marco Dorigo"
+    },
+    {
+      "index": 30,
+      "title": "Evaluation of parallel particle swarm optimization algorithms within the cuda™ architecture",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Information Sciences",
+      "authors": "Luca Mussi, Fabio Daolio, and Stefano Cagnoni"
+    },
+    {
+      "index": 31,
+      "title": "NVIDIA Tesla V100 GPU Architecture",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "NVIDIA Corporation"
+    },
+    {
+      "index": 32,
+      "title": "A survey on parallel ant colony optimization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Appl. Soft Comput.",
+      "authors": "Martín Pedemonte, Sergio Nesmachnow, and Héctor Cancela"
+    },
+    {
+      "index": 33,
+      "title": "A parallel implementation of ant colony optimization",
+      "abstract": "",
+      "year": "2002",
+      "venue": "J. Parallel Distrib. Comput.",
+      "authors": "Marcus Randall and Andrew Lewis"
+    },
+    {
+      "index": 34,
+      "title": "TSPLIB - A traveling salesman problem library",
+      "abstract": "",
+      "year": "1991",
+      "venue": "INFORMS Journal on Computing",
+      "authors": "Gerhard Reinelt"
+    },
+    {
+      "index": 35,
+      "title": "A CPU-GPU parallel ant colony optimization solver for the vehicle routing problem",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Applications of Evolutionary Computation, EvoApplications 2018",
+      "authors": "Anton Rey, Manuel Prieto, José Ignacio Gómez, Christian Tenllado, and José Ignacio Hidalgo"
+    },
+    {
+      "index": 36,
+      "title": "Analysis of a high-performance TSP solver on the GPU",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Journal of Experimental Algorithmics",
+      "authors": "Jeffrey A. Robinson, Susan V. Vrbsky, Xiaoyan Hong, and Brian P. Eddy"
+    },
+    {
+      "index": 37,
+      "title": "High performance GPU accelerated local optimization in TSP",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE International Symposium on Parallel & Distributed Processing, Workshops and Phd Forum",
+      "authors": "Kamil Rocki and Reiji Suda"
+    },
+    {
+      "index": 38,
+      "title": "The GPU-based Parallel Ant Colony System",
+      "abstract": "",
+      "year": "2016",
+      "venue": "J. Parallel Distrib. Comput.",
+      "authors": "Rafał Skinderowicz",
+      "orig_title": "The GPU-based parallel Ant Colony System",
+      "paper_id": "1605.02669v2"
+    },
+    {
+      "index": 39,
+      "title": "An improved Ant Colony System for the Sequential Ordering Problem",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Computers & OR",
+      "authors": "Rafał Skinderowicz",
+      "orig_title": "An improved ant colony system for the sequential ordering problem",
+      "paper_id": "1705.01076v1"
+    },
+    {
+      "index": 40,
+      "title": "Solving the uncapacitated traveling purchaser problem with the MAX-MIN ant system",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Computational Collective Intelligence, ICCCI 2018",
+      "authors": "Rafał Skinderowicz"
+    },
+    {
+      "index": 41,
+      "title": "TOP500 Supercomputer Site",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Erich Strohmaier, Jack Dongarra, Horst Simon, and Martin Meuer"
+    },
+    {
+      "index": 42,
+      "title": "MAX-MIN ant system",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Future Generation Comp. Syst.",
+      "authors": "Thomas Stützle and Holger H. Hoos"
+    },
+    {
+      "index": 43,
+      "title": "Parallel ant colonies for the quadratic assignment problem",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Future Generation Comp. Syst.",
+      "authors": "El-Ghazali Talbi, Olivier Roux, Cyril Fonlupt, and D. Robillard"
+    },
+    {
+      "index": 44,
+      "title": "A survey on gpu-based implementation of swarm intelligence algorithms",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Trans. Cybernetics",
+      "authors": "Ying Tan and Ke Ding"
+    },
+    {
+      "index": 45,
+      "title": "The decline of computers as a general purpose technology: Why deep learning and the end of moore’s law are fragmenting computing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SSRN",
+      "authors": "Neil Thompson and Svenja Spanuth"
+    },
+    {
+      "index": 46,
+      "title": "An efficient GPU implementation of ant colony optimization for the traveling salesman problem",
+      "abstract": "",
+      "year": "2012",
+      "venue": "International Conference on Networking and Computing, ICNC 2012",
+      "authors": "Akihiro Uchida, Yasuaki Ito, and Koji Nakano"
+    },
+    {
+      "index": 47,
+      "title": "A parallel framework for multi-population cultural algorithm and its applications in TSP",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Machine Learning, Optimization, and Big Data, MOD 2017",
+      "authors": "Olgierd Unold and Radoslaw Tarnawski"
+    },
+    {
+      "index": 48,
+      "title": "A massively parallel neural network approach to large-scale euclidean traveling salesman problems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Neurocomputing",
+      "authors": "Hongjian Wang, Naiyu Zhang, and Jean-Charles Créput"
+    },
+    {
+      "index": 49,
+      "title": "Implementation of Ant Colony Algorithm Based on GPU",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Computer Graphics, Imaging and Visualization, CGIV 2009",
+      "authors": "Jiening Wang, Jiankang Dong, and Chunfeng Zhang"
+    },
+    {
+      "index": 50,
+      "title": "A GPU-based parallel MAX-MIN Ant System algorithm with grouped roulette wheel selection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Supported Cooperative Work in Design, CSCWD 2017",
+      "authors": "Wei Zhou, Fazhi He, and Zhengchang Zhang"
+    },
+    {
+      "index": 51,
+      "title": "Optimization of parallel iterated local search algorithms on graphics processing unit",
+      "abstract": "",
+      "year": "2016",
+      "venue": "The Journal of Supercomputing",
+      "authors": "Yi Zhou, Fazhi He, and Yimin Qiu"
+    },
+    {
+      "index": 52,
+      "title": "Parallel ant colony optimization on multi-core SIMD cpus",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Future Generation Comp. Syst.",
+      "authors": "Yi Zhou, Fazhi He, Neng Hou, and Yimin Qiu"
+    }
+  ]
+}

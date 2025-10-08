@@ -1,0 +1,579 @@
+{
+  "paper_id": "2010.05627v2",
+  "title": "Towards Theoretically Understanding Why Sgd Generalizes Better Than Adam in Deep Learning",
+  "sections": {
+    "introduction": "Stochastic gradient descent (Sgd)   has become one of the most popular algorithms for training deep neural networks       . In spite of its simplicity and effectiveness, Sgd uses one learning rate for all gradient coordinates and could suffer from unsatisfactory convergence performance, especially for ill-conditioned problems . To avoid this issue, a variety of adaptive gradient algorithms have been developed that adjust learning rate for each gradient coordinate according to the current geometry curvature of the objective function    . These algorithms, especially for Adam, have achieved much faster convergence speed than vanilla Sgd in practice. Despite their faster convergence behaviors, these adaptive gradient algorithms usually suffer from worse generalization performance than Sgd   . Specifically, adaptive gradient algorithms often show faster progress in the training phase but their performance quickly reaches a plateaus on test data. Differently, Sgd usually improves model performance slowly but could achieve higher test performance.\nOne empirical explanation [ref]1  0 1 for this generalization gap is that adaptive gradient algorithms\ntend to converge to sharp minima whose local basin has large curvature and usually generalize poorly, while Sgd prefers to find flat minima\nand thus generalizes better.\nHowever, recent evidence  2 shows that (1) for deep neural networks, the minima at the asymmetric basins/valleys where both steep and flat directions exist also generalize well though they are sharp in terms of their local curvature, and (2) Sgd often converges to these minima. So the argument of the conventional “flat\" and “sharp\" minima defined on curvature cannot explain these new results. Thus the reason for the generalization gap between adaptive gradient methods and Sgd is still unclear. In this work, we provide a new viewpoint for understanding the generalization performance gap. We first formulate Adam and Sgd as Lévy-driven stochastic differential equations (SDEs), since the SDE of an algorithm shares similar convergence behaviors of the algorithm and can be analyzed more easily than directly analyzing the algorithm. Then we analyze the escaping behaviors of these SDEs at local minima to investigate the generalization gap between Adam and Sgd, as escaping behaviors determine which basin that an algorithm finally converges to and thus affect the generalization performance of the algorithm. By analysis, we find that compared with Adam, Sgd is more locally unstable and is more likely to converge to the minima at the flat or asymmetric basins/valleys which often have better generalization performance over other type minima. So our results can explain the better generalization performance of Sgd over Adam. Our contributions are highlighted below. Firstly, this work is the first one that adopts Lévy-driven SDE which better characterizes the algorithm gradient noise in practice, to analyze the adaptive gradient algorithms. Specifically, Fig. 1 shows that the gradient noise in Adam and Sgd, i.e. the difference between the full and stochastic gradients, has heavy tails and can be well characterized by systemic α𝛼\\alpha-stable (𝒮​α​𝒮𝒮𝛼𝒮\\mathcal{S}\\alpha\\mathcal{S}) distribution 4.\nBased on this observation, we view Adam and Sgd as discretization of the continuous-time processes and formulate the processes as Lévy-driven SDEs to analyze their behaviors. Compared with Gaussian gradient noise assumption in Sgd 5 6 7, 𝒮​α​𝒮𝒮𝛼𝒮\\mathcal{S}\\alpha\\mathcal{S} distribution assumption can characterize the heavy-tailed gradient noise in practice more accurately as shown in Fig. 1, and also better explains the different generalization performance of Sgd and Adam as discussed in Sec. 3.\nThis work extends 3 8 from Sgd on the over-simplified one-dimensional problems to much more complicated adaptive algorithms on high-dimensional problems. It also differs from 9, as 9 considers escaping behaviors of Sgd along several fixed directions, while this work analyzes the dynamic underlying structures in gradient noise that plays an important role in the local escaping behaviors of both Adam and Sgd. Next, we theoretically prove that for the Lévy-driven SDEs of Adam and Sgd, their escaping time ΓΓ\\Gamma from a local basin 𝛀𝛀\\bm{\\Omega}, namely the least time for escaping from the inner of 𝛀𝛀\\bm{\\Omega} to its outside, is at the order of 𝒪​(ε−α/m​(𝓦))𝒪superscript𝜀𝛼𝑚𝓦\\mathcal{O}({\\varepsilon^{-\\alpha}}\\!/m(\\bm{\\mathcal{W}})), where the constant ε∈(0,1)𝜀01{\\varepsilon}\\!\\in\\!(0,1) relies on the learning rate of algorithms and α𝛼\\alpha denotes the tail index of 𝒮​α​𝒮𝒮𝛼𝒮\\mathcal{S}\\alpha\\mathcal{S} distribution. Here m​(𝓦)𝑚𝓦m(\\bm{\\mathcal{W}}) is a non-zero Radon measure on the escaping set 𝓦𝓦\\bm{\\mathcal{W}} of Adam  and Sgd  at the local basin 𝛀𝛀\\bm{\\Omega} (see Sec. 4.1), and actually negatively relies on the Radon measure of 𝛀𝛀\\bm{\\Omega}. So both Adam and Sgd have small escaping time at the “sharp\" minima whose corresponding basins 𝛀𝛀\\bm{\\Omega} have small Radon measure. It means that Adam and Sgd are actually unstable at “sharp\" minima and would escape them to “flatter\" ones. Note, the Radon measure of 𝛀𝛀\\bm{\\Omega} positively depends on the volume of 𝛀𝛀\\bm{\\Omega}. So these results also well explain the observations in [ref]1  0 1 that the minima of deep networks found by Sgd often locate at the flat or asymmetric valleys, as their corresponding basins have large volumes and thus large Radon measure. Finally, our results can answer why Sgd often converges to flatter minima than Adam in terms of Radon measure, and thus explain the generalization gap between Adam and Sgd. Firstly, our analysis shows that even for the same basin 𝛀𝛀\\bm{\\Omega}, Adam often has smaller Radon measure m​(𝓦)𝑚𝓦m(\\bm{\\mathcal{W}}) on the escaping set 𝓦𝓦\\bm{\\mathcal{W}} at 𝛀𝛀\\bm{\\Omega} than Sgd, as the geometry adaptation in Adam via adaptively scaling each gradient coordinate well diminishes underlying anisotropic structure in gradient noise and leads to smaller m​(𝓦)𝑚𝓦m(\\bm{\\mathcal{W}}).\nSecondly, the empirical results in Sec. 5 and Fig. 1 show that Sgd often\nhas much smaller tail index α𝛼\\alpha of gradient noise than Adam for some optimization iterations and thus enjoys smaller factor ε−αsuperscript𝜀𝛼{\\varepsilon^{-\\alpha}}.\nThese results together show that Sgd is more locally unstable and would like to converge to flatter minima with larger measure m​(𝓦)𝑚𝓦m(\\bm{\\mathcal{W}}) which often refer to the minima at the flat and asymmetric basins/valleys, according with empirical evidences in  0 1 . Considering the observations in [ref]1  0 1 that the minima at the flat and asymmetric basins/valleys often generalize better, our results well explain the generalization gap between Adam and Sgd. Besides, our results also show that Sgd benefits from its anisotropic gradient noise on its escaping behaviors, while Adam does not."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "On large-batch training for deep learning: Generalization gap and sharp minima",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Int’l Conf. Learning Representations",
+      "authors": "N. Keskar, D. Mudigere, J. Nocedal, M. Smelyanskiy, and P. Tang"
+    },
+    {
+      "index": 1,
+      "title": "Asymmetric Valleys: Beyond Sharp and Flat Local Minima",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Conf. Neural Information Processing Systems",
+      "authors": "H. He, G. Huang, and Y. Yuan",
+      "orig_title": "Asymmetric valleys: Beyond sharp and flat local minima",
+      "paper_id": "1902.00744v2"
+    },
+    {
+      "index": 2,
+      "title": "A stochastic approximation method",
+      "abstract": "",
+      "year": "1951",
+      "venue": "The annals of mathematical statistics",
+      "authors": "H. Robbins and S. Monro"
+    },
+    {
+      "index": 3,
+      "title": "Stochastic gradient learning in neural networks",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Neuro-Nımes",
+      "authors": "L. Bottou"
+    },
+    {
+      "index": 4,
+      "title": "Learning deep architectures for AI",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Foundations and trends® in Machine Learning",
+      "authors": "Y. Bengio"
+    },
+    {
+      "index": 5,
+      "title": "Deep neural networks for acoustic modeling in speech recognition",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Signal processing magazine",
+      "authors": "G. Hinton, L. Deng, D. Yu, G. Dahl, A. Mohamed, N. Jaitly, A. Senior, V. Vanhoucke, P. Nguyen, and B. Kingsbury"
+    },
+    {
+      "index": 6,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature",
+      "authors": "Y. LeCun, Y. Bengio, and G. Hinton",
+      "orig_title": "Deep learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 7,
+      "title": "Deep adversarial subspace clustering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conf. Computer Vision and Pattern Recognition",
+      "authors": "P. Zhou, Y. Hou, and J. Feng"
+    },
+    {
+      "index": 8,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conf. Computer Vision and Pattern Recognition",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 9,
+      "title": "Efficient meta learning via minibatch proximal update",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Conf. Neural Information Processing Systems",
+      "authors": "P. Zhou, X. Yuan, H. Xu, S. Yan, and J. Feng"
+    },
+    {
+      "index": 10,
+      "title": "Theory-inspired path-regularized differential network architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Conf. Neural Information Processing Systems",
+      "authors": "P. Zhou, C. Xiong, R. Socher, and S. Hoi"
+    },
+    {
+      "index": 11,
+      "title": "Improving Generalization Performance by Switching from Adam to SGD",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1712.07628",
+      "authors": "N. Keskar and R. Socher",
+      "orig_title": "Improving generalization performance by switching from Adam to SGD",
+      "paper_id": "1712.07628v1"
+    },
+    {
+      "index": 12,
+      "title": "Adaptive subgradient methods for online learning and stochastic optimization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "J. of Machine Learning Research",
+      "authors": "J. Duchi, E. Hazan, and Y. Singer"
+    },
+    {
+      "index": 13,
+      "title": "Lecture 6.5—rmsprop: Divide the gradient by a running average of its recent magnitude",
+      "abstract": "",
+      "year": "2012",
+      "venue": "COURSERA: Neural Networks for Machine Learning",
+      "authors": "T. Tieleman and G. Hinton"
+    },
+    {
+      "index": 14,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Int’l Conf. Learning Representations",
+      "authors": "D. Kingma and J. Ba"
+    },
+    {
+      "index": 15,
+      "title": "On the convergence of Adam and Beyond",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.09237",
+      "authors": "S. Reddi, S. Kale, and S. Kumar",
+      "orig_title": "On the convergence of Adam and beyond",
+      "paper_id": "1904.09237v1"
+    },
+    {
+      "index": 16,
+      "title": "The Marginal Value of Adaptive Gradient Methods in Machine Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Conf. Neural Information Processing Systems",
+      "authors": "A. Wilson, R. Roelofs, M. Stern, N. Srebro, and B. Recht",
+      "orig_title": "The marginal value of adaptive gradient methods in machine learning",
+      "paper_id": "1705.08292v2"
+    },
+    {
+      "index": 17,
+      "title": "Adaptive Gradient Methods with Dynamic Bound of Learning Rate",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Int’l Conf. Learning Representations",
+      "authors": "L. Luo, Y. Xiong, Y. Liu, and X. Sun",
+      "orig_title": "Adaptive gradient methods with dynamic bound of learning rate",
+      "paper_id": "1902.09843v1"
+    },
+    {
+      "index": 18,
+      "title": "Flat minima",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural Computation",
+      "authors": "S. Hochreiter and J. Schmidhuber"
+    },
+    {
+      "index": 19,
+      "title": "Averaging Weights Leads to Wider Optima and Better Generalization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1803.05407",
+      "authors": "P. Izmailov, D. Podoprikhin, T. Garipov, D. Vetrov, and A. Wilson",
+      "orig_title": "Averaging weights leads to wider optima and better generalization",
+      "paper_id": "1803.05407v3"
+    },
+    {
+      "index": 20,
+      "title": "Visualizing the Loss Landscape of Neural Nets",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conf. Neural Information Processing Systems",
+      "authors": "H. Li, Z. Xu, G. Taylor, C. Studer, and T. Goldstein",
+      "orig_title": "Visualizing the loss landscape of neural nets",
+      "paper_id": "1712.09913v3"
+    },
+    {
+      "index": 21,
+      "title": "Empirical Analysis of the Hessian of Over-Parametrized Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1706.04454",
+      "authors": "L. Sagun, U. Evci, V. Guney, Y. Dauphin, and L. Bottou",
+      "orig_title": "Empirical analysis of the hessian of over-parametrized neural networks",
+      "paper_id": "1706.04454v3"
+    },
+    {
+      "index": 22,
+      "title": "A Tail-Index Analysis of Stochastic Gradient Noise in Deep Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Int’l Conf. Machine Learning",
+      "authors": "U. Simsekli, L. Sagun, and M. Gurbuzbalaban",
+      "orig_title": "A tail-index analysis of stochastic gradient noise in deep neural networks",
+      "paper_id": "1901.06053v1"
+    },
+    {
+      "index": 23,
+      "title": "Théorie de l’addition des variables aléatoires, gauthier-villars, paris, 1937",
+      "abstract": "",
+      "year": "1954",
+      "venue": "LévyThéorie de l’addition des variables aléatoires1937",
+      "authors": "P. Levy"
+    },
+    {
+      "index": 24,
+      "title": "A Variational Analysis of Stochastic Gradient Algorithms",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Int’l Conf. Machine Learning",
+      "authors": "S. Mandt, M. Hoffman, and D. Blei",
+      "orig_title": "A variational analysis of stochastic gradient algorithms",
+      "paper_id": "1602.02666v1"
+    },
+    {
+      "index": 25,
+      "title": "Three Factors Influencing Minima in SGD",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.04623",
+      "authors": "S. Jastrzebski, Z. Kenton, D. Arpit, N. Ballas, A. Fischer, Y. Bengio, and A. Storkey",
+      "orig_title": "Three factors influencing minima in SGD",
+      "paper_id": "1711.04623v3"
+    },
+    {
+      "index": 26,
+      "title": "Stochastic gradient descent performs variational inference, converges to limit cycles for deep networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 Information Theory and Applications Workshop",
+      "authors": "P. Chaudhari and S. Soatto",
+      "orig_title": "Stochastic gradient descent performs variational inference, converges to limit cycles for deep networks",
+      "paper_id": "1710.11029v2"
+    },
+    {
+      "index": 27,
+      "title": "Cooling down Lévy flights",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Journal of Physics A: Mathematical and Theoretical",
+      "authors": "I. Pavlyukevich"
+    },
+    {
+      "index": 28,
+      "title": "First exit times of solutions of stochastic differential equations driven by multiplicative lévy noise with heavy tails",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Stochastics and Dynamics",
+      "authors": "I. Pavlyukevich"
+    },
+    {
+      "index": 29,
+      "title": "Regularizing and Optimizing LSTM Language Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1708.02182",
+      "authors": "S. Merity, N. Keskar, and R. Socher",
+      "orig_title": "Regularizing and optimizing LSTM language models",
+      "paper_id": "1708.02182v1"
+    },
+    {
+      "index": 30,
+      "title": "SGDR: Stochastic Gradient Descent with Warm Restarts",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1608.03983",
+      "authors": "I. Loshchilov and F. Hutter",
+      "orig_title": "SGDR: Stochastic gradient descent with warm restarts",
+      "paper_id": "1608.03983v5"
+    },
+    {
+      "index": 31,
+      "title": "Sharp Minima Can Generalize For Deep Nets",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Int’l Conf. Machine Learning",
+      "authors": "L. Dinh, R. Pascanu, S. Bengio, and Y. Bengio",
+      "orig_title": "Sharp minima can generalize for deep nets",
+      "paper_id": "1703.04933v2"
+    },
+    {
+      "index": 32,
+      "title": "Why adam beats sgd for attention models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1912.03194",
+      "authors": "J. Zhang, S. Karimireddy, A. Veit, S. Kim, S. Reddi, S. Kumar, and S. Sra"
+    },
+    {
+      "index": 33,
+      "title": "The anisotropic noise in stochastic gradient descent: Its behavior of escaping from minima and regularization effects",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Int’l Conf. Machine Learning",
+      "authors": "Z. Zhu, J. Wu, B. Yu, L. Wu, and J. Ma"
+    },
+    {
+      "index": 34,
+      "title": "Natural gradient works efficiently in learning",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Neural computation",
+      "authors": "S. Amari"
+    },
+    {
+      "index": 35,
+      "title": "The hierarchy of exit times of lévy-driven langevin equations",
+      "abstract": "",
+      "year": "2010",
+      "venue": "The European Physical Journal Special Topics",
+      "authors": "P. Imkeller, I. Pavlyukevich, and T. Wetzel"
+    },
+    {
+      "index": 36,
+      "title": "Stochastic modified equations and adaptive stochastic gradient algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Int’l Conf. Machine Learning",
+      "authors": "Q. Li, C. Tai, and W. E",
+      "orig_title": "Stochastic modified equations and adaptive stochastic gradient algorithms",
+      "paper_id": "1511.06251v3"
+    },
+    {
+      "index": 37,
+      "title": "Lectures on geometric measure theory",
+      "abstract": "",
+      "year": "1983",
+      "venue": "The Australian National University, Mathematical Sciences Institute, Centre …",
+      "authors": "L. Simon"
+    },
+    {
+      "index": 38,
+      "title": "Stochastic first-and zeroth-order methods for nonconvex stochastic programming",
+      "abstract": "",
+      "year": "2013",
+      "venue": "SIAM Journal on Optimization",
+      "authors": "S. Ghadimi and G. Lan"
+    },
+    {
+      "index": 39,
+      "title": "Efficient stochastic gradient hard thresholding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conf. Neural Information Processing Systems",
+      "authors": "Pan Zhou, Xiaotong Yuan, and Jiashi Feng"
+    },
+    {
+      "index": 40,
+      "title": "Accelerating stochastic gradient descent using predictive variance reduction",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Conf. Neural Information Processing Systems",
+      "authors": "R. Johnson and T. Zhang"
+    },
+    {
+      "index": 41,
+      "title": "New insight into hybrid stochastic gradient descent: Beyond with-replacement sampling and convexity",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conf. Neural Information Processing Systems",
+      "authors": "P. Zhou, X. Yuan, and J. Feng"
+    },
+    {
+      "index": 42,
+      "title": "Faster first-order methods for stochastic non-convex optimization on riemannian manifolds",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Int’l Conf. Artificial Intelligence and Statistics",
+      "authors": "P. Zhou, X. Yuan, and J. Feng"
+    },
+    {
+      "index": 43,
+      "title": "Hybrid Stochastic-Deterministic Minibatch Proximal Gradient: Less-Than-Single-Pass Optimization with Nearly Optimal Generalization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Int’l Conf. Machine Learning",
+      "authors": "P. Zhou and X. Tong",
+      "orig_title": "Hybrid stochastic-deterministic minibatch proximal gradient: Less-than-single-pass optimization with nearly optimal generalization",
+      "paper_id": "2009.09835v1"
+    },
+    {
+      "index": 44,
+      "title": "Gradient Descent Finds Global Minima of Deep Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Int’l Conf. Machine Learning",
+      "authors": "S. Du, J. Lee, H. Li, L. Wang, and X. Zhai",
+      "orig_title": "Gradient descent finds global minima of deep neural networks",
+      "paper_id": "1811.03804v4"
+    },
+    {
+      "index": 45,
+      "title": "An analytical formula of population gradient for two-layered relu network and its applications in convergence and critical point analysis",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Int’l Conf. Machine Learning",
+      "authors": "Y. Tian"
+    },
+    {
+      "index": 46,
+      "title": "Understanding generalization and optimization performance of deep cnns",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Int’l Conf. Machine Learning",
+      "authors": "P. Zhou and J. Feng"
+    },
+    {
+      "index": 47,
+      "title": "Empirical risk landscape analysis for understanding deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Int’l Conf. Learning Representations",
+      "authors": "P. Zhou and J. Feng"
+    },
+    {
+      "index": 48,
+      "title": "How sgd selects the global minima in over-parameterized learning: A dynamical stability perspective",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conf. Neural Information Processing Systems",
+      "authors": "L. Wu, C. Ma, and W. E"
+    },
+    {
+      "index": 49,
+      "title": "Efficient approaches for escaping higher order saddle points in non-convex optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Conf. on Learning Theory",
+      "authors": "A. Anandkumar and R. Ge"
+    },
+    {
+      "index": 50,
+      "title": "Group Normalization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conf. Computer Vision",
+      "authors": "Y. Wu and K. He",
+      "orig_title": "Group normalization",
+      "paper_id": "1803.08494v3"
+    },
+    {
+      "index": 51,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Conf. Neural Information Processing Systems",
+      "authors": "A. Krizhevsky, I. Sutskever, and G. Hinton"
+    },
+    {
+      "index": 52,
+      "title": "On estimating the tail index and the spectral measure of multivariate α𝛼\\alpha-stable distributions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Metrika",
+      "authors": "M. Mohammadi, A. Mohammadpour, and H. Ogata"
+    },
+    {
+      "index": 53,
+      "title": "Gradient based learning applied to document recognition",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE",
+      "authors": "Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner"
+    },
+    {
+      "index": 54,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "A. Krizhevsky and G. Hinton"
+    },
+    {
+      "index": 55,
+      "title": "Stability properties of systems of linear stochastic differential equations with random coefficients",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SIAM Journal on Control and Optimization",
+      "authors": "A. Bishop and P. Del Moral"
+    },
+    {
+      "index": 56,
+      "title": "Stochastic differential equations with random coefficients",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Bernoulli",
+      "authors": "A. Kohatsu-Higa, J. León, and D. Nualart"
+    },
+    {
+      "index": 57,
+      "title": "Stabilization of continuous-time jump linear systems",
+      "abstract": "",
+      "year": "2002",
+      "venue": "IEEE Transactions on Automatic Control",
+      "authors": "Y. Fang and K. Loparo"
+    },
+    {
+      "index": 58,
+      "title": "Mean-variance portfolio selection with random parameters in a complete market",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Mathematics of Operations Research",
+      "authors": "Andrew EB Lim and Xun Yu Zhou"
+    },
+    {
+      "index": 59,
+      "title": "Optimal stabilization policies for deterministic and stochastic linear economic systems",
+      "abstract": "",
+      "year": "1973",
+      "venue": "The Review of Economic Studies",
+      "authors": "Stephen J Turnovsky"
+    },
+    {
+      "index": 60,
+      "title": "Random differential equations as models of ecosystems: Monte carlo simulation approach",
+      "abstract": "",
+      "year": "1976",
+      "venue": "Mathematical Biosciences",
+      "authors": "Jawahar Lal Tiwari and John E Hobbie"
+    },
+    {
+      "index": 61,
+      "title": "Random integral equations with applications to life sciences and engineering",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Academic Press",
+      "authors": "Chris P Tsokos and William J Padgett"
+    },
+    {
+      "index": 62,
+      "title": "Random differential equations in river water quality modeling",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Water resources research",
+      "authors": "Brad A Finney, David S Bowles, and Michael P Windham"
+    },
+    {
+      "index": 63,
+      "title": "Note on the derivatives with respect to a parameter of the solutions of a system of differential equations",
+      "abstract": "",
+      "year": "1919",
+      "venue": "Annals of Mathematics",
+      "authors": "T. Gronwall"
+    },
+    {
+      "index": 64,
+      "title": "An introduction to lévy processes with applications in finance",
+      "abstract": "",
+      "year": "2008",
+      "venue": "arXiv preprint arXiv:0804.0482",
+      "authors": "A. Papapantoleon"
+    },
+    {
+      "index": 65,
+      "title": "Foundations of modern probability",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Springer Science & Business Media",
+      "authors": "O. Kallenberg"
+    }
+  ]
+}

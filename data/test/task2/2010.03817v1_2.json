@@ -1,0 +1,477 @@
+{
+  "paper_id": "2010.03817v1",
+  "title": "Efficient Sampling from Feasible Sets of SDPs and Volume Approximation",
+  "sections": {
+    "introduction": "Spectrahedra are probably the most well studied shapes after\npolyhedra. We can represent polyhedra as the intersection of the\npositive orthant with an affine subspace. Spectrahedra generalize polyhedra,\nin the sense that they are the intersection of the cone of positive\nsemidefinite matrices —i.e., symmetric matrices with\nnon-negative eigenvalues— with an affine space.\nIn other words, a spectrahedron S⊂ℝn𝑆superscriptℝ𝑛S\\subset\\mathbb{R}^{n} is the feasible set\nof a linear matrix inequality. That is, let where 𝑨isubscript𝑨𝑖\\bm{A}_{i} are symmetric matrices in ℝm×msuperscriptℝ𝑚𝑚\\mathbb{R}^{m\\times m}, then\nS={𝒙∈ℝn|𝑭​(𝒙)⪰0}𝑆conditional-set𝒙superscriptℝ𝑛succeeds-or-equals𝑭𝒙0S=\\{\\bm{x}\\in\\mathbb{R}^{n}\\,|\\,\\bm{F}(\\bm{x})\\succeq 0\\}, where ⪰succeeds-or-equals\\succeq denotes\npositive semidefiniteness. We assume throughout that S𝑆S is bounded of dimension\nn𝑛n. Spectrahedra are convex sets (Figures 2 and 4) and every polytope is a spectrahedron, but not the opposite.\nThey are the feasible regions of semidefinite programs  in the\nway that polyhedra are feasible regions of linear programs. Efficient methods for sampling points in spectrahedra are crucial for\nmany applications, such as volume approximation ,\nintegration , semidefinite\noptimization  , and applications in robust\ncontrol\nanalysis 1  . To\nsample in the interior or on the boundary of S𝑆S, we employ geometric\nrandom walks . A geometric random walk on S𝑆S starts\nat some interior point and at each step moves to a ”neighboring” point\nthat we choose according to some distribution, depending only on the\ncurrent point; thus it is a special category of Markov chains. For example, in\nthe so-called ball walk, we move to a point p𝑝p that we choose uniformly at\nrandom in a ball of fixed radius δ𝛿\\delta, if p∈S𝑝𝑆p\\in S. The complexity of a\nrandom walk depends on its mixing time —the number of steps required to bound\nthe distance between the current and the stationary distribution— and the\ncomplexity of the basic geometric operations performed at each step of the walk;\nwe call the latter per-step complexity. The majority of geometric random walks are defined for general convex bodies and\nare based on an oracle; usually the membership oracle. There are also a few walks,\ne.g., Vaidya walk  and the sub-linear ball walk ,\nspecialized for polytopes. Most results on their analysis focus on convergence\nand mixing time, while they define abstractly the operations they perform at\neach step and they enclose them in the corresponding oracle. That is why the\ncomplexity bounds involve the number of oracle calls. To specialize a random walk for a family or representation of convex\nbodies one has to come up with efficient algorithms for the basic\ngeometric operations to realize the (various) oracles. These\noperations should exploit the underlying geometric and algebraic\nproperties and are of independent interest.\nThey depend on efficient (numerical) linear algebra computations.\nMore importantly, they\ndominate the per-step complexity and are hence crucial both for the\noverall complexity to sample a point from the target distribution,\nas well as for an efficient implementation. The study of basic geometric operations to sample from non-linear convex objects\nfinds its roots in non-linear computational geometry. During the last two\ndecades, there are combined efforts   to develop\nefficient algorithms for the basic operations (predicates) that are behind\nclassical geometric algorithms, like convex hull, arrangements, Voronoi\ndiagrams, to go beyond points and lines and handle curved objects. For this, one\nexploits efficiently structure and symmetry in linear algebra computations, and\ndevelops novel algebraic tools. To our knowledge, only the Random Directions Hit and Run (W-HnR) random walk  has been\nstudied for spectrahedra . To exploit the various other\nwalks, like Ball walk , Billiard walk (W-Billard) ,\nand Hamiltonian Monte Carlo with boundary reflections (W-HMC-r) ,\none needs to provide geometric\noperations. For example, we need to compute the reflection of a curve at the\nboundary, and the intersection point of a curve with the boundary (of a\nspectrahedron). We should mention that there is a gap 7  between the\ntheoretical worst case bounds for the mixing times and the practical\nperformance of the random walk algorithms. Furthermore, there are random walks without known\ntheoretical mixing times, such as Coordinate Directions Hit and Run (W-CHnR), W-Billard and W-HMC-r. To study them experimentally,\nit is imperative to provide an efficient realization of the corresponding oracles."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Reflection, Refraction, and Hamiltonian Monte Carlo",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NeurIPS",
+      "authors": "H. M. Afshar and J. Domke"
+    },
+    {
+      "index": 1,
+      "title": "The polynomial eigenvalue problem is well conditioned for random inputs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SIMAX",
+      "authors": "D. Armentano and C. Beltrán"
+    },
+    {
+      "index": 2,
+      "title": "The real polynomial eigenvalue problem is well conditioned on the average",
+      "abstract": "",
+      "year": "2019",
+      "venue": "J. Foundations of Computational Math.",
+      "authors": "C. Beltrán and K. Kozhasov"
+    },
+    {
+      "index": 3,
+      "title": "The polynomial eigenvalue problem",
+      "abstract": "",
+      "year": "2005",
+      "venue": "University of Manchester",
+      "authors": "M. Berhanu"
+    },
+    {
+      "index": 4,
+      "title": "A conceptual introduction to Hamiltonian Monte Carlo",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1701.02434",
+      "authors": "M. Betancourt"
+    },
+    {
+      "index": 5,
+      "title": "A survey of computational complexity results in systems and control",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Automatica",
+      "authors": "V. D. Blondel and J. N. Tsitsiklis"
+    },
+    {
+      "index": 6,
+      "title": "Effective computational geometry for curves and surfaces",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Springer",
+      "authors": "J.-D. Boissonnat and M. Teillaud"
+    },
+    {
+      "index": 7,
+      "title": "Random spectrahedra",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SIAM J. Optimization",
+      "authors": "P. Breiding, K. Kozhasov, and A. Lerario"
+    },
+    {
+      "index": 8,
+      "title": "Exact Volume Computation for Polytopes: A Practical Study",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Polytopes — Combinatorics and Computation, DMV Seminar",
+      "authors": "B. Büeler, A. Enge, and K. Fukuda"
+    },
+    {
+      "index": 9,
+      "title": "Random walks for probabilistic robustness",
+      "abstract": "",
+      "year": "2004",
+      "venue": "CDC",
+      "authors": "G. Calafiore"
+    },
+    {
+      "index": 10,
+      "title": "Robust convex programs: Randomized solutions and applications in control",
+      "abstract": "",
+      "year": "2003",
+      "venue": "CDC",
+      "authors": "G. Calafiore and M. Campi"
+    },
+    {
+      "index": 11,
+      "title": "Practical volume estimation by a new annealing schedule for cooling convex bodies",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1905.05494",
+      "authors": "A. Chalkis, I. Z. Emiris, and V. Fisikopoulos",
+      "orig_title": "Practical volume estimation by a new annealing schedule for cooling convex bodies",
+      "paper_id": "1905.05494v3"
+    },
+    {
+      "index": 12,
+      "title": "Sampling the feasible sets of SDPs and volume approximation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ISSAC, ACM Communications in Computer Algebra",
+      "authors": "A. Chalkis, V. Fisikopoulos, P. Repouskos, and E. Tsigaridas"
+    },
+    {
+      "index": 13,
+      "title": "Vaidya walk: A sampling algorithm based on the volumetric barrier",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Annual Allerton Conference on Communication, Control, and Computing (Allerton)",
+      "authors": "Y. Chen, R. Dwivedi, M. J. Wainwright, and B. Yu"
+    },
+    {
+      "index": 14,
+      "title": "Hamiltonian Monte Carlo with boundary reflections, and application to polytope volume calculations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "INRIA, Sophia-Antipolis, France",
+      "authors": "A. Chevallier, S. Pion, and F. Cazals"
+    },
+    {
+      "index": 15,
+      "title": "Bypassing KLS: Gaussian cooling and an O∗​(n3) volume algorithm",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM Symposium Theory of computation (STOC)",
+      "authors": "B. Cousins and S. Vempala"
+    },
+    {
+      "index": 16,
+      "title": "A practical volume algorithm",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Mathematical Programming Computation",
+      "authors": "B. Cousins and S. Vempala"
+    },
+    {
+      "index": 17,
+      "title": "A randomized cutting plane method with probabilistic geometric convergence",
+      "abstract": "",
+      "year": "2010",
+      "venue": "SIAM J. Optimization",
+      "authors": "F. Dabbene, P. Shcherbakov, and B. T. Polyak"
+    },
+    {
+      "index": 18,
+      "title": "Perturbation theory for homogeneous polynomial eigenvalue problems",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Linear algebra & Appl.",
+      "authors": "J.-P. Dedieu and F. Tisseur"
+    },
+    {
+      "index": 19,
+      "title": "A random polynomial-time algorithm for approximating the volume of convex bodies",
+      "abstract": "",
+      "year": "1991",
+      "venue": "J. ACM",
+      "authors": "M. Dyer, A. Frieze, and R. Kannan"
+    },
+    {
+      "index": 20,
+      "title": "Practical polytope volume approximation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Trans. Math. Soft.",
+      "authors": "I. Emiris and V. Fisikopoulos"
+    },
+    {
+      "index": 21,
+      "title": "Nonlinear computational geometry, volume 151 of I.M.A. volumes in Math & its Applications",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Springer, Berlin",
+      "authors": "I. Emiris, F. Sottile, and T. Theobald, editors"
+    },
+    {
+      "index": 22,
+      "title": "Separation bounds for polynomial systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "J. Symbolic Computation",
+      "authors": "I. Z. Emiris, B. Mourrain, and E. Tsigaridas"
+    },
+    {
+      "index": 23,
+      "title": "Random sampling: Billiard walk algorithm",
+      "abstract": "",
+      "year": "2012",
+      "venue": "European J. Operational Research",
+      "authors": "E. Gryazina and B. Polyak"
+    },
+    {
+      "index": 24,
+      "title": "Eigen v3, 2010",
+      "abstract": "",
+      "year": "2010",
+      "venue": "http://eigen.tuxfamily.org",
+      "authors": "G. Guennebaud, B. Jacob, et al."
+    },
+    {
+      "index": 25,
+      "title": "Approximate volume and integration for basic semialgebraic sets",
+      "abstract": "",
+      "year": "2009",
+      "venue": "SIAM review",
+      "authors": "D. Henrion, J. B. Lasserre, and C. Savorgnan"
+    },
+    {
+      "index": 26,
+      "title": "Simulated annealing for convex optimization",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Math. Oper. Res.",
+      "authors": "A. T. Kalai and S. Vempala"
+    },
+    {
+      "index": 27,
+      "title": "On the complexity of computing determinants",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Computational complexity",
+      "authors": "E. Kaltofen and G. Villard"
+    },
+    {
+      "index": 28,
+      "title": "Randomized algorithms for robust control analysis and synthesis have polynomial complexity",
+      "abstract": "",
+      "year": "1996",
+      "venue": "IEEE Conference on Decision and Control",
+      "authors": "P. Khargonekar and A. Tikku"
+    },
+    {
+      "index": 29,
+      "title": "Convergence rates of moment-sum-of-squares hierarchies for volume approximation of semialgebraic sets",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Optimization Letters",
+      "authors": "M. Korda and D. Henrion"
+    },
+    {
+      "index": 30,
+      "title": "Computing the volume of compact semi-algebraic sets",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ISSAC",
+      "authors": "P. Lairez, M. Mezzarobba, and M. Safey El Din",
+      "orig_title": "Computing the volume of compact semi-algebraic sets",
+      "paper_id": "1904.11705v1"
+    },
+    {
+      "index": 31,
+      "title": "Spherical Hamiltonian Monte Carlo for Constrained Target Distributions",
+      "abstract": "",
+      "year": "2014",
+      "venue": "JMLR workshop and Conf procs.",
+      "authors": "S. Lan, B. Zhou, and B. Shahbaba"
+    },
+    {
+      "index": 32,
+      "title": "On the complexity of the Lickteig–Roy subresultant algorithm",
+      "abstract": "",
+      "year": "2019",
+      "venue": "J. Symbolic Computation",
+      "authors": "G. Lecerf"
+    },
+    {
+      "index": 33,
+      "title": "Algorithmic Theory of ODEs and Sampling from Well-conditioned Logconcave Densities",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Y. T. Lee, Z. Song, and S. S. Vempala",
+      "orig_title": "Algorithmic theory of odes and sampling from well-conditioned logconcave densities",
+      "paper_id": "1812.06243v1"
+    },
+    {
+      "index": 34,
+      "title": "Convergence Rate of Riemannian Hamiltonian Monte Carlo and Faster Polytope Volume Computation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Symp. Theory of Computation (STOC)",
+      "authors": "Y. T. Lee and S. Vempala",
+      "orig_title": "Convergence Rate of Riemannian Hamiltonian Monte Carlo and Faster Polytope Volume Computation",
+      "paper_id": "1710.06261v1"
+    },
+    {
+      "index": 35,
+      "title": "Sylvester–habicht sequences and fast cauchy index computation",
+      "abstract": "",
+      "year": "2001",
+      "venue": "J. Symbolic Computation",
+      "authors": "T. Lickteig and M.-F. Roy"
+    },
+    {
+      "index": 36,
+      "title": "Random walks and an O∗​(n5) volume algorithm for convex bodies",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Random Structures & Algorithms",
+      "authors": "L. Lovász, R. Kannan, and M. Simonovits"
+    },
+    {
+      "index": 37,
+      "title": "Simulated annealing in convex bodies and an O∗​(n4) volume algorithm",
+      "abstract": "",
+      "year": "2003",
+      "venue": "IEEE Symp. Foundation of Comp. Science (FOCS)",
+      "authors": "L. Lovász and S. Vempala"
+    },
+    {
+      "index": 38,
+      "title": "Fast algorithms for logconcave functions: Sampling, rounding, integration and optimization",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Symp. Foundation of Comp. Science (FOCS)",
+      "authors": "L. Lovasz and S. Vempala"
+    },
+    {
+      "index": 39,
+      "title": "Matrix Differential Calculus with Applications in Statistics and Econometrics (Revised Edition)",
+      "abstract": "",
+      "year": "1999",
+      "venue": "John Wiley & Sons Ltd",
+      "authors": "J. Magnus and H. Neudecker"
+    },
+    {
+      "index": 40,
+      "title": "Faster polytope rounding, sampling, and volume computation via a sublinear “Ball Walk”",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Symp. Foundation of Comp. Science (FOCS)",
+      "authors": "O. Mangoubi and N. K. Vishnoi",
+      "orig_title": "Faster polytope rounding, sampling, and volume computation via a sub-linear ball walk",
+      "paper_id": "1905.01745v2"
+    },
+    {
+      "index": 41,
+      "title": "Exact Hamiltonian Monte Carlo for Truncated Multivariate Gaussians",
+      "abstract": "",
+      "year": "2014",
+      "venue": "J. Computational & Graphical Statistics",
+      "authors": "A. Pakman and L. Paninski"
+    },
+    {
+      "index": 42,
+      "title": "Univariate polynomials: nearly optimal algorithms for numerical factorization and root-finding",
+      "abstract": "",
+      "year": "2002",
+      "venue": "J. Symbolic Computation",
+      "authors": "V. Y. Pan"
+    },
+    {
+      "index": 43,
+      "title": "Nearly optimal refinement of real roots of a univariate polynomial",
+      "abstract": "",
+      "year": "2016",
+      "venue": "J. Symbolic Computation",
+      "authors": "V. Y. Pan and E. P. Tsigaridas"
+    },
+    {
+      "index": 44,
+      "title": "Billiard walk - a new sampling algorithm for control and optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IFAC Proceedings Volumes",
+      "authors": "B. Polyak and E. Gryazina"
+    },
+    {
+      "index": 45,
+      "title": "The D-decomposition technique for linear matrix inequalities",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Automation and Remote Control",
+      "authors": "B. Polyak and P. Shcherbakov"
+    },
+    {
+      "index": 46,
+      "title": "Some geometric results in semidefinite programming",
+      "abstract": "",
+      "year": "1999",
+      "venue": "J. Global Optimization",
+      "authors": "M. Ramana and A. Goldman"
+    },
+    {
+      "index": 47,
+      "title": "A monte carlo approach to the analysis of control system robustness",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Automatica",
+      "authors": "L. R. Ray and R. F. Stengel"
+    },
+    {
+      "index": 48,
+      "title": "The fundamental theorem of algebra in terms of computational complexity",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Univ. of Tübingen, Germany",
+      "authors": "A. Schönhage"
+    },
+    {
+      "index": 49,
+      "title": "Efficient monte carlo procedures for generating points uniformly distributed over bounded regions",
+      "abstract": "",
+      "year": "1984",
+      "venue": "Operations Research",
+      "authors": "R. L. Smith"
+    },
+    {
+      "index": 50,
+      "title": "Spectra",
+      "abstract": "",
+      "year": "2020",
+      "venue": "https://spectralib.org",
+      "authors": ""
+    },
+    {
+      "index": 51,
+      "title": "Geometry and billiards",
+      "abstract": "",
+      "year": "2005",
+      "venue": "American Mathematical Society",
+      "authors": "S. Tabachnikov"
+    },
+    {
+      "index": 52,
+      "title": "Randomized algorithms for analysis and control of uncertain systems: with applications",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Springer",
+      "authors": "R. Tempo, G. Calafiore, and F. Dabbene"
+    },
+    {
+      "index": 53,
+      "title": "Backward error and condition of polynomial eigenvalue problems",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Linear Algebra & Appl.",
+      "authors": "F. Tisseur"
+    },
+    {
+      "index": 54,
+      "title": "Numerical Nonlinear Algebra",
+      "abstract": "",
+      "year": "1997",
+      "venue": "SIAM",
+      "authors": "L. N. Trefethen and D. Bau",
+      "orig_title": "Numerical linear algebra",
+      "paper_id": "2302.08585v2"
+    },
+    {
+      "index": 55,
+      "title": "Geometric random walks: A survey",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Combinatorial & Computational Geometry",
+      "authors": "S. Vempala"
+    },
+    {
+      "index": 56,
+      "title": "Implementation and evaluation of sdpa 6.0",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Optimization Methods & Software",
+      "authors": "M. Yamashita, K. Fujisawa, and M. Kojima"
+    }
+  ]
+}

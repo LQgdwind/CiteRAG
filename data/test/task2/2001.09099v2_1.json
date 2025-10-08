@@ -1,0 +1,475 @@
+{
+  "paper_id": "2001.09099v2",
+  "title": "TVR: A Large-Scale Dataset for Video-Subtitle Moment Retrieval",
+  "sections": {
+    "b.1 more vcmr experiments": "Frequency Baseline. Following prior works [ref]14 [ref]8, we first discretize the video-length normalized start-end points, then use moments with most frequent start-end points as predictions. For video retrieval, we randomly sample videos from the dataset. The results of this baseline is presented in Table 5. We observe this baseline has slightly better performance than chance, we hypothesize it is mainly caused by the fact that the annotators tend to annotate the first few seconds of the video [ref]14, as we have shown in Fig. 13 (Right). Models Trained with TEF. It is shown in [ref]14 [ref]8 that adding Temporal Endpoint Feature (TEF) [ref]14 improves models’ performance in moment retrieval tasks. In Table 5, we compare models trained with TEF.\nIn most cases, adding TEF increases models’ performance, which suggests there exists a certain degree of bias in the proposed dataset.\nThis phenomenon is also observed by recent works [ref]14 [ref]8 in various moment retrieval datasets, i.e., DiDeMo [ref]14, CharadesSTA [ref]9 and ActivityNet Captions .\nWe attribute this phenomenon into two aspects: (1)moment distribution bias - the moments are not evenly distributed over the video, e.g., in TVR and DiDeMo [ref]14, there are more moments appear at the beginning of the video. (2)language timestamp correlation bias - some query words are highly indicative of the potential temporal location of the queries, e.g., temporal connectives like ‘first’ strongly indicate the associated query might be located around the beginning of the video and pronouns like ‘He’ may suggest this query should not be placed at the beginning of the video as people would usually not use pronouns when they first mention someone.\nThe second bias commonly exists in datasets that are built by converting paragraphs into separate sentences, i.e., CharadesSTA [ref]9, TACoS  and ActivityNet Captions .\nTVR avoids this bias by explicitly ask annotators to write queries as individual sentences without requiring the context of a paragraph. XML with Sliding Windows.\nIn Sec. 5.3, we compared XML variants with different proposal generation strategies.\nIn Table 5, we further compare XML (sw, sliding window) with MCN/CAL models. For details of this variant, see Sec. 5.3.\nCompared to the best baseline (MEE+CAL), using the same set of sliding window proposals, we observe XML (sw) still perform much better (3.82 vs. 0.97, R@1 IoU=0.7).\nWe hypothesize that the lower performance of MCN/CAL models compared to XML is mainly caused by the difficulties of training and ranking with a large pool of proposal candidates (1.5M proposals for TVR train). Both MCN and CAL are trained with a ranking objective, which relies on informative negatives to learn effectively. However, effective negative sampling in such a large pool of candidates can be challenging. In comparison, XML breaks the video corpus level moment retrieval problem into two sub-problems: video-level and moment-level retrieval. At video-level retrieval, XML performs ranking within a small set of videos (17.4K), which eases the aforementioned issue. At moment-level, XML (sliding window) utilizes Binary Cross Entropy to maximize the similarity scores of each ground-truth clip, eliminating the need for manually designing a negative sampling strategy. Model Architecture.\nTable 6 presents a model architecture ablation.\nWe first compare with different self-encoder architectures, replacing our transformer style encoder with a bidirectional LSTM encoder  or a CNN encoder  .\nWe observe worse performance after the change and attribute this performance drop to the ineffectiveness of LSTMs and CNNs to capture long-term dependencies  .\nNext, we compare XML with a variant that uses a single max-pooled query instead of two modularized queries. Across all metrics, XML performs better than the variant without modular queries, showing the importance of considering different query representations in matching the context from different modalities. Feature Ablation. We tested XML model with different visual features, the results are shown in Table 7.\nThe model that uses both static appearance features (ResNet ) and action features (I3D ) outperforms models using only one of the features, demonstrating the importance of recognizing both the objects and the actions in the VCMR task. Retrieval Efficiency in 1M Videos. We consider Video Corpus Moment Retrieval in a video corpus containing 1M videos with 100 queries. Following [ref]8, we conduct this experiment in a simulated setting with each video containing 20 clips with max moment length of 14 clips. Each query containing 15 words. We report the following metrics: (1) feature encoding time (feat time) - measures the time for encoding the context (video and subtitle) features offline. (2) encoded feature size (feat size) - measures the disk space needed to store the encoded context features. (3) retrieval time (retrieval time) - measures the time needed to retrieve relevant moments for 100 new queries. It includes time for encoding the queries and performing approximate nearest neighbor search  or matrix multiplication. The time spent on data loading, pre-processing, feature extraction on backend models (i.e., ResNet-152, I3D, RoBERTa) are not considered as they should be similar if not the same for all the methods. Note that the retrieval time here is different from the runtime in Table 5, which additional includes feat time. We do not report feat time and feat size for ExCL  as it does not have the ability to pre-encode the features - its context encoding depends on the input queries. This experiment was conducted on an RTX 2080Ti GPU and an Intel(R) Xeon(R) Silver 4114 CPU @ 2.20GHz ×\\times 40, with PyTorch  and FAISS . The results are shown in Table 8. Our XML model is more efficient than all the baselines. Compared to the best baseline methods MEE+MCN, XML is 18×18\\times faster in retrieval, 4.5×4.5\\times faster in feature encoding and needs 77% less disk space to store the encoded features. Besides, it also has 7.7×7.7\\times higher performance (3.25 vs. 0.42, IoU=0.7, R@1, on TVR test-public set). Note that MEE+ExCL has very poor retrieval time performance (287×287\\times slower than XML), as it requires early fusion of context and query features. In comparison, the other 3 methods are able to pre-encode the context features and only perform lightweight query encoding and highly optimized nearest neighbor search or matrix multiplication to obtain the moment predictions. Impact of #Retrieved Videos. In previous experiments, we fix the number of videos retrieved by XML to be 100 for corpus level moment retrieval experiments. To study the impact of this hyperparameter, we perform experiments when #videos ∈  0 00absent1050100200\\in  0 00, the results are shown in Table 9. Overall, we notice XML is not sensitive to the number of retrieved videos in terms of R@1, R@5 and R@10 (IoU=0.5, 0.7) in the tested range. When we focus on R@100, IoU=0.5, we find that using more videos helps improve the retrieval performance."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Layer normalization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint",
+      "authors": "Ba, J.L., Kiros, J.R., Hinton, G.E."
+    },
+    {
+      "index": 1,
+      "title": "Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Carreira, J., Zisserman, A.",
+      "orig_title": "Quo vadis, action recognition? a new model and the kinetics dataset",
+      "paper_id": "1705.07750v3"
+    },
+    {
+      "index": 2,
+      "title": "Reading Wikipedia to Answer Open-Domain Questions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACL",
+      "authors": "Chen, D., Fisch, A., Weston, J., Bordes, A.",
+      "orig_title": "Reading wikipedia to answer open-domain questions",
+      "paper_id": "1704.00051v2"
+    },
+    {
+      "index": 3,
+      "title": "Temporally grounding natural sentence in video",
+      "abstract": "",
+      "year": "2018",
+      "venue": "EMNLP",
+      "authors": "Chen, J., Chen, X., Ma, L., Jie, Z., Chua, T.S."
+    },
+    {
+      "index": 4,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR",
+      "authors": "Deng, J., Dong, W., Socher, R., Li, L.J., Li, K., Fei-Fei, L."
+    },
+    {
+      "index": 5,
+      "title": "Meteor universal: Language specific translation evaluation for any target language",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ninth workshop on statistical machine translation",
+      "authors": "Denkowski, M., Lavie, A."
+    },
+    {
+      "index": 6,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NAACL",
+      "authors": "Devlin, J., Chang, M.W., Lee, K., Toutanova, K.",
+      "orig_title": "Bert: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 7,
+      "title": "Temporal localization of moments in video collections with natural language",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "Escorcia, V., Soldan, M., Sivic, J., Ghanem, B., Russell, B."
+    },
+    {
+      "index": 8,
+      "title": "TALL: Temporal Activity Localization via Language Query",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Gao, J., Sun, C., Yang, Z., Nevatia, R.",
+      "orig_title": "Tall: Temporal activity localization via language query",
+      "paper_id": "1705.02101v2"
+    },
+    {
+      "index": 9,
+      "title": "MAC: Mining Activity Concepts for Language-based Temporal Localization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "WACV",
+      "authors": "Ge, R., Gao, J., Chen, K., Nevatia, R.",
+      "orig_title": "Mac: Mining activity concepts for language-based temporal localization",
+      "paper_id": "1811.08925v1"
+    },
+    {
+      "index": 10,
+      "title": "ExCL: Extractive Clip Localization Using Natural Language Descriptions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NAACL",
+      "authors": "Ghosh, S., Agarwal, A., Parekh, Z., Hauptmann, A.",
+      "orig_title": "Excl: Extractive clip localization using natural language descriptions",
+      "paper_id": "1904.02755v1"
+    },
+    {
+      "index": 11,
+      "title": "Deep sparse rectifier neural networks",
+      "abstract": "",
+      "year": "2011",
+      "venue": "AISTATS",
+      "authors": "Glorot, X., Bordes, A., Bengio, Y."
+    },
+    {
+      "index": 12,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "He, K., Zhang, X., Ren, S., Sun, J.",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 13,
+      "title": "Localizing Moments in Video with Natural Language",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Hendricks, L.A., Wang, O., Shechtman, E., Sivic, J., Darrell, T., Russell, B.",
+      "orig_title": "Localizing moments in video with natural language",
+      "paper_id": "1708.01641v1"
+    },
+    {
+      "index": 14,
+      "title": "Localizing Moments in Video with Temporal Language",
+      "abstract": "",
+      "year": "2018",
+      "venue": "EMNLP",
+      "authors": "Hendricks, L.A., Wang, O., Shechtman, E., Sivic, J., Darrell, T., Russell, B.",
+      "orig_title": "Localizing moments in video with temporal language",
+      "paper_id": "1809.01337v1"
+    },
+    {
+      "index": 15,
+      "title": "Gradient flow in recurrent nets: the difficulty of learning long-term dependencies",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": "Hochreiter, S., Bengio, Y., Frasconi, P., Schmidhuber, J., et al."
+    },
+    {
+      "index": 16,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural computation",
+      "authors": "Hochreiter, S., Schmidhuber, J."
+    },
+    {
+      "index": 17,
+      "title": "Billion-scale similarity search with GPUs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Big Data",
+      "authors": "Johnson, J., Douze, M., Jégou, H.",
+      "orig_title": "Billion-scale similarity search with gpus",
+      "paper_id": "1702.08734v1"
+    },
+    {
+      "index": 18,
+      "title": "The Kinetics Human Action Video Dataset",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint",
+      "authors": "Kay, W., Carreira, J., Simonyan, K., Zhang, B., Hillier, C., Vijayanarasimhan, S., Viola, F., Green, T., Back, T., Natsev, P., et al.",
+      "orig_title": "The kinetics human action video dataset",
+      "paper_id": "1705.06950v1"
+    },
+    {
+      "index": 19,
+      "title": "Referitgame: Referring to objects in photographs of natural scenes",
+      "abstract": "",
+      "year": "2014",
+      "venue": "EMNLP",
+      "authors": "Kazemzadeh, S., Ordonez, V., Matten, M., Berg, T."
+    },
+    {
+      "index": 20,
+      "title": "Deepstory: Video story qa by deep embedded memory networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCAI",
+      "authors": "Kim, K.M., Heo, M.O., Choi, S.H., Zhang, B.T."
+    },
+    {
+      "index": 21,
+      "title": "Dense-Captioning Events in Videos",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Krishna, R., Hata, K., Ren, F., Fei-Fei, L., Niebles, J.C.",
+      "orig_title": "Dense-captioning events in videos",
+      "paper_id": "1705.00754v1"
+    },
+    {
+      "index": 22,
+      "title": "MART: Memory-Augmented Recurrent Transformer for Coherent Video Paragraph Captioning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACL",
+      "authors": "Lei, J., Wang, L., Shen, Y., Yu, D., Berg, T.L., Bansal, M.",
+      "orig_title": "Mart: Memory-augmented recurrent transformer for coherent video paragraph captioning",
+      "paper_id": "2005.05402v1"
+    },
+    {
+      "index": 23,
+      "title": "TVQA: Localized, Compositional Video Question Answering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "EMNLP",
+      "authors": "Lei, J., Yu, L., Bansal, M., Berg, T.L.",
+      "orig_title": "Tvqa: Localized, compositional video question answering",
+      "paper_id": "1809.01696v2"
+    },
+    {
+      "index": 24,
+      "title": "TVQA+: Spatio-Temporal Grounding for Video Question Answering",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACL",
+      "authors": "Lei, J., Yu, L., Berg, T.L., Bansal, M.",
+      "orig_title": "Tvqa+: Spatio-temporal grounding for video question answering",
+      "paper_id": "1904.11574v2"
+    },
+    {
+      "index": 25,
+      "title": "Rouge: A package for automatic evaluation of summaries",
+      "abstract": "",
+      "year": "2004",
+      "venue": "ACL",
+      "authors": "Lin, C.Y."
+    },
+    {
+      "index": 26,
+      "title": "BSN: Boundary Sensitive Network for Temporal Action Proposal Generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Lin, T., Zhao, X., Su, H., Wang, C., Yang, M.",
+      "orig_title": "Bsn: Boundary sensitive network for temporal action proposal generation",
+      "paper_id": "1806.02964v3"
+    },
+    {
+      "index": 27,
+      "title": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "Liu, Y., Ott, M., Goyal, N., Du, J., Joshi, M., Chen, D., Levy, O., Lewis, M., Zettlemoyer, L., Stoyanov, V.",
+      "orig_title": "Roberta: A robustly optimized bert pretraining approach",
+      "paper_id": "1907.11692v1"
+    },
+    {
+      "index": 28,
+      "title": "Learning a Text-Video Embedding from Incomplete and Heterogeneous Data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint",
+      "authors": "Miech, A., Laptev, I., Sivic, J.",
+      "orig_title": "Learning a text-video embedding from incomplete and heterogeneous data",
+      "paper_id": "1804.02516v2"
+    },
+    {
+      "index": 29,
+      "title": "Bleu: a method for automatic evaluation of machine translation",
+      "abstract": "",
+      "year": "2002",
+      "venue": "ACL",
+      "authors": "Papineni, K., Roukos, S., Ward, T., Zhu, W.J."
+    },
+    {
+      "index": 30,
+      "title": "Automatic differentiation in PyTorch",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS Autodiff Workshop",
+      "authors": "Paszke, A., Gross, S., Chintala, S., Chanan, G., Yang, E., DeVito, Z., Lin, Z., Desmaison, A., Antiga, L., Lerer, A."
+    },
+    {
+      "index": 31,
+      "title": "Grounding action descriptions in videos",
+      "abstract": "",
+      "year": "2013",
+      "venue": "TACL",
+      "authors": "Regneri, M., Rohrbach, M., Wetzel, D., Thater, S., Schiele, B., Pinkal, M."
+    },
+    {
+      "index": 32,
+      "title": "The watershed transform: Definitions, algorithms and parallelization strategies",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Fundamenta informaticae",
+      "authors": "Roerdink, J.B., Meijster, A."
+    },
+    {
+      "index": 33,
+      "title": "Coherent Multi-Sentence Video Description with Variable Level of Detail",
+      "abstract": "",
+      "year": "2014",
+      "venue": "GCPR",
+      "authors": "Rohrbach, A., Rohrbach, M., Qiu, W., Friedrich, A., Pinkal, M., Schiele, B.",
+      "orig_title": "Coherent multi-sentence video description with variable level of detail",
+      "paper_id": "1403.6173v1"
+    },
+    {
+      "index": 34,
+      "title": "Movie description",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCV",
+      "authors": "Rohrbach, A., Torabi, A., Rohrbach, M., Tandon, N., Pal, C., Larochelle, H., Courville, A., Schiele, B."
+    },
+    {
+      "index": 35,
+      "title": "Bi-Directional Attention Flow for Machine Comprehension",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Seo, M., Kembhavi, A., Farhadi, A., Hajishirzi, H.",
+      "orig_title": "Bidirectional attention flow for machine comprehension",
+      "paper_id": "1611.01603v6"
+    },
+    {
+      "index": 36,
+      "title": "Hollywood in Homes: Crowdsourcing Data Collection for Activity Understanding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "Sigurdsson, G.A., Varol, G., Wang, X., Farhadi, A., Laptev, I., Gupta, A.",
+      "orig_title": "Hollywood in homes: Crowdsourcing data collection for activity understanding",
+      "paper_id": "1604.01753v3"
+    },
+    {
+      "index": 37,
+      "title": "Computer vision: algorithms and applications",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Springer Science & Business Media",
+      "authors": "Szeliski, R."
+    },
+    {
+      "index": 38,
+      "title": "Movieqa: Understanding stories in movies through question-answering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Tapaswi, M., Zhu, Y., Stiefelhagen, R., Torralba, A., Urtasun, R., Fidler, S."
+    },
+    {
+      "index": 39,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, Ł., Polosukhin, I.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 40,
+      "title": "CIDEr: Consensus-based Image Description Evaluation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Vedantam, R., Lawrence Zitnick, C., Parikh, D.",
+      "orig_title": "Cider: Consensus-based image description evaluation",
+      "paper_id": "1411.5726v2"
+    },
+    {
+      "index": 41,
+      "title": "Vatex: A large-scale, high-quality multilingual dataset for video-and-language research",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Wang, X., Wu, J., Chen, J., Li, L., Wang, Y.F., Wang, W.Y."
+    },
+    {
+      "index": 42,
+      "title": "Multilevel Language and Vision Integration for Text-to-Clip Retrieval",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "Xu, H., He, K., Plummer, B.A., Sigal, L., Sclaroff, S., Saenko, K.",
+      "orig_title": "Multilevel language and vision integration for text-to-clip retrieval",
+      "paper_id": "1804.05113v3"
+    },
+    {
+      "index": 43,
+      "title": "Msr-vtt: A large video description dataset for bridging video and language",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Xu, J., Mei, T., Yao, T., Rui, Y."
+    },
+    {
+      "index": 44,
+      "title": "QANet: Combining Local Convolution with Global Self-Attention for Reading Comprehension",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Yu, A.W., Dohan, D., Luong, M.T., Zhao, R., Chen, K., Norouzi, M., Le, Q.V.",
+      "orig_title": "Qanet: Combining local convolution with global self-attention for reading comprehension",
+      "paper_id": "1804.09541v1"
+    },
+    {
+      "index": 45,
+      "title": "MAttNet: Modular Attention Network for Referring Expression Comprehension",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Yu, L., Lin, Z., Shen, X., Yang, J., Lu, X., Bansal, M., Berg, T.L.",
+      "orig_title": "Mattnet: Modular attention network for referring expression comprehension",
+      "paper_id": "1801.08186v3"
+    },
+    {
+      "index": 46,
+      "title": "From Recognition to Cognition: Visual Commonsense Reasoning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Zellers, R., Bisk, Y., Farhadi, A., Choi, Y.",
+      "orig_title": "From recognition to cognition: Visual commonsense reasoning",
+      "paper_id": "1811.10830v2"
+    },
+    {
+      "index": 47,
+      "title": "MAN: Moment Alignment Network for Natural Language Moment Retrieval via Iterative Graph Adjustment",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Zhang, D., Dai, X., Wang, X., fang Wang, Y., Davis, L.S.",
+      "orig_title": "Man: Moment alignment network for natural language moment retrieval via iterative graph adjustment",
+      "paper_id": "1812.00087v2"
+    },
+    {
+      "index": 48,
+      "title": "Cross-Modal Interaction Networks for Query-Based Moment Retrieval in Videos",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SIGIR",
+      "authors": "Zhang, Z., Lin, Z., Zhao, Z., Xiao, Z.",
+      "orig_title": "Cross-modal interaction networks for query-based moment retrieval in videos",
+      "paper_id": "1906.02497v2"
+    },
+    {
+      "index": 49,
+      "title": "Temporal action detection with structured segment networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Zhao, Y., Xiong, Y., Wang, L., Wu, Z., Tang, X., Lin, D."
+    },
+    {
+      "index": 50,
+      "title": "Towards automatic learning of procedures from web instructional videos",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "Zhou, L., Xu, C., Corso, J.J."
+    }
+  ]
+}

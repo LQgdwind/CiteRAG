@@ -1,0 +1,479 @@
+{
+  "paper_id": "2108.13702v1",
+  "title": "SemIE: Semantically-aware Image Extrapolation",
+  "sections": {
+    "experiments": "We evaluate the proposed approach on two different datasets which have a sufficient disparity between each other to show that our approach is fairly robust and is applicable to diverse scenes. We utilize the publicly available Cityscapes  and ADE20K-bedroom subset 0 datasets both of which contain large variety of distinct object categories. While Cityscapes comprises of outdoor street images, ADE20K bedroom subset consists of bedroom scenes. The ADE20K processed subset111To obtain the processed subset, we contacted the authors of . consists of 31 classes including bed, lamp, wall, floor and table. Cityscapes consists of 2975 training images and 500 validation images. Each image has its corresponding semantic label map and instance label map along with the original image. The bedroom subset of ADE20K 0 has 1389 images in the training set and 139 in the validation set. In order to limit the size of our model, we downsample the images in Cityscapes to a resolution of 256×512256512256\\times 512 and the ADE20K bedroom by resizing all its images to a standard size of 384×512384512384\\times 512 while training. For both the datasets, the input image is taken as centre crop of resized image with half the height and width. Implementation details\nWe train PSPNet  on Cityscapes as well as ADE20K bedroom subset at the resolution discussed earlier and use them to generate segmentation maps of the input (cropped) images. We adopt cGAN based generator for stage 1, stage 2 and stage 4 models similar to SPADE [ref]32. In stage 2 we replace t​a​n​h𝑡𝑎𝑛ℎtanh with s​i​g​m​o​i​d𝑠𝑖𝑔𝑚𝑜𝑖𝑑sigmoid activation in the final layer to produce one hot encodings and semantic label map. For the training of stage 2, in our final objective (Eq. 1), we use λF​L=5subscript𝜆𝐹𝐿5\\lambda_{FL}=5, λC​E=5subscript𝜆𝐶𝐸5\\lambda_{CE}=5 and γ=5𝛾5\\gamma=5. For the training of stage4, we use the same weights for loss terms as [ref]32, i.e. λF​M=10,λV​G​G=10​ and ​λK​L​D=0.05formulae-sequencesubscript𝜆𝐹𝑀10subscript𝜆𝑉𝐺𝐺10 and subscript𝜆𝐾𝐿𝐷0.05\\lambda_{FM}=10,\\lambda_{VGG}=10\\text{ and }\\lambda_{KLD}=0.05 in Eq 3. We use ADAM solver  with β1=0subscript𝛽10\\beta_{1}=0 and β2=0.9subscript𝛽20.9\\beta_{2}=0.9 for both the stages. The training is done for 200 epochs. Baselines\nWe compare our method with various baselines both in quantitative (with FID and Similarity in Object Co-Occurrence metrics) and qualitative terms. We compare the proposed approach with five baselines ‘Outpainting-SRN’ , ‘Boundless’ [ref]37, ‘SPGNet’ [ref]35, ‘SPGNet++’ and partial convolutions (‘PConv’) . ‘PConv’  was originally proposed for image inpainting, like in [ref]37, we adapt it for the task of image out-painting in our setting. We also use SPGNet [ref]35 as a baseline since it also operates in semantic label space but for image inpainting task; but we adapt it for out-painting task. We create a modified version of SPGNet, SPGNet++ using [ref]32 base generator and multiscale discriminator used in our method while retaining the exact training procedure and loss functions used in [ref]35 and use it to compare with our method. We train these baselines on our kind of input-crop (25% of the original image). Evaluation Metrics\nTo compare the perpetual quality of the generated RGB image we use Frêchet Inception distance (FID)  metric. However, since we additionally focus on generation of new objects in the extrapolated region, we also evaluate the results in semantic label space using similarity in object co-occurrence (SOCC) statistics . FID: It is a standard metric used to calculate the fidelity of GAN generated images and provides a measure of the distance between the generated images and the real images. SOCC:\nThe co-occurrence measure for two classes casubscript𝑐𝑎c_{a} and cbsubscript𝑐𝑏c_{b} can be calculated as the ratio of the number of times they occur together to the total number of times one of them occurs in the entire dataset. Let Ncasubscript𝑁subscript𝑐𝑎N_{c_{a}} represent the frequency of a class casubscript𝑐𝑎c_{a} in the input image, and Nca​bsubscript𝑁subscript𝑐𝑎𝑏N_{c_{ab}} be the number of times there is atleast one instance of class cbsubscript𝑐𝑏c_{b} present in the extrapolated region, given casubscript𝑐𝑎c_{a} is present in the input. The probability of co-occurrence p​(ca,cb)𝑝subscript𝑐𝑎subscript𝑐𝑏p(c_{a},c_{b}) of the two classes can be calculated as Nca​bNcasubscript𝑁subscript𝑐𝑎𝑏subscript𝑁subscript𝑐𝑎\\frac{N_{c_{ab}}}{N_{c_{a}}}. The similarity in co-occurrence probability of a pair of classes between generated outputs and the training set, therefore, reflects the extent of faithful emulation of scene distribution. The similarity in co-occurrence for class c2subscript𝑐2c_{2} in the output to the training set, given c1subscript𝑐1c_{1} is present in the output, is defined as s​(ca,cb)=1−|pt​r​a​i​n​(ca,cb)−pg​e​n​(ca,cb)|𝑠subscript𝑐𝑎subscript𝑐𝑏1subscript𝑝𝑡𝑟𝑎𝑖𝑛subscript𝑐𝑎subscript𝑐𝑏subscript𝑝𝑔𝑒𝑛subscript𝑐𝑎subscript𝑐𝑏s(c_{a},c_{b})=1-|p_{train}(c_{a},c_{b})-p_{gen}(c_{a},c_{b})|. The closer this score is to 1, the greater is the similarity between the outputs of the model and the training set images."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Wasserstein generative adversarial networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International conference on machine learning",
+      "authors": "Martin Arjovsky, Soumith Chintala, and Léon Bottou"
+    },
+    {
+      "index": 1,
+      "title": "Semantic Bottleneck Scene Generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.11357",
+      "authors": "Samaneh Azadi, Michael Tschannen, Eric Tzeng, Sylvain Gelly, Trevor Darrell, and Mario Lucic",
+      "orig_title": "Semantic bottleneck scene generation",
+      "paper_id": "1911.11357v1"
+    },
+    {
+      "index": 2,
+      "title": "Patchmatch: A randomized correspondence algorithm for structural image editing",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ACM Trans. Graph.",
+      "authors": "Connelly Barnes, Eli Shechtman, Adam Finkelstein, and Dan B Goldman"
+    },
+    {
+      "index": 3,
+      "title": "Panoptic-DeepLab: A Simple, Strong, and Fast Baseline for Bottom-Up Panoptic Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Bowen Cheng, Maxwell D Collins, Yukun Zhu, Ting Liu, Thomas S Huang, Hartwig Adam, and Liang-Chieh Chen",
+      "orig_title": "Panoptic-deeplab: A simple, strong, and fast baseline for bottom-up panoptic segmentation",
+      "paper_id": "1911.10194v3"
+    },
+    {
+      "index": 4,
+      "title": "The Cityscapes Dataset for Semantic Urban Scene Understanding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Marius Cordts, Mohamed Omran, Sebastian Ramos, Timo Rehfeld, Markus Enzweiler, Rodrigo Benenson, Uwe Franke, Stefan Roth, and Bernt Schiele",
+      "orig_title": "The cityscapes dataset for semantic urban scene understanding",
+      "paper_id": "1604.01685v2"
+    },
+    {
+      "index": 5,
+      "title": "Generating Images with Perceptual Similarity Metrics based on Deep Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in Neural Information Processing Systems (NIPS)",
+      "authors": "A. Dosovitskiy and T. Brox",
+      "orig_title": "Generating images with perceptual similarity metrics based on deep networks",
+      "paper_id": "1602.02644v2"
+    },
+    {
+      "index": 6,
+      "title": "Generative multi-adversarial networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.01673",
+      "authors": "Ishan Durugkar, Ian Gemp, and Sridhar Mahadevan"
+    },
+    {
+      "index": 7,
+      "title": "Image quilting for texture synthesis and transfer",
+      "abstract": "",
+      "year": "2001",
+      "venue": "28th annual conference on Computer graphics and interactive techniques",
+      "authors": "Alexei A Efros and William T Freeman"
+    },
+    {
+      "index": 8,
+      "title": "Texture synthesis by non-parametric sampling",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Seventh IEEE International Conference on Computer Vision",
+      "authors": "A. A. Efros and T. K. Leung"
+    },
+    {
+      "index": 9,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio"
+    },
+    {
+      "index": 10,
+      "title": "Spiral generative network for image extrapolation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Dongsheng Guo, Hongzhi Liu, Haoru Zhao, Yunhao Cheng, Qingwei Song, Zhaorui Gu, Haiyong Zheng, and Bing Zheng"
+    },
+    {
+      "index": 11,
+      "title": "Spiral generative network for image extrapolation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Dongsheng Guo, Hongzhi Liu, Haoru Zhao, Yunhao Cheng, Qingwei Song, Zhaorui Gu, Haiyong Zheng, and Bing Zheng"
+    },
+    {
+      "index": 12,
+      "title": "GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Martin Heusel, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and Sepp Hochreiter",
+      "orig_title": "Gans trained by a two time-scale update rule converge to a local nash equilibrium",
+      "paper_id": "1706.08500v6"
+    },
+    {
+      "index": 13,
+      "title": "Learning Hierarchical Semantic Image Manipulation through Structured Representations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1808.07535",
+      "authors": "Seunghoon Hong, Xinchen Yan, Thomas Huang, and Honglak Lee",
+      "orig_title": "Learning hierarchical semantic image manipulation through structured representations",
+      "paper_id": "1808.07535v2"
+    },
+    {
+      "index": 14,
+      "title": "Image-to-Image Translation with Conditional Adversarial Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, and Alexei A Efros",
+      "orig_title": "Image-to-image translation with conditional adversarial networks",
+      "paper_id": "1611.07004v3"
+    },
+    {
+      "index": 15,
+      "title": "Perceptual Losses for Real-Time Style Transfer and Super-Resolution",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European conference on computer vision",
+      "authors": "Justin Johnson, Alexandre Alahi, and Li Fei-Fei",
+      "orig_title": "Perceptual losses for real-time style transfer and super-resolution",
+      "paper_id": "1603.08155v1"
+    },
+    {
+      "index": 16,
+      "title": "Analyzing and Improving the Image Quality of StyleGAN",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Tero Karras, Samuli Laine, Miika Aittala, Janne Hellsten, Jaakko Lehtinen, and Timo Aila",
+      "orig_title": "Analyzing and improving the image quality of stylegan",
+      "paper_id": "1912.04958v2"
+    },
+    {
+      "index": 17,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "Diederik P Kingma and Jimmy Ba"
+    },
+    {
+      "index": 18,
+      "title": "Auto-encoding variational bayes",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.6114",
+      "authors": "Diederik P Kingma and Max Welling"
+    },
+    {
+      "index": 19,
+      "title": "Panoptic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Alexander Kirillov, Kaiming He, Ross Girshick, Carsten Rother, and Piotr Dollár",
+      "orig_title": "Panoptic segmentation",
+      "paper_id": "1801.00868v3"
+    },
+    {
+      "index": 20,
+      "title": "Halluci-Net: Scene Completion by Exploiting Object Co-occurrence Relationships",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2004.08614",
+      "authors": "Kuldeep Kulkarni, Tejas Gokhale, Rajhans Singh, Pavan Turaga, and Aswin Sankaranarayanan",
+      "orig_title": "Halluci-net: Scene completion by exploiting object co-occurrence relationships",
+      "paper_id": "2004.08614v2"
+    },
+    {
+      "index": 21,
+      "title": "Context-Aware Synthesis and Placement of Object Instances",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1812.02350",
+      "authors": "Donghoon Lee, Sifei Liu, Jinwei Gu, Ming-Yu Liu, Ming-Hsuan Yang, and Jan Kautz",
+      "orig_title": "Context-aware synthesis and placement of object instances",
+      "paper_id": "1812.02350v2"
+    },
+    {
+      "index": 22,
+      "title": "GRAINS: Generative Recursive Autoencoders for INdoor Scenes",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Manyi Li, Akshay Gadi Patil, Kai Xu, Siddhartha Chaudhuri, Owais Khan, Ariel Shamir, Changhe Tu, Baoquan Chen, Daniel Cohen-Or, and Hao Zhang",
+      "orig_title": "Grains: Generative recursive autoencoders for indoor scenes",
+      "paper_id": "1807.09193v5"
+    },
+    {
+      "index": 23,
+      "title": "Geometric GAN",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1705.02894",
+      "authors": "Jae Hyun Lim and Jong Chul Ye",
+      "orig_title": "Geometric gan",
+      "paper_id": "1705.02894v2"
+    },
+    {
+      "index": 24,
+      "title": "Focal Loss for Dense Object Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and Piotr Dollár",
+      "orig_title": "Focal loss for dense object detection",
+      "paper_id": "1708.02002v2"
+    },
+    {
+      "index": 25,
+      "title": "Image Inpainting for Irregular Holes Using Partial Convolutions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Guilin Liu, Fitsum A Reda, Kevin J Shih, Ting-Chun Wang, Andrew Tao, and Bryan Catanzaro",
+      "orig_title": "Image inpainting for irregular holes using partial convolutions",
+      "paper_id": "1804.07723v2"
+    },
+    {
+      "index": 26,
+      "title": "Learning to Predict Layout-to-image Conditional Convolutions for Semantic Image Synthesis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Xihui Liu, Guojun Yin, Jing Shao, Xiaogang Wang, et al.",
+      "orig_title": "Learning to predict layout-to-image conditional convolutions for semantic image synthesis",
+      "paper_id": "1910.06809v3"
+    },
+    {
+      "index": 27,
+      "title": "Least Squares Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Xudong Mao, Qing Li, Haoran Xie, Raymond YK Lau, Zhen Wang, and Stephen Paul Smolley",
+      "orig_title": "Least squares generative adversarial networks",
+      "paper_id": "1611.04076v3"
+    },
+    {
+      "index": 28,
+      "title": "Which training methods for gans do actually converge?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on machine learning",
+      "authors": "Lars Mescheder, Andreas Geiger, and Sebastian Nowozin"
+    },
+    {
+      "index": 29,
+      "title": "Spectral Normalization for Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.05957",
+      "authors": "Takeru Miyato, Toshiki Kataoka, Masanori Koyama, and Yuichi Yoshida",
+      "orig_title": "Spectral normalization for generative adversarial networks",
+      "paper_id": "1802.05957v1"
+    },
+    {
+      "index": 30,
+      "title": "SESAME: Semantic Editing of Scenes by Adding, Manipulating or Erasing Objects",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Evangelos Ntavelis, Andrés Romero, Iason Kastanis, Luc Van Gool, and Radu Timofte",
+      "orig_title": "Sesame: Semantic editing of scenes by adding, manipulating or erasing objects",
+      "paper_id": "2004.04977v2"
+    },
+    {
+      "index": 31,
+      "title": "Semantic Image Synthesis with Spatially-Adaptive Normalization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Taesung Park, Ming-Yu Liu, Ting-Chun Wang, and Jun-Yan Zhu",
+      "orig_title": "Semantic image synthesis with spatially-adaptive normalization",
+      "paper_id": "1903.07291v2"
+    },
+    {
+      "index": 32,
+      "title": "Swapping Autoencoder for Deep Image Manipulation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Taesung Park, Jun-Yan Zhu, Oliver Wang, Jingwan Lu, Eli Shechtman, Alexei Efros, and Richard Zhang",
+      "orig_title": "Swapping autoencoder for deep image manipulation",
+      "paper_id": "2007.00653v2"
+    },
+    {
+      "index": 33,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1556",
+      "authors": "Karen Simonyan and Andrew Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 34,
+      "title": "SPG-Net: Segmentation Prediction and Guidance Network for Image Inpainting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1805.03356",
+      "authors": "Yuhang Song, Chao Yang, Yeji Shen, Peng Wang, Qin Huang, and C-C Jay Kuo",
+      "orig_title": "Spg-net: Segmentation prediction and guidance network for image inpainting",
+      "paper_id": "1805.03356v4"
+    },
+    {
+      "index": 35,
+      "title": "Hierarchical multi-scale attention for semantic segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2005.10821",
+      "authors": "Andrew Tao, Karan Sapra, and Bryan Catanzaro",
+      "orig_title": "Hierarchical multi-scale attention for semantic segmentation",
+      "paper_id": "2005.10821v1"
+    },
+    {
+      "index": 36,
+      "title": "Boundless: Generative adversarial networks for image extension",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Piotr Teterwak, Aaron Sarna, Dilip Krishnan, Aaron Maschinot, David Belanger, Ce Liu, and William T Freeman"
+    },
+    {
+      "index": 37,
+      "title": "High-Resolution Image Synthesis and Semantic Manipulation with Conditional GANs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Ting-Chun Wang, Ming-Yu Liu, Jun-Yan Zhu, Andrew Tao, Jan Kautz, and Bryan Catanzaro",
+      "orig_title": "High-resolution image synthesis and semantic manipulation with conditional gans",
+      "paper_id": "1711.11585v2"
+    },
+    {
+      "index": 38,
+      "title": "Wide-context semantic image extrapolation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Yi Wang, Xin Tao, Xiaoyong Shen, and Jiaya Jia"
+    },
+    {
+      "index": 39,
+      "title": "Sketch-Guided Scenery Image Outpainting",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.09788",
+      "authors": "Yaxiong Wang, Yunchao Wei, Xueming Qian, Li Zhu, and Yi Yang",
+      "orig_title": "Sketch-guided scenery image outpainting",
+      "paper_id": "2006.09788v2"
+    },
+    {
+      "index": 40,
+      "title": "TextureGAN: Controlling Deep Image Synthesis with Texture Patches",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Wenqi Xian, Patsorn Sangkloy, Varun Agrawal, Amit Raj, Jingwan Lu, Chen Fang, Fisher Yu, and James Hays",
+      "orig_title": "Texturegan: Controlling deep image synthesis with texture patches",
+      "paper_id": "1706.02823v3"
+    },
+    {
+      "index": 41,
+      "title": "Very Long Natural Scenery Image Prediction by Outpainting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Zongxin Yang, Jian Dong, Ping Liu, Yi Yang, and Shuicheng Yan",
+      "orig_title": "Very long natural scenery image prediction by outpainting",
+      "paper_id": "1912.12688v1"
+    },
+    {
+      "index": 42,
+      "title": "Semantic Image Inpainting with Deep Generative Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Raymond A. Yeh, Chen Chen, Teck Yian Lim, Alexander G. Schwing, Mark Hasegawa-Johnson, and Minh N. Do",
+      "orig_title": "Semantic image inpainting with deep generative models",
+      "paper_id": "1607.07539v3"
+    },
+    {
+      "index": 43,
+      "title": "Context Prior for Scene Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Changqian Yu, Jingbo Wang, Changxin Gao, Gang Yu, Chunhua Shen, and Nong Sang",
+      "orig_title": "Context prior for scene segmentation",
+      "paper_id": "2004.01547v1"
+    },
+    {
+      "index": 44,
+      "title": "Generative Image Inpainting with Contextual Attention",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Jiahui Yu, Zhe Lin, Jimei Yang, Xiaohui Shen, Xin Lu, and Thomas S Huang",
+      "orig_title": "Generative image inpainting with contextual attention",
+      "paper_id": "1801.07892v2"
+    },
+    {
+      "index": 45,
+      "title": "Self-Attention Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Han Zhang, Ian Goodfellow, Dimitris Metaxas, and Augustus Odena",
+      "orig_title": "Self-attention generative adversarial networks",
+      "paper_id": "1805.08318v2"
+    },
+    {
+      "index": 46,
+      "title": "ResNeSt: Split-Attention Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2004.08955",
+      "authors": "Hang Zhang, Chongruo Wu, Zhongyue Zhang, Yi Zhu, Zhi Zhang, Haibin Lin, Yue Sun, Tong He, Jonas Mueller, R Manmatha, et al.",
+      "orig_title": "Resnest: Split-attention networks",
+      "paper_id": "2004.08955v2"
+    },
+    {
+      "index": 47,
+      "title": "Sienet: Siamese expansion network for image extrapolation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Signal Processing Letters",
+      "authors": "Xiaofeng Zhang, Feng Chen, Cailing Wang, Ming Tao, and Guo-Ping Jiang"
+    },
+    {
+      "index": 48,
+      "title": "Pyramid Scene Parsing Network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Hengshuang Zhao, Jianping Shi, Xiaojuan Qi, Xiaogang Wang, and Jiaya Jia",
+      "orig_title": "Pyramid scene parsing network",
+      "paper_id": "1612.01105v2"
+    },
+    {
+      "index": 49,
+      "title": "Scene parsing through ade20k dataset",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Bolei Zhou, Hang Zhao, Xavier Puig, Sanja Fidler, Adela Barriuso, and Antonio Torralba"
+    }
+  ]
+}

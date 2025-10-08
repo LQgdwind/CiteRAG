@@ -1,0 +1,379 @@
+{
+  "paper_id": "2001.09734v1",
+  "title": "One Explanation Does Not Fit All",
+  "sections": {
+    "explanation desiderata": "During the development stage and early trials of Glass-Box we identified a collection of desiderata and properties that should be considered when building such systems. Some of these attributes are inspired by relevant literature  [ref]26 [ref]20 , while others come from our experience gained in the process of building the system, presenting it to various audiences, discussing its properties at different events and collecting feedback about interacting with it. While this and the following sections focus on desiderata for interactive and customisable explanations, we provide an in-depth discussion on this topic for generic explainability systems in our work on “Explainability Fact Sheets” . The relevant subset of these desiderata are summarised in Table 1 as well as collected and discussed below. Section 3.3, on the other hand, examines the properties of interactive explainability systems. Given the complex nature of such systems, it would be expected that some of these objectives might be at odds with each other, their definition may be “fuzzy”, they might be difficult to operationalise, their “correct” application might depend on the use case, etc. Furthermore, striking the right balance between these desiderata can be challenging. Nevertheless, we argue that considering them while designing interactive explainers will improve the overall quality of the system, help the designers and users understand their strengths and limitations, and make the interaction feel more natural to humans. Furthermore, some of these desired properties can be achieved (and “optimised” for the explainees) by simply allowing user interaction, thereby alleviating the need of explicitly building them into the system. For example, interactive personalisation of the explanations (on-line, with user input) can mean that it does not have to be solved fully algorithmically off-line. The main advantage of Glass-Box interactiveness is the explainee’s ability to transfer knowledge onto the system – in this particular case various preferences with respect to the desired explanation – thereby personalising the resulting explanation [36, property U10, see Table 1]. In our experience, personalisation can come in many different shapes and forms, some of which are discussed below. By interacting with the system the explainee should be able to adjust the breadth and scope of an explanation [36, property F4]. Given the complexity of the underlying predictive model, the explainee may start by asking for an explanation of a single data point (black-box prediction) and continue the interrogation by generalising it to an explanation of a sub-space of the data space (a cohort explanation) with the final stage entailing the explanation of the entire black-box model. Such a shift in explainee’s interest may require the explainability method to adapt and respond by changing the target of the explanation [36, property F3]. The user may request an explanation of a single data point or a summary of the whole data set (training, test, validation, etc.), an explanation of a predictive model (or its subspace) or any number of its predictions. Furthermore, interactive personalisation of an explanation can increase the overall versatility of such systems as customised explanations may serve different purposes and have different functions [36, property O7]. An appropriately phrased explanation may be used as an evidence that the system is fair – either with respect to a group or an individual depending on the scope and breadth of the explanation – or that it is accountable, which again can be investigated with a varied scope, for example, a “What if?” question uncovering that two seemingly indistinguishable data points yield significantly different class assignment, aka adversarial examples . Importantly, if the explainer is flexible enough and the interaction allows such customisation, however the explanations were designed to serve only one purpose, e.g., transparency, the explainee should be explicitly warned of such limitations to avoid any unintended consequences. For example, the explanations may be counterfactually actionable but they are not causal as they were not derived from a causal model [36, property O8]. Some of the aforementioned principles can be observed in how Glass-Box operates. The contrastive statements about the underlying black-box model can be used to assess its transparency (their main purpose), fairness (disparate treatment via contrastive statements conditioned on protected attributes) and accountability (e.g., answers to “What if?” questions that indicate an unexpected non-monotonic behaviour). The contrastive statements are personalised via user-specified constrains of the conditional part (foil) of the counterfactual explanation and by default are with respect to a single prediction. Cohort-based insights can be retrieved by asking “What if?” questions with regard to counterfactual explanations generated by Glass-Box – Section 4 discusses how the scope and the target of our explanations can be broadened to global explanations of the black-box model. Given the wide range of possible explanations and their uses some systems may produce contradictory or competing explanations. Glass-Box is less prone to such issues as the employed explainer is ante-hoc [36, property F7], i.e., predictions and explanations are derived from the same ML model, hence they are always truthful with respect to the predictive model. This means that contradictory explanations are indicative of flaws in the underlying ML model, hence can be very helpful in improving its accountability. In day-to-day human interactions we are able to communicate effectively and efficiently because we share common background knowledge about the world that surrounds us – a mental model of how to interact with the world and other people . Often, human-machine interactions lack this implicit link making the whole process feel unnatural and frustrating. Therefore, the creators of interactive explainability techniques should strive to make their systems coherent with the explainee’s mental model to mitigate this phenomenon as much as possible [36, property U7]. While this objective may not be achievable in general, modelling a part of the user’s mental model, however small, can make a significant difference. The two main approaches to extracting an explainee’s mental model are interactive querying of the explainee in an iterative dialogue (on-line), or embedding the user’s characteristics and preferences in the data or in the parameters of the explainer (off-line), both of which are discussed in Section 2. For explainability systems this task is possible to some extent as their operation and purpose are limited in scope in contrast to more difficult tasks like developing a generic virtual personal assistant. Designers of such systems should also be aware that many interactions are underlined by implicit assumptions that are embedded in the explainee’s mental model and perceived as mundane, hence not voiced, for example, the context of a follow-up question. However, for human-machine interactions the context and its dynamic changes can be more subtle, which may cause the coherence of the internal state of an explainer and the explainee’s mental model to diverge [36, property U3]. This issue can be partially mitigated by explicitly grounding explanations in a context at certain stages, for example, whenever the context shifts, which will help the users to adapt by updating their mental model and assumptions. Contextfullness will also help the explainee better understand the limitations of the system, e.g., whether an explanation produced for a single prediction can (or must not) be generalised to other (similar) instances: “this explanation can be generalised to other data points that have all of the feature values the same but feature x5subscript𝑥5x_{5}, which can span the 0.4≤x5<1.70.4subscript𝑥51.70.4\\leq x_{5}<1.7 range.” Regardless of the system’s interactivity, the explanations should be parsimonious – as short as possible but not shorter than necessary – to convey the required information without overwhelming the explainee [36, property U11]. Maintaining a mental model of the user can help to achieve this objective as the system can provide the explainee only with novel explanations – accounting for factors that the user is not familiar with – therefore reducing the amount of information carried by the explanation [36, property U8]. Another two user-centred aspects of an explanation are its complexity and granularity [36, property U9]. The complexity of explanations should be adjusted according to the depth of the technical knowledge expected of the intended audience, and the level of detail chosen appropriately for their intended use. This can either be achieved by design (i.e., incorporated into the explainability technique), be part of the system configuration and parametrisation steps (off-line) or adjusted interactively by the user as part of the explanatory dialogue (on-line). Another aspect of an explanation, which is often expected by humans [ref]26, is the chronology of factors presented therein: the explainee expects to hear more recent events first [36, property U6]. While this property is data set-specific, the explainee should be given the opportunity to trace the explanation back in time, which can easily be achieved via interaction. Glass-Box attempts to approximate its users’ mental models by mapping their interests and interaction context (inferred from posed questions) to data features that are used to compose counterfactual explanations. Memorising previous interactions, their sequence and the frequency of features mentioned by the user help to achieve this goal and avoid repeating the same answers – once all of the explanations satisfying given constraints were presented, the system explicitly states this fact. Contextfullness of explanations is based on user interactions and is implicitly preserved for follow-up queries in case of actions that do not alter the context and are initiated by the user – e.g., interrogative dialogue. Whenever the context shifts – e.g., a new personalised explanation is requested by the user or an interaction is initiated by Glass-Box – it is explicitly communicated to the user. Contrastive explanations are inherently succinct, but a lack of parsimony could be observed for some of Glass-Box explanations, which resulted in a long “monologue” delivered by the system. In most of the cases this was caused by the system “deciding” to repeat the personalisation conditions provided by the user to ensure their coherence with the explainee’s mental model. Glass-Box is capable of producing novel explanations by using features that have not been acknowledged by the user during the interaction. Interestingly, there is a trade-off between novelty of explanations and their coherence with the user’s mental model, which we have not explored when presenting our system but which should be navigated carefully to avoid jeopardising explainee’s trust. Glass-Box was built to explain predictions of the underlying ML model and did not account for possible generalisation of its explanations to other data points (the users were informed about it prior to interacting with the device). However, the explainees can ask “What if?” questions with respect to the counterfactual explanations, e.g., using slight variations of the explained data point, to explicitly check whether their intuition about the broader scope of an explanation holds up. Finally, chronology was not required of Glass-Box explanations as the data set used to train the underlying predictive model does not have any time-annotated features."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Natural Language Interaction with Explainable AI Models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition Workshops",
+      "authors": "Arjun R Akula, Sinisa Todorovic, Joyce Y Chai, and Song-Chun Zhu"
+    },
+    {
+      "index": 1,
+      "title": "Power to the people: The role of humans in interactive machine learning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "AI Magazine",
+      "authors": "Saleema Amershi, Maya Cakmak, William Bradley Knox, and Todd Kulesza"
+    },
+    {
+      "index": 2,
+      "title": "Formalizing explanatory dialogues",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Scalable Uncertainty Management",
+      "authors": "Abdallah Arioua and Madalina Croitoru"
+    },
+    {
+      "index": 3,
+      "title": "Justification narratives for individual classifications",
+      "abstract": "",
+      "year": "2014",
+      "venue": "AutoML workshop at ICML",
+      "authors": "Or Biran and Kathleen McKeown"
+    },
+    {
+      "index": 4,
+      "title": "Wizard of Oz studies — why and how",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Knowledge-based systems",
+      "authors": "Nils Dahlbäck, Arne Jönsson, and Lars Ahrenberg"
+    },
+    {
+      "index": 5,
+      "title": "Assumption-based argumentation",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Argumentation in artificial intelligence",
+      "authors": "Phan Minh Dung, Robert A Kowalski, and Francesca Toni"
+    },
+    {
+      "index": 6,
+      "title": "Bringing transparency design into practice",
+      "abstract": "",
+      "year": "2018",
+      "venue": "23rd International Conference on Intelligent User Interfaces",
+      "authors": "Malin Eiband, Hanna Schneider, Mark Bilandzic, Julian Fazekas-Con, Mareike Haug, and Heinrich Hussmann"
+    },
+    {
+      "index": 7,
+      "title": "Greedy function approximation: a gradient boosting machine",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Annals of statistics",
+      "authors": "Jerome H Friedman"
+    },
+    {
+      "index": 8,
+      "title": "Peeking inside the black box: Visualizing statistical learning with plots of individual conditional expectation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Journal of Computational and Graphical Statistics",
+      "authors": "Alex Goldstein, Adam Kapelner, Justin Bleich, and Emil Pitkin"
+    },
+    {
+      "index": 9,
+      "title": "Explaining and Harnessing Adversarial Examples",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Ian Goodfellow, Jonathon Shlens, and Christian Szegedy",
+      "orig_title": "Explaining and Harnessing Adversarial Examples",
+      "paper_id": "1412.6572v3"
+    },
+    {
+      "index": 10,
+      "title": "DARPA’s Explainable Artificial Intelligence Program",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AI Magazine",
+      "authors": "David Gunning and David W Aha"
+    },
+    {
+      "index": 11,
+      "title": "Towards a Generic Framework for Black-box Explanation Methods",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IJCAI Workshop on eXplainable Artificial Intelligence (XAI 2019)",
+      "authors": "Clement Henin and Daniel Le Métayer"
+    },
+    {
+      "index": 12,
+      "title": "Interactive optimization for steering machine classification",
+      "abstract": "",
+      "year": "2010",
+      "venue": "SIGCHI Conference on Human Factors in Computing Systems",
+      "authors": "Ashish Kapoor, Bongshin Lee, Desney Tan, and Eric Horvitz"
+    },
+    {
+      "index": 13,
+      "title": "iBCM: Interactive Bayesian case model empowering humans via intuitive interaction",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Been Kim, Elena Glassman, Brittney Johnson, and Julie Shah"
+    },
+    {
+      "index": 14,
+      "title": "Using visual analytics to interpret predictive machine learning models",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML Workshop on Human Interpretability in Machine Learning (WHI 2016)",
+      "authors": "Josua Krause, Adam Perer, and Enrico Bertini"
+    },
+    {
+      "index": 15,
+      "title": "Interacting with predictions: Visual inspection of black-box machine learning models",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 CHI Conference on Human Factors in Computing Systems",
+      "authors": "Josua Krause, Adam Perer, and Kenney Ng"
+    },
+    {
+      "index": 16,
+      "title": "Explanatory debugging: Supporting end-user debugging of machine-learned programs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "2010 IEEE Symposium on Visual Languages and Human-Centric Computing",
+      "authors": "Todd Kulesza, Simone Stumpf, Margaret Burnett, Weng-Keen Wong, Yann Riche, Travis Moore, Ian Oberst, Amber Shinsel, and Kevin McIntosh"
+    },
+    {
+      "index": 17,
+      "title": "Tell me more?: the effects of mental model soundness on personalizing an intelligent agent",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGCHI Conference on Human Factors in Computing Systems",
+      "authors": "Todd Kulesza, Simone Stumpf, Margaret Burnett, and Irwin Kwan"
+    },
+    {
+      "index": 18,
+      "title": "Too much, too little, or just right? Ways explanations impact end users’ mental models",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Visual Languages and Human-Centric Computing (VL/HCC), 2013 IEEE Symposium on",
+      "authors": "Todd Kulesza, Simone Stumpf, Margaret Burnett, Sherry Yang, Irwin Kwan, and Weng-Keen Wong"
+    },
+    {
+      "index": 19,
+      "title": "Principles of explanatory debugging to personalize interactive machine learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "20th international conference on intelligent user interfaces",
+      "authors": "Todd Kulesza, Margaret Burnett, Weng-Keen Wong, and Simone Stumpf"
+    },
+    {
+      "index": 20,
+      "title": "Counterfactual Fairness",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Matt J Kusner, Joshua Loftus, Chris Russell, and Ricardo Silva",
+      "orig_title": "Counterfactual fairness",
+      "paper_id": "1703.06856v3"
+    },
+    {
+      "index": 21,
+      "title": "Faithful and customizable explanations of black box models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 AAAI/ACM Conference on AI, Ethics, and Society",
+      "authors": "Himabindu Lakkaraju, Ece Kamar, Rich Caruana, and Jure Leskovec"
+    },
+    {
+      "index": 22,
+      "title": "The Doctor Just Won’t Accept That!",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Interpretable ML Symposium, 31st Conference on Neural Information Processing Systems (NIPS 2017)",
+      "authors": "Zachary C Lipton"
+    },
+    {
+      "index": 23,
+      "title": "A Unified Approach to Interpreting Model Predictions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems 30",
+      "authors": "Scott M Lundberg and Su-In Lee",
+      "orig_title": "A Unified Approach to Interpreting Model Predictions",
+      "paper_id": "1705.07874v2"
+    },
+    {
+      "index": 24,
+      "title": "A Grounded Interaction Protocol for Explainable Artificial Intelligence",
+      "abstract": "",
+      "year": "2019",
+      "venue": "18th International Conference on Autonomous Agents and MultiAgent Systems",
+      "authors": "Prashan Madumal, Tim Miller, Liz Sonenberg, and Frank Vetere"
+    },
+    {
+      "index": 25,
+      "title": "Explanation in Artificial Intelligence: Insights from the Social Sciences",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Artificial Intelligence",
+      "authors": "Tim Miller",
+      "orig_title": "Explanation in artificial intelligence: Insights from the social sciences",
+      "paper_id": "1706.07269v3"
+    },
+    {
+      "index": 26,
+      "title": "Explainable AI: Beware of Inmates Running the Asylum Or: How I Learnt to Stop Worrying and Love the Social and Behavioural Sciences",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCAI Workshop on eXplainable Artificial Intelligence (XAI 2017)",
+      "authors": "Tim Miller, Piers Howe, and Liz Sonenberg",
+      "orig_title": "Explainable AI: Beware of inmates running the asylum or: How I learnt to stop worrying and love the social and behavioural sciences",
+      "paper_id": "1712.00547v2"
+    },
+    {
+      "index": 27,
+      "title": "Scikit-learn: Machine Learning in Python",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "F. Pedregosa, G. Varoquaux, A. Gramfort, V. Michel, B. Thirion, O. Grisel, M. Blondel, P. Prettenhofer, R. Weiss, V. Dubourg, J. Vanderplas, A. Passos, D. Cournapeau, M. Brucher, M. Perrot, and E. Duchesnay"
+    },
+    {
+      "index": 28,
+      "title": "FACE: Feasible and Actionable Counterfactual Explanations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 AAAI/ACM Conference on AI, Ethics, and Society",
+      "authors": "Rafael Poyiadzi, Kacper Sokol, Raul Santos-Rodriguez, Tijl De Bie, and Peter Flach",
+      "orig_title": "FACE: Feasible and Actionable Counterfactual Explanations",
+      "paper_id": "1909.09369v2"
+    },
+    {
+      "index": 29,
+      "title": "“Why Should I Trust You?” Explaining the Predictions of Any Classifier",
+      "abstract": "",
+      "year": "2016",
+      "venue": "22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+      "authors": "Marco Tulio Ribeiro, Sameer Singh, and Carlos Guestrin",
+      "orig_title": "”Why Should I Trust You?”: Explaining the Predictions of Any Classifier",
+      "paper_id": "1602.04938v3"
+    },
+    {
+      "index": 30,
+      "title": "Anchors: High-precision model-agnostic explanations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Thirty-Second AAAI Conference on Artificial Intelligence",
+      "authors": "Marco Tulio Ribeiro, Sameer Singh, and Carlos Guestrin"
+    },
+    {
+      "index": 31,
+      "title": "Perturbation-Based Explanations of Prediction Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Human and Machine Learning",
+      "authors": "Marko Robnik-Šikonja and Marko Bohanec"
+    },
+    {
+      "index": 32,
+      "title": "Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Nature Machine Intelligence",
+      "authors": "Cynthia Rudin"
+    },
+    {
+      "index": 33,
+      "title": "Personalized Explanation for Machine Learning: a Conceptualization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ECIS",
+      "authors": "Johanes Schneider and Joshua Handali"
+    },
+    {
+      "index": 34,
+      "title": "Counterfactual Explanations of Machine Learning Predictions: Opportunities and Challenges for AI Safety",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SafeAI@AAAI",
+      "authors": "Kacper Sokol and Peter Flach"
+    },
+    {
+      "index": 35,
+      "title": "Explainability Fact Sheets: A Framework for Systematic Assessment of Explainable Approaches",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Conference on Fairness, Accountability, and Transparency",
+      "authors": "Kacper Sokol and Peter Flach"
+    },
+    {
+      "index": 36,
+      "title": "Glass-Box: Explaining AI Decisions With Counterfactual Statements Through Conversation With a Voice-enabled Virtual Assistant",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IJCAI",
+      "authors": "Kacper Sokol and Peter A Flach"
+    },
+    {
+      "index": 37,
+      "title": "bLIMEy: Surrogate Prediction Explanations Beyond LIME",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Workshop on Human-Centric Machine Learning (HCML 2019) at the 33rd Conference on Neural Information Processing Systems (NeurIPS 2019)",
+      "authors": "Kacper Sokol, Alexander Hepburn, Raul Santos-Rodriguez, and Peter Flach",
+      "orig_title": "bLIMEy: Surrogate Prediction Explanations Beyond LIME",
+      "paper_id": "1910.13016v1"
+    },
+    {
+      "index": 38,
+      "title": "Contrastive Explanations with Local Foil Trees",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML Workshop on Human Interpretability in Machine Learning (WHI 2018)",
+      "authors": "Jasper van der Waa, Marcel Robeer, J van Diggelen, Matthieu Brinkhuis, and Mark Neerincx"
+    },
+    {
+      "index": 39,
+      "title": "Counterfactual Explanations without Opening the Black Box: Automated Decisions and the GPDR",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Harv. JL & Tech.",
+      "authors": "Sandra Wachter, Brent Mittelstadt, and Chris Russell"
+    },
+    {
+      "index": 40,
+      "title": "Dialogical Models of Explanation",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ExaCt",
+      "authors": "Douglas Walton"
+    },
+    {
+      "index": 41,
+      "title": "A dialogue system specification for explanation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Synthese",
+      "authors": "Douglas Walton"
+    },
+    {
+      "index": 42,
+      "title": "A dialogue system for evaluating explanations",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Argument Evaluation and Evidence",
+      "authors": "Douglas Walton"
+    },
+    {
+      "index": 43,
+      "title": "The Challenge of Crafting Intelligible Intelligence",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Communications of the ACM",
+      "authors": "Daniel S Weld and Gagan Bansal",
+      "orig_title": "The challenge of crafting intelligible intelligence",
+      "paper_id": "1803.04263v3"
+    }
+  ]
+}

@@ -1,0 +1,455 @@
+{
+  "paper_id": "2101.10292v3",
+  "title": "Transferable Interactiveness Knowledge for Human-Object Interaction Detection",
+  "sections": {
+    "introduction": "Human-Object Interaction (HOI) detection retrieves human and object locations and infers the interaction classes simultaneously from still image. As a sub-task of visual relationship  , HOI is strongly related to the human body and object understanding    . It is crucial for behavior understanding and can facilitate activity understanding , imitation learning , etc. Recently, impressive progress has been made by utilizing Deep Neural Networks (DNNs) in this area  0 1 2. Generally, humans and objects need to be detected first in HOI detection. Given an image and its detections, humans and objects are often paired exhaustively 0 2 1. HOI detection task aims to classify these pairs as various HOI categories. Previous one-stage methods  0 2 3 1 directly classify a pair as specific HOIs. These methods predict interactiveness implicitly at the same time, where interactiveness indicates whether a human-object pair is interactive. For example, when a pair is classified as “eat apple”, we can implicitly predict that it is interactive. Though interactiveness is an essential element for HOI detection, previous methods neglected to study how to utilize it and improve its learning.\nIn comparison to various HOI categories, interactiveness conveys more basic information.\nSuch an attribute makes it easier to transfer across datasets.\nBased on this inspiration, we propose a interactiveness knowledge learning method as seen in Fig. 1.\nWith our method, interactiveness can be learned across datasets and applied to any specific datasets.\nBy utilizing interactiveness, we take two stages to identify HOIs: first discriminate a human-object pair as interactive or not and then classify it as specific HOIs.\nCompared to the previous one-stage method  0 2 3 1, we take advantage of powerful interactiveness knowledge that incorporates more information from other datasets. Thus our method can decrease the false positives significantly. Additionally, after the interactiveness filtering in the first stage, we do not need to handle a large number of non-interactive pairs which are overwhelmingly more than interactive ones. In this paper, we propose a novel two-stage method to classify pairs hierarchically as shown in Fig. 2. Our model, Transferable Interactiveness Network (TIN), consists of three networks: Representation Network (extractor, referred to as 𝐑𝐑\\mathbf{R}), HOI Network (classifier, referred as 𝐂𝐂\\mathbf{C}), and Interactiveness Network (discriminator, referred as 𝐃𝐃\\mathbf{D}).\nThe interactiveness network 𝐃𝐃\\mathbf{D} is creatively utilized for binary classification, i.e., interactive/non-interactive. It benefits the whole model in two aspects. For one thing, the conventional HOI model is only targeted at HOI detection and classification. Our HOI classifier 𝐂𝐂\\mathbf{C} can be trained together with the interactiveness discriminator 𝐃𝐃\\mathbf{D} to learn the HOIs and interactiveness knowledge together.\nUnder usual circumstances, the ratio of non-interactive edges is dominant within inputs.\nThus, by utilizing binary interactiveness labels converted from HOI labels, the whole model would be trained with a stronger supervised constraint and performs better and more robustly. For another, noting that the interactiveness network 𝐃𝐃\\mathbf{D} only needs binary labels which are beyond the HOI classes, interactiveness is transferable and reusable. Therefore, 𝐃𝐃\\mathbf{D} can be used as a transferable knowledge learner to learn interactiveness from multiple datasets and be applied to each of them respectively. In testing, we adopt the two-stage policy. First, the interactiveness network 𝐃𝐃\\mathbf{D} evaluates the interactiveness of a human-object pair (edge) by exploiting the learned interactiveness knowledge, so we can convert the dense HOI graph to a sparse one (Fig. 2). After this, 𝐂𝐂\\mathbf{C} will process the sparse graph and classify the remaining edges. To implement TIN, we propose a hierarchical framework.\nFirst, we utilize the human/object appearance and spatial configuration as the instance-level features to learn the interactiveness between instances.\nSecond, we further argue that interactiveness has an important characteristic related to human body parts. That said, when interacting with daily objects, only some parts of our body would get involved. For example, in “read book”, only our head and hands have strong relationships with the book, but not our lower body. We can either stand or lie while reading.\nGiven this, besides the de facto instance-level features, we further define the interactiveness between object and human body parts, i.e., part interactiveness. Then, the human body part feature paired with object feature are used to learn it.\nNotably, instance and part interactivenesses have inherent and implicit relationships.\nTheir relationship is in line with the Multi-Instance Learning (MIL) 4, i.e., the instance interactiveness is false if and only if all part interactivenesses are false.\nTo be more explicit, a human is interacting with an object if and only if at least one human part is interacting with the object.\nThus, when inputting different level features, we can construct this consistency between two levels as an objective in learning.\nMoreover, body parts with higher interactiveness scores should be paid more attention to.\nWe further use the part attention strategy to strengthen the important parts in HOI inference.\nThe experiment (Sec. 5.5.3) verifies our assumption that different HOIs have various part interactiveness patterns.\nFor instance, “ride” is learned to be more related to feet, thighs, and hands than head and hip.\nThus, such an attention policy can greatly benefit HOI learning. We perform extensive experiments on HICO-DET , V-COCO 3\nand a newly constructed dataset PaStaNet-HOI 5.\nOur method cooperated with transferred interactiveness outperforms the state-of-the-art methods by 1.53 and 4.35 mAP on the Default set and Rare set of HICO-DET."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Visual genome: Connecting language and vision using crowdsourced dense image annotations",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IJCV",
+      "authors": "Ranjay Krishna, Yuke Zhu, Oliver Groth, Justin Johnson, Kenji Hata, Joshua Kravitz, Stephanie Chen, Yannis Kalantidis, Li-Jia Li, David A Shamma, Michael Bernstein, and Li Fei-Fei"
+    },
+    {
+      "index": 1,
+      "title": "Visual Relationship Detection with Language Priors",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "Cewu Lu, Ranjay Krishna, Michael Bernstein, and Fei Fei Li",
+      "orig_title": "Visual relationship detection with language priors",
+      "paper_id": "1608.00187v1"
+    },
+    {
+      "index": 2,
+      "title": "Weakly and Semi Supervised Human Body Part Parsing via Pose-Guided Knowledge Transfer",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Hao-Shu Fang, Guansong Lu, Xiaolin Fang, Jianwen Xie, Yu-Wing Tai, and Cewu Lu",
+      "orig_title": "Weakly and semi-supervised human body part parsing via pose-guided knowledge transfer",
+      "paper_id": "1805.04310v1"
+    },
+    {
+      "index": 3,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NIPS",
+      "authors": "Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun",
+      "orig_title": "Faster r-cnn: Towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 4,
+      "title": "Beyond holistic object recognition: Enriching image understanding with part states",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Cewu Lu, Hao Su, Yonglu Li, Yongyi Lu, Li Yi, Chi-Keung Tang, and Leonidas J Guibas"
+    },
+    {
+      "index": 5,
+      "title": "Mask R-CNN",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick",
+      "orig_title": "Mask r-cnn",
+      "paper_id": "1703.06870v3"
+    },
+    {
+      "index": 6,
+      "title": "Activitynet: A large-scale video benchmark for human activity understanding",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Bernard Ghanem Fabian Caba Heilbron, Victor Escorcia and Juan Carlos Niebles"
+    },
+    {
+      "index": 7,
+      "title": "A survey of robot learning from demonstration",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Robotics and autonomous systems",
+      "authors": "Brenna D. Argall, Sonia Chernova, Manuela Veloso, and Brett Browning"
+    },
+    {
+      "index": 8,
+      "title": "Learning to detect human-object interactions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "WACV",
+      "authors": "Yu-Wei Chao, Yunfan Liu, Xieyang Liu, Huayi Zeng, and Jia Deng"
+    },
+    {
+      "index": 9,
+      "title": "Detecting and recognizing human-object interactions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Georgia Gkioxari, Ross Girshick, Piotr Dollár, and Kaiming He"
+    },
+    {
+      "index": 10,
+      "title": "Learning Human-Object Interactions by Graph Parsing Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Siyuan Qi, Wenguan Wang, Baoxiong Jia, Jianbing Shen, and Song-Chun Zhu",
+      "orig_title": "Learning human-object interactions by graph parsing neural networks",
+      "paper_id": "1808.07962v1"
+    },
+    {
+      "index": 11,
+      "title": "iCAN: Instance-Centric Attention Network for Human-Object Interaction Detection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1808.10437",
+      "authors": "Chen Gao, Yuliang Zou, and Jia-Bin Huang",
+      "orig_title": "ican: Instance-centric attention network for human-object interaction detection",
+      "paper_id": "1808.10437v1"
+    },
+    {
+      "index": 12,
+      "title": "Visual Semantic Role Labeling",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1505.04474",
+      "authors": "Saurabh Gupta and Jitendra Malik",
+      "orig_title": "Visual semantic role labeling",
+      "paper_id": "1505.04474v1"
+    },
+    {
+      "index": 13,
+      "title": "A framework for multiple-instance learning",
+      "abstract": "",
+      "year": "1998",
+      "venue": "NIPS",
+      "authors": "Oded Maron and Tomás Lozano-Pérez"
+    },
+    {
+      "index": 14,
+      "title": "PaStaNet: Toward Human Activity Knowledge Engine",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Yong-Lu Li, Liang Xu, Xinpeng Liu, Xijie Huang, Yue Xu, Shiyi Wang, Hao-Shu Fang, Ze Ma, Mingyang Chen, and Cewu Lu",
+      "orig_title": "PaStaNet: Toward Human Activity Knowledge Engine",
+      "paper_id": "2004.00945v2"
+    },
+    {
+      "index": 15,
+      "title": "Recognition using visual phrases",
+      "abstract": "",
+      "year": "2012",
+      "venue": "CVPR",
+      "authors": "M. A. Sadeghi and A. Farhadi"
+    },
+    {
+      "index": 16,
+      "title": "Situation recognition: Visual semantic role labeling for image understanding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "M. Yatskar, L. Zettlemoyer, and A. Farhadi"
+    },
+    {
+      "index": 17,
+      "title": "Scene Graph Generation by Iterative Message Passing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "D. Xu, Y. Zhu, C. B. Choy, and L. Fei-Fei",
+      "orig_title": "Scene graph generation by iterative message passing",
+      "paper_id": "1701.02426v2"
+    },
+    {
+      "index": 18,
+      "title": "Visual Translation Embedding Network for Visual Relation Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "H. Zhang, Z. Kyaw, S.-F. Chang, and T.-S. Chua",
+      "orig_title": "Visual translation embedding network for visual relation detection",
+      "paper_id": "1702.08319v1"
+    },
+    {
+      "index": 19,
+      "title": "Zoom-Net: Mining Deep Feature Interactions for Visual Relationship Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1807.04979",
+      "authors": "G. Yin, L. Sheng, B. Liu, N. Yu, X. Wang, J. Shao, and C. C. Loy",
+      "orig_title": "Zoom-net: Mining deep feature interactions for visual relationship recognition",
+      "paper_id": "1807.04979v1"
+    },
+    {
+      "index": 20,
+      "title": "Graph R-CNN for Scene Graph Generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "L. Yang, L. Lu, S. Lee. D. Batra and D. Parikh",
+      "orig_title": "Graph r-cnn for scene graph generation",
+      "paper_id": "1808.00191v1"
+    },
+    {
+      "index": 21,
+      "title": "Unsupervised discovery of action classes",
+      "abstract": "",
+      "year": "2006",
+      "venue": "CVPR",
+      "authors": "Y. Wang, H. Jiang, Mark. S. Drew, Z.-N. Li, and G. Mori"
+    },
+    {
+      "index": 22,
+      "title": "Recognizing human actions from still images with latent poses",
+      "abstract": "",
+      "year": "2010",
+      "venue": "CVPR",
+      "authors": "W. Yang, Y. Wang, and G. Mori"
+    },
+    {
+      "index": 23,
+      "title": "Recognizing actions from still images",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ICPR",
+      "authors": "N. Ikizler, R. G. Cinbis, S. Pehlivan, and P. Duygulu"
+    },
+    {
+      "index": 24,
+      "title": "Care about you: towards large-scale human-centric visual relationship detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1705.09892",
+      "authors": "B. Zhuang, Q. Wu, C. Shen, I. Reid, and A. v. d. Hengel",
+      "orig_title": "Care about you: towards large-scale human-centric visual relationship detection",
+      "paper_id": "1705.09892v1"
+    },
+    {
+      "index": 25,
+      "title": "Pairwise Body-Part Attention for Recognizing Human-Object Interactions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "H.-S. Fang, J. Cao, Y.-W. Tai, and C. Lu",
+      "orig_title": "Pairwise body-part attention for recognizing human-object interactions",
+      "paper_id": "1807.10889v1"
+    },
+    {
+      "index": 26,
+      "title": "Recognizing human actions in still images: a study of bag-of-features and part-based representations",
+      "abstract": "",
+      "year": "2010",
+      "venue": "BMVC",
+      "authors": "V. Delaitre, I. Laptev, and J. Sivic"
+    },
+    {
+      "index": 27,
+      "title": "Hico: A benchmark for recognizing human-object interactions in images",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Y. W. Chao, Z. Wang, Y. He, J. Wang, and J. Deng"
+    },
+    {
+      "index": 28,
+      "title": "Predicting the location of “interactees” in novel human-object interactions",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACCV",
+      "authors": "C.-Y. Chen and K. Grauman"
+    },
+    {
+      "index": 29,
+      "title": "Learning Models for Actions and Person-Object Interactions with Transfer to Question Answering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "A. Mallya and S. Lazebnik",
+      "orig_title": "Learning models for actions and person-object interactions with transfer to question answering",
+      "paper_id": "1604.04808v2"
+    },
+    {
+      "index": 30,
+      "title": "Detailed 2D-3D Joint Representation for Human-Object Interaction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Yong-Lu Li, Xinpeng Liu, Han Lu, Shiyi Wang, Junqi Liu, Jiefeng Li, and Cewu Lu",
+      "orig_title": "Detailed 2D-3D Joint Representation for Human-Object Interaction",
+      "paper_id": "2004.08154v2"
+    },
+    {
+      "index": 31,
+      "title": "Detecting Human-Object Interactions with Action Co-occurrence Priors",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "D.-J. Kim, X. Sun, J. Choi, S. Lin, and I. S. Kweon",
+      "orig_title": "Detecting human-object interactions with action co-occurrence priors",
+      "paper_id": "2007.08728v2"
+    },
+    {
+      "index": 32,
+      "title": "Visual Compositional Learning for Human-Object Interaction Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Z. Hou, X. Peng, Y. Qiao, and D. Tao",
+      "orig_title": "Visual compositional learning for human-object interaction detection",
+      "paper_id": "2007.12407v2"
+    },
+    {
+      "index": 33,
+      "title": "Polysemy deciphering network for human-object interaction detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "X. Zhong, C. Ding, X. Qu, and D. Tao"
+    },
+    {
+      "index": 34,
+      "title": "Contextual heterogeneous graph network for human-object interaction detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "H. Wang, W.-s. Zheng, and L. Yingbiao"
+    },
+    {
+      "index": 35,
+      "title": "UnionDet: Union-Level Detector Towards Real-Time Human-Object Interaction Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "B. Kim, T. Choi, J. Kang, and H. J. Kim",
+      "orig_title": "Uniondet: Union-level detector towards real-time human-object interaction detection",
+      "paper_id": "2312.12664v1"
+    },
+    {
+      "index": 36,
+      "title": "DRG: Dual Relation Graph for Human-Object Interaction Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "C. Gao, J. Xu, Y. Zou, and J.-B. Huang",
+      "orig_title": "Drg: Dual relation graph for human-object interaction detection",
+      "paper_id": "2008.11714v1"
+    },
+    {
+      "index": 37,
+      "title": "Amplifying key cues for human-object-interaction detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Y. Liu, Q. Chen, and A. Zisserman"
+    },
+    {
+      "index": 38,
+      "title": "HOI Analysis: Integrating and Decomposing Human-Object Interaction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "Y.-L. Li, X. Liu, X. Wu, Y. Li, and C. Lu",
+      "orig_title": "Hoi analysis: Integrating and decomposing human-object interaction",
+      "paper_id": "2010.16219v2"
+    },
+    {
+      "index": 39,
+      "title": "Scaling human-object interaction recognition through zero-shot learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "WACV",
+      "authors": "Liyue Shen, Serena Yeung, Judy Hoffman, Greg Mori, and Li Fei Fei"
+    },
+    {
+      "index": 40,
+      "title": "Detecting rare visual relations using analogies",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Julia Peyre, Ivan Laptev, Cordelia Schmid, and Josef Sivic"
+    },
+    {
+      "index": 41,
+      "title": "Actions and Attributes from Wholes and Parts",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICCV",
+      "authors": "G. Gkioxari, R. Girshick, and J. Malik",
+      "orig_title": "DActions and attributes from wholes and parts",
+      "paper_id": "1412.2604v2"
+    },
+    {
+      "index": 42,
+      "title": "Detectron",
+      "abstract": "",
+      "year": "2018",
+      "venue": "https://github.com/facebookresearch/detectron",
+      "authors": "R. Girshick, I. Radosavovic, G. Gkioxari, P. Dollár, and K. He"
+    },
+    {
+      "index": 43,
+      "title": "Feature Pyramid Networks for Object Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "T.-Y. Lin, P. Dollár, R. B. Girshick, K. He, B. Hariharan, and S. J. Belongie",
+      "orig_title": "Feature pyramid networks for object detection",
+      "paper_id": "1612.03144v2"
+    },
+    {
+      "index": 44,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 45,
+      "title": "RMPE: Regional multi-person pose estimation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "H.-S. Fang, S. Xie, Y.-W. Tai, and C. Lu"
+    },
+    {
+      "index": 46,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "T.-Y. Lin, M. Maire, S. Belongie, J. Hays, P. Perona, D. Ramanan, P. Dollár, and C. L. Zitnick",
+      "orig_title": "Microsoft coco: Common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 47,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.04805",
+      "authors": "Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova",
+      "orig_title": "Bert: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 48,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1609.02907",
+      "authors": "T. N. Kipf and M. Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    }
+  ]
+}

@@ -1,0 +1,367 @@
+{
+  "paper_id": "2204.13307v3",
+  "title": "AlphaZero-Inspired Game Learning: Faster Training by Using MCTS Only at Test Time",
+  "sections": {
+    "ii-a algorithm overview": "The most important task of a game-playing agent is, given an observation or game state stsubscript𝑠𝑡s_{t} at time t𝑡t, to propose a good next action atsubscript𝑎𝑡a_{t} from the set of actions available in stsubscript𝑠𝑡s_{t} (Fig. 1).\nTD-learning uses the value function V​(st)𝑉subscript𝑠𝑡V(s_{t}), which is the expected sum of future rewards when being in state stsubscript𝑠𝑡s_{t}. It is the task of the agent to learn the value function V𝑉V from experience (by interacting with the environment). In order to do so, it usually performs multiple self-play training episodes until a certain training budget is exhausted or a certain game-playing strength is reached. Our base RL algorithm TD-FARL is described in detail in   and is partly inspired by Jaskowski et al. , van der Ree et al.  and partly by our own experience with RL-n-tuple training. The key elements of the new RL-logic – as opposed to our previous RL algorithms   – are n-tuple systems, temporal coherence learning (TCL)  and final adaptation RL (FARL)  . All these key elements will be briefly described in Sec. II-C, II-D and II-E. Despite being successful on a variety of games  , this base algorithm shares one disadvantage with other deep learning algorithms that are only value-based: they base their decision on the value of the current state-action pairs. They have no planning component, no what-if scenarios to think about further consequences, like possible counter-actions of the other player(s), further own actions and so on. This is where AlphaZero’s MCTS-trick\ncomes into play: Silver et al.  [ref]2 combine a deep learning RL agent with an MCTS wrapper (Fig. 1) to introduce such a planning component. They do this throughout the whole training procedure,\nwhich is better for the overall performance but also very computationally demanding. In this work, we take a simpler approach: we first train our RL agent, a TD n-tuple network, and then use the MCTS wrapping only at test time (i. e. during game play). This usage of MCTS adds a form of planning at test time.\n"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Mastering the game of Go with deep neural networks and tree search",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Nature",
+      "authors": "D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. Van Den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam, M. Lanctot et al."
+    },
+    {
+      "index": 1,
+      "title": "Mastering the game of Go without human knowledge",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Nature",
+      "authors": "D. Silver, J. Schrittwieser, K. Simonyan, I. Antonoglou, A. Huang, A. Guez, T. Hubert, L. Baker, M. Lai, A. Bolton et al."
+    },
+    {
+      "index": 2,
+      "title": "Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1712.01815",
+      "authors": "D. Silver, T. Hubert, J. Schrittwieser, I. Antonoglou, M. Lai, A. Guez, M. Lanctot, L. Sifre, D. Kumaran, T. Graepel et al.",
+      "orig_title": "Mastering chess and shogi by self-play with a general reinforcement learning algorithm",
+      "paper_id": "1712.01815v1"
+    },
+    {
+      "index": 3,
+      "title": "Online adaptable learning rates for the game Connect-4",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Transactions on Computational Intelligence and AI in Games",
+      "authors": "S. Bagheri, M. Thill, P. Koch, and W. Konen"
+    },
+    {
+      "index": 4,
+      "title": "Learning to play Othello with n-tuple systems",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Australian Journal of Intelligent Information Processing",
+      "authors": "S. M. Lucas"
+    },
+    {
+      "index": 5,
+      "title": "Temporal difference learning of n-tuple networks for the game 2048",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computational Intelligence and Games (CIG), 2014 IEEE Conference on",
+      "authors": "M. Szubert and W. Jaśkowski"
+    },
+    {
+      "index": 6,
+      "title": "General Board Game Playing for Education and Research in Generic AI Game Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Conference on Games (London)",
+      "authors": "W. Konen",
+      "orig_title": "General board game playing for education and research in generic AI game learning",
+      "paper_id": "1907.06508v1"
+    },
+    {
+      "index": 7,
+      "title": "The GBG class interface tutorial V2.3: General board game playing and learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "TH Köln, Tech. Rep.",
+      "authors": "——"
+    },
+    {
+      "index": 8,
+      "title": "Reinforcement learning for n-player games: The importance of final adaptation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Bioinspired Methods and Their Applications",
+      "authors": "W. Konen and S. Bagheri"
+    },
+    {
+      "index": 9,
+      "title": "Final adaptation reinforcement learning for n-player games",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2111.14375",
+      "authors": "——"
+    },
+    {
+      "index": 10,
+      "title": "Mastering 2048 with delayed temporal coherence learning, multistage weight promotion, redundant encoding, and carousel shaping",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. on Games",
+      "authors": "W. Jaśkowski"
+    },
+    {
+      "index": 11,
+      "title": "Reinforcement learning in the game of Othello: Learning against a fixed opponent and learning from self-play.",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Adaptive Dynamic Programming and Reinforcement Learning (ADPRL)",
+      "authors": "M. van der Ree and M. Wiering"
+    },
+    {
+      "index": 12,
+      "title": "Reinforcement learning for board games: The temporal difference algorithm",
+      "abstract": "",
+      "year": "2015",
+      "venue": "TH Köln, Tech. Rep.",
+      "authors": "W. Konen"
+    },
+    {
+      "index": 13,
+      "title": "Temporal coherence and prediction decay in TD learning",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Int. Joint Conf. on Artificial Intelligence (IJCAI)",
+      "authors": "D. F. Beal and M. C. Smith"
+    },
+    {
+      "index": 14,
+      "title": "Bandit based Monte-Carlo planning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "17th European Conference on Machine Learning, ECML’06",
+      "authors": "L. Kocsis and C. Szepesvári"
+    },
+    {
+      "index": 15,
+      "title": "A survey of Monte Carlo tree search methods",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Transactions on Computational Intelligence and AI in Games",
+      "authors": "C. B. Browne, E. Powley et al."
+    },
+    {
+      "index": 16,
+      "title": "Multi-armed bandits with episode context",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Annals of Mathematics and Artificial Intelligence",
+      "authors": "C. D. Rosin"
+    },
+    {
+      "index": 17,
+      "title": "Pattern recognition and reading by machine",
+      "abstract": "",
+      "year": "1959",
+      "venue": "Eastern Joint Computer Conference",
+      "authors": "W. W. Bledsoe and I. Browning"
+    },
+    {
+      "index": 18,
+      "title": "Reinforcement Learning: An Introduction",
+      "abstract": "",
+      "year": "1998",
+      "venue": "MIT Press",
+      "authors": "R. S. Sutton and A. G. Barto"
+    },
+    {
+      "index": 19,
+      "title": "Edax, version 4.4",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "R. Delorme"
+    },
+    {
+      "index": 20,
+      "title": "OLIVAW: Mastering Othello without human knowledge, nor a penny",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Games",
+      "authors": "A. Norelli and A. Panconesi"
+    },
+    {
+      "index": 21,
+      "title": "Temporal difference learning with eligibility traces for the game Connect-4",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conf on Computational Intelligence in Games (CIG), Dortmund",
+      "authors": "M. Thill, S. Bagheri, P. Koch, and W. Konen"
+    },
+    {
+      "index": 22,
+      "title": "Warm-Start AlphaZero Self-Play Search Enhancements",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Parallel Problem Solving from Nature",
+      "authors": "H. Wang, M. Preuss, and A. Plaat",
+      "orig_title": "Warm-start AlphaZero self-play search enhancements",
+      "paper_id": "2004.12357v1"
+    },
+    {
+      "index": 23,
+      "title": "Learning to play Connect-4 with deep reinforcement learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "R. Dawson"
+    },
+    {
+      "index": 24,
+      "title": "The diameter of the Rubik’s Cube group is twenty",
+      "abstract": "",
+      "year": "2014",
+      "venue": "SIAM Review",
+      "authors": "T. Rokicki, H. Kociemba, M. Davidson, and J. Dethridge"
+    },
+    {
+      "index": 25,
+      "title": "Towards learning Rubik’s Cube with n-tuple-based reinforcement learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "TH Köln (in preparation), Tech. Rep.",
+      "authors": "W. Konen"
+    },
+    {
+      "index": 26,
+      "title": "TD-Gammon, a self-teaching backgammon program, achieves master-level play",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Neural computation",
+      "authors": "G. Tesauro"
+    },
+    {
+      "index": 27,
+      "title": "Learning to play Othello without human knowledge",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "S. Thakoor, S. Nair, and M. Jhunjhunwala"
+    },
+    {
+      "index": 28,
+      "title": "Alternative loss functions in AlphaZero-like self-play",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 IEEE Symposium Series on Computational Intelligence (SSCI)",
+      "authors": "H. Wang, M. Emmerich, M. Preuss, and A. Plaat"
+    },
+    {
+      "index": 29,
+      "title": "Hyper-Parameter Sweep on AlphaZero General",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1903.08129",
+      "authors": "——",
+      "orig_title": "Hyper-parameter sweep on AlphaZero general",
+      "paper_id": "1903.08129v1"
+    },
+    {
+      "index": 30,
+      "title": "The big win strategy on multi-value network: An improvement over AlphaZero approach for 6x6 Othello",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 International Conference on Machine Learning and Machine Intelligence",
+      "authors": "N.-Y. Chang, C.-H. Chen, S.-S. Lin, and S. Nair"
+    },
+    {
+      "index": 31,
+      "title": "Lessons from implementing AlphaZero, part 6",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "A. Young, A. Prasad, and I. Abrams"
+    },
+    {
+      "index": 32,
+      "title": "Learning to Play Othello with Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Games",
+      "authors": "P. Liskowski, W. Jaśkowski, and K. Krawiec",
+      "orig_title": "Learning to play Othello with deep neural networks",
+      "paper_id": "1711.06583v1"
+    },
+    {
+      "index": 33,
+      "title": "AlphaZero-inspirierte KI-Agenten im General Board Game Playing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "J. Scheiermann"
+    },
+    {
+      "index": 34,
+      "title": "Solving the Rubik’s Cube with approximate policy iteration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "S. McAleer, F. Agostinelli, A. Shmakov, and P. Baldi"
+    },
+    {
+      "index": 35,
+      "title": "Solving the Rubik’s Cube with deep reinforcement learning and search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Nature Machine Intelligence",
+      "authors": "F. Agostinelli, S. McAleer, A. Shmakov, and P. Baldi"
+    },
+    {
+      "index": 36,
+      "title": "Ludii - the ludemic general game system",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "É. Piette, D. J. N. J. Soemers, M. Stephenson, C. F. Sironi, M. H. M. Winands, and C. Browne"
+    },
+    {
+      "index": 37,
+      "title": "Deep Learning for General Game Playing with Ludii and Polygames",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2101.09562",
+      "authors": "D. J. Soemers, V. Mella, C. Browne, and O. Teytaud",
+      "orig_title": "Deep learning for general game playing with Ludii and Polygames",
+      "paper_id": "2101.09562v1"
+    },
+    {
+      "index": 38,
+      "title": "Polygames: Improved Zero Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICGA Journal",
+      "authors": "T. Cazenave, Y.-C. Chen, G.-W. Chen, S.-Y. Chen, X.-D. Chiu, J. Dehos, M. Elsa, Q. Gong, H. Hu, V. Khalidov et al.",
+      "orig_title": "Polygames: Improved zero learning",
+      "paper_id": "2001.09832v1"
+    },
+    {
+      "index": 39,
+      "title": "An agent for EinStein Würfelt Nicht! using n-tuple networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Conf. on Technologies and Applications of AI (TAAI)",
+      "authors": "Y. R. Chu, Y. Chen, C. Hsueh, and I. Wu"
+    },
+    {
+      "index": 40,
+      "title": "High-dimensional function approximation for knowledge-free reinforcement learning: A case study in SZ-Tetris",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Conf. on Genetic and Evolutionary Computation",
+      "authors": "W. Jaśkowski, M. Szubert, P. Liskowski, and K. Krawiec"
+    },
+    {
+      "index": 41,
+      "title": "Self-adaptive MCTS for general video game playing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on the Applications of Evolutionary Computation",
+      "authors": "C. F. Sironi, J. Liu, D. Perez-Liebana, R. D. Gaina, I. Bravi, S. M. Lucas, and M. H. Winands"
+    },
+    {
+      "index": 42,
+      "title": "KI-Agenten für das Spiel 2048: Untersuchung von Lernalgorithmen für nichtdeterministische Spiele",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "J. Kutsch"
+    }
+  ]
+}

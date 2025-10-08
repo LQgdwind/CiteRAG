@@ -1,0 +1,435 @@
+{
+  "paper_id": "2010.08938v1",
+  "title": "A Framework to Quantify Approximate Simulation on Graph Data",
+  "sections": {
+    "introduction": "Consider two directed graphs G1subscript𝐺1G_{1} and G2subscript𝐺2G_{2} with labeled nodes from the sets V1subscript𝑉1V_{1} and V2subscript𝑉2V_{2}, respectively. A simulation  relation R⊆V1×V2𝑅subscript𝑉1subscript𝑉2R\\subseteq V_{1}\\times V_{2} is a binary relation over V1subscript𝑉1V_{1} and V2subscript𝑉2V_{2}. For each node pair (u,v)𝑢𝑣(u,v) in R𝑅R (namely, u𝑢u is simulated by v𝑣v), each u𝑢u’s out-neighbor111A node u′superscript𝑢′u^{\\prime} is an out-neighbor of u𝑢u, if there is an outgoing edge from u𝑢u to u′superscript𝑢′u^{\\prime} in G𝐺G. Similarly, u′′superscript𝑢′′u^{\\prime\\prime} is an in-neighbor of u𝑢u, if an edge from u′′superscript𝑢′′u^{\\prime\\prime} to u𝑢u presents. is simulated by one of v𝑣v’s out-neighbors, and the same applies to in-neighbors. An illustration of this concept is shown below. As shown in Figure 1, node u𝑢u is simulated by node v2subscript𝑣2v_{2}, as they have the same label, and each u𝑢u’s out-neighbor can be simulated by the same-label out-neighbor of v2subscript𝑣2v_{2} (u𝑢u has no in-neighbors). Note that the two hexagonal nodes in 𝒫𝒫\\mathcal{P} are simulated by the same hexagonal node in 𝒢2subscript𝒢2\\mathcal{G}_{2}. Similarly, u𝑢u is simulated by v3subscript𝑣3v_{3} and v4subscript𝑣4v_{4}. However, u𝑢u can not be simulated by v1subscript𝑣1v_{1}, as the pentagonal neighbor of u𝑢u cannot be simulated by any neighbor of v1subscript𝑣1v_{1}. The original definition of simulation put forward by Milner in 1971  only considered out-neighbors. But, in 2011, Ma et al.  revised the definition to consider in-neighbors, making it capture more topological information. Additionally, different variants of simulation have emerged over the years, each with its own constraint(s). For example, on the basis that R𝑅R is a simulation relation, bisimulation  further requires that R−1superscript𝑅1R^{-1} is also a simulation, where R−1superscript𝑅1R^{-1} denotes the converse relation of R𝑅R (i.e., R−1={(v,u)|∀(u,v)∈R}superscript𝑅1conditional-set𝑣𝑢for-all𝑢𝑣𝑅R^{-1}=\\{(v,u)|\\forall(u,v)\\in R\\}); and degree-preserving simulation  requires that two neighbors of u𝑢u cannot be simulated by the same neighbor of v𝑣v. Applications. Simulation and its variants are important relations among nodes, and have been adopted in a wide range of applications. For example, simulation and degree-preserving simulation are shown to be effective in graph pattern matching   [ref]6 , and a node in the data graph is considered to be a potential match for a node in the query graph if it simulates the query node. Bisimulation has been applied to compute RDF graph alignment  and graph partition   0. Generally, two nodes will be aligned or be placed in the same partition if they are in a bisimulation relation. Other applications include data retrieval 1, graph compression 2 and index construction 3 4 5, etc. Motivations. Despite their numerous valuable uses, simulation and its variants are all coarse “yes-or-no” indicators. That is, simulation and its variants can only answer whether node v𝑣v can fully simulate node u𝑢u; they cannot tell us whether v𝑣v might be able to partially or even very nearly (i.e., approximately) simulate u𝑢u. This coarseness raises two practical issues. First, there often exist some nodes that nearly simulate u𝑢u in real-world graphs, which either naturally present in the graphs or are consequences of data errors (a common issue by data noise and mistakes of collecting data). However, simulation and its variants cannot catch these nodes and cause loss of potential results. Second, the coarseness makes it inappropriate to apply simulation and its variants to applications that naturally require fine-grained evaluation, such as node similarity measurement. Example 2 provides a real-life illustration of these issues. We consider the application of simulation to determine whether or not a poster A𝐴A is simulated by another poster B𝐵B in terms of their design elements (e.g., color, layout, font, and structure). For example, when compared with the poster P1subscript𝑃1P_{1} in Figure 2(b), the candidate poster P𝑃P in Figure 2(a) only slightly differs in the font and font style. Hence, it is highly suspected as a case of plagiarism 6. Nevertheless, due to a minor change of design elements, there is no exact simulation relation between posters P𝑃P and P1subscript𝑃1P_{1}, and thus exact simulation can not be used to discover such similarity. As a result, it is more desirable to develop a mechanism to capture the similarity between two posters via the degree of approximate simulation (some fine-grained measurement), instead of simply using the exact simulation. In general, it is of practical need to develop a mechanism to quantify the cases of approximate simulation to remedy the impacts of the “yes-or-no” semantics. Such quantification can not only open up a host of possibilities for using simulation but also make the results of simulation more effective and robust. Although the simulation variants differ in certain properties, they are actually derived from a common foundation, namely the simulation relation . Consequently, instead of developing a quantification technique independently and individually for each variant, it is more desirable to devise a general framework that works for all simulation variants. Aside from the obvious benefits of less redundancy, developing a unified framework requires a systematic study of the properties of the different simulation variants. Not only has this not been done before, doing so may help to inspire new variants. Our Contributions. We propose the fractional χ𝜒\\chi-simulation framework that quantifies the extent of simulation and its variants in the range of  01 . Our main contributions are as follows. (1) A unified definition of χ𝜒\\chi-simulation. From a systematic study of the properties of simulation and its variants, we distill the base definition of simulation and its variants into a unified definition called χ𝜒\\chi-simulation. Further, we discover and name a new simulation variant - bijective simulation. Theoretically, bijective simulation is akin to the well-known Weisfeiler-Lehman isomorphism test 7 (Section 4.3). Practically, its fractional form (contribution 2) is more effective than the existing models regarding node similarity measurement, as detailed in Section 5.4. (2) A general framework 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} for computing fractional χ𝜒\\chi-simulation. To quantify the degree to which one node simulates another by a χ𝜒\\chi-simulation,  we propose the concept of fractional χ𝜒\\chi-simulation and identify a list of properties that a fractional χ𝜒\\chi-simulation measure should satisfy. Then, we present a general computation framework, namely 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi}, which can be configured to compute fractional χ𝜒\\chi-simulation for all χ𝜒\\chi-simulations with the properties satisfied. 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} is an iterative framework that computes the fractional χ𝜒\\chi-simulation scores for all pairs of nodes over two graphs. Furthermore, we show the relations of 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} to several well-known concepts, including node similarity measures (i.e., 𝖲𝗂𝗆𝖱𝖺𝗇𝗄𝖲𝗂𝗆𝖱𝖺𝗇𝗄\\mathsf{SimRank} 8 and 𝖱𝗈𝗅𝖾𝖲𝗂𝗆𝖱𝗈𝗅𝖾𝖲𝗂𝗆\\mathsf{RoleSim} 9) and an approximate variant of bisimulation (i.e., k𝑘k-bisimulation 0 1 2 0), in Section 4.3. (3) Extensive experiments and case studies. We perform empirical studies to exhibit that 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} is robust to parameter tuning and data errors, and is efficient to compute on real-world graphs. We further conduct three case studies to evaluate 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi}’s potential for subgraph pattern matching, node similarity measurement, and RDF graph alignment. Based on these studies, we reach the following conclusions. First, fractional χ𝜒\\chi-simulation can remedy the “yes-or-no\" semantics of χ𝜒\\chi-simulation, and it significantly improves the effectiveness of χ𝜒\\chi-simulation in the related applications, e.g., simulation in subgraph pattern matching. Second, fractional bijective simulation (proposed in this paper) is a highly effective way of measuring node similarity. Finally, the 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} framework provides a flexible way to study the effectiveness of different simulation variants, and thus can be used as a tool to help identify the best variant for a specific application."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Capturing topology in graph pattern matching",
+      "abstract": "",
+      "year": "2011",
+      "venue": "PVLDB",
+      "authors": "Shuai Ma, Yang Cao, Wenfei Fan, Jinpeng Huai, and Tianyu Wo"
+    },
+    {
+      "index": 1,
+      "title": "An algebraic definition of simulation between programs",
+      "abstract": "",
+      "year": "1971",
+      "venue": "IJCAI",
+      "authors": "Robin Milner"
+    },
+    {
+      "index": 2,
+      "title": "Communication and concurrency",
+      "abstract": "",
+      "year": "1989",
+      "venue": "",
+      "authors": "Robin Milner"
+    },
+    {
+      "index": 3,
+      "title": "Event pattern matching over graph streams",
+      "abstract": "",
+      "year": "2014",
+      "venue": "PVLDB",
+      "authors": "Chunyao Song, Tingjian Ge, Cindy X. Chen, and Jie Wang"
+    },
+    {
+      "index": 4,
+      "title": "Graph pattern matc-hing: From intractable to polynomial time",
+      "abstract": "",
+      "year": "2010",
+      "venue": "PVLDB",
+      "authors": "Wenfei Fan, Jianzhong Li, Shuai Ma, Nan Tang, Yinghui Wu, and Yunpeng Wu"
+    },
+    {
+      "index": 5,
+      "title": "Strong simulation: Capturing topology in graph pattern matching",
+      "abstract": "",
+      "year": "2014",
+      "venue": "TODS",
+      "authors": "Shuai Ma, Yang Cao, Wenfei Fan, Jinpeng Huai, and Tianyu Wo"
+    },
+    {
+      "index": 6,
+      "title": "RDF Graph Alignment with Bisimulation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "PVLDB",
+      "authors": "Peter Buneman and Slawek Staworko",
+      "orig_title": "RDF graph alignment with bisimulation",
+      "paper_id": "1606.08657v1"
+    },
+    {
+      "index": 7,
+      "title": "Efficient external-memory bisimulation on dags",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGMOD",
+      "authors": "Jelle Hellings, George H. L. Fletcher, and Herman J. Haverkort"
+    },
+    {
+      "index": 8,
+      "title": "Large-scale bisimulation of RDF graphs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "SWIM@SIGMOD",
+      "authors": "Alexander Schätzle, Antony Neu, Georg Lausen, and Martin Przyjaciel-Zablocki"
+    },
+    {
+      "index": 9,
+      "title": "On structure preserving sampling and approximate partitioning of graphs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Symposium on Applied Computing",
+      "authors": "Wouter van Heeswijk, George H. L. Fletcher, and Mykola Pechenizkiy"
+    },
+    {
+      "index": 10,
+      "title": "Covering indexes for XML queries: Bisimulation - simulation = negation",
+      "abstract": "",
+      "year": "2003",
+      "venue": "VLDB",
+      "authors": "Prakash Ramanan"
+    },
+    {
+      "index": 11,
+      "title": "Query preserving graph compression",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGMOD",
+      "authors": "Wenfei Fan, Jianzhong Li, Xin Wang, and Yinghui Wu"
+    },
+    {
+      "index": 12,
+      "title": "A methodology for coupling fragments of xpath with structural indexes for XML documents",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Inf. Syst.",
+      "authors": "George H. L. Fletcher, Dirk Van Gucht, Yuqing Wu, Marc Gyssens, Sofia Brenes, and Jan Paredaens"
+    },
+    {
+      "index": 13,
+      "title": "Covering indexes for branching path queries",
+      "abstract": "",
+      "year": "2002",
+      "venue": "SIGMOD",
+      "authors": "Raghav Kaushik, Philip Bohannon, Jeffrey F. Naughton, and Henry F. Korth"
+    },
+    {
+      "index": 14,
+      "title": "Structural indexing for conjunctive path queries",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "Yuya Sasaki, George Fletcher, and Makoto Onizuka"
+    },
+    {
+      "index": 15,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 16,
+      "title": "Weisfeiler-lehman graph kernels",
+      "abstract": "",
+      "year": "2011",
+      "venue": "JMLR",
+      "authors": "Nino Shervashidze, Pascal Schweitzer, Erik Jan van Leeuwen, Kurt Mehlhorn, and Karsten M. Borgwardt"
+    },
+    {
+      "index": 17,
+      "title": "Simrank: a measure of structural-context similarity",
+      "abstract": "",
+      "year": "2002",
+      "venue": "SIGKDD",
+      "authors": "Glen Jeh and Jennifer Widom"
+    },
+    {
+      "index": 18,
+      "title": "Axiomatic ranking of network role similarity",
+      "abstract": "",
+      "year": "2011",
+      "venue": "SIGKDD",
+      "authors": "Ruoming Jin, Victor E. Lee, and Hui Hong"
+    },
+    {
+      "index": 19,
+      "title": "The algorithmics of bisimilarity",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advanced Topics in Bisimulation and Coinduction",
+      "authors": "Luca Aceto, Anna Ingólfsdóttir, and Jirí Srba"
+    },
+    {
+      "index": 20,
+      "title": "Bisimulation reduction of big graphs on mapreduce",
+      "abstract": "",
+      "year": "2013",
+      "venue": "BNCOD",
+      "authors": "Yongming Luo, Yannick de Lange, George H. L. Fletcher, Paul De Bra, Jan Hidders, and Yuqing Wu"
+    },
+    {
+      "index": 21,
+      "title": "External memory k-bisimulation reduction of big graphs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CIKM",
+      "authors": "Yongming Luo, George H. L. Fletcher, Jan Hidders, Yuqing Wu, and Paul De Bra"
+    },
+    {
+      "index": 22,
+      "title": "A survey of heuristics for the weighted matching problem",
+      "abstract": "",
+      "year": "1983",
+      "venue": "Networks",
+      "authors": "David Avis"
+    },
+    {
+      "index": 23,
+      "title": "Graph isomorphism in quasipolynomial time",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Symposium on Theory of Computing",
+      "authors": "László Babai"
+    },
+    {
+      "index": 24,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 25,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 26,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 27,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 28,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 29,
+      "title": "SAPPER: subgraph indexing and approximate matching in large graphs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "PVLDB",
+      "authors": "Shijie Zhang, Jiong Yang, and Wei Jin"
+    },
+    {
+      "index": 30,
+      "title": "Treespan: efficiently computing similarity all-matching",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGMOD",
+      "authors": "Gaoping Zhu, Xuemin Lin, Ke Zhu, Wenjie Zhang, and Jeffrey Xu Yu"
+    },
+    {
+      "index": 31,
+      "title": "Fast best-effort pattern matching in large attributed graphs",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIGKDD",
+      "authors": "Hanghang Tong, Christos Faloutsos, Brian Gallagher, and Tina Eliassi-Rad"
+    },
+    {
+      "index": 32,
+      "title": "Global alignment of multiple protein interaction networks with application to functional orthology detection",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Proc. Natl. Acad. Sci.",
+      "authors": "Rohit Singh, Jinbo Xu, and Bonnie Berger"
+    },
+    {
+      "index": 33,
+      "title": "Nema: Fast graph search with label similarity",
+      "abstract": "",
+      "year": "2013",
+      "venue": "PVLDB",
+      "authors": "Arijit Khan, Yinghui Wu, Charu C. Aggarwal, and Xifeng Yan"
+    },
+    {
+      "index": 34,
+      "title": "Neighbor-aware search for approximate labeled graph matching using the chi-square statistics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "WWW",
+      "authors": "Sourav Dutta, Pratik Nayek, and Arnab Bhattacharya"
+    },
+    {
+      "index": 35,
+      "title": "G-finder: Approximate attributed subgraph matching",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Big Data",
+      "authors": "Lihui Liu, Boxin Du, Jiejun Xu, and Hanghang Tong"
+    },
+    {
+      "index": 36,
+      "title": "SAGA: a subgraph matching tool for biological graphs",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Bioinform.",
+      "authors": "Yuanyuan Tian, Richard C. McEachin, Carlos Santos, David J. States, and Jignesh M. Patel"
+    },
+    {
+      "index": 37,
+      "title": "Schemaless and structureless graph querying",
+      "abstract": "",
+      "year": "2014",
+      "venue": "PVLDB",
+      "authors": "Shengqi Yang, Yinghui Wu, Huan Sun, and Xifeng Yan"
+    },
+    {
+      "index": 38,
+      "title": "Semantic SPARQL similarity search over RDF knowledge graphs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "PVLDB",
+      "authors": "Weiguo Zheng, Lei Zou, Wei Peng, Xifeng Yan, Shaoxu Song, and Dongyan Zhao"
+    },
+    {
+      "index": 39,
+      "title": "Relational retrieval using a combination of path-constrained random walks",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Machine Learning",
+      "authors": "Ni Lao and William W. Cohen"
+    },
+    {
+      "index": 40,
+      "title": "Pathsim: Meta path-based top-k similarity search in heterogeneous information networks",
+      "abstract": "",
+      "year": "2011",
+      "venue": "PVLDB",
+      "authors": "Yizhou Sun, Jiawei Han, Xifeng Yan, Philip S. Yu, and Tianyi Wu"
+    },
+    {
+      "index": 41,
+      "title": "Top-k similarity join in heterogeneous information networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "TKDE",
+      "authors": "Yun Xiong, Yangyong Zhu, and Philip S. Yu"
+    },
+    {
+      "index": 42,
+      "title": "Node similarity with q-grams for real-world labeled networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGKDD",
+      "authors": "Alessio Conte, Gaspare Ferraro, Roberto Grossi, Andrea Marino, Kunihiko Sadakane, and Takeaki Uno"
+    },
+    {
+      "index": 43,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 44,
+      "title": "An iterative global structure-assisted labeled network aligner",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGKDD",
+      "authors": "Abdurrahman Yasar and Ümit V. Çatalyürek"
+    },
+    {
+      "index": 45,
+      "title": "FINAL: fast attributed network alignment",
+      "abstract": "",
+      "year": "2016",
+      "venue": "SIGKDD",
+      "authors": "Si Zhang and Hanghang Tong"
+    },
+    {
+      "index": 46,
+      "title": "Growing a graph matching from a handful of seeds",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PVLDB",
+      "authors": "Ehsan Kazemi, Seyed Hamed Hassani, and Matthias Grossglauser"
+    },
+    {
+      "index": 47,
+      "title": "An efficient simulation algorithm on kripke structures",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Acta Informatica",
+      "authors": "Francesco Ranzato"
+    },
+    {
+      "index": 48,
+      "title": "Meta structure: Computing relevance in large heterogeneous information networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "SIGKDD",
+      "authors": "Zhipeng Huang, Yudian Zheng, Reynold Cheng, Yizhou Sun, Nikos Mamoulis, and Xiang Li"
+    },
+    {
+      "index": 49,
+      "title": "REGAL: Representation Learning-based Graph Alignment",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM CIKM",
+      "authors": "Mark Heimann, Haoming Shen, Tara Safavi, and Danai Koutra",
+      "orig_title": "REGAL: representation learning-based graph alignment",
+      "paper_id": "1802.06257v3"
+    },
+    {
+      "index": 50,
+      "title": "FIRST: fast interactive attributed subgraph matching",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIGKDD",
+      "authors": "Boxin Du, Si Zhang, Nan Cao, and Hanghang Tong"
+    }
+  ]
+}

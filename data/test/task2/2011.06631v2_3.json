@@ -1,0 +1,319 @@
+{
+  "paper_id": "2011.06631v2",
+  "title": "Steady State Analysis of Episodic Reinforcement Learning",
+  "sections": {
+    "appendix a notes on the mdp formulation": "This section provides more discussions about the MDP formulation as introduced in Section 2. A faithful implementation of this formulation was used to generate all the results reported in Section 6 and Section F. Our MDP formulation assumes both SSSS\\SS and 𝒜𝒜\\mathcal{A} are countable sets. This is mainly for aligning to the standard markov chain theory, and also for enabling convenient notations like transition matrix M𝑀M and summation ∑s,asubscript𝑠𝑎\\sum_{s,a}. Results in this paper are readily generalizable to uncountable action spaces (which still induce countable transitions after marginalizing over the actions), and may also be generalized to uncountable state spaces based on the theory of general-state-space markov chains . Our MDP formulation also assumes state-based deterministic reward function R𝑅R. While this formulation was used in many previous works [ref]16, some literature  explicitly assign stochastic rewards to transitions, in the form of R​(r|s,a,s′)=ℙ[rt+1=r|st=s,at=a,st+1=s′]𝑅conditional𝑟𝑠𝑎superscript𝑠′ℙsubscript𝑟𝑡1conditional𝑟subscript𝑠𝑡𝑠subscript𝑎𝑡𝑎subscript𝑠𝑡1superscript𝑠′R(r|s,a,s^{\\prime})=\\operatorname*{\\mathbb{P}}[r_{t+1}=r|s_{t}=s,a_{t}=a,s_{t+1}=s^{\\prime}]. Our reward-function formulation has no loss of generality here, as one can think of a “state” in our formulation as a (s,r)𝑠𝑟(s,r) pair in stochastic-reward models, with the transition-dependent stochasticity of the reward captured by the transition function P𝑃P. Our MDP formulation has replaced the (often included) discounting constant γcsubscript𝛾𝑐\\gamma_{c} with the (often excluded) initial state distribution ρ0subscript𝜌0\\rho_{0}. Similar perspective to “downgrade” the discounting constant was discussed in  (Chapter 10.4). As will become evident later in the paper, the discounting constant is neither necessary for the purpose of defining the problem, nor is it necessary for treating the problem. On the other hand, an explicit specification of ρ0subscript𝜌0\\rho_{0} is necessary to define the episode-wise performance Je​p​isubscript𝐽𝑒𝑝𝑖J_{epi} as used in all episodic tasks, and will be also needed to define the terminal states in the formulation of episodic learning process proposed in this paper. A finite-horizon task can have degenerated steady states if it is formulated as an infinite-horizon MDP with an imaginary absorbing state s□subscript𝑠□s_{\\scriptscriptstyle\\Box}. In the absorbing MDP formulation, any finite episode will end up with moving from its terminal state to the absorbing state s□subscript𝑠□s_{\\scriptscriptstyle\\Box}, from there the rollout is trapped in the absorbing state forever without generating effective reward  . As a result, the stationary (and limiting) distribution of the absorbing MDP of any finite-horizon task concentrates fully and only to the absorbing state, making it of limited use for designing and analyzing RL algorithms. The definition of the steady-state performance measure Ja​v​g​(π)≐limT→∞1T​∑t=1TR​(st)=𝔼s∼ρπ[R​(s)]approaches-limitsubscript𝐽𝑎𝑣𝑔𝜋subscript→𝑇1𝑇superscriptsubscript𝑡1𝑇𝑅subscript𝑠𝑡subscript𝔼similar-to𝑠subscript𝜌𝜋𝑅𝑠J_{avg}(\\pi)\\doteq\\lim\\limits_{T\\rightarrow\\infty}\\frac{1}{T}\\sum_{t=1}^{T}R(s_{t})=\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}s\\sim\\rho_{\\pi}\\end{subarray}}[R(s)], as introduced in Section 2, is based on the following ergodic theorem of markov chain: In ergodic markov chain M𝑀M with stationary distribution ρMsubscript𝜌𝑀\\rho_{\\scriptscriptstyle M}, let f​(s)𝑓𝑠f(s) be any function such that 𝔼s∼ρM[|f​(s)|]<∞subscript𝔼similar-to𝑠subscript𝜌𝑀𝑓𝑠\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}s\\sim\\rho_{\\scriptscriptstyle M}\\end{subarray}}[~{}|f(s)|~{}]<\\infty, then the time-average of f𝑓f converges almost surely to the state-average of f𝑓f, i.e., limT→∞ℙ[1T​∑t=1Tf​(st)=𝔼s∼ρM[f​(s)]]=1subscript→𝑇ℙ1𝑇superscriptsubscript𝑡1𝑇𝑓subscript𝑠𝑡subscript𝔼similar-to𝑠subscript𝜌𝑀𝑓𝑠1\\lim\\limits_{T\\rightarrow\\infty}\\operatorname*{\\mathbb{P}}[~{}\\frac{1}{T}\\sum_{t=1}^{T}f(s_{t})=\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}s\\sim\\rho_{\\scriptscriptstyle M}\\end{subarray}}[f(s)]~{}]=1.\n(, Theorem 74) The value function Q𝑄Q is often more specifically called the action-value function. We called the Q𝑄Q-function just value function because of its symmetric role with policy function π𝜋\\pi. Moreover, in classic literature, the term “action-value function” was often referred specifically to\nQπγc​(s,a)≐𝔼s1∼P​(s,a),{s≥2}∼Mπ[∑t=1∞R​(st)⋅γct−1]approaches-limitsubscriptsuperscript𝑄subscript𝛾𝑐𝜋𝑠𝑎subscript𝔼formulae-sequencesimilar-tosubscript𝑠1𝑃𝑠𝑎similar-tosubscript𝑠absent2subscript𝑀𝜋superscriptsubscript𝑡1⋅𝑅subscript𝑠𝑡superscriptsubscript𝛾𝑐𝑡1Q^{\\scriptscriptstyle\\gamma_{c}}_{\\pi}(s,a)\\doteq\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}s_{1}\\sim P(s,a),\\{s_{\\geq 2}\\}\\sim M_{\\pi}\\end{subarray}}[\\sum_{t=1}^{\\infty}R(s_{t})\\cdot\\gamma_{c}^{t-1}]\n, in which the constant 0≤γc<10subscript𝛾𝑐10\\leq\\gamma_{c}<1 is called the discounting factor. The specialized definition of Qπγcsuperscriptsubscript𝑄𝜋subscript𝛾𝑐Q_{\\pi}^{\\scriptscriptstyle\\gamma_{c}} entails the specialized version of Bellman equation\nQπγc​(s,a)=𝔼s′∼P​(s,a),a′∼π​(s′)[R​(s′)+γc⋅Qπγc​(s′,a′)],superscriptsubscript𝑄𝜋subscript𝛾𝑐𝑠𝑎subscript𝔼formulae-sequencesimilar-tosuperscript𝑠′𝑃𝑠𝑎similar-tosuperscript𝑎′𝜋superscript𝑠′𝑅superscript𝑠′⋅subscript𝛾𝑐superscriptsubscript𝑄𝜋subscript𝛾𝑐superscript𝑠′superscript𝑎′Q_{\\pi}^{\\scriptscriptstyle\\gamma_{c}}(s,a)=\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}s^{\\prime}\\sim P(s,a),a^{\\prime}\\sim\\pi(s^{\\prime})\\end{subarray}}[R(s^{\\prime})+\\gamma_{c}\\cdot Q_{\\pi}^{\\scriptscriptstyle\\gamma_{c}}(s^{\\prime},a^{\\prime})],\nand induces the specialized version of state-value function\nVπγc​(s)≐𝔼a∼π​(s)[Qπγc​(s,a)].approaches-limitsuperscriptsubscript𝑉𝜋subscript𝛾𝑐𝑠subscript𝔼similar-to𝑎𝜋𝑠superscriptsubscript𝑄𝜋subscript𝛾𝑐𝑠𝑎V_{\\pi}^{\\scriptscriptstyle\\gamma_{c}}(s)\\doteq\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}a\\sim\\pi(s)\\end{subarray}}[Q_{\\pi}^{\\scriptscriptstyle\\gamma_{c}}(s,a)]. The product of γ𝛾\\gamma in the general-form value functions (1) was originally proposed as a virtual probabilistic termination in the agent’s mind ,\nbut was latter found useful to account for the real episode-boundaries when the MDP is used to model multi-episode rollouts  .\nOur paper uses product-form value functions for the same purpose as in  (Section 2.1.1) and . However, both  and  used transition-based γ𝛾\\gamma-discounting, while the value function in our treatment uses state-based discounting and is probably closer to the method of Figure 1(c) in , which was considered an sub-optimal design in that paper. In fact,  attributes much of its main technical contribution to the adoption and contrastive analysis of transition-based discounting (against state-based discounting) which concludes that “transition-based discounting is necessary to enable the unified specification of episodic and continuing tasks” ( Section 2.1, see also Section 6 and B). Despite this major technical disparity, we nevertheless think the approach as described in Section 3 of our paper actually aligns with  (Section 2.1.1) and  in terms of the bigger idea that connecting finite episodes into a single infinite-horizon MDP greatly helps with unifying the episodic and continual formalisms."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Pybullet gymperium.",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Dynamic programming and optimal control, volume 1.",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Athena scientific Belmont, MA",
+      "authors": "D. P. Bertsekas."
+    },
+    {
+      "index": 2,
+      "title": "Openai gym.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.01540",
+      "authors": "G. Brockman, V. Cheung, L. Pettersson, J. Schneider, J. Schulman, J. Tang, and W. Zaremba."
+    },
+    {
+      "index": 3,
+      "title": "Off-policy actor-critic.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "arXiv preprint arXiv:1205.4839",
+      "authors": "T. Degris, M. White, and R. S. Sutton."
+    },
+    {
+      "index": 4,
+      "title": "Benchmarking Deep Reinforcement Learning for Continuous Control",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Y. Duan, X. Chen, R. Houthooft, J. Schulman, and P. Abbeel.",
+      "orig_title": "Benchmarking deep reinforcement learning for continuous control.",
+      "paper_id": "1604.06778v3"
+    },
+    {
+      "index": 5,
+      "title": "Addressing Function Approximation Error in Actor-Critic Methods",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.09477",
+      "authors": "S. Fujimoto, H. Van Hoof, and D. Meger.",
+      "orig_title": "Addressing function approximation error in actor-critic methods.",
+      "paper_id": "1802.09477v3"
+    },
+    {
+      "index": 6,
+      "title": "Continuous Deep Q-Learning with Model-based Acceleration",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Machine Learning",
+      "authors": "S. Gu, T. Lillicrap, I. Sutskever, and S. Levine.",
+      "orig_title": "Continuous deep q-learning with model-based acceleration.",
+      "paper_id": "1603.00748v1"
+    },
+    {
+      "index": 7,
+      "title": "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "T. Haarnoja, A. Zhou, P. Abbeel, and S. Levine.",
+      "orig_title": "Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor.",
+      "paper_id": "1801.01290v2"
+    },
+    {
+      "index": 8,
+      "title": "A natural policy gradient.",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Advances in neural information processing systems",
+      "authors": "S. M. Kakade."
+    },
+    {
+      "index": 9,
+      "title": "Continuous control with deep reinforcement learning.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1509.02971",
+      "authors": "T. P. Lillicrap, J. J. Hunt, A. Pritzel, N. Heess, T. Erez, Y. Tassa, D. Silver, and D. Wierstra."
+    },
+    {
+      "index": 10,
+      "title": "Simulation-based optimization of markov reward processes.",
+      "abstract": "",
+      "year": "2001",
+      "venue": "IEEE Transactions on Automatic Control",
+      "authors": "P. Marbach and J. N. Tsitsiklis."
+    },
+    {
+      "index": 11,
+      "title": "Markov chains and stochastic stability.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Springer Science & Business Media",
+      "authors": "S. P. Meyn and R. L. Tweedie."
+    },
+    {
+      "index": 12,
+      "title": "Human-level control through deep reinforcement learning.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature",
+      "authors": "V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G. Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski, et al."
+    },
+    {
+      "index": 13,
+      "title": "Asynchronous methods for deep reinforcement learning.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International conference on machine learning",
+      "authors": "V. Mnih, A. P. Badia, M. Mirza, A. Graves, T. Lillicrap, T. Harley, D. Silver, and K. Kavukcuoglu."
+    },
+    {
+      "index": 14,
+      "title": "Time Limits in Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1712.00378",
+      "authors": "F. Pardo, A. Tavakoli, V. Levdik, and P. Kormushev.",
+      "orig_title": "Time limits in reinforcement learning.",
+      "paper_id": "1712.00378v4"
+    },
+    {
+      "index": 15,
+      "title": "Trust Region Policy Optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning",
+      "authors": "J. Schulman, S. Levine, P. Abbeel, M. Jordan, and P. Moritz.",
+      "orig_title": "Trust region policy optimization.",
+      "paper_id": "1502.05477v5"
+    },
+    {
+      "index": 16,
+      "title": "Equivalence Between Policy Gradients and Soft Q-Learning",
+      "abstract": "",
+      "year": "2017a",
+      "venue": "arXiv preprint arXiv:1704.06440",
+      "authors": "J. Schulman, X. Chen, and P. Abbeel.",
+      "orig_title": "Equivalence between policy gradients and soft q-learning.",
+      "paper_id": "1704.06440v4"
+    },
+    {
+      "index": 17,
+      "title": "Proximal policy optimization algorithms.",
+      "abstract": "",
+      "year": "2017b",
+      "venue": "arXiv preprint arXiv:1707.06347",
+      "authors": "J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov."
+    },
+    {
+      "index": 18,
+      "title": "Basics of applied stochastic processes.",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Springer Science & Business Media",
+      "authors": "R. Serfozo."
+    },
+    {
+      "index": 19,
+      "title": "Deterministic policy gradient algorithms.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICML",
+      "authors": "D. Silver, G. Lever, N. Heess, T. Degris, D. Wierstra, and M. Riedmiller."
+    },
+    {
+      "index": 20,
+      "title": "The predictron: End-to-end learning and planning.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "D. Silver, H. van Hasselt, M. Hessel, T. Schaul, A. Guez, T. Harley, G. Dulac-Arnold, D. Reichert, N. Rabinowitz, A. Barreto, et al."
+    },
+    {
+      "index": 21,
+      "title": "A new q (lambda) with interim forward view and monte carlo equivalence.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conference on Machine Learning",
+      "authors": "R. Sutton, A. R. Mahmood, D. Precup, and H. Hasselt."
+    },
+    {
+      "index": 22,
+      "title": "Td models: modeling the world at a mixture of time scales.",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Twelfth International Conference on Machine Learning",
+      "authors": "R. S. Sutton."
+    },
+    {
+      "index": 23,
+      "title": "Reinforcement learning: An introduction.",
+      "abstract": "",
+      "year": "2018",
+      "venue": "MIT press",
+      "authors": "R. S. Sutton and A. G. Barto."
+    },
+    {
+      "index": 24,
+      "title": "Policy gradient methods for reinforcement learning with function approximation.",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Advances in neural information processing systems",
+      "authors": "R. S. Sutton, D. A. McAllester, S. P. Singh, and Y. Mansour."
+    },
+    {
+      "index": 25,
+      "title": "Horde: a scalable real-time architecture for learning knowledge from unsupervised sensorimotor interaction.",
+      "abstract": "",
+      "year": "2011",
+      "venue": "The 10th International Conference on Autonomous Agents and Multiagent Systems",
+      "authors": "R. S. Sutton, J. Modayil, M. Delp, T. Degris, P. M. Pilarski, A. White, and D. Precup."
+    },
+    {
+      "index": 26,
+      "title": "An Emphatic Approach to the Problem of Off-policy Temporal-Difference Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "R. S. Sutton, A. R. Mahmood, and M. White.",
+      "orig_title": "An emphatic approach to the problem of off-policy temporal-difference learning.",
+      "paper_id": "1503.04269v2"
+    },
+    {
+      "index": 27,
+      "title": "Bias in natural actor-critic algorithms.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International conference on machine learning",
+      "authors": "P. Thomas."
+    },
+    {
+      "index": 28,
+      "title": "On average versus discounted reward temporal-difference learning.",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Machine Learning",
+      "authors": "J. N. Tsitsiklis and B. Van Roy."
+    },
+    {
+      "index": 29,
+      "title": "Deep Reinforcement Learning with Double Q-learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "AAAI",
+      "authors": "H. Van Hasselt, A. Guez, and D. Silver.",
+      "orig_title": "Deep reinforcement learning with double q-learning.",
+      "paper_id": "1509.06461v3"
+    },
+    {
+      "index": 30,
+      "title": "Insights in reinforcement rearning: formal analysis and empirical evaluation of temporal-difference learning algorithms.",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Utrecht University",
+      "authors": "H. P. van Hasselt."
+    },
+    {
+      "index": 31,
+      "title": "Learning from delayed rewards.",
+      "abstract": "",
+      "year": "1989",
+      "venue": "King’s College, University of Cambridge",
+      "authors": "C. Watkins."
+    },
+    {
+      "index": 32,
+      "title": "Unifying Task Specification in Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "M. White.",
+      "orig_title": "Unifying task specification in reinforcement learning.",
+      "paper_id": "1609.01995v4"
+    },
+    {
+      "index": 33,
+      "title": "Simple statistical gradient-following algorithms for connectionist reinforcement learning.",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Machine learning",
+      "authors": "R. J. Williams."
+    },
+    {
+      "index": 34,
+      "title": "On convergence of emphatic temporal-difference learning.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Conference on Learning Theory",
+      "authors": "H. Yu."
+    },
+    {
+      "index": 35,
+      "title": "Generalized Off-Policy Actor-Critic",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "S. Zhang, W. Boehmer, and S. Whiteson.",
+      "orig_title": "Generalized off-policy actor-critic.",
+      "paper_id": "1903.11329v8"
+    }
+  ]
+}

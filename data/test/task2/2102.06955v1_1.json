@@ -1,0 +1,429 @@
+{
+  "paper_id": "2102.06955v1",
+  "title": "Improving Automated Visual Fault Detection by Combining a Biologically Plausible Model of Visual Attention with Deep Learning",
+  "sections": {
+    "i introduction": "One long-term goal is to incorporate biological processing principles into machine vision systems. Visual attention, a smart human processing principle that focuses processing resources on an aspect of a scene relevant for the current task, is one of these biological processing principles  . We apply this principle here to the domain of wafer dicing\nto investigate its benefits and under which circumstances it improves automated visual inspection systems. The long-term goal of our research is therefore to better understand the power of human processing as well as to incorporate its benefits into machine vision systems and improve them accordingly. A major aim in the domain of the semiconductor industry is to detect and recognize production errors and faults early on. As manual detection is a very labor-intensive and thus costly procedure, computer vision systems are often deployed as an automatic detection system  . This does not only results in reduced manufacturing costs and work load, but also helps increasing the yield of the production process itself. Hence, systems for automated visual inspection are widely deployed in the industry. In this contribution, we address the topic of wafer dicing. Wafer dicing is the separation of silicon wafers into single components, e.g. chips, often using a dicing saw  .\nDicing based on laser technology is a novel alternative method to separate\nbrittle semiconductor materials via thermally induced mechanical forces (laser cut wafer dicing  ). Thereby, a dicing street is the area where dicing is potentially allowed. The quality criterion of dicing is that the laser cut (kerf) must not leave the street (Fig. 1). A curve leaving a street entails faulty chips and decreases the wafer yield, i.e. the ratio of faultless to the total sum of chips. The field of automated visual inspection for wafer dicing uses classically image processing approaches commonly differentiated due to their functionality in projection-, filter-\nbased, and hybrid approaches  . Projection-based approaches\ninclude for example principal component analysis, whereas filter-based approaches encompass spectral estimation methods, yet, they often need manual adaption. Therefore, learning-based and hybrid approaches make utilization of support vector machines (SVMs) or multilayer perceptrons (MLPs)  , while, in recent years, also a few more powerful deep learning (DL, 0) approaches have been deployed 1 2 3 4 5, which we will address here. For instance, 4 tested synthetic wafer data using a convolutional neuronal network (CNN) in their application. Others recognize the production process over time for an on-the-fly control 2, or use recurrent neuronal networks 3. However, one problem is that faults are typically very small in size and hard to detect in the large wafer disk (Fig. 1).\nImaging systems capture the complete (often stitched) image of a wafer, which results in resolutions of up to 150 megapixels, where single chips often range in a size of 200 – 2000 pixels as in our case. Faults are even smaller structures up to the size of only a few pixels (Fig. 1, 2). Therefore, the challenge is to detect these small structures in a vast amount of data. Classical deep neural networks have trouble to deal with this problem: Either the input image is down-scaled as normally for the network, but then the small structures would be lost. Or, the input could be chosen large enough, but then the network would run very slowly and had too many free parameters, leading to overfitting problems, as the network’s size would increase unfeasible. One interesting biological processing principle for this problem is visual attention, a smart human mechanism to select from the huge amount of input data the relevant one for the task at hand 6, or to focus neuronal processing resources on an aspect of a scene  .\nThe principle is deployed here to “zoom in” into the wafer disk or into a chip (Fig. 1).\nVisual attention has, to the author’s knowledge, not been used in the domain yet. Therefore, we like to propose the first model of visual attention,\nin combination with deep learning, for the domain of fault recognition in the semiconductor industry. There exist several approaches of combining visual attention with deep neural networks (DNNs) in other domains already. The background behind this idea is often that attention focuses the processing on a part or an aspect or a scene, which is then passed for classification to a machine learning classifier, like a DNN. In such a way, the attention model zooms in on the content, which then the DNN classifies in higher resolution and with less irrelevant data. However, the way to combine this remains pretty unclear and under debate.\nWe found several dominant approaches, which are listed in the following.\n1) One approach is the saliency models 7. The idea understands attention as a mechanism to define a spatial region (region of interest, ROI 7), which is then later passed to a classifier. Newer work uses this idea for taking fast snapshots from the image via attention and feed them to a CNN (Glimpse approach 8).\n2) As saliency models struggle with objects that are not very obvious in the image, they find the wrong regions for the DNN. This has led to a combination of this approach with machine learning like reinforcement learning 9, e.g. 0.\n3) Similarly, a saliency model can be controlled by words to find the visual regions corresponding to text (attention for visual-textual alignment, e.g. Wang et al. 1).\n4) A different approach is from Jürgen Schmidthuber 2, which introduces top-down feature-based attention in his model and thus uses attention towards specific features, not regions.\n5) Attention towards some basic features can also be used to select an irregularly shaped region, defined via visual features instead of a spatial region, and then feed this content to a DNN (e.g. 3).\n6) In the recent few years, works also utilize DNNs, or building blocks of them, as attention networks. So, one neuronal network serves as attention network, while the other is modulated by it and processes normally the image (e.g. 4 5 3). Quite a few systems use this approach, but they are designed very diverse (5 examples: 4 6 5 7 3). Therefore, many different approaches exist that allow the combination of visual attention with machine learning and deep learning based models, yet, selecting the approach with the best performance for a specific task remains difficult. However, when we look at the attentional processing in the brain (e.g. Miller & Buschman 8 or Tsotsos et al. 9) and the underlying connectivity (e.g. Ungerleider et al. 0 or Felleman & Van Essen 1), we found that none of the above approaches resembles closely the attentional processing in the human brain. Also none of these approaches are underpinned with much neuroscientific data. For instance, there exist a lot of single-cell recordings in the attention literature 2 3 which are not replicated at all, and also many behavioral influences by attention 6. The saliency models are inspired by the latter 7, but the approaches are nowadays also not so close more linked to psychology. Moreover, there exist also many other different ways in which visual attention alters human behavior, which are not reflected (e.g. texture segmentation 4 5). Therefore, we propose here to use a more biologically plausible model of visual attention, to avoid all of these problems, and the quarrels about which model is the right one.\nBiologically-plausible models of visual attention originate more from the discipline of computational neuroscience, which develops models of the human brain to replicate neuronal recording data and to simulate human behavior. In recent years, a few works have also shown that such models of visual attention are capable of real-world applications (see dissertation  for an overview), e.g.  9 6  7 8. However, none of these models, at least to the authors’ literature search, have been combined with deep learning yet. We will employ the model of Beuth, 2019  as it shows very promising real-world capability (see also 9) while maintaining a deep biological plausibility. The model has a strong neurophysiological foundation as it can replicate a large range of neuronal recordings of attention 3. Moreover, it has a satisfying operation as several applications show it can at least deal with virtual reality 0 and real-world 9. And finally, it can replicate human behavior as it is based on previous models (visual search, 1 ) and is able to also fit new experiments in other behavioral paradigms (OSM, Chap. 5 in ). Additionally, the work  shows advantages over saliency models: a) Top-down object-descriptors, b) biological foundation, c) the option to easily realize complex task sets in a natural way, as later shown in Sec. II-B.\nThe current work is deeply rooted in neuroscience and focuses on the concept of visual attention, while extending an earlier work-in-progress publication of us using opposingly a specialized pipeline . The current biologically-grounded contribution also evaluates, in comparison to this shorter work, the concept of visual attention with deep learning more broader and in-depth. This is more thoroughly possible as we utilize now a model based on the human brain.\nTherefore, we like to propose the combination of a biologically-plausible model of visual attention with deep learning as our second contribution."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "The emergence of attention by population-based inference and its role in distributed processing and cognitive control of vision",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Comput Vis Image Underst",
+      "authors": "F. H. Hamker"
+    },
+    {
+      "index": 1,
+      "title": "Visual attention in primates and for machines - neuronal mechanisms",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "F. Beuth"
+    },
+    {
+      "index": 2,
+      "title": "Automated visual inspection in the semiconductor industry: A survey",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Computers in Industry",
+      "authors": "S.-H. Huang and Y.-C. Pan"
+    },
+    {
+      "index": 3,
+      "title": "Computer-Vision-Based Fabric Defect Detection: A Survey",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Trans Ind Electron",
+      "authors": "A. Kumar"
+    },
+    {
+      "index": 4,
+      "title": "Review of wafer dicing techniques for via-middle process 3DI/TSV ultrathin silicon device wafers",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ECTC",
+      "authors": "A. Hooper, J. Ehorn, M. Brand, and C. Bassett"
+    },
+    {
+      "index": 5,
+      "title": "A Review on Laser Processing in Electronic and MEMS Packaging",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J Electron Packag",
+      "authors": "K. Rahim and A. Mian"
+    },
+    {
+      "index": 6,
+      "title": "A novel visual fault detection and classification system for semiconductor manufacturing using stacked hybrid convolutional neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ETFA",
+      "authors": "T. Schlosser, F. Beuth, M. Friedrich, and D. Kowerko"
+    },
+    {
+      "index": 7,
+      "title": "A neural-network approach to recognize defect spatial pattern in semiconductor fabrication",
+      "abstract": "",
+      "year": "2000",
+      "venue": "IEEE Trans Semicond Manuf",
+      "authors": "Fei-Long Chen and Shu-Fan Liu"
+    },
+    {
+      "index": 8,
+      "title": "A novel defect detection and identification method in optical inspection",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Neural Computing and Applications",
+      "authors": "L. Xie, R. Huang, N. Gu, and Z. Cao"
+    },
+    {
+      "index": 9,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature",
+      "authors": "Y. LeCun, Y. Bengio, and G. Hinton",
+      "orig_title": "Deep learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 10,
+      "title": "Convolutional Neural Network for Wafer Surface Defect Classification and the Detection of Unknown Defect Class",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans Semicond Manuf",
+      "authors": "S. Cheon, H. Lee, C. O. Kim, and S. H. Lee"
+    },
+    {
+      "index": 11,
+      "title": "A Convolutional Neural Network for Fault Classification and Diagnosis in Semiconductor Manufacturing Processes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans Semicond Manuf",
+      "authors": "K. B. Lee, S. Cheon, and C. O. Kim"
+    },
+    {
+      "index": 12,
+      "title": "Recurrent feature-incorporated convolutional neural network for virtual metrology of the chemical mechanical planarization process",
+      "abstract": "",
+      "year": "2018",
+      "venue": "J Intell Manuf",
+      "authors": "K. B. Lee and C. O. Kim"
+    },
+    {
+      "index": 13,
+      "title": "Wafer map defect pattern classification and image retrieval using convolutional neural network",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans Semicond Manuf",
+      "authors": "T. Nakazawa and D. V. Kulkarni"
+    },
+    {
+      "index": 14,
+      "title": "Deep learning for classification of the chemical composition of particle defects on semiconductor wafers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans Semicond Manuf",
+      "authors": "J. O’Leary, K. Sawlani, and A. Mesbah"
+    },
+    {
+      "index": 15,
+      "title": "Visual attention: the past 25 years.",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Vision Research",
+      "authors": "M. Carrasco"
+    },
+    {
+      "index": 16,
+      "title": "A Model of Saliency-based Visual Attention for Rapid Scene Analysis",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE Trans Pattern Anal Mach Intell",
+      "authors": "L. Itti, C. Koch, and E. Niebur"
+    },
+    {
+      "index": 17,
+      "title": "Multiple Object Recognition with Visual Attention",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.7755",
+      "authors": "J. Ba, V. Mnih, and K. Kavukcuoglu",
+      "orig_title": "Multiple object recognition with visual attention",
+      "paper_id": "1412.7755v2"
+    },
+    {
+      "index": 18,
+      "title": "Introduction to reinforcement learning",
+      "abstract": "",
+      "year": "1998",
+      "venue": "MIT press Cambridge",
+      "authors": "R. S. Sutton, A. G. Barto et al."
+    },
+    {
+      "index": 19,
+      "title": "Attention-Aware Face Hallucination via Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Q. Cao, L. Lin, Y. Shi, X. Liang, and G. Li",
+      "orig_title": "Attention-Aware Face Hallucination via Deep Reinforcement Learning",
+      "paper_id": "1708.03132v1"
+    },
+    {
+      "index": 20,
+      "title": "Learning Deep Contextual Attention Network for Narrative Photo Stream Captioning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Thematic Workshops of ACM Multimedia",
+      "authors": "H. Wang, S. Tang, Y. Zhang, T. Mei, Y. Zhuang, and F. Wu"
+    },
+    {
+      "index": 21,
+      "title": "Deep Networks with Internal Selective Attention through Feedback Connections",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "M. Stollenga and J. Masci"
+    },
+    {
+      "index": 22,
+      "title": "Improving periocular recognition by explicit attention to critical regions in deep neural network",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans Inf Forensics Security",
+      "authors": "Z. Zhao and A. Kumar"
+    },
+    {
+      "index": 23,
+      "title": "Guided Attention Network for Object Detection and Counting on Drones",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1909.11307",
+      "authors": "Y. Cai, D. Du, L. Zhang, L. Wen, W. Wang, Y. Wu, and S. Lyu",
+      "orig_title": "Guided attention network for object detection and counting on drones",
+      "paper_id": "1909.11307v1"
+    },
+    {
+      "index": 24,
+      "title": "Dual attention network for scene segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "J. Fu, J. Liu, H. Tian, Y. Li, Y. Bao, Z. Fang, and H. Lu"
+    },
+    {
+      "index": 25,
+      "title": "Hybrid-Attention based Decoupled Metric Learning for Zero-Shot Image Retrieval",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "B. Chen and W. Deng",
+      "orig_title": "Hybrid-attention based decoupled metric learning for zero-shot image retrieval",
+      "paper_id": "1907.11832v1"
+    },
+    {
+      "index": 26,
+      "title": "Visual attention consistency under image transforms for multi-label image classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "H. Guo, K. Zheng, X. Fan, H. Yu, and S. Wang"
+    },
+    {
+      "index": 27,
+      "title": "Cortical circuits for the control of attention.",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Curr Opin Neurobiol",
+      "authors": "E. K. Miller and T. J. Buschman"
+    },
+    {
+      "index": 28,
+      "title": "Attending to visual motion",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Comput Vis Image Underst",
+      "authors": "J. K. Tsotsos, Y. Liu, J. C. Martinez-Trujillo, M. Pomplun, E. Simine, and K. Zhou"
+    },
+    {
+      "index": 29,
+      "title": "Cortical connections of area V4 in the macaque.",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Cerebral Cortex",
+      "authors": "L. G. Ungerleider, T. W. Galkin, R. Desimone, and R. Gattass"
+    },
+    {
+      "index": 30,
+      "title": "Distributed hierarchical processing in the primate cerebral cortex.",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Cerebral Cortex",
+      "authors": "D. J. Felleman and D. C. Van Essen"
+    },
+    {
+      "index": 31,
+      "title": "The normalization model of attention.",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Neuron",
+      "authors": "J. H. Reynolds and D. J. Heeger"
+    },
+    {
+      "index": 32,
+      "title": "A mechanistic cortical microcircuit of attention for amplification, normalization and suppression.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Vision Research",
+      "authors": "F. Beuth and F. H. Hamker"
+    },
+    {
+      "index": 33,
+      "title": "Texture segmentation in human perception: a combined modeling and fMRI study.",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Neuroscience",
+      "authors": "A. Thielscher, M. Kölle, H. Neumann, M. Spitzer, and G. Grön"
+    },
+    {
+      "index": 34,
+      "title": "Figure-ground mechanisms provide structure for selective attention.",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Nature Neuroscience",
+      "authors": "F. T. Qiu, T. Sugihara, and R. von der Heydt"
+    },
+    {
+      "index": 35,
+      "title": "A hierarchical system for a distributed representation of the peripersonal space of a humanoid robot",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Trans Auton Mental Develop",
+      "authors": "M. Antonelli, A. Gibaldi, F. Beuth, A. J. Duran, A. Canessa, M. Chessa, F. H. Hamker, E. Chinellato, and S. P. Sabatini"
+    },
+    {
+      "index": 36,
+      "title": "Globally consistent depth sorting of overlapping 2d surfaces in a model using local recurrent interactions",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Biological Cybernetics",
+      "authors": "A. Thielscher and H. Neumann"
+    },
+    {
+      "index": 37,
+      "title": "What and where: a Bayesian inference theory of attention.",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Vision Research",
+      "authors": "S. Chikkerur, T. Serre, C. Tan, and T. Poggio"
+    },
+    {
+      "index": 38,
+      "title": "Attention as cognitive, holistic control of the visual system",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NCNC",
+      "authors": "F. Beuth and F. H. Hamker"
+    },
+    {
+      "index": 39,
+      "title": "The performance of a biologically plausible model of visual attention to localize objects in a virtual reality",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICANN",
+      "authors": "A. Jamalian, F. Beuth, and F. H. Hamker"
+    },
+    {
+      "index": 40,
+      "title": "The reentry hypothesis: the putative interaction of the frontal eye field, ventrolateral prefrontal cortex, and areas V4, IT for attention and eye movement.",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Cerebral Cortex",
+      "authors": "F. H. Hamker"
+    },
+    {
+      "index": 41,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint:1409.1556",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 42,
+      "title": "Split of spatial attention as predicted by a systems-level model of visual attention.",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Eur J Neurosci",
+      "authors": "M. Zirnsak, F. Beuth, and F. H. Hamker"
+    },
+    {
+      "index": 43,
+      "title": "Shape representation in the inferior temporal cortex of monkeys",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Current Biology",
+      "authors": "N. K. Logothetis, J. Pauls, and T. Poggiot"
+    },
+    {
+      "index": 44,
+      "title": "Guided search 2.0 a revised model of visual search",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Psychon Bull Rev",
+      "authors": "J. M. Wolfe"
+    },
+    {
+      "index": 45,
+      "title": "Visual and motor connectivity and the distribution of calcium-binding proteins in macaque frontal eye field: implications for saccade target selection.",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Frontiers in Neuroanatomy",
+      "authors": "P. Pouget, I. Stepniewska, E. a. Crowder, M. W. Leslie, E. E. Emeric, M. J. Nelson, and J. D. Schall"
+    },
+    {
+      "index": 46,
+      "title": "Fuzzy artmap: A neural network architecture for incremental supervised learning of analog multidimensional maps",
+      "abstract": "",
+      "year": "1992",
+      "venue": "IEEE Trans Neural Netw",
+      "authors": "G. A. Carpenter, S. Grossberg, N. Markuzon, J. H. Reynolds, D. B. Rosen et al."
+    },
+    {
+      "index": 47,
+      "title": "Playing atari with deep reinforcement learning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.5602",
+      "authors": "V. Mnih, K. Kavukcuoglu, D. Silver, A. Graves, I. Antonoglou, D. Wierstra, and M. Riedmiller"
+    },
+    {
+      "index": 48,
+      "title": "Visual search",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Current biology",
+      "authors": "J. M. Wolfe"
+    },
+    {
+      "index": 49,
+      "title": "Modeling attention to salient proto-objects.",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Neural Networks",
+      "authors": "D. Walther and C. Koch"
+    },
+    {
+      "index": 50,
+      "title": "Competitive mechanisms subserve attention in macaque areas V2 and V4.",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Journal of Neuroscience",
+      "authors": "J. H. Reynolds, L. Chelazzi, and R. Desimone"
+    }
+  ]
+}

@@ -1,0 +1,485 @@
+{
+  "paper_id": "2301.13867v2",
+  "title": "Mathematical Capabilities of ChatGPT",
+  "sections": {
+    "related work": "As a language model, (Chat)GPT can be universally employed to perform mathematical reasoning and therefore has to compete with technologies in this space that are sometimes decades old. Performing mathematical reasoning in an automated way has a long history and can be traced back to 1959 , the most focus being devoted to proving theorems . Presently, there is a realization that classical approaches, using a symbolic encoding of mathematics, have reached a plateau [ref]15. On the other hand, there is now a growing body of literature on learning mathematical relationships directly in a supervised-learning manner    or by using LLMs to perform mathematical reasoning directly on mathematics encoded in natural language [ref]19. Sometimes, the distinction is blurred because architectures of LLMs can also be used in a supervised-learning setting and have been employed successfully in learning mathematical relationships  . Among the supervised approaches, we mention , where a Transformer architecture  was used to generate symbolic, closed-form solutions to integrals and first and second-order differential equations, which outperformed classical solvers222For a given prompt, the computer algebra system is considered to have failed if it does not provide a closed-form solution or times out after 30 seconds (in case of Mathematica)., such as Mathematica, MATLAB, and Maple by at least 14% on a test set of integration problems. On the task of solving differential equations, the Transformer-based approach still exceeds the classical approach, but by a smaller margin (at least 4% in the case of first-order differential equations and with more varied results for second-order equations). Recent LLMs, for instance, PaLM  (released in 2022), are tested only on elementary-level mathematical reasoning datasets, such as the MathQA or GSM8K datasets  .\nWe suspect that this is due to a lack of advanced-level natural language mathematics datasets.\nMoreover, the results obtained indicate that the models at that time had difficulty with much simpler datasets than ours.\nFor example, the version of PaLM with 540 billion parameters only correctly solves 58% of the problems of the GSM8K dataset, even with chain-of-thought prompting and access to an external calculator [22, Table 10]. This model nonetheless outperforms GPT-3 , which only achieves 54% on the same dataset.\nVariations of BERT  have been shown to only solve between 28% and 37% of the problems when fine-tuned and tested on the Algebra Question Answering with Rationales (AQuA-RAT) dataset , which is the direct predecessor of MathQA. For some models, such as BLOOM  or the LaMDA model  (both released in 2022), an evaluation of the mathematical reasoning capability is entirely missing. An up-to-date survey on mathematical datasets and the performance of various LLMs can be found in . Among the aforementioned LLMs, Minerva [ref]19, based on PaLM, stands out, being trained in equal parts on websites that contain MathJax elements and arXiv preprints (additionally to general natural language data on which PaLM was trained). It achieves a score of roughly 50% on the significantly harder Mathematics Aptitude Test of Heuristics (MATH) dataset , which was sourced from various mathematical competitions. One distinguishing feature of the MATH dataset is that its problems admit a unique answer that can be condensed within a few characters (a number, for example). This is beneficial for the automatic evaluation of a model on such a dataset since one can simply check the final answer, ignoring the step-by-step solution. Most similar to our dataset is the NaturalProofs dataset [ref]31 and the NaturalProofs-Gen dataset . In this paragraph, we illustrate the similarities and differences between these datasets and ours. NaturalProofs and NaturalProofs-Gen are similar among themselves and cover graduate-level mathematics by focusing on data from ProofWiki333https://proofwiki.org/ (the latter dataset), as well as on the Stacks Project444https://github.com/stacks/stacks-project and two open-source textbooks (the former dataset). Using the LaTeX source code, which is available for all these resources, annotated theorems and their proof graphs are extracted.\nThe annotations consist of reference graphs highlighting references to other theorems or definitions, the idea being that these references capture the “skeleton” of a proof.\nThis task resembles the mathematical abilities that the Named Theorem Proof Completion subdataset from the GHOSTS dataset evaluates (see Table 1), although 1) we only retrieve a single reference and 2) (Chat)GPT, as far as known, does not use training objectives that make use of information from data annotation, in contrast to models evaluated in [ref]31 .\nOur framework pertains to general language model evaluation, which may be presented in a black-box manner (as is the case for (Chat)GPT), and therefore does not allow to leverage any additional information, such as reference graphs. This is also reflected in the human evaluation schema introduced in  (see Table 24), which classifies common model mistakes.\nAs reference graphs form the foundation of how the mathematical proofs are engineered, many elements of the evaluation schema are strongly tailored toward this representation of mathematical data. Our benchmark is not reference-centric and therefore allows evaluations of any type of proof (including computations, as featured in the Symbolic-Integration subdataset, which we consider to be a particular kind of proof).\nTherefore, our methodology includes further and more general failure modes to make for a more fine-grained evaluation that explains the nature of the errors.\nWe refer to Appendix A for further related works."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Das Ende von Google, wie wir es kannten",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Der Spiegel",
+      "authors": "Sascha Lobo"
+    },
+    {
+      "index": 1,
+      "title": "The ChatGPT bot is causing panic now – but it’ll soon be as mundane a tool as Excel",
+      "abstract": "",
+      "year": "2023",
+      "venue": "The Guardian",
+      "authors": "John Naughton"
+    },
+    {
+      "index": 2,
+      "title": "The Brilliance and Weirdness of ChatGPT",
+      "abstract": "",
+      "year": "2023",
+      "venue": "The New York Times",
+      "authors": "Kevon Roose"
+    },
+    {
+      "index": 3,
+      "title": "I made ChatGPT take a full SAT test. Here’s how it did: [Image attached] [Tweet]",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Twitter",
+      "authors": "teddy [@teddynpc]"
+    },
+    {
+      "index": 4,
+      "title": "It’s amusing when ChatGPT makes ridiculous mathematical mistakes. But of course, it’s more interesting to find out what it can do well. Here’s one example that wasn’t bad: I gave it a very rough outline of a proof and asked it to fill in the details [Tweet]",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Twitter",
+      "authors": "Timothy Gowers [@wtgowers]"
+    },
+    {
+      "index": 5,
+      "title": "GPT-4 Technical Report",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2303.08774",
+      "authors": "OpenAI (2023)",
+      "orig_title": "GPT-4 technical report",
+      "paper_id": "2303.08774v6"
+    },
+    {
+      "index": 6,
+      "title": "Performance of ChatGPT on USMLE: Potential for AI-Assisted Medical Education Using Large Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "medRxiv",
+      "authors": "Tiffany H. Kung, Morgan Cheatham, Arielle Medenilla, Czarina Sillos, and Lorie De Leon et al."
+    },
+    {
+      "index": 7,
+      "title": "What is the IQ of ChatGPT?",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "David Rozado"
+    },
+    {
+      "index": 8,
+      "title": "Would Chat GPT3 Get a Wharton MBA? A Prediction Based on Its Performance in the Operations Management Course",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Christian Terwiesch"
+    },
+    {
+      "index": 9,
+      "title": "ChatGPT – Release Notes",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Natalie"
+    },
+    {
+      "index": 10,
+      "title": "Measuring Mathematical Problem Solving With the MATH Dataset",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.03874",
+      "authors": "Dan Hendrycks, Collin Burns, Saurav Kadavath, Akul Arora, and Steven Basart et al.",
+      "orig_title": "Measuring mathematical problem solving with the MATH dataset",
+      "paper_id": "2103.03874v2"
+    },
+    {
+      "index": 11,
+      "title": "Deep learning for symbolic mathematics",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1912.01412",
+      "authors": "Guillaume Lample and François Charton",
+      "orig_title": "Deep learning for symbolic mathematics",
+      "paper_id": "1912.01412v1"
+    },
+    {
+      "index": 12,
+      "title": "Some studies in machine learning using the game of checkers",
+      "abstract": "",
+      "year": "1959",
+      "venue": "IBM Journal of Research and Development",
+      "authors": "A. L. Samuel"
+    },
+    {
+      "index": 13,
+      "title": "Learning from previous proof experience: A survey",
+      "abstract": "",
+      "year": "1999",
+      "venue": "TU München",
+      "authors": "Jörg Denzinger, Matthias Fuchs, Christoph Goller, and Stephan Schulz"
+    },
+    {
+      "index": 14,
+      "title": "History of interactive theorem proving",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computational Logic",
+      "authors": "John Harrison, Josef Urban, and Freek Wiedijk"
+    },
+    {
+      "index": 15,
+      "title": "Machine learning class numbers of real quadratic fields",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2209.09283",
+      "authors": "Malik Amir, Yang-Hui He, Kyu-Hwan Lee, Thomas Oliver, and Eldar Sultanow",
+      "orig_title": "Machine Learning Class Numbers of Real Quadratic Fields",
+      "paper_id": "2209.09283v1"
+    },
+    {
+      "index": 16,
+      "title": "Advancing mathematics by guiding human intuition with AI",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Nature",
+      "authors": "Alex Davies, Petar Veličković, Lars Buesing, Sam Blackwell, and Daniel Zheng et al."
+    },
+    {
+      "index": 17,
+      "title": "Machine-learning the string landscape",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Physics Letters B",
+      "authors": "Yang-Hui He"
+    },
+    {
+      "index": 18,
+      "title": "Solving Quantitative Reasoning Problems with Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Aitor Lewkowycz, Anders Johan Andreassen, David Dohan, Ethan Dyer, and Henryk Michalewski et al.",
+      "orig_title": "Solving quantitative reasoning problems with language models",
+      "paper_id": "2206.14858v2"
+    },
+    {
+      "index": 19,
+      "title": "Learning advanced mathematical computations from examples",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Francois Charton, Amaury Hayat, and Guillaume Lample",
+      "orig_title": "Learning advanced mathematical computations from examples",
+      "paper_id": "2006.06462v2"
+    },
+    {
+      "index": 20,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 21,
+      "title": "PaLM: Scaling Language Modeling with Pathways",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2204.02311",
+      "authors": "Aakanksha Chowdhery, Sharan Narang, Jacob Devlin, Maarten Bosma, and Gaurav Mishra et al.",
+      "orig_title": "Palm: Scaling language modeling with pathways",
+      "paper_id": "2204.02311v5"
+    },
+    {
+      "index": 22,
+      "title": "MathQA: Towards Interpretable Math Word Problem Solving with Operation-Based Formalisms",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+      "authors": "Aida Amini, Saadia Gabriel, Shanchuan Lin, and Rik Koncel-Kedziorski et al.",
+      "orig_title": "MathQA: Towards interpretable math word problem solving with operation-based formalisms",
+      "paper_id": "1905.13319v1"
+    },
+    {
+      "index": 23,
+      "title": "Training Verifiers to Solve Math Word Problems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2110.14168",
+      "authors": "Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, and Heewoo Jun et al.",
+      "orig_title": "Training verifiers to solve math word problems",
+      "paper_id": "2110.14168v2"
+    },
+    {
+      "index": 24,
+      "title": "Language Models are Few-Shot Learners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, and Jared D Kaplan et al.",
+      "orig_title": "Language models are few-shot learners",
+      "paper_id": "2005.14165v4"
+    },
+    {
+      "index": 25,
+      "title": "Measuring and Improving BERT’s Mathematical Abilities by Predicting the Order of Reasoning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Annual Meeting of the Association for Computational Linguistics and the International Joint Conference on Natural Language Processing",
+      "authors": "Piotr Piękos, Mateusz Malinowski, and Henryk Michalewski",
+      "orig_title": "Measuring and improving BERT’s mathematical abilities by predicting the order of reasoning",
+      "paper_id": "2106.03921v1"
+    },
+    {
+      "index": 26,
+      "title": "Program Induction by Rationale Generation: Learning to Solve and Explain Algebraic Word Problems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Annual Meeting of the Association for Computational Linguistics",
+      "authors": "Wang Ling, Dani Yogatama, Chris Dyer, and Phil Blunsom",
+      "orig_title": "Program induction by rationale generation: Learning to solve and explain algebraic word problems",
+      "paper_id": "1705.04146v3"
+    },
+    {
+      "index": 27,
+      "title": "BLOOM: A 176B-Parameter Open-Access Multilingual Language Model",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2211.05100",
+      "authors": "Teven Le Scao and Angela Fan et al.",
+      "orig_title": "Bloom: A 176b-parameter open-access multilingual language model",
+      "paper_id": "2211.05100v4"
+    },
+    {
+      "index": 28,
+      "title": "LaMDA: Language Models for Dialog Applications",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2201.08239",
+      "authors": "Romal Thoppilan, Daniel De Freitas, Jamie Hall, Noam Shazeer, and Apoorv Kulshreshtha et al.",
+      "orig_title": "Lamda: Language models for dialog applications",
+      "paper_id": "2201.08239v3"
+    },
+    {
+      "index": 29,
+      "title": "A Survey of Deep Learning for Mathematical Reasoning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2212.10535",
+      "authors": "Pan Lu, Liang Qiu, Wenhao Yu, Sean Welleck, and Kai-Wei Chang",
+      "orig_title": "A survey of deep learning for mathematical reasoning",
+      "paper_id": "2212.10535v2"
+    },
+    {
+      "index": 30,
+      "title": "NaturalProofs: Mathematical Theorem Proving in Natural Language",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.01112",
+      "authors": "Sean Welleck, Jiacheng Liu, Ronan Le Bras, Hannaneh Hajishirzi, Yejin Choi, and Kyunghyun Cho",
+      "orig_title": "Naturalproofs: Mathematical theorem proving in natural language",
+      "paper_id": "2104.01112v2"
+    },
+    {
+      "index": 31,
+      "title": "NaturalProver: Grounded Mathematical Proof Generation with Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2205.12910",
+      "authors": "Sean Welleck, Jiacheng Liu, Ximing Lu, Hannaneh Hajishirzi, and Yejin Choi",
+      "orig_title": "Naturalprover: Grounded mathematical proof generation with language models",
+      "paper_id": "2205.12910v2"
+    },
+    {
+      "index": 32,
+      "title": "Probability: Theory and Examples",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Cambridge Series in Statistical and Probabilistic Mathematics. Cambridge University Press",
+      "authors": "Rick Durrett"
+    },
+    {
+      "index": 33,
+      "title": "Topology",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Prentice-Hall",
+      "authors": "James R. Munkres"
+    },
+    {
+      "index": 34,
+      "title": "Functional analysis",
+      "abstract": "",
+      "year": "1991",
+      "venue": "McgGraw-Hill",
+      "authors": "Walter Rudin"
+    },
+    {
+      "index": 35,
+      "title": "Linear algebra done right",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer",
+      "authors": "Sheldon Axler"
+    },
+    {
+      "index": 36,
+      "title": "Principles of Mathematical Analysis",
+      "abstract": "",
+      "year": "1976",
+      "venue": "International series in pure and applied mathematics. McGraw-Hill",
+      "authors": "W. Rudin"
+    },
+    {
+      "index": 37,
+      "title": "Problem-Solving Strategies",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Springer",
+      "authors": "Arthur Engel"
+    },
+    {
+      "index": 38,
+      "title": "Does ChatGPT code LaTeX and write proofs? Youtube",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Youtube",
+      "authors": "Tranquil Sea Of Math"
+    },
+    {
+      "index": 39,
+      "title": "Huh. ChatGPT confidently gives the right kind of reasoning to solve this math problem, but whiffs on the algebra in the middle and gets the answer wrong [Tweet]",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Twitter",
+      "authors": "Richard Van Noorden @richvn@mastodon.social [@Richvn]"
+    },
+    {
+      "index": 40,
+      "title": "ChatGPT Usage and Limitations",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Amos Azaria"
+    },
+    {
+      "index": 41,
+      "title": "Mathematics, word problems, common sense, and artificial intelligence",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2301.09723",
+      "authors": "Ernest Davis",
+      "orig_title": "Mathematics, word problems, common sense, and artificial intelligence",
+      "paper_id": "2301.09723v2"
+    },
+    {
+      "index": 42,
+      "title": "Sparks of artificial general intelligence: Early experiments with gpt-4",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2303.12712",
+      "authors": "Sébastien Bubeck, Varun Chandrasekaran, Ronen Eldan, Johannes Gehrke, Eric Horvitz, Ece Kamar, Peter Lee, Yin Tat Lee, Yuanzhi Li, Scott Lundberg, et al."
+    },
+    {
+      "index": 43,
+      "title": "Measuring Massive Multitask Language Understanding",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2009.03300",
+      "authors": "Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn Song, and Jacob Steinhardt",
+      "orig_title": "Measuring massive multitask language understanding",
+      "paper_id": "2009.03300v3"
+    },
+    {
+      "index": 44,
+      "title": "The Lean mathematical library",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM SIGPLAN International Conference on Certified Programs and Proofs. ACM",
+      "authors": "The mathlib Community"
+    },
+    {
+      "index": 45,
+      "title": "Mathematical Reasoning via Self-supervised Skip-tree Training",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.04757v3",
+      "authors": "Markus N. Rabe, Dennis Lee, Kshitij Bansal, and Christian Szegedy",
+      "orig_title": "Mathematical reasoning via self-supervised skip-tree training",
+      "paper_id": "2006.04757v3"
+    },
+    {
+      "index": 46,
+      "title": "Training language models to follow instructions with human feedback",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2203.02155",
+      "authors": "Long Ouyang, Jeff Wu, Xu Jiang, Diogo Almeida, and Carroll L. Wainwright et al."
+    },
+    {
+      "index": 47,
+      "title": "InstructGPT: Training Language Models to Follow Instructions with Human Feedback",
+      "abstract": "",
+      "year": "2023",
+      "venue": "GitHub repository",
+      "authors": "Carroll Wainwright and Ryan Lowe"
+    },
+    {
+      "index": 48,
+      "title": "If text-davinci-001 is a rough approximate to the model reported in the NeurIPS 2020 paper, and text-davinci-002 is  InstructGPT in the 2022 preprint, then what is just \"davinci\"? Trying to reproduce results from a time before this naming existed [Tweet]",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Twitter",
+      "authors": "Sarah Wiegreffe (sigmoid.social/@sarah) [@sarahwiegreffe]"
+    },
+    {
+      "index": 49,
+      "title": "GPT-4 API waitlist",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "OpenAI"
+    },
+    {
+      "index": 50,
+      "title": "Documentation - Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "OpenAI"
+    },
+    {
+      "index": 51,
+      "title": "OpenAI API Reference - Chat Completion Endpoint",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "OpenAI"
+    },
+    {
+      "index": 52,
+      "title": "Evaluating Large Language Models Trained on Code",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2107.03374",
+      "authors": "Mark Chen, Jerry Tworek, Heewoo Jun, Qiming Yuan, and Henrique Ponde de Oliveira Pinto et al.",
+      "orig_title": "Evaluating large language models trained on code",
+      "paper_id": "2107.03374v2"
+    },
+    {
+      "index": 53,
+      "title": "Datasheets for datasets",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Communications of the ACM",
+      "authors": "Timnit Gebru, Jamie Morgenstern, Briana Vecchione, Jennifer Wortman Vaughan, Hanna Wallach, Hal Daumé Iii, and Kate Crawford"
+    }
+  ]
+}

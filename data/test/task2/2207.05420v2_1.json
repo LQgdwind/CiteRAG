@@ -1,0 +1,523 @@
+{
+  "paper_id": "2207.05420v2",
+  "title": "UniNet: Unified Architecture Search with Convolution, Transformer, and MLP",
+  "sections": {
+    "related works": "Convolution, Transformer, and MLP.\nA host of ConvNets have been proposed to push forward the state-of-the-art computer vision approaches such as [ref]17 [ref]37 . Despite the numerous CNN models, their basic operators, convolution, are the same. Recently, [ref]11 proposed a pure transformer-based image classification model ViT, which achieves impressive performance on the ImageNet benchmark. DeiT  shows that well-trained ViT can obtain a better performance-speed trade-off than ConvNets. PVT  and Swin  propose multi-stage vision transformers, which can be easily transferred to other downstream tasks. On the other hand, recent papers are attempting to use only MLP as the building block. MLP-Mixer , ResMLP , and ViP  show that pure MLP architectures can also achieve near state-of-the-art performance. Combination of different operators.\nAnother line of work tries to combine different operators to form new networks. CvT  propose to incorporate self-attention and convolution by generating 𝚀𝚀\\mathtt{Q}, 𝙺𝙺\\mathtt{K}, and 𝚅𝚅\\mathtt{V} in self-attention with convolution. CeiT  replace the original patchy stem with a convolutional stem and add depthwise convolution to the FFN layer, which obtains fast convergence and better performance. ConViT  tries to unify convolution and self-attention with gated positional self-attention and is more sample-efficient than self-attention. Many other works     also explored the combination of convolution and transformer to form hybrid architectures to improve the data or computation efficiency. Besides, ConvMLP  studied the combination of convolution and MLP, and gMLP  studied the combination of gated MLP and multi-head self-attentions (MSA). Instead of requiring manual exploration of the hybrid architectures, we propose a unified architecture search approach to automatically search for high-performance hybrid architecture. Downsampling module.\nIn ConvNets, the downsampling module (DSM) is implemented with strided-Conv or pooling. As DSM breaks the shift-invariant of convolution,  propose anti-aliased DSM to keep it. Besides, a line of works tries to preserve more information when downsampling with a learnable or dynamic kernel   . Most of their approaches are downsampling based on local context, which we show is not suitable for our unified network. In our work, we propose context-aware DSM and jointly search with operator combinations, which guarantees better performance."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Layer normalization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ArXiv",
+      "authors": "Ba, J., Kiros, J.R., Hinton, G.E."
+    },
+    {
+      "index": 1,
+      "title": "High-performance large-scale image recognition without normalization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Brock, A., De, S., Smith, S.L., Simonyan, K."
+    },
+    {
+      "index": 2,
+      "title": "Once-for-all: Train one network and specialize it for efficient deployment",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "Cai, H., Gan, C., Wang, T., Zhang, Z., Han, S."
+    },
+    {
+      "index": 3,
+      "title": "Xception: Deep Learning with Depthwise Separable Convolutions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Chollet, F.",
+      "orig_title": "Xception: Deep learning with depthwise separable convolutions",
+      "paper_id": "1610.02357v3"
+    },
+    {
+      "index": 4,
+      "title": "Conditional Positional Encodings for Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ArXiv",
+      "authors": "Chu, X., Tian, Z., Bo Zhang, X.W., Wei, X., Xia, H., Shen, C.",
+      "orig_title": "Conditional positional encodings for vision transformers",
+      "paper_id": "2102.10882v3"
+    },
+    {
+      "index": 5,
+      "title": "Randaugment: Practical automated data augmentation with a reduced search space",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops",
+      "authors": "Cubuk, E.D., Zoph, B., Shlens, J., Le, Q.V."
+    },
+    {
+      "index": 6,
+      "title": "Fbnetv3: Joint architecture-recipe search using neural acquisition function",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Dai, X., Wan, A., Zhang, P., Wu, B., He, Z., Wei, Z., Chen, K., Tian, Y., Yu, M., Vajda, P., et al."
+    },
+    {
+      "index": 7,
+      "title": "CoAtNet: Marrying Convolution and Attention for All Data Sizes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Dai, Z., Liu, H., Le, Q.V., Tan, M.",
+      "orig_title": "Coatnet: Marrying convolution and attention for all data sizes",
+      "paper_id": "2106.04803v2"
+    },
+    {
+      "index": 8,
+      "title": "ConViT: Improving Vision Transformers with Soft Convolutional Inductive Biases",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "d’Ascoli, S., Touvron, H., Leavitt, M., Morcos, A., Biroli, G., Sagun, L.",
+      "orig_title": "Convit: Improving vision transformers with soft convolutional inductive biases",
+      "paper_id": "2103.10697v2"
+    },
+    {
+      "index": 9,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Deng, J., Dong, W., Socher, R., Li, L.J., Li, K., Fei-Fei, L."
+    },
+    {
+      "index": 10,
+      "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint",
+      "authors": "Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., et al.",
+      "orig_title": "An image is worth 16x16 words: Transformers for image recognition at scale",
+      "paper_id": "2010.11929v2"
+    },
+    {
+      "index": 11,
+      "title": "Container: Context Aggregation Network",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Gao, P., Lu, J., Li, H., Mottaghi, R., Kembhavi, A.",
+      "orig_title": "Container: Context aggregation network",
+      "paper_id": "2106.01401v2"
+    },
+    {
+      "index": 12,
+      "title": "Lip: Local importance-based pooling",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Gao, Z., Wang, L., Wu, G."
+    },
+    {
+      "index": 13,
+      "title": "Nasvit: Neural architecture search for efficient vision transformers with gradient conflict aware supernet training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Gong, C., Wang, D., Li, M., Chen, X., Yan, Z., Tian, Y., Chandra, V., et al."
+    },
+    {
+      "index": 14,
+      "title": "Levit: a vision transformer in convnet’s clothing for faster inference",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Graham, B., El-Nouby, A., Touvron, H., Stock, P., Joulin, A., Jégou, H., Douze, M."
+    },
+    {
+      "index": 15,
+      "title": "CMT: Convolutional Neural Networks Meet Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Guo, J., Han, K., Wu, H., Xu, C., Tang, Y., Xu, C., Wang, Y.",
+      "orig_title": "Cmt: Convolutional neural networks meet vision transformers",
+      "paper_id": "2107.06263v3"
+    },
+    {
+      "index": 16,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "He, K., Zhang, X., Ren, S., Sun, J.",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 17,
+      "title": "Gaussian Error Linear Units (GELUs)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv: Learning",
+      "authors": "Hendrycks, D., Gimpel, K.",
+      "orig_title": "Gaussian error linear units (gelus)",
+      "paper_id": "1606.08415v5"
+    },
+    {
+      "index": 18,
+      "title": "Augment your batch: Improving generalization through instance repetition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Hoffer, E., Ben-Nun, T., Hubara, I., Giladi, N., Hoefler, T., Soudry, D."
+    },
+    {
+      "index": 19,
+      "title": "Vision permutator: A permutable mlp-like architecture for visual recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Hou, Q., Jiang, Z., Yuan, L., Cheng, M.M., Yan, S., Feng, J."
+    },
+    {
+      "index": 20,
+      "title": "Deep Networks with Stochastic Depth",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European conference on computer vision",
+      "authors": "Huang, G., Sun, Y., Liu, Z., Sedra, D., Weinberger, K.Q.",
+      "orig_title": "Deep networks with stochastic depth",
+      "paper_id": "1603.09382v3"
+    },
+    {
+      "index": 21,
+      "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ArXiv",
+      "authors": "Ioffe, S., Szegedy, C."
+    },
+    {
+      "index": 22,
+      "title": "How Much Position Information Do Convolutional Neural Networks Encode?",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint",
+      "authors": "Islam, M.A., Jia, S., Bruce, N.D.",
+      "orig_title": "How much position information do convolutional neural networks encode?",
+      "paper_id": "2001.08248v1"
+    },
+    {
+      "index": 23,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint",
+      "authors": "Kingma, D.P., Ba, J."
+    },
+    {
+      "index": 24,
+      "title": "Convmlp: Hierarchical convolutional mlps for vision",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Li, J., Hassani, A., Walton, S., Shi, H."
+    },
+    {
+      "index": 25,
+      "title": "Pay Attention to MLPs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems 34",
+      "authors": "Liu, H., Dai, Z., So, D., Le, Q.",
+      "orig_title": "Pay attention to mlps",
+      "paper_id": "2105.08050v2"
+    },
+    {
+      "index": 26,
+      "title": "Darts: Differentiable architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Liu, H., Simonyan, K., Yang, Y."
+    },
+    {
+      "index": 27,
+      "title": "FNAS: Uncertainty-Aware Fast Neural Architecture Search",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Liu, J., Zhang, M., Sun, Y., Liu, B., Song, G., Liu, Y., Li, H.",
+      "orig_title": "Fnas: Uncertainty-aware fast neural architecture search",
+      "paper_id": "2105.11694v3"
+    },
+    {
+      "index": 28,
+      "title": "Swin transformer: Hierarchical vision transformer using shifted windows",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Liu, Z., Lin, Y., Cao, Y., Hu, H., Wei, Y., Zhang, Z., Lin, S., Guo, B."
+    },
+    {
+      "index": 29,
+      "title": "Designing Network Design Spaces",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Radosavovic, I., Kosaraju, R.P., Girshick, R., He, K., Dollár, P.",
+      "orig_title": "Designing network design spaces",
+      "paper_id": "2003.13678v1"
+    },
+    {
+      "index": 30,
+      "title": "Rethinking semantic segmentation from a sequence-to-sequence perspective with transformers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "S, Z., J, L., H, Z., X, Z., Z, L., Y, W., Y, F., J, F., T, X., PH, T., L., Z."
+    },
+    {
+      "index": 31,
+      "title": "Detail-preserving pooling in deep networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Saeedan, F., Weber, N., Goesele, M., Roth, S."
+    },
+    {
+      "index": 32,
+      "title": "MobileNetV2: Inverted Residuals and Linear Bottlenecks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., Chen, L.C.",
+      "orig_title": "Mobilenetv2: Inverted residuals and linear bottlenecks",
+      "paper_id": "1801.04381v4"
+    },
+    {
+      "index": 33,
+      "title": "Proximal policy optimization algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint",
+      "authors": "Schulman, J., Wolski, F., Dhariwal, P., Radford, A., Klimov, O."
+    },
+    {
+      "index": 34,
+      "title": "Bottleneck Transformers for Visual Recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Srinivas, A., Lin, T.Y., Parmar, N., Shlens, J., Abbeel, P., Vaswani, A.",
+      "orig_title": "Bottleneck transformers for visual recognition",
+      "paper_id": "2101.11605v2"
+    },
+    {
+      "index": 35,
+      "title": "How to train your ViT? Data, Augmentation, and Regularization in Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Steiner, A., Kolesnikov, A., Zhai, X., Wightman, R., Uszkoreit, J., Beyer, L.",
+      "orig_title": "How to train your vit? data, augmentation, and regularization in vision transformers",
+      "paper_id": "2106.10270v2"
+    },
+    {
+      "index": 36,
+      "title": "Going deeper with convolutions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Szegedy, C., Liu, W., Jia, Y., Sermanet, P., Reed, S., Anguelov, D., Erhan, D., Vanhoucke, V., Rabinovich, A.",
+      "orig_title": "Going deeper with convolutions",
+      "paper_id": "1409.4842v1"
+    },
+    {
+      "index": 37,
+      "title": "MnasNet: Platform-Aware Neural Architecture Search for Mobile",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Tan, M., Chen, B., Pang, R., Vasudevan, V., Sandler, M., Howard, A., Le, Q.V.",
+      "orig_title": "Mnasnet: Platform-aware neural architecture search for mobile",
+      "paper_id": "1807.11626v3"
+    },
+    {
+      "index": 38,
+      "title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Tan, M., Le, Q.",
+      "orig_title": "Efficientnet: Rethinking model scaling for convolutional neural networks",
+      "paper_id": "1905.11946v5"
+    },
+    {
+      "index": 39,
+      "title": "Efficientnetv2: Smaller models and faster training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Tan, M., Le, Q.V."
+    },
+    {
+      "index": 40,
+      "title": "MLP-Mixer: An all-MLP Architecture for Vision",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Tolstikhin, I., Houlsby, N., Kolesnikov, A., Beyer, L., Zhai, X., Unterthiner, T., Yung, J., Keysers, D., Uszkoreit, J., Lucic, M., et al.",
+      "orig_title": "Mlp-mixer: An all-mlp architecture for vision",
+      "paper_id": "2105.01601v4"
+    },
+    {
+      "index": 41,
+      "title": "ResMLP: Feedforward networks for image classification with data-efficient training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Touvron, H., Bojanowski, P., Caron, M., Cord, M., El-Nouby, A., Grave, E., Joulin, A., Synnaeve, G., Verbeek, J., Jégou, H.",
+      "orig_title": "Resmlp: Feedforward networks for image classification with data-efficient training",
+      "paper_id": "2105.03404v2"
+    },
+    {
+      "index": 42,
+      "title": "Training data-efficient image transformers & distillation through attention",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Touvron, H., Cord, M., Douze, M., Massa, F., Sablayrolles, A., Jégou, H.",
+      "orig_title": "Training data-efficient image transformers & distillation through attention",
+      "paper_id": "2012.12877v2"
+    },
+    {
+      "index": 43,
+      "title": "Going deeper with image transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Touvron, H., Cord, M., Sablayrolles, A., Synnaeve, G., Jégou, H."
+    },
+    {
+      "index": 44,
+      "title": "Scaling Local Self-Attention for Parameter Efficient Visual Backbones",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Vaswani, A., Ramachandran, P., Srinivas, A., Parmar, N., Hechtman, B., Shlens, J.",
+      "orig_title": "Scaling local self-attention for parameter efficient visual backbones",
+      "paper_id": "2103.12731v3"
+    },
+    {
+      "index": 45,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, Ł., Polosukhin, I.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 46,
+      "title": "AlphaNet: Improved Training of Supernets with Alpha-Divergence",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Wang, D., Gong, C., Li, M., Liu, Q., Chandra, V.",
+      "orig_title": "Alphanet: Improved training of supernets with alpha-divergence",
+      "paper_id": "2102.07954v2"
+    },
+    {
+      "index": 47,
+      "title": "AttentiveNAS: Improving Neural Architecture Search via Attentive Sampling",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Wang, D., Li, M., Gong, C., Chandra, V.",
+      "orig_title": "Attentivenas: Improving neural architecture search via attentive sampling",
+      "paper_id": "2011.09011v2"
+    },
+    {
+      "index": 48,
+      "title": "CARAFE++: Unified Content-Aware ReAssembly of FEatures",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Wang, J., Chen, K., Xu, R., Liu, Z., Loy, C.C., Lin, D.",
+      "orig_title": "Carafe++: Unified content-aware reassembly of features",
+      "paper_id": "2012.04733v1"
+    },
+    {
+      "index": 49,
+      "title": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Wang, W., Xie, E., Li, X., Fan, D.P., Song, K., Liang, D., Lu, T., Luo, P., Shao, L.",
+      "orig_title": "Pyramid vision transformer: A versatile backbone for dense prediction without convolutions",
+      "paper_id": "2102.12122v2"
+    },
+    {
+      "index": 50,
+      "title": "CvT: Introducing Convolutions to Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Wu, H., Xiao, B., Codella, N., Liu, M., Dai, X., Yuan, L., Zhang, L.",
+      "orig_title": "Cvt: Introducing convolutions to vision transformers",
+      "paper_id": "2103.15808v1"
+    },
+    {
+      "index": 51,
+      "title": "Early Convolutions Help Transformers See Better",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Xiao, T., Singh, M., Mintun, E., Darrell, T., Dollár, P., Girshick, R.",
+      "orig_title": "Early convolutions help transformers see better",
+      "paper_id": "2106.14881v3"
+    },
+    {
+      "index": 52,
+      "title": "Incorporating Convolution Designs into Visual Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Yuan, K., Guo, S., Liu, Z., Zhou, A., Yu, F., Wu, W.",
+      "orig_title": "Incorporating convolution designs into visual transformers",
+      "paper_id": "2103.11816v2"
+    },
+    {
+      "index": 53,
+      "title": "Cutmix: Regularization strategy to train strong classifiers with localizable features",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "authors": "Yun, S., Han, D., Oh, S.J., Chun, S., Choe, J., Yoo, Y.J."
+    },
+    {
+      "index": 54,
+      "title": "mixup: Beyond Empirical Risk Minimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Zhang, H., Cissé, M., Dauphin, Y., Lopez-Paz, D.",
+      "orig_title": "mixup: Beyond empirical risk minimization",
+      "paper_id": "1710.09412v2"
+    },
+    {
+      "index": 55,
+      "title": "Making convolutional networks shift-invariant again",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "Zhang, R."
+    }
+  ]
+}

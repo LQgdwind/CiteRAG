@@ -1,0 +1,525 @@
+{
+  "paper_id": "2011.06850v1",
+  "title": "Transductive Zero-Shot Learning using Cross-Modal CycleGAN",
+  "sections": {
+    "baselines": "For ImageNet, we compare CM-GAN to a variety of approaches: Standard (inductive) ZSL: DeViSE , CONSE [ref]12, SYNC  and EXEM [ref]17; Inductive generative: GAN-based model Gvf  (state-of-the-art on ImageNet-Full) and VAE-based models VZSL 5, CVAE-ZSL  and SE-ZSL 6; Transductive (non-generative): DIPL  (state-of-the-art on ImageNet-360). In DIPL, a projection matrix is learned to solve an optimization problem that (a) brings projection of visual feature close to semantic representations for seen classes, (b) brings projection of unseen visual features close to the closest unseen class representation; Transductive generative: f-VAEWGAN-D2  (state-of-the-art on attribute-based datasets). f-VAEGAN-D2, like most generative models, aims at learning a generator G𝐺G to produce visual samples for unseen classes, and then train a supervised classifier on these synthetic data. Here, the generator G𝐺G is trained on three objectives: (i) WGAN objective: G𝐺G generates visual samples for seen classes, from Gaussian noise concatenated with the class vector, and a discriminator is trained to distinguish between G𝐺G’s outputs and true data,\n(ii) VAE objective: a VAE is trained to reconstruct data from seen classes, and G𝐺G is the VAE’s decoder,\nand (iii) transductive objective: G𝐺G is the generator, and a discriminator is trained to distinguish between generated sampled for unseen classes and true samples. All reported results are extracted from the original papers, which explains that we could not report all metrics for all models. For DIPL and for f-VAEWGAN-D2, we re-implement their model to get ImageNet-Full scores. We note CONSE* our re-implementation of CONSE, which performs better than the original CONSE [ref]12 since we use the CNN network Inception-V3 7, which shows better performances than AlexNet 8. For MS COCO, as our unsupervised setting is new in the literature, we only compare to a supervised baseline, for which we suppose that the sentence-to-image alignment is known and\nthe ℒs​u​psubscriptℒ𝑠𝑢𝑝\\mathcal{L}_{sup} objective is optimized to map CONSE representation to the corresponding sentence vectors."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "ImageNet: A Large-Scale Hierarchical Image Database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR",
+      "authors": "J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, L. Fei-Fei"
+    },
+    {
+      "index": 1,
+      "title": "Regularized Evolution for Image Classifier Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "E. Real, A. Aggarwal, Y. Huang, Q. V. Le",
+      "orig_title": "Regularized evolution for image classifier architecture search",
+      "paper_id": "1802.01548v7"
+    },
+    {
+      "index": 2,
+      "title": "Devise: A deep visual-semantic embedding model",
+      "abstract": "",
+      "year": "2013",
+      "venue": "NeurIPS",
+      "authors": "A. Frome, G. S. Corrado, J. Shlens, S. Bengio, J. Dean, M. Ranzato, T. Mikolov"
+    },
+    {
+      "index": 3,
+      "title": "Zero-shot learning with semantic output codes",
+      "abstract": "",
+      "year": "2009",
+      "venue": "NeurIPS",
+      "authors": "M. Palatucci, D. Pomerleau, G. E. Hinton, T. M. Mitchell"
+    },
+    {
+      "index": 4,
+      "title": "Relative attributes",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICCV",
+      "authors": "D. Parikh, K. Grauman"
+    },
+    {
+      "index": 5,
+      "title": "Transductive multi-view zero-shot learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "Y. Fu, T. M. Hospedales, T. Xiang, S. Gong"
+    },
+    {
+      "index": 6,
+      "title": "Zero-shot classification with discriminative semantic representation learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR 2017",
+      "authors": "M. Ye, Y. Guo"
+    },
+    {
+      "index": 7,
+      "title": "Transductive Zero-Shot Learning with Visual Structure Constraint",
+      "abstract": "",
+      "year": "",
+      "venue": "NeurIPS",
+      "authors": "Z. Wan, D. Chen, Y. Li, X. Yan, J. Zhang, Y. Yu, J. Liao",
+      "orig_title": "Transductive zero-shot learning with visual structure constraint",
+      "paper_id": "1901.01570v2"
+    },
+    {
+      "index": 8,
+      "title": "Domain-Invariant Projection Learning for Zero-Shot Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "A. Zhao, M. Ding, J. Guan, Z. Lu, T. Xiang, J. Wen",
+      "orig_title": "Domain-invariant projection learning for zero-shot recognition",
+      "paper_id": "1810.08326v1"
+    },
+    {
+      "index": 9,
+      "title": "Unpaired image-to-image translation using cycle-consistent adversarial networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "J. Zhu, T. Park, P. Isola, A. A. Efros"
+    },
+    {
+      "index": 10,
+      "title": "Word translation without parallel data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "G. Lample, A. Conneau, M. Ranzato, L. Denoyer, H. Jégou"
+    },
+    {
+      "index": 11,
+      "title": "Zero-shot learning by convex combination of semantic embeddings",
+      "abstract": "",
+      "year": "",
+      "venue": "ICLRarXiv",
+      "authors": "M. Norouzi, T.Mikolov, S. Bengio, Y. Singer, J. Shlens, A. Frome, G. Corrado, J. Dean"
+    },
+    {
+      "index": 12,
+      "title": "A Generative Framework for Zero-Shot Learning with Adversarial Domain Adaptation",
+      "abstract": "",
+      "year": "",
+      "venue": "CoRR",
+      "authors": "V. Khare, D. Mahajan, H. Bharadhwaj, V. K. Verma, P. Rai",
+      "orig_title": "A generative framework for zero-shot learning with adversarial domain adaptation",
+      "paper_id": "1906.03038v3"
+    },
+    {
+      "index": 13,
+      "title": "Generative Dual Adversarial Network for Generalized Zero-shot Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2019",
+      "authors": "H. Huang, C. Wang, P. S. Yu, C. Wang",
+      "orig_title": "Generative dual adversarial network for generalized zero-shot learning",
+      "paper_id": "1811.04857v4"
+    },
+    {
+      "index": 14,
+      "title": "Distributed representations of words and phrases and their compositionality",
+      "abstract": "",
+      "year": "2013",
+      "venue": "NeurIPS",
+      "authors": "T. Mikolov, I. Sutskever, K. Chen, G. S. Corrado, J. Dean"
+    },
+    {
+      "index": 15,
+      "title": "Synthesized Classifiers for Zero-Shot Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "S. Changpinyo, W. Chao, B. Gong, F. Sha",
+      "orig_title": "Synthesized classifiers for zero-shot learning",
+      "paper_id": "1603.00550v3"
+    },
+    {
+      "index": 16,
+      "title": "Predicting visual exemplars of unseen classes for zero-shot learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "S. Changpinyo, W. Chao, F. Sha"
+    },
+    {
+      "index": 17,
+      "title": "Rethinking Knowledge Graph Propagation for Zero-Shot Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "M. Kampffmeyer, Y. Chen, X. Liang, H. Wang, Y. Zhang, E. P. Xing",
+      "orig_title": "Rethinking knowledge graph propagation for zero-shot learning",
+      "paper_id": "1805.11724v3"
+    },
+    {
+      "index": 18,
+      "title": "Efficient label propagation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICML",
+      "authors": "Y. Fujiwara, G. Irie"
+    },
+    {
+      "index": 19,
+      "title": "Generating Visual Representations for Zero-Shot Classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "F. Jurie, M. Bucher, S. Herbin",
+      "orig_title": "Generating visual representations for zero-shot classification",
+      "paper_id": "1708.06975v3"
+    },
+    {
+      "index": 20,
+      "title": "Dual adversarial semantics-consistent network for generalized zero-shot learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "J. Ni, S. Zhang, H. Xie"
+    },
+    {
+      "index": 21,
+      "title": "A Simple Exponential Family Framework for Zero-Shot Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ECML PKDD 2017",
+      "authors": "V. K. Verma, P. Rai",
+      "orig_title": "A simple exponential family framework for zero-shot learning",
+      "paper_id": "1707.08040v3"
+    },
+    {
+      "index": 22,
+      "title": "A Generative Model For Zero Shot Learning Using Conditional Variational Autoencoders",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR Workshops",
+      "authors": "A. Mishra, M. S. K. Reddy, A. Mittal, H. A. Murthy",
+      "orig_title": "A generative model for zero shot learning using conditional variational autoencoders",
+      "paper_id": "1709.00663v2"
+    },
+    {
+      "index": 23,
+      "title": "F-VAEGAN-D2: A feature generating framework for any-shot learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2019",
+      "authors": "Y. Xian, S. Sharma, B. Schiele, Z. Akata"
+    },
+    {
+      "index": 24,
+      "title": "Dd-cyclegan: Unpaired image dehazing via double-discriminator cycle-consistent generative adversarial network",
+      "abstract": "",
+      "year": "",
+      "venue": "EAAI",
+      "authors": "J. Zhao, J. Zhang, Z. Li, J. Hwang, Y. Gao, Z. Fang, X. Jiang, B. Huang"
+    },
+    {
+      "index": 25,
+      "title": "Unsupervised Cross-Modal Alignment of Speech and Text Embedding Spaces",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "Y. Chung, W. Weng, S. Tong, J. R. Glass",
+      "orig_title": "Unsupervised cross-modal alignment of speech and text embedding spaces",
+      "paper_id": "1805.07467v2"
+    },
+    {
+      "index": 26,
+      "title": "Multimodal distributional semantics",
+      "abstract": "",
+      "year": "",
+      "venue": "J. Artif. Intell. Res.",
+      "authors": "E. Bruni, N. Tran, M. Baroni"
+    },
+    {
+      "index": 27,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "K. He, X. Zhang, S. Ren, J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 28,
+      "title": "Incorporating Visual Semantics into Sentence Representations within a Grounded Space",
+      "abstract": "",
+      "year": "2019",
+      "venue": "EMNLP-IJCNLP",
+      "authors": "P. Bordes, E. Zablocki, L. Soulier, B. Piwowarski, P. Gallinari",
+      "orig_title": "Incorporating visual semantics into sentence representations within a grounded space",
+      "paper_id": "2002.02734v1"
+    },
+    {
+      "index": 29,
+      "title": "Distance metric learning for large margin nearest neighbor classification",
+      "abstract": "",
+      "year": "2009",
+      "venue": "J. Mach. Learn. Res.",
+      "authors": "K. Q. Weinberger, L. K. Saul"
+    },
+    {
+      "index": 30,
+      "title": "Dimensionality reduction by learning an invariant mapping",
+      "abstract": "",
+      "year": "2006",
+      "venue": "CVPR",
+      "authors": "R. Hadsell, S. Chopra, Y. LeCun"
+    },
+    {
+      "index": 31,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NeurIPS",
+      "authors": "I. J. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. C. Courville, Y. Bengio"
+    },
+    {
+      "index": 32,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "T. Lin, M. Maire, S. J. Belongie, J. Hays, P. Perona, D. Ramanan, P. Dollár, C. L. Zitnick",
+      "orig_title": "Microsoft COCO: common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 33,
+      "title": "Context-Aware Zero-Shot Learning for Object Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "E. Zablocki, P. Bordes, L. Soulier, B. Piwowarski, P. Gallinari",
+      "orig_title": "Context-aware zero-shot learning for object recognition",
+      "paper_id": "1904.12638v2"
+    },
+    {
+      "index": 34,
+      "title": "Zero-Shot Learning via Class-Conditioned Deep Generative Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "W. Wang, Y. Pu, V. K. Verma, K. Fan, Y. Zhang, C. Chen, P. Rai, L. Carin",
+      "orig_title": "Zero-shot learning via class-conditioned deep generative models",
+      "paper_id": "1711.05820v2"
+    },
+    {
+      "index": 35,
+      "title": "Generalized Zero-Shot Learning via Synthesized Examples",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "V. K. Verma, G. Arora, A. Mishra, P. Rai",
+      "orig_title": "Generalized zero-shot learning via synthesized examples",
+      "paper_id": "1712.03878v5"
+    },
+    {
+      "index": 36,
+      "title": "Rethinking the inception architecture for computer vision",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "C. Szegedy, V. Vanhoucke, S. Ioffe, J. Shlens, Z. Wojna"
+    },
+    {
+      "index": 37,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "",
+      "venue": "Commun. ACM",
+      "authors": "A. Krizhevsky, I. Sutskever, G. E. Hinton"
+    },
+    {
+      "index": 38,
+      "title": "Zero-Shot Learning - A Comprehensive Evaluation of the Good, the Bad and the Ugly",
+      "abstract": "",
+      "year": "",
+      "venue": "IEEE",
+      "authors": "B. S. Y. Xian, C. H. Lampert, Z. Akata",
+      "orig_title": "Zero-shot learning - A comprehensive evaluation of the good, the bad and the ugly",
+      "paper_id": "1707.00600v4"
+    },
+    {
+      "index": 39,
+      "title": "Combining Language and Vision with a Multimodal Skip-gram Model",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NAACL",
+      "authors": "A. Lazaridou, N. T. Pham, M. Baroni",
+      "orig_title": "Combining language and vision with a multimodal skip-gram model",
+      "paper_id": "1501.02598v3"
+    },
+    {
+      "index": 40,
+      "title": "Symbols and embodiment: Debates on meaning and cognition",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Oxford University Press",
+      "authors": "M. De Vega, A. Glenberg, A. Graesser"
+    },
+    {
+      "index": 41,
+      "title": "Brain mechanisms linking language and action",
+      "abstract": "",
+      "year": "",
+      "venue": "Nature reviews. Neuroscience",
+      "authors": "F. Pulvermuller"
+    },
+    {
+      "index": 42,
+      "title": "Memory modulates color appearance",
+      "abstract": "",
+      "year": "",
+      "venue": "Nature neuroscience",
+      "authors": "T. Hansen, M. Olkkonen, S. Walter, K. Gegenfurtner"
+    },
+    {
+      "index": 43,
+      "title": "Perception of auditory motion affects language processing",
+      "abstract": "",
+      "year": "",
+      "venue": "Cognitive science",
+      "authors": "M. Kaschak, R. Zwaan, M. Aveyard, R. Yaxley"
+    },
+    {
+      "index": 44,
+      "title": "Reporting bias and knowledge acquisition",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Automated knowledge base construction - AKBC ’13",
+      "authors": "J. Gordon, B. Van Durme"
+    },
+    {
+      "index": 45,
+      "title": "Seeing through the Human Reporting Bias: Visual Classifiers from Noisy Human-Centric Labels",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR 2016",
+      "authors": "I. Misra, C. L. Zitnick, M. Mitchell, R. B. Girshick",
+      "orig_title": "Seeing through the human reporting bias: Visual classifiers from noisy human-centric labels",
+      "paper_id": "1512.06974v2"
+    },
+    {
+      "index": 46,
+      "title": "Grounding distributional semantics in the visual world",
+      "abstract": "",
+      "year": "",
+      "venue": "Language and Linguistics Compass",
+      "authors": "M. Baroni"
+    },
+    {
+      "index": 47,
+      "title": "Imagined visual representations as multimodal embeddings",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI",
+      "authors": "G. Collell, T. Zhang, M. Moens"
+    },
+    {
+      "index": 48,
+      "title": "Learning Multi-Modal Word Representation Grounded in Visual Context",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "É. Zablocki, B. Piwowarski, L. Soulier, P. Gallinari",
+      "orig_title": "Learning Multi-Modal Word Representation Grounded in Visual Context",
+      "paper_id": "1711.03483v1"
+    },
+    {
+      "index": 49,
+      "title": "Placing search in context: the concept revisited",
+      "abstract": "",
+      "year": "",
+      "venue": "ACM",
+      "authors": "L. Finkelstein, E. Gabrilovich, Y. Matias, E. Rivlin, Z. Solan, G. Wolfman, E. Ruppin"
+    },
+    {
+      "index": 50,
+      "title": "Multimodal distributional semantics",
+      "abstract": "",
+      "year": "",
+      "venue": "J. Artif. Intell. Res.",
+      "authors": "E. Bruni, N. Tran, M. Baroni"
+    },
+    {
+      "index": 51,
+      "title": "SimLex-999: Evaluating Semantic Models With (Genuine) Similarity Estimation",
+      "abstract": "",
+      "year": "",
+      "venue": "Computational Linguistics",
+      "authors": "F. Hill, R. Reichart, A. Korhonen",
+      "orig_title": "Simlex-999: Evaluating semantic models with (genuine) similarity estimation",
+      "paper_id": "1408.3456v1"
+    },
+    {
+      "index": 52,
+      "title": "Learning grounded meaning representations with autoencoders",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACL",
+      "authors": "C. Silberer, M. Lapata"
+    },
+    {
+      "index": 53,
+      "title": "The university of south florida free association, rhyme, and word fragment norms",
+      "abstract": "",
+      "year": "",
+      "venue": "Behavior Research Methods, Instruments, & Computers",
+      "authors": "D. L. Nelson, C. L. McEvoy, T. A. Schreiber"
+    },
+    {
+      "index": 54,
+      "title": "LXMERT: Learning Cross-Modality Encoder Representations from Transformers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "EMNLP-IJCNLP 2019",
+      "authors": "H. Tan, M. Bansal",
+      "orig_title": "LXMERT: learning cross-modality encoder representations from transformers",
+      "paper_id": "1908.07490v3"
+    },
+    {
+      "index": 55,
+      "title": "VisualBERT: A Simple and Performant Baseline for Vision and Language",
+      "abstract": "",
+      "year": "",
+      "venue": "CoRR",
+      "authors": "L. H. Li, M. Yatskar, D. Yin, C. Hsieh, K. Chang",
+      "orig_title": "Visualbert: A simple and performant baseline for vision and language",
+      "paper_id": "1908.03557v1"
+    },
+    {
+      "index": 56,
+      "title": "Link the head to the “beak”: Zero Shot Learning from Noisy Text Description at Part Precision",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2017",
+      "authors": "M. Elhoseiny, Y. Zhu, H. Zhang, A. M. Elgammal",
+      "orig_title": "Link the head to the ”beak”: Zero shot learning from noisy text description at part precision",
+      "paper_id": "1709.01148v1"
+    },
+    {
+      "index": 57,
+      "title": "A Generative Adversarial Approach for Zero-Shot Learning from Noisy Texts",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2018",
+      "authors": "Y. Zhu, M. Elhoseiny, B. Liu, X. Peng, A. Elgammal",
+      "orig_title": "A generative adversarial approach for zero-shot learning from noisy texts",
+      "paper_id": "1712.01381v3"
+    }
+  ]
+}

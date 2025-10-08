@@ -1,0 +1,513 @@
+{
+  "paper_id": "2402.03507v1",
+  "title": "Neural networks for abstraction and reasoning: Towards broad generalization in machines",
+  "sections": {
+    "previous work": "Many attempts have been made to computationally solve ARC, primarily through the Kaggle Abstraction & Reasoning Challenge hosted in 2019  with a $20,000 prize pool, where the current state-of-the-art was set by Johan Sokrates Wind (a.k.a. Icecuber) . Icecuber implements a Domain-Specific Language (DSL) with 142 handcrafted unary functions on grids. At runtime, the functions are greedily composed on the input grids, with the resulting ‘pieces’ stored in a directed acyclic graph (DAG). Finally, a solver combines pieces from the DAG to get as close as possible to matching the training examples. Figure 4 shows an outline of the approach; a detailed description is available in Supplementary Materials. Xu et al. introduced ARGA (Abstract Reasoning with Graph Abstractions) ; they extended DSL search by converting ARC grids into an object-graph representation, and operating on these representations instead. Additionally, a series of constraints were derived from the training examples to prune the search space, and a ‘Tabu list’ avoided searching primitives with poor recent performance. Overall, this approach achieved performance comparable to Icecuber limited to a small subset of tasks related to object manipulation. While ARC was designed to be a machine learning benchmark, the state-of-the-art solutions all rely on entirely handcrafted methods similar to Icecuber. There have been attempts to use ML, but these have been limited to small subsets of the ARC dataset. For example, Golubev et al. solved tasks that rely on cropping by extracting features from grids and training a task-specific decision tree classifier to try and predict cropping coordinates (x,y,w,h)𝑥𝑦𝑤ℎ(x,y,w,h) for a task’s test example  . This approach generalized to solve 7% of private test set tasks. In 2021, Alford et al. [ref]9  explored the idea of applying the neurosymbolic solver DreamCoder  to the ARC dataset, considered much more challenging than previous DreamCoder applications. They selected a subset of 36 ARC-Easy tasks involving symmetry and basic geometric operations (such as rotations, flips and crops), and provided a DSL with 5 basic primitives on grids. They found that DreamCoder could solve some of the tasks and also successfully created new primitives. However, this solution was limited to a small subset of the ARC-Easy dataset, and did not use neural-network-guided search unlike the original neurosymbolic solver DreamCoder paper . In the next section, we review the DreamCoder algorithm in detail, and then revisit whether DreamCoder can be extended to solve much more of ARC by harnessing a more powerful DSL, neural networks and other improvements."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Pattern recognition",
+      "abstract": "",
+      "year": "1968",
+      "venue": "Spartan Books",
+      "authors": "Bongard MM, Hawkins JK, Cheron T"
+    },
+    {
+      "index": 1,
+      "title": "On the Measure of Intelligence",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ArXiv",
+      "authors": "Chollet F",
+      "orig_title": "On the measure of intelligence",
+      "paper_id": "1911.01547v2"
+    },
+    {
+      "index": 2,
+      "title": "Highly accurate protein structure prediction with AlphaFold",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Nature",
+      "authors": "Jumper J, Evans R, Pritzel A, Green T, Figurnov M, et al."
+    },
+    {
+      "index": 3,
+      "title": "Mastering the game of Go with deep neural networks and tree search",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Nature",
+      "authors": "Silver D, Huang A, Maddison CJ, Guez A, Sifre L, et al."
+    },
+    {
+      "index": 4,
+      "title": "Self-driving cars are headed toward an ai roadblock",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Brandom R"
+    },
+    {
+      "index": 5,
+      "title": "Why do deep convolutional networks generalize so poorly to small image transformations?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "J Mach Learn Res",
+      "authors": "Azulay A, Weiss Y",
+      "orig_title": "Why do deep convolutional networks generalize so poorly to small image transformations?",
+      "paper_id": "1805.12177v4"
+    },
+    {
+      "index": 6,
+      "title": "Abstraction and reasoning challenge",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Chollet F, Tong K, Reade W, Elliott J"
+    },
+    {
+      "index": 7,
+      "title": "1st place solution + code and official documentation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Kaggle Forums",
+      "authors": "Wind JS"
+    },
+    {
+      "index": 8,
+      "title": "A Neurosymbolic Approach to Abstraction and Reasoning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Alford S"
+    },
+    {
+      "index": 9,
+      "title": "Language Models are Few-Shot Learners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "33rd Annual Conference on Neural Information Processing Systems (NeurIPS)",
+      "authors": "Brown TB, Mann B, Ryder N, Subbiah M, Kaplan J, et al.",
+      "orig_title": "Language models are few-shot learners",
+      "paper_id": "2005.14165v4"
+    },
+    {
+      "index": 10,
+      "title": "GPT-4 Technical Report",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ArXiv",
+      "authors": "OpenAI",
+      "orig_title": "GPT-4 technical report",
+      "paper_id": "2303.08774v6"
+    },
+    {
+      "index": 11,
+      "title": "LLaMA: Open and Efficient Foundation Language Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ArXiv",
+      "authors": "Touvron H, Lavril T, Izacard G, Martinet X, Lachaux MA, et al.",
+      "orig_title": "LLaMA: Open and efficient foundation language models",
+      "paper_id": "2302.13971v1"
+    },
+    {
+      "index": 12,
+      "title": "Gödel, Escher, Bach: an Eternal Golden Braid",
+      "abstract": "",
+      "year": "1979",
+      "venue": "Basic Books New York",
+      "authors": "Hofstadter DR"
+    },
+    {
+      "index": 13,
+      "title": "Index of bongard problems",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": "Foundalis H"
+    },
+    {
+      "index": 14,
+      "title": "Bongard solvers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Halme A"
+    },
+    {
+      "index": 15,
+      "title": "Solving Bongard problems with deep learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Kharagorgiev S"
+    },
+    {
+      "index": 16,
+      "title": "Solving Bongard Problems with a Visual Language and Pragmatic Reasoning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ArXiv",
+      "authors": "Depeweg S, Rothkopf CA, Jäkel F",
+      "orig_title": "Solving Bongard problems with a visual language and pragmatic reasoning",
+      "paper_id": "1804.04452v1"
+    },
+    {
+      "index": 17,
+      "title": "Phaeaco: A Cognitive Architecture Inspired by Bongard’s problems",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "Foundalis HE"
+    },
+    {
+      "index": 18,
+      "title": "Generalisation in humans and deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "31st Annual Conference on Neural Information Processing Systems (NeurIPS)",
+      "authors": "Geirhos R, Temme CRM, Rauber J, Schütt HH, Bethge M, et al."
+    },
+    {
+      "index": 19,
+      "title": "A collection of definitions of intelligence",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ArXiv",
+      "authors": "Legg S, Hutter M"
+    },
+    {
+      "index": 20,
+      "title": "The data that changed the direction of AI research and possibly the world",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Gershgorn D"
+    },
+    {
+      "index": 21,
+      "title": "Mental tests used in genetic studies: The performance of related individuals on tests mainly educative and mainly reproductive",
+      "abstract": "",
+      "year": "1936",
+      "venue": "",
+      "authors": "Raven JC"
+    },
+    {
+      "index": 22,
+      "title": "Graphs, Constraints, and Search for the Abstraction and Reasoning Corpus",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ArXiv",
+      "authors": "Xu Y, Khalil EB, Sanner S",
+      "orig_title": "Graphs, constraints, and search for the abstraction and reasoning corpus",
+      "paper_id": "2210.09880v2"
+    },
+    {
+      "index": 23,
+      "title": "3rd place[short preview+code]",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Kaggle Forums",
+      "authors": "Golubev V"
+    },
+    {
+      "index": 24,
+      "title": "7 solved tasks via trees",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Kaggle Kernels",
+      "authors": "Golubev V"
+    },
+    {
+      "index": 25,
+      "title": "Dreaming with ARC",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Center for Brains, Minds and Machines (CBMM)",
+      "authors": "Banburski A, Ghandi A, Alford S, Dandekar S, Chin P, et al."
+    },
+    {
+      "index": 26,
+      "title": "DreamCoder: Growing generalizable, interpretable knowledge with wake-sleep Bayesian program learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ArXiv",
+      "authors": "Ellis K, Wong C, Nye M, Sable-Meyer M, Cary L, et al."
+    },
+    {
+      "index": 27,
+      "title": "Inductive logic programming",
+      "abstract": "",
+      "year": "1991",
+      "venue": "New Generation Computing",
+      "authors": "Muggleton SH"
+    },
+    {
+      "index": 28,
+      "title": "Inductive logic programming at 30",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Machine Learning",
+      "authors": "Cropper A, Dumancic S, Evans R, Muggleton SH",
+      "orig_title": "Inductive logic programming at 30",
+      "paper_id": "2102.10556v2"
+    },
+    {
+      "index": 29,
+      "title": "The Helmholtz machine",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Neural Computation",
+      "authors": "Dayan P, Hinton GE, Neal RM, Zemel RS"
+    },
+    {
+      "index": 30,
+      "title": "Dreamcoder official code",
+      "abstract": "",
+      "year": "2022",
+      "venue": "GitHub",
+      "authors": "Ellis K"
+    },
+    {
+      "index": 31,
+      "title": "bidir-synth: DreamCoder and bidirectional program synthesis on ARC",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Alford S"
+    },
+    {
+      "index": 32,
+      "title": "Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "He K, Zhang X, Ren S, Sun J",
+      "orig_title": "Spatial pyramid pooling in deep convolutional networks for visual recognition",
+      "paper_id": "1406.4729v4"
+    },
+    {
+      "index": 33,
+      "title": "Network in network",
+      "abstract": "",
+      "year": "2014",
+      "venue": "2nd International Conference on Learning Representations, ICLR",
+      "authors": "Lin M, Chen Q, Yan S"
+    },
+    {
+      "index": 34,
+      "title": "Fully Convolutional Networks for Semantic Segmentation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition, CVPR",
+      "authors": "Long J, Shelhamer E, Darrell T",
+      "orig_title": "Fully convolutional networks for semantic segmentation",
+      "paper_id": "1605.06211v1"
+    },
+    {
+      "index": 35,
+      "title": "Multi-Scale Context Aggregation by Dilated Convolutions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "4th International Conference on Learning Representations, ICLR",
+      "authors": "Yu F, Koltun V",
+      "orig_title": "Multi-scale context aggregation by dilated convolutions",
+      "paper_id": "1511.07122v3"
+    },
+    {
+      "index": 36,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "3rd International Conference on Learning Representations, ICLR",
+      "authors": "Kingma DP, Ba J"
+    },
+    {
+      "index": 37,
+      "title": "Python reference: Full grammar specification",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 38,
+      "title": "Training language models to follow instructions with human feedback",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ArXiv",
+      "authors": "Ouyang L, Wu J, Jiang X, Almeida D, Wainwright CL, et al."
+    },
+    {
+      "index": 39,
+      "title": "Evaluating Large Language Models Trained on Code",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ArXiv",
+      "authors": "Chen M, Tworek J, Jun H, Yuan Q, de Oliveira Pinto HP, et al.",
+      "orig_title": "Evaluating large language models trained on code",
+      "paper_id": "2107.03374v2"
+    },
+    {
+      "index": 40,
+      "title": "Emergent Analogical Reasoning in Large Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ArXiv",
+      "authors": "Webb T, Holyoak KJ, Lu H"
+    },
+    {
+      "index": 41,
+      "title": "On analogy-making in large language models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Mitchell M"
+    },
+    {
+      "index": 42,
+      "title": "Can GPT-3 make analogies?",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Mitchell M"
+    },
+    {
+      "index": 43,
+      "title": "Analogy-Making as Perception",
+      "abstract": "",
+      "year": "1993",
+      "venue": "MIT Press",
+      "authors": "Mitchell M"
+    },
+    {
+      "index": 44,
+      "title": "GPT-3, Bloviator: OpenAI’s language generator has no idea what it’s talking about",
+      "abstract": "",
+      "year": "2020",
+      "venue": "MIT Technology Review",
+      "authors": "Marcus G, Davis E"
+    },
+    {
+      "index": 45,
+      "title": "GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ArXiv",
+      "authors": "Frantar E, Ashkboos S, Hoefler T, Alistarh D",
+      "orig_title": "GPTQ: Accurate post-training quantization for generative pre-trained transformers",
+      "paper_id": "2210.17323v2"
+    },
+    {
+      "index": 46,
+      "title": "GPTQ for LLaMa",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "qwopqwop200"
+    },
+    {
+      "index": 47,
+      "title": "TikToken",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "OpenAI"
+    },
+    {
+      "index": 48,
+      "title": "Introducing ChatGPT",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "OpenAI"
+    },
+    {
+      "index": 49,
+      "title": "Training Compute-Optimal Large Language Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ArXiv",
+      "authors": "Hoffmann J, Borgeaud S, Mensch A, Buchatskaya E, Cai T, et al.",
+      "orig_title": "Training compute-optimal large language models",
+      "paper_id": "2203.15556v1"
+    },
+    {
+      "index": 50,
+      "title": "Sequential modeling enables scalable learning for large vision models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ArXiv",
+      "authors": "Bai Y, Geng X, Mangalam K, Bar A, Yuille A, et al."
+    },
+    {
+      "index": 51,
+      "title": "Cultivating DNN Diversity for Large Scale Video Labelling",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Conference on Computer Vision and Pattern Recognition, CVPR, Youtube-8M Workshop",
+      "authors": "Bober-Irizar M, Husain S, Ong EJ, Bober M",
+      "orig_title": "Cultivating DNN diversity for large scale video labelling",
+      "paper_id": "1707.04272v1"
+    },
+    {
+      "index": 52,
+      "title": "A survey on similarity measures in text mining",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Machine Learning and Applications: An International Journal",
+      "authors": "Vijaymeena M, Kavitha K"
+    },
+    {
+      "index": 53,
+      "title": "LoRA: Low-rank adaptation of large language models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "The Tenth International Conference on Learning Representations, ICLR",
+      "authors": "Hu EJ, Shen Y, Wallis P, Allen-Zhu Z, Li Y, et al."
+    },
+    {
+      "index": 54,
+      "title": "Chain-of-thought prompting elicits reasoning in large language models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Thirty-sixth Conference on Neural Information Processing Systems (NeurIPS)",
+      "authors": "Wei J, Wang X, Schuurmans D, Bosma M, Ichter B, et al."
+    },
+    {
+      "index": 55,
+      "title": "ARCreate: Crowdsourcing ARC 2",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Lab42"
+    },
+    {
+      "index": 56,
+      "title": "Comparing Humans, GPT-4, and GPT-4V on abstraction and reasoning tasks",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ArXiv",
+      "authors": "Mitchell M, Palmarini AB, Moskvichev A"
+    },
+    {
+      "index": 57,
+      "title": "Fast and flexible: Human program induction in abstract reasoning tasks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "43rd Annual Meeting of the Cognitive Science Society: Comparative Cognition: Animal Minds, CogSci",
+      "authors": "Johnson A, Vong WK, Lake BM, Gureckis TM",
+      "orig_title": "Fast and flexible: Human program induction in abstract reasoning tasks",
+      "paper_id": "2103.05823v1"
+    },
+    {
+      "index": 58,
+      "title": "DSL solution to the ARC challenge",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Wind JS"
+    }
+  ]
+}

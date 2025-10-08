@@ -1,0 +1,483 @@
+{
+  "paper_id": "2005.03230v2",
+  "title": "Hierarchical Predictive Coding Models in a Deep-Learning Framework",
+  "sections": {
+    "the friston free energy model": "Following ,   developed a\nunified theory of sensory-based cortical function based on predictive coding\nwhich estimated the mean and variance of predicted states.\nThis more general framework was\nbased on the ideas of hierarchical expectation maximization (EM)\nand empirical\nBayes (a method to estimate priors from data).\nThis model is also biologically motivated along lines similar to ,\nbut is intended to address a broader range of\nempirical evidence [ref]19.\nThe Friston model differs from , but still obtains\nthe Rao-Ballard protocol.\nAs the Friston papers are mathematicaly difficult,\nthere is an authoritative tutorial of\n that explains the Friston model and is essential reading\nto get started.\nAlthough Friston formulates this model using a statistical framework,\nour goal is to implement models of this type within deep learning frameworks that\nscale to larger problems and, in practice, require fewer statistical assumptions.\nWe use the  variant of the Friston model. As mentioned earlier,\nbuilding representations which capture causes of sensory input, such as the\nshapes, reflective characteristics, arrangements and movements of objects, [48, p. 151]\nis a type of\ninversion process.\nIn the real world,\nthis calculation may be\nintractable or impossible (ill-posed) because the inverse is not unique.\nThis can happen because of\nnonlinear interactions among\nthe causes, for example visual occlusion [16, p. 816].\nThis problem can be handled by estimating what the prior distribution should look\nlike. Why? See Rao/Ballard, 1997\n uses empirical Bayes to obtain these priors. Let us calculate the most likely value of a continuous quantity, given\nsensory evidence.\nFollowing ,\nwe use a concrete\nperceptual inference problem, namely, inferring the amount of a\nfood item in the environment from the intensity of\nits projection\non the retina.\nThe scalar variables u𝑢u and v𝑣v denote the pixel intensity and food amount, respectively.\nThe problem is formulated probabilistically, as p​(v|u)𝑝conditional𝑣𝑢p(v|u).\nThis denotes the probability that the random variable v𝑣v (food quantity) has some value, given\nthe pixel-intensity variable u𝑢u has some value.\nWe wish to compute the most likely value of v𝑣v, given a specific value for the sensory input, u𝑢u,\nand the prior p​(v)𝑝𝑣p(v).\nThis is known as an MAP estimate.\nBayes’s rule, lets us\nfind the most likely value of v𝑣v, denoted ϕitalic-ϕ\\phi, by maximizing the log of the numerator\n(also known as negative free energy111[16, p. 821] observes that “minimizing the free energy\nis equivalent to minimizing a precision weighted sum of squared prediction error.”)\non the right-hand side (RHS) of the equation below, that is Let us assume that p​(u|v)𝑝conditional𝑢𝑣p(u|v) and p​(v)𝑝𝑣p(v) are normally distributed, where\np​(v)∼𝒩​(vp,σp2)similar-to𝑝𝑣𝒩subscript𝑣𝑝subscriptsuperscript𝜎2𝑝p(v)\\sim\\mathcal{N}(v_{p},\\sigma^{2}_{p}).\nvpsubscript𝑣𝑝v_{p} denotes the value of v𝑣v with the most likely prior probability and σp2superscriptsubscript𝜎𝑝2\\sigma_{p}^{2} denotes\nthe variance of the prior distribution.\nSimilarly, we assume p​(u|v)∼𝒩​(g​(v),σu2)similar-to𝑝conditional𝑢𝑣𝒩𝑔𝑣subscriptsuperscript𝜎2𝑢p(u|v)\\sim\\mathcal{N}(g(v),\\sigma^{2}_{u}).\nEquation 10 can be expanded by substituting the formulas for these probability distributions. Function g​(⋅)𝑔⋅g(\\cdot) predicts the raw sensory input (e.g., image pixel values)\nfrom the representation by using a causal observation model.\nThis takes the form of\na deteministic,\nusually nonlinear function of v𝑣v denoted g​(⋅)𝑔⋅g(\\cdot) and which may contain trainable parameters, θ𝜃\\theta. v𝑣v is some representation of causes (e.g., amount of food),\nu𝑢u is some representation of\nthe raw sensory input, and θ𝜃\\theta is a set of\nparameters (likely learnable) used to configure g​(⋅)𝑔⋅g(\\cdot).\nTo develop intuitions,\none can think of g​(⋅)𝑔⋅g(\\cdot) as a deterministic causal process that\ntakes the state of the environment v𝑣v and maps it\nto u𝑢u.\nAn alternative interpretation is that g​(⋅)𝑔⋅g(\\cdot) is a function that\nthe brain can learn to approximate and the input to g​(⋅)𝑔⋅g(\\cdot) is\na representation, v𝑣v, which resides in the brain but models causal\neffects in the environment.\nThe output, u𝑢u, of g​(⋅)𝑔⋅g(\\cdot) can then be viewed as a prediction of\nwhat the sensory input should look like.\nAlthough, in general g​(⋅)𝑔⋅g(\\cdot) is nonlinear, for this exposition we\nassume that g​(⋅)𝑔⋅g(\\cdot) is linear.\nFor simplicity, we assume that g​(v;θ)=θ​v𝑔𝑣𝜃𝜃𝑣g(v;\\theta)=\\theta v. Our next steps for developing the scalar version of the free energy model are the following. Develop equations to find the maximum of F𝐹F by performing gradient descent.\nPerforming gradient descent on the resulting equations is called\npredictive activation update.\nIn appropriate contexts in can be called inference (in contrast to learning). Represent the equations in Step 1 as a neural network such that the trainable parameters map to\nweights or synapses in the network and the other parameters of the network map to neuron like elements (nodes) that\ncan have activation levels. Use F𝐹F to develop learning rules for the weights in the network. One way to maximize F𝐹F is to perform gradient ascent on F𝐹F with respect to the estimated\nmost likely value ϕitalic-ϕ\\phi.\nThe derivative of F𝐹F is Next, refactor this formula by defining two types of prediction errors involving vpsubscript𝑣𝑝v_{p} and θ​ϕ𝜃italic-ϕ\\theta\\phi. With these prediction error definitions, Eqn 12 is rewritten as, letting us express the problem of maximizing F𝐹F in terms of prediction error.\nFor a given parameter set, gradient descent on Eqn. 14 can be used to search for an\noptimal value of F𝐹F. Note that the neural model has been factored so that prediction errors are explicit nodes in the network\nas seen in Fig. 5.\nThe derivatives needed for gradient descent to update the nodes in the network are given as follows. Eqn. 15a says that update to the representation\nactivations depends on the difference in prediction error for two consecutive layers.\nEqns. 15b and 15c\nare obtained\nfrom 13a and 13b\nby moving e𝑒e to the RHS, setting the derivative on the LHS to zero,\nand then simplifying\nthe RHS.\nAfter convergence of gradient descent, the network reaches a state which maximizes F𝐹F with respect to the current\nparameter values. Fig. 5 shows a possible neural implementation of this model.\nThe circled variables indicate continuous-valued, single neuron activations.\nThe black lines ending with arrowheads and solid circles indictate excitatory and inhibitory neural connections,\nrespectively.\nThe red arrows point to synaptic contacts where learning occurs.\nThe variables u, ϕitalic-ϕ\\phi, eusubscript𝑒𝑢e_{u}, and epsubscript𝑒𝑝e_{p} are modeled as neural activations.\nThe labeled connections between the neurons θ𝜃\\theta, vpsubscript𝑣𝑝v_{p}, σu2subscriptsuperscript𝜎2𝑢\\sigma^{2}_{u}, and σp2subscriptsuperscript𝜎2𝑝\\sigma^{2}_{p} are\nthe values of the weights at the synaptic contacts and can be trained.\nThe trainable parameters have been made explicit by associating them with synaptic contacts. The last step is to develop learning rules to train the network.\nLearning equations for the five synapses are given below.\nThey are obtained by taking the derivative of F𝐹F with respect to the relevant synaptic parameter. Notice that all of the resulting learning rules are in some way functions of predictive error.\nThe prior probability, vpsubscript𝑣𝑝v_{p}, is not changed unless there is predictive error\nrelated to prior (Eqn. 16a).\nFor Eqns. 16a and 16d,\nthere is no learning when the predictive error is zero and learning increases with higher predictive error.\nFor Eqns. 16b and 16c, the variance decreases when the predictive error is zero. Fig. 5\nhas two synapses with the same label, θ𝜃\\theta.\nTheir separate weights are matched, in the sense that they each use the same learning rule,\nbut not shared (they are different synapses).\nThe model can be simulated by running all of the dynamic equations simultaneously.\n Running the network, given an input stimulus to be processed,\nrequires three steps as shown in the free energy algorithm below. Performs network update (inference) and learning. Initialize the network with sensory input. Perform predictive activation update (inference) by gradient ascent using Equation Set 15\nfor some fixed number of integration steps (e.g., Forward-Euler), or until the node activations converge. Apply learning rules in Equation Set 16 to update the network weights. The algorithms of  and , described in Section 5.1, show possible ways to do\nthe above\nin a deep learning framework for convolutional networks. This model can be generalized to multiple variables and multiple layers.\nThe node dynamics and learning are governed by multidimensional versions of the rules\nalready described.\nThe generalized model uses multivariate instead of univariate Gaussian distributions.\nAlso, the distinction between e𝑒e and e𝑒e is generalized\nto elsuperscript𝑒𝑙e^{l} and el+1superscript𝑒𝑙1e^{l+1}, where l𝑙l and l+1𝑙1l+1 stand for\nconsecutive layers.\nThis is seen in Fig. 1 (b). Predictive update dynamics are now specified using indexed equations across layers l𝑙l,\nnamely, a pair of coupled equations for each level in the hierarchy conforming to\nFig. 1(b).\nThe 𝒓𝒓\\boldsymbol{r} symbols in  correspond approximately\nto the ϕbold-italic-ϕ\\boldsymbol{\\phi} symbols in the equation below.\nBy extracting the couplings, we recover the Rao-Ballard protocol (see Fig. 6). Eqn. 17a calculates the representation component in Fig. 1(b)\nand Eqn. 17b calculates the predictive error for that layer.\nEqn. 17a has two additive terms on its RHS.\nThese approximately correspond to the information flowing on the incoming links to 𝒓lsuperscript𝒓𝑙\\boldsymbol{r}^{l} in Fig. 1(b).\nBecause of the couplings, we see that ϕlsuperscriptbold-italic-ϕ𝑙\\boldsymbol{\\phi}^{l} receives input from both\n𝒆lsuperscript𝒆𝑙\\boldsymbol{e}^{l} and 𝒆l−1superscript𝒆𝑙1\\boldsymbol{e}^{l-1}.\nThese correspond to the links LTE and PE in the Rao-Ballard protocol.\nSimilarly, 𝒆lsuperscript𝒆𝑙\\boldsymbol{e}^{l} receives inputs from ϕlsuperscriptbold-italic-ϕ𝑙\\boldsymbol{\\phi}^{l} and ϕl+1superscriptbold-italic-ϕ𝑙1\\boldsymbol{\\phi}^{l+1} in the protocol.\nThese correspond to the links P and LT in the protocol.\nFig. 6 helps visualize this information.\nPriors are represented on the P links. Equation Set 17 is numerically simulated by updating each equation across all layers\nfor each time step.\nFor reasons discussed in Section 5.1, we call this a global update procedure.\nBesides the links used in the Rao-Ballard protocol, we should also note the recurrent connections.\nEqn. 17a has a self reference in the second additive term on the RHS.\nEqn. 17b also uses a recurrent connection in the third additive term on the RHS. The next section considers the question of using these equations and the RB protocol as a guide to\nbuild a deep predictive coding network.\nIn a deep learning framework, the protocol constraints can be realized by ensuring that the both the\n𝒓𝒓\\boldsymbol{r} and 𝒆𝒆\\boldsymbol{e} modules\nare implemented as recurrent networks.\nAlso,\nEquation Set 17 is intended to operate on feature vectors and a deep learning model\nwill be applied to next-frame video prediction.\nTherefore, must adjust the model so that it operates on multi-channel images. In the spirit of ,\n  formulates this setup hierarchically\nintending to capture different levels of representation that might occur\nin the brain.\nA given level provides priors to the immediately lower level\nto support Bayesian inferences.\nThe model outline is shown below. The higher-level representations, visubscript𝑣𝑖v_{i}, predict\nthe state of immediately lower-level representations, vi−1subscript𝑣𝑖1v_{i-1}.\nu𝑢u at the lowest level denotes observed values at the sensory receptor.\nEach gisubscript𝑔𝑖g_{i} function is deterministic with its own parameter set θisubscript𝜃𝑖\\theta_{i}.\nThe δisubscript𝛿𝑖\\delta_{i}’s add noise to the predictions. By adding assumptions about the noise sources being Gaussian with\ncovariance ΣisubscriptΣ𝑖\\Sigma_{i},\nwe can reformulate Eqns. 18 probabilistically.\nThe equation below expresses the likelihood of visubscript𝑣𝑖v_{i} given the state\nof vi+1subscript𝑣𝑖1v_{i+1}. visubscript𝑣𝑖v_{i} and vi+1subscript𝑣𝑖1v_{i+1} are now vectors of continuous variables and\nvisubscript𝑣𝑖v_{i} is sampled from a multi-variate Gaussian distribution with\nmean gi+1​(vi+1,θi+1)subscript𝑔𝑖1subscript𝑣𝑖1subscript𝜃𝑖1g_{i+1}(v_{i+1},\\theta_{i+1}) and variance Σi+1subscriptΣ𝑖1\\Sigma_{i+1}.\nThe representation at level i+1𝑖1i+1 provides priors for level i𝑖i\nproviding top-down expectations to the lower layer. Before proceeding, let us review EM in a nonhierarchical context.\nThe EM learning algorithm is iterative\nwith two steps in the iteration loop: the E-step and the M-step.\nThe E-step uses the recognition equation below to assign probability values to the causes, v𝑣v,\nof a given input, u𝑢u, using the current parameter values, θ𝜃\\theta. Using Bayes’s rule, this equation computes the probability of\na cause given the current input and the current parameterization\nof the model, θ𝜃\\theta, which will be adjusted in the M-step.\nThe rule inverts the generative formula p​(u|v;θ)𝑝conditional𝑢𝑣𝜃p(u|v;\\theta),\nwhich predicts the input distribution.\nIf the value of formula 20 can be computed tractably,\nthe model is said to be invertible.\nOtherwise, it is noninvertible \nand relates to the ill-posed nature of sensory input mentioned at the start\nof this section.\nIn the context where the model is not invertible,\nwe introduce an approximate recognition distribution written which uses a new parameter set, ϕitalic-ϕ\\phi,\ncalled recognition parameters. We of course need a way to estimate this approximate distribution.\nPredictive coding is a form of EM that finesses the challenge of\nfinding the parameters for complicated recognition densities.\nIn a predictive coding framework, the ϕitalic-ϕ\\phi parameters\n“are dynamically encoded by the activity of units in the brain”\n[15, p. 1339]. The M-step uses the results of the E-step to update the model parameters,\nand this is how learning occurs.\nIn traditional EM,\nthe specific update equations depend on the details of the\nparticular causal model used.\nA common didactic example to illustrate EM is to use a Gaussian mixture model\nto generate data which is to be clustered.\nIn this case, the parameter set consists of: 1) the mixture proportions;\n2) the mean vectors of each distribution in the mixture; and, 3) the parameters\nfor the variance of each mixture distribution.\nThe specific details of such causal models can be arbitrarily complicated.\nPredictive coding is a version of EM that avoids the challenges\nof formulating and parameterizing specific causal models. According to , EM is “a useful procedure for density estimation\nthat has direct connections to statistical mechanics” [p. 820]."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "With or without you: predictive coding and Bayesian inference in the brain",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Curr Opin Neurobio.",
+      "authors": "L. Aitchison and M. Lengyel"
+    },
+    {
+      "index": 1,
+      "title": "Hierarchical error representation: A computational model of anterior cingulate and dorsolateral prefrontal cortex",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Neural Computation",
+      "authors": "W. H. Alexander and J. W. Brown"
+    },
+    {
+      "index": 2,
+      "title": "Frontal cortex function as derived from hierarchical predictive coding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Scientific Reports",
+      "authors": "W. H. Alexander and J. W. Brown"
+    },
+    {
+      "index": 3,
+      "title": "Canonical microcircuits for predictive coding",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Neuron",
+      "authors": "A. M. Bastos, W. M. Usrey, R. A. Adams, G. R. Mangun, P. Fries, and K. J. Friston"
+    },
+    {
+      "index": 4,
+      "title": "Representation learning: A review and new perspectives",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CoRR",
+      "authors": "Y. Bengio, A. C. Courville, and P. Vincent"
+    },
+    {
+      "index": 5,
+      "title": "A tutorial on the free-energy framework for modelling perception and learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Mathematical Psychology",
+      "authors": "R. Bogacz"
+    },
+    {
+      "index": 6,
+      "title": "Generation of end-inibition in the visual cortex via interlaminar connections",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Nature",
+      "authors": "J. Bolz and C. D. Gilbert"
+    },
+    {
+      "index": 7,
+      "title": "Deep predictive coding networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "R. Chalasani and J. C. Príncipe"
+    },
+    {
+      "index": 8,
+      "title": "Surfing Uncertainty: Prediction, Action, and the Embodied Mind",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Oxford University Press",
+      "authors": "A. Clark"
+    },
+    {
+      "index": 9,
+      "title": "Cortical microcircuits as gated-recurrent neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "R. Costa, Y. Assael, B. Shillingford, N. de Freitas, and T. P. Vogels",
+      "orig_title": "Cortical microcircuits as gated-recurrent neural networks",
+      "paper_id": "1711.02448v2"
+    },
+    {
+      "index": 10,
+      "title": "Theoretical Neuroscience: Computational and Mathematical Modeling of Neural Systems",
+      "abstract": "",
+      "year": "2001",
+      "venue": "MIT Press",
+      "authors": "P. Dayan and L. F. Abbott"
+    },
+    {
+      "index": 11,
+      "title": "Neural mechanisms of selective visual attention",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Annual Review of Neuroscience",
+      "authors": "R. Desimone and J. Duncan"
+    },
+    {
+      "index": 12,
+      "title": "Reduced-Gate Convolutional LSTM Using Predictive Coding for Spatiotemporal Prediction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "N. Elsayed, A. S. Maida, and M. Bayoumi",
+      "orig_title": "Reduced-gate convolutional LSTM using predictive coding for spatiotemporal prediction",
+      "paper_id": "1810.07251v11"
+    },
+    {
+      "index": 13,
+      "title": "Distributed hierarchical processing in the primate cerebral cortex",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Cerebral Cortex",
+      "authors": "D. J. Felleman and D. C. V. Essen"
+    },
+    {
+      "index": 14,
+      "title": "Learning and inference in the brain",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Neural Networks",
+      "authors": "K. Friston"
+    },
+    {
+      "index": 15,
+      "title": "A theory of cortical responses",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Phil. Trans. R. Soc. B",
+      "authors": "K. Friston"
+    },
+    {
+      "index": 16,
+      "title": "The free-energy principle: a rough guide to the brain?",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Trends in Cognitive Sciences",
+      "authors": "K. Friston"
+    },
+    {
+      "index": 17,
+      "title": "The free-energy principle: A unified brain theory?",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Nature Reviews Neuroscience",
+      "authors": "K. Friston"
+    },
+    {
+      "index": 18,
+      "title": "Does predictive coding have a future?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Nature Neuroscience",
+      "authors": "K. Friston"
+    },
+    {
+      "index": 19,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MIT Press",
+      "authors": "I. Goodfellow, Y. Bengio, and A. C. Courville",
+      "orig_title": "Deep Learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 20,
+      "title": "Early temporal characteristics of elderly patient cognitive impairment in electronic health records",
+      "abstract": "",
+      "year": "2019",
+      "venue": "BMC medical informatics and decision making",
+      "authors": "S. Goudarzvand, J. S. Sauver, M. M. Mielke, P. Y. Takahashi, Y. Lee, and S. Sohn"
+    },
+    {
+      "index": 21,
+      "title": "LSTM: A Search Space Odyssey",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "K. Greff, R. K. Srivastava, J. Koutník, B. R. Steunebrink, and J. Schmidthuber",
+      "orig_title": "LSTM: A search space odyssey",
+      "paper_id": "1503.04069v2"
+    },
+    {
+      "index": 22,
+      "title": "Deep Predictive Coding Network with Local Recurrent Processing for Object Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing (NIPS)",
+      "authors": "K. Han, H. Wen, Y. Zhang, D. Fu, E. Culurciello, and Z. Liu",
+      "orig_title": "Deep predictive coding network with local recurrent processing for object recognition",
+      "paper_id": "1805.07526v2"
+    },
+    {
+      "index": 23,
+      "title": "Introduction to the Theory of Neural Computation",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Addison-Wesley",
+      "authors": "J. Hertz, A. Krogh, and R. G. Palmer"
+    },
+    {
+      "index": 24,
+      "title": "Neural networks and physical systems with emergent collective computational abilities",
+      "abstract": "",
+      "year": "1982",
+      "venue": "National Academy of Sciences",
+      "authors": "J. J. Hopfield"
+    },
+    {
+      "index": 25,
+      "title": "Inception lstm for next-frame video prediction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "M. Hosseini, A. S. Maida, M. Hosseini, and G. Raju"
+    },
+    {
+      "index": 26,
+      "title": "Predictive processing: A canonical cortical computation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Neuron",
+      "authors": "G. B. Keller and T. D. Mrsic-Flogel"
+    },
+    {
+      "index": 27,
+      "title": "ImageNet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advances in Neural Information Processing (NIPS)",
+      "authors": "A. Krizhevsky, I. Sutskever, and G. Hinton"
+    },
+    {
+      "index": 28,
+      "title": "Learning the parts of objects by non-negative matrix factorization",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Nature",
+      "authors": "D. D. Lee and H. S. Seung"
+    },
+    {
+      "index": 29,
+      "title": "Algorithms for non-negative matrix factorization",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Advances in Neural Information Processing Systems (NIPS)",
+      "authors": "D. D. Lee and H. S. Seung"
+    },
+    {
+      "index": 30,
+      "title": "Hierarchical Bayesian inference in the visual cortex",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Journal of the Optical Society of America",
+      "authors": "T. S. Lee and D. Mumford"
+    },
+    {
+      "index": 31,
+      "title": "Bridging the Gaps Between Residual Learning, Recurrent Neural Networks and Visual Cortex",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "Q. Liao and T. Poggio",
+      "orig_title": "Bridging the gaps between residual learning, recurrent neural networks and visual cortex",
+      "paper_id": "1604.03640v2"
+    },
+    {
+      "index": 32,
+      "title": "Network in network",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "M. Lin, Q. Chen, and S. Yan"
+    },
+    {
+      "index": 33,
+      "title": "Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations. Computational and Biological Learning Society",
+      "authors": "W. Lotter, G. Kreiman, and D. Cox",
+      "orig_title": "Deep predictive coding networks for video prediction and unsupervised learning",
+      "paper_id": "1605.08104v5"
+    },
+    {
+      "index": 34,
+      "title": "A neural network trained to predict future video frames mimics critical properties of biological neuronal responses and perception",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "W. Lotter, G. Kreiman, and D. Cox",
+      "orig_title": "A neural network trained to predict future video frames mimics critical properties of biological neuronal responses and perception",
+      "paper_id": "1805.10734v2"
+    },
+    {
+      "index": 35,
+      "title": "An iterative image registration technique with an application to stereo vision",
+      "abstract": "",
+      "year": "1981",
+      "venue": "Image Understanding Workshop (Vancouver)",
+      "authors": "B. D. Lucas and T. Kanada"
+    },
+    {
+      "index": 36,
+      "title": "On the computational architecture of the neocortex. II. The role of cortico-cortico loops",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Biological Cybernetics",
+      "authors": "D. Mumford"
+    },
+    {
+      "index": 37,
+      "title": "What visual illusions teach us about schizophrenia",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Frontiers in Integrative Neuroscience",
+      "authors": "C. E. Notredame, D. Pins, S. Deneve, and R. Jardri"
+    },
+    {
+      "index": 38,
+      "title": "Perception, illusions and Bayesian inference",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Psychopathology",
+      "authors": "M. M. Nour and J. M. Nour"
+    },
+    {
+      "index": 39,
+      "title": "Dynamic model of visual recognition predicts neural response properties in the visual cortex",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural Computation",
+      "authors": "R. P. Rao and D. H. Ballard"
+    },
+    {
+      "index": 40,
+      "title": "Predictive coding in the visual cortex: a functional interpretation of some extra-classical receptive-field effects",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Nature Neuroscience",
+      "authors": "R. P. Rao and D. H. Ballard"
+    },
+    {
+      "index": 41,
+      "title": "Convolutional LSTM network: A machine learning approach for precipitation nowcasing",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "X. Shi, Z. Chen, H. Wang, D. Yueng, W. Wong, and W. Woo"
+    },
+    {
+      "index": 42,
+      "title": "Neural elements for predictive coding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Frontiers in Psychology",
+      "authors": "S. Shipp"
+    },
+    {
+      "index": 43,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 44,
+      "title": "Reconciling predictive coding and biased competition models of cortical function",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Frontiers in Computational Neuroscience",
+      "authors": "M. W. Spratling"
+    },
+    {
+      "index": 45,
+      "title": "Unsupervised learning of overlapping image components using divisive input modulation",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Computational Intelligence and Neuroscience",
+      "authors": "M. W. Spratling"
+    },
+    {
+      "index": 46,
+      "title": "Predictive coding as a model of response properties in cortical area V1",
+      "abstract": "",
+      "year": "2010",
+      "venue": "The Journal of Neuroscience",
+      "authors": "M. W. Spratling"
+    },
+    {
+      "index": 47,
+      "title": "A hierarchical predictive coding model of object recognition in natural images",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Cognitive Computation",
+      "authors": "M. W. Spratling"
+    },
+    {
+      "index": 48,
+      "title": "A review of predictive coding algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Brain and Cognition",
+      "authors": "M. W. Spratling"
+    },
+    {
+      "index": 49,
+      "title": "Unsupervised learning of video representations using LSTMs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "N. Srivastava, E. Mansimov, and R. Salakhutdinov"
+    },
+    {
+      "index": 50,
+      "title": "Recurrent computations for visual pattern completion",
+      "abstract": "",
+      "year": "2018",
+      "venue": "National Academy of Sciences",
+      "authors": "H. Tang, M. Schrimpf, W. Lotter, C. Moerman, A. Paredes, J. Ortega Caro, W. Hardesty, D. Cox, and G. Kreiman"
+    },
+    {
+      "index": 51,
+      "title": "Image quality assessment: From error visibility to structural similarity",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "Z. Wang, A. C. Bovik, H. R. Sheigh, and E. P. Simoncelli"
+    },
+    {
+      "index": 52,
+      "title": "Illusory motion reproduced by deep neural networks trained for prediction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Fronties in Psychology",
+      "authors": "E. Watanabe, A. Kitaoka, K. Sakamoto, M. Yasugi, and K. Tanaka"
+    },
+    {
+      "index": 53,
+      "title": "Deep predictive coding network for object recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Machine Learning Research",
+      "authors": "H. Wen, K. Han, J. Shi, Y. Zhang, E. Culurciello, and Z. Liu"
+    },
+    {
+      "index": 54,
+      "title": "An approximation of the error backpropagation algorithm in a predictive coding network with local Hebbian plasticity",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Neural Computing",
+      "authors": "J. Whittington and R. Bogacz"
+    },
+    {
+      "index": 55,
+      "title": "Video anomaly detection with deep predictive coding networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Wopauli"
+    },
+    {
+      "index": 56,
+      "title": "Mining news media for understanding public health concerns",
+      "abstract": "",
+      "year": "",
+      "venue": "Journal of Clinical and Translational Science",
+      "authors": "M. Zolnoori, M. Huang, C. A. Patten, J. E. Balls-Berry, S. Goudarzvand, T. A. Brockman, E. Sagheb, and L. Yao"
+    }
+  ]
+}

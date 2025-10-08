@@ -1,0 +1,491 @@
+{
+  "paper_id": "2211.08805v1",
+  "title": "Interacting Hand-Object Pose Estimation via Dense Mutual Attention",
+  "sections": {
+    "introduction": "Accurate and efficient pose estimation for the scene of a hand interacting with an object from a single monocular view is desired in many applications, e.g. extended reality (XR)  and human-computer iteration (HCI) . Despite that great efforts have been contributed to developing effective 3D hand pose estimation algorithms     , joint hand-object pose estimation remains especially challenging due to the severe mutual occlusion and diverse ways of hand-object manipulation.\nMethods failing to tackle the aforementioned challenges tend to produce physically implausible configurations, such as interpenetration and out-of-contact. To avoid generating undesired poses, an in-depth understanding of the correlation between the hand and the interacting object is therefore required. Research works on 3D hand-object pose estimation can be categorized as optimization-based and learning-based. While the former methods  [ref]13  generalize to diverse object classes, the optimization process requires multiple iterations to converge, which is not applicable for real-time applications like XR. In contrast, learning-based methods  [ref]14  [ref]8  can achieve real-time inference. Motivated by the optimization-based methods, soft contact losses are introduced  [ref]14  to implicitly guide the network to pursuit plausible hand-object interaction. For a more effective modeling, other works focus on explicitly learning the hand-object correlation [ref]8  in the design of the network.\nRecently, several attention-based works   are proposed considering its efficacy in modelling complex correlation. In  a self-attention mechanism is used to capture feature dependencies for either the hand or the object and the interaction between them is modeled by the exchange of global features. Most close to our work is  where a cross-attention is used to model the correlation between the hand and the object. However, all above methods only model a sparse interaction between a pre-defined set of keypoints or features from the hand and the object, regardless of the fact that hand-object interaction actually occurs on physical regions of the surfaces. In this work, we instead propose to model fine-grained hand-object interaction via a dense mutual attention mechanism. Specifically, we first estimate rough hand and object meshes separately from a single monocular image. Next, we construct the hand and object graphs based on their mesh structures, then spatially sample node features according to the rough mesh positions. Unlike  which transfers inter-graph dependencies via global features only, we allow direct node-to-node feature aggregation via mutual attention. Taking a node from the hand graph as an example, we calculate the object-to-hand attention for all object nodes, and then fuse the hand node feature with attention-weighted object node features to explicitly model the fine-grained interaction correlation. A similar calculation is performed to refine object node features given hand-to-object attention. Finally, we refine the hand and object poses through graph convolutional blocks equipped with the proposed mutual attention layer. We show that our method does not require iterative optimization as in  [ref]13, and the dense vertex-level mutual attention can model the hand-object interaction more effectively than sparse keypoints based methods  [ref]8. In summary, our contributions are as follows. We propose a novel dense mutual attention mechanism that effectively models hand-object interaction by aggregating and transferring node features between the hand and object graphs. We design a novel hand-object pose estimation pipeline facilitating the proposed mutual attention. Extensive experiments show superior results compared to state-of-the-art methods on large benchmark datasets."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "ContactPose: A Dataset of Grasps with Object Contact and Hand Pose",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Samarth Brahmbhatt, Chengcheng Tang, Christopher D Twigg, Charles C Kemp, and James Hays",
+      "orig_title": "Contactpose: A dataset of grasps with object contact and hand pose",
+      "paper_id": "2007.09545v1"
+    },
+    {
+      "index": 1,
+      "title": "The ycb object and model set: Towards common benchmarks for manipulation research",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 international conference on advanced robotics (ICAR)",
+      "authors": "Berk Calli, Arjun Singh, Aaron Walsman, Siddhartha Srinivasa, Pieter Abbeel, and Aaron M Dollar"
+    },
+    {
+      "index": 2,
+      "title": "DexYCB: A Benchmark for Capturing Hand Grasping of Objects",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Yu-Wei Chao, Wei Yang, Yu Xiang, Pavlo Molchanov, Ankur Handa, Jonathan Tremblay, Yashraj S Narang, Karl Van Wyk, Umar Iqbal, Stan Birchfield, et al.",
+      "orig_title": "Dexycb: A benchmark for capturing hand grasping of objects",
+      "paper_id": "2104.04631v1"
+    },
+    {
+      "index": 3,
+      "title": "Gradient descent optimization of smoothed information retrieval metrics",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Information retrieval",
+      "authors": "Olivier Chapelle and Mingrui Wu"
+    },
+    {
+      "index": 4,
+      "title": "Temporal-Aware Self-Supervised Learning for 3D Hand Pose and Mesh Estimation in Videos",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)",
+      "authors": "Liangjian Chen, Shih-Yao Lin, Yusheng Xie, Yen-Yu Lin, and Xiaohui Xie",
+      "orig_title": "Temporal-aware self-supervised learning for 3d hand pose and mesh estimation in videos",
+      "paper_id": "2012.03205v1"
+    },
+    {
+      "index": 5,
+      "title": "Robust hand pose estimation during the interaction with an unknown object",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Chiho Choi, Sang Ho Yoon, Chin-Ning Chen, and Karthik Ramani"
+    },
+    {
+      "index": 6,
+      "title": "Multi-Context Attention for Human Pose Estimation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Xiao Chu, Wei Yang, Wanli Ouyang, Cheng Ma, Alan L Yuille, and Xiaogang Wang",
+      "orig_title": "Multi-context attention for human pose estimation",
+      "paper_id": "1702.07432v1"
+    },
+    {
+      "index": 7,
+      "title": "Hope-net: A graph-based model for hand-object pose estimation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "Bardia Doosti, Shujon Naha, Majid Mirbagheri, and David J Crandall"
+    },
+    {
+      "index": 8,
+      "title": "3D Hand Shape and Pose Estimation from a Single RGB Image",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Liuhao Ge, Zhou Ren, Yuncheng Li, Zehao Xue, Yingying Wang, Jianfei Cai, and Junsong Yuan",
+      "orig_title": "3d hand shape and pose estimation from a single rgb image",
+      "paper_id": "1903.00812v2"
+    },
+    {
+      "index": 9,
+      "title": "HOnnotate: A method for 3D Annotation of Hand and Object Poses",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "Shreyas Hampali, Mahdi Rad, Markus Oberweger, and Vincent Lepetit",
+      "orig_title": "Honnotate: A method for 3d annotation of hand and object poses",
+      "paper_id": "1907.01481v6"
+    },
+    {
+      "index": 10,
+      "title": "Keypoint transformer: Solving joint identification in challenging hands and object interactions for accurate 3d pose estimation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Shreyas Hampali, Sayan Deb Sarkar, Mahdi Rad, and Vincent Lepetit"
+    },
+    {
+      "index": 11,
+      "title": "Leveraging photometric consistency over time for sparsely supervised hand-object reconstruction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "Yana Hasson, Bugra Tekin, Federica Bogo, Ivan Laptev, Marc Pollefeys, and Cordelia Schmid"
+    },
+    {
+      "index": 12,
+      "title": "Towards Unconstrained Joint Hand-Object Reconstruction From RGB Videos",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 International Conference on 3D Vision (3DV)",
+      "authors": "Yana Hasson, Gül Varol, Cordelia Schmid, and Ivan Laptev",
+      "orig_title": "Towards unconstrained joint hand-object reconstruction from rgb videos",
+      "paper_id": "2108.07044v2"
+    },
+    {
+      "index": 13,
+      "title": "Learning joint reconstruction of hands and manipulated objects",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "Yana Hasson, Gul Varol, Dimitrios Tzionas, Igor Kalevatykh, Michael J Black, Ivan Laptev, and Cordelia Schmid",
+      "orig_title": "Learning joint reconstruction of hands and manipulated objects",
+      "paper_id": "1904.05767v1"
+    },
+    {
+      "index": 14,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 15,
+      "title": "Hot-net: Non-autoregressive transformer for 3d hand-object pose estimation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "28th ACM International Conference on Multimedia",
+      "authors": "Lin Huang, Jianchao Tan, Jingjing Meng, Ji Liu, and Junsong Yuan"
+    },
+    {
+      "index": 16,
+      "title": "Hand pose estimation via latent 2.5 d heatmap regression",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Umar Iqbal, Pavlo Molchanov, Thomas Breuel Juergen Gall, and Jan Kautz"
+    },
+    {
+      "index": 17,
+      "title": "Grasping Field: Learning Implicit Representations for Human Grasps",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 International Conference on 3D Vision (3DV)",
+      "authors": "Korrawe Karunratanakul, Jinlong Yang, Yan Zhang, Michael J Black, Krikamol Muandet, and Siyu Tang",
+      "orig_title": "Grasping field: Learning implicit representations for human grasps",
+      "paper_id": "2008.04451v3"
+    },
+    {
+      "index": 18,
+      "title": "Neural 3D Mesh Renderer",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Hiroharu Kato, Yoshitaka Ushiku, and Tatsuya Harada",
+      "orig_title": "Neural 3d mesh renderer",
+      "paper_id": "1711.07566v1"
+    },
+    {
+      "index": 19,
+      "title": "Multi-View Video-Based 3D Hand Pose Estimation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2109.11747",
+      "authors": "Leyla Khaleghi, Alireza Sepas Moghaddam, Joshua Marshall, and Ali Etemad",
+      "orig_title": "Multi-view video-based 3d hand pose estimation",
+      "paper_id": "2109.11747v1"
+    },
+    {
+      "index": 20,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "Diederik P Kingma and Jimmy Ba"
+    },
+    {
+      "index": 21,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1609.02907",
+      "authors": "Thomas N Kipf and Max Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 22,
+      "title": "PARE: Part Attention Regressor for 3D Human Body Estimation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Muhammed Kocabas, Chun-Hao P Huang, Otmar Hilliges, and Michael J Black",
+      "orig_title": "Pare: Part attention regressor for 3d human body estimation",
+      "paper_id": "2104.08527v2"
+    },
+    {
+      "index": 23,
+      "title": "Anticipating human activities for reactive robotic response",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IROS",
+      "authors": "Hema Swetha Koppula and Ashutosh Saxena"
+    },
+    {
+      "index": 24,
+      "title": "Weakly-Supervised Mesh-Convolutional Hand Reconstruction in the Wild",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "Dominik Kulon, Riza Alp Guler, Iasonas Kokkinos, Michael M Bronstein, and Stefanos Zafeiriou",
+      "orig_title": "Weakly-supervised mesh-convolutional hand reconstruction in the wild",
+      "paper_id": "2004.01946v1"
+    },
+    {
+      "index": 25,
+      "title": "ArtiBoost: Boosting Articulated 3D Hand-Object Pose Estimation via Online Exploration and Synthesis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2109.05488",
+      "authors": "Kailin Li, Lixin Yang, Xinyu Zhan, Jun Lv, Wenqiang Xu, Jiefeng Li, and Cewu Lu",
+      "orig_title": "Artiboost: Boosting articulated 3d hand-object pose estimation via online exploration and synthesis",
+      "paper_id": "2109.05488v2"
+    },
+    {
+      "index": 26,
+      "title": "DeepIM: Deep Iterative Matching for 6D Pose Estimation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Yi Li, Gu Wang, Xiangyang Ji, Yu Xiang, and Dieter Fox",
+      "orig_title": "Deepim: Deep iterative matching for 6d pose estimation",
+      "paper_id": "1804.00175v4"
+    },
+    {
+      "index": 27,
+      "title": "Semi-Supervised 3D Hand-Object Poses Estimation with Interactions in Time",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Shaowei Liu, Hanwen Jiang, Jiarui Xu, Sifei Liu, and Xiaolong Wang",
+      "orig_title": "Semi-supervised 3d hand-object poses estimation with interactions in time",
+      "paper_id": "2106.05266v1"
+    },
+    {
+      "index": 28,
+      "title": "I2L-MeshNet: Image-to-Lixel Prediction Network for Accurate 3D Human Pose and Mesh Estimation from a Single RGB Image",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Gyeongsik Moon and Kyoung Mu Lee",
+      "orig_title": "I2l-meshnet: Image-to-lixel prediction network for accurate 3d human pose and mesh estimation from a single rgb image",
+      "paper_id": "2008.03713v2"
+    },
+    {
+      "index": 29,
+      "title": "Handoccnet: Occlusion-robust 3d hand mesh estimation network",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "JoonKyu Park, Yeonguk Oh, Gyeongsik Moon, Hongsuk Choi, and Kyoung Mu Lee"
+    },
+    {
+      "index": 30,
+      "title": "Pvnet: Pixel-wise voting network for 6dof pose estimation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Sida Peng, Yuan Liu, Qixing Huang, Xiaowei Zhou, and Hujun Bao"
+    },
+    {
+      "index": 31,
+      "title": "Html: A parametric hand texture model for 3d hand reconstruction and personalization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Neng Qian, Jiayi Wang, Franziska Mueller, Florian Bernard, Vladislav Golyanik, and Christian Theobalt"
+    },
+    {
+      "index": 32,
+      "title": "Recognizing indoor scenes",
+      "abstract": "",
+      "year": "2009",
+      "venue": "2009 IEEE conference on computer vision and pattern recognition",
+      "authors": "Ariadna Quattoni and Antonio Torralba"
+    },
+    {
+      "index": 33,
+      "title": "Accelerating 3D Deep Learning with PyTorch3D",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2007.08501",
+      "authors": "Nikhila Ravi, Jeremy Reizenstein, David Novotny, Taylor Gordon, Wan-Yen Lo, Justin Johnson, and Georgia Gkioxari",
+      "orig_title": "Accelerating 3d deep learning with pytorch3d",
+      "paper_id": "2007.08501v1"
+    },
+    {
+      "index": 34,
+      "title": "Embodied Hands: Modeling and Capturing Hands and Bodies Together",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2201.02610",
+      "authors": "Javier Romero, Dimitrios Tzionas, and Michael J Black",
+      "orig_title": "Embodied hands: Modeling and capturing hands and bodies together",
+      "paper_id": "2201.02610v1"
+    },
+    {
+      "index": 35,
+      "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Medical image computing and computer-assisted intervention",
+      "authors": "Olaf Ronneberger, Philipp Fischer, and Thomas Brox",
+      "orig_title": "U-net: Convolutional networks for biomedical image segmentation",
+      "paper_id": "1505.04597v1"
+    },
+    {
+      "index": 36,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International journal of computer vision",
+      "authors": "Olga Russakovsky, Jia Deng, Hao Su, Jonathan Krause, Sanjeev Satheesh, Sean Ma, Zhiheng Huang, Andrej Karpathy, Aditya Khosla, Michael Bernstein, et al.",
+      "orig_title": "Imagenet large scale visual recognition challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 37,
+      "title": "Neural state machine for character-scene interactions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Trans. Graph.",
+      "authors": "Sebastian Starke, He Zhang, Taku Komura, and Jun Saito"
+    },
+    {
+      "index": 38,
+      "title": "Grab: A dataset of whole-body human grasping of objects",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European conference on computer vision",
+      "authors": "Omid Taheri, Nima Ghorbani, Michael J Black, and Dimitrios Tzionas"
+    },
+    {
+      "index": 39,
+      "title": "Towards Accurate Alignment in Real-time 3D Hand-Mesh Reconstruction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Computer Vision (ICCV)",
+      "authors": "Xiao Tang, Tianyu Wang, and Chi-Wing Fu",
+      "orig_title": "Towards accurate alignment in real-time 3d hand-mesh reconstruction",
+      "paper_id": "2109.01723v1"
+    },
+    {
+      "index": 40,
+      "title": "Collaborative Learning for Hand and Object Reconstruction with Attention-guided Graph Convolution",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Tze Ho Elden Tse, Kwang In Kim, Ales Leonardis, and Hyung Jin Chang",
+      "orig_title": "Collaborative learning for hand and object reconstruction with attention-guided graph convolution",
+      "paper_id": "2204.13062v1"
+    },
+    {
+      "index": 41,
+      "title": "Generic remeshing of 3d triangular meshes with metric-dependent discrete voronoi diagrams",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "Sébastien Valette, Jean Marc Chassery, and Rémy Prost"
+    },
+    {
+      "index": 42,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 43,
+      "title": "GDR-Net: Geometry-Guided Direct Regression Network for Monocular 6D Object Pose Estimation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Gu Wang, Fabian Manhardt, Federico Tombari, and Xiangyang Ji",
+      "orig_title": "Gdr-net: Geometry-guided direct regression network for monocular 6d object pose estimation",
+      "paper_id": "2102.12145v5"
+    },
+    {
+      "index": 44,
+      "title": "PoseCNN: A Convolutional Neural Network for 6D Object Pose Estimation in Cluttered Scenes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.00199",
+      "authors": "Yu Xiang, Tanner Schmidt, Venkatraman Narayanan, and Dieter Fox",
+      "orig_title": "Posecnn: A convolutional neural network for 6d object pose estimation in cluttered scenes",
+      "paper_id": "1711.00199v3"
+    },
+    {
+      "index": 45,
+      "title": "How Powerful are Graph Neural Networks?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.00826",
+      "authors": "Keyulu Xu, Weihua Hu, Jure Leskovec, and Stefanie Jegelka",
+      "orig_title": "How powerful are graph neural networks?",
+      "paper_id": "1810.00826v3"
+    },
+    {
+      "index": 46,
+      "title": "Dynamic iterative refinement for efficient 3d hand pose estimation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Winter Conference on Applications of Computer Vision",
+      "authors": "John Yang, Yash Bhalgat, Simyung Chang, Fatih Porikli, and Nojun Kwak"
+    },
+    {
+      "index": 47,
+      "title": "CPF: Learning a Contact Potential Field to Model the Hand-Object Interaction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Lixin Yang, Xinyu Zhan, Kailin Li, Wenqiang Xu, Jiefeng Li, and Cewu Lu",
+      "orig_title": "Cpf: Learning a contact potential field to model the hand-object interaction",
+      "paper_id": "2012.00924v4"
+    },
+    {
+      "index": 48,
+      "title": "Graph neural network for 6d object pose estimation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Knowledge-Based Systems",
+      "authors": "Pengshuai Yin, Jiayong Ye, Guoshen Lin, and Qingyao Wu"
+    },
+    {
+      "index": 49,
+      "title": "Contrastive Representation Learning for Hand Shape Estimation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "DAGM German Conference on Pattern Recognition",
+      "authors": "Christian Zimmermann, Max Argus, and Thomas Brox",
+      "orig_title": "Contrastive representation learning for hand shape estimation",
+      "paper_id": "2106.04324v2"
+    },
+    {
+      "index": 50,
+      "title": "Learning to Estimate 3D Hand Pose from Single RGB Images",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Christian Zimmermann and Thomas Brox",
+      "orig_title": "Learning to estimate 3d hand pose from single rgb images",
+      "paper_id": "1705.01389v3"
+    },
+    {
+      "index": 51,
+      "title": "FreiHAND: A Dataset for Markerless Capture of Hand Pose and Shape from Single RGB Images",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Christian Zimmermann, Duygu Ceylan, Jimei Yang, Bryan Russell, Max Argus, and Thomas Brox",
+      "orig_title": "Freihand: A dataset for markerless capture of hand pose and shape from single rgb images",
+      "paper_id": "1909.04349v3"
+    }
+  ]
+}

@@ -1,0 +1,473 @@
+{
+  "paper_id": "2211.17262v2",
+  "title": "Non-Deterministic Approximation Fixpoint Theory and Its Application in Disjunctive Logic Programming",
+  "sections": {
+    "approximation fixpoint theory": "We now recall basic notions from approximation fixpoint theory (AFT), as described by Denecker, Marek and Truszczyński .\nAs we have already noted, AFT introduces constructive techniques for approximating the fixpoints of an operator O𝑂O over a lattice L=⟨ℒ,≤⟩𝐿ℒL={\\langle{\\cal L},\\leq\\rangle}.\nThis is particularly useful when O𝑂O is non-monotonic (as is often the case in logic programming, default logic and abstract argumentation, and other disciplines\nfor non-monotonic reasoning in AI), in which case such operators are not guaranteed to even have a fixpoint, or a unique least fixpoint that can be constructively obtained.\nAFT generalizes the principles for the construction of fixpoints to the non-monotonic setting, by working with approximations of such operators on a bilattice [ref]4     , constructed on the basis of L𝐿L. Given a lattice L=⟨ℒ,≤⟩𝐿ℒL={\\langle{\\cal L},\\leq\\rangle}, a bilattice is the structure L2=⟨ℒ2,≤i,≤t⟩superscript𝐿2superscriptℒ2subscript𝑖subscript𝑡L^{2}={\\langle{\\cal L}^{2},\\leq_{i},\\leq_{t}\\rangle}, in which\nℒ2=ℒ×ℒsuperscriptℒ2ℒℒ{\\cal L}^{2}={\\cal L}\\times{\\cal L}, and for every x1,y1,x2,y2∈ℒsubscript𝑥1subscript𝑦1subscript𝑥2subscript𝑦2ℒx_{1},y_{1},x_{2},y_{2}\\in{\\cal L}, \n∙∙\\bullet (x1,y1)≤i(x2,y2)subscript𝑖subscript𝑥1subscript𝑦1subscript𝑥2subscript𝑦2(x_{1},y_{1})\\leq_{i}(x_{2},y_{2}) if x1≤x2subscript𝑥1subscript𝑥2x_{1}\\leq x_{2} and y1≥y2subscript𝑦1subscript𝑦2y_{1}\\geq y_{2}, \n∙∙\\bullet (x1,y1)≤t(x2,y2)subscript𝑡subscript𝑥1subscript𝑦1subscript𝑥2subscript𝑦2(x_{1},y_{1})\\leq_{t}(x_{2},y_{2}) if x1≤x2subscript𝑥1subscript𝑥2x_{1}\\leq x_{2} and y1≤y2subscript𝑦1subscript𝑦2y_{1}\\leq y_{2}.777Recall that we use small letters to denote elements of lattice, capital letters to denote\nsets of elements, and capital calligraphic letters to denote sets of sets of elements (Table 1). Bilattices of the form L2superscript𝐿2L^{2} are used for defining operators that approximate operators on L𝐿L. An approximating operator 𝒪:ℒ2→ℒ2:𝒪→superscriptℒ2superscriptℒ2{\\cal O}:{\\cal L}^{2}\\rightarrow{\\cal L}^{2} of an operator O:ℒ→ℒ:𝑂→ℒℒO:{\\cal L}\\rightarrow{\\cal L} is an operator that maps every\napproximation (x,y)𝑥𝑦(x,y) of an element z𝑧z to an approximation (x′,y′)superscript𝑥′superscript𝑦′(x^{\\prime},y^{\\prime}) of another element O​(z)𝑂𝑧O(z), thus approximating the behavior of the approximated operator O𝑂O.\nApproximation operators may be viewed as combinations of two operators: (𝒪(.,.))1({\\cal O}(.,.))_{1} and (𝒪(.,.))2({\\cal O}(.,.))_{2} which calculate, respectively, a lower and\nan upper bounds for the value of O𝑂O (where, as usual, (x,y)1subscript𝑥𝑦1(x,y)_{1} respectively (x,y)2subscript𝑥𝑦2(x,y)_{2} represents the first respectively second component of (x,y)𝑥𝑦(x,y)).\nTo avoid clutter, we will also denote (𝒪​(x,y))1subscript𝒪𝑥𝑦1({\\cal O}(x,y))_{1} by 𝒪l​(x,y)subscript𝒪𝑙𝑥𝑦{\\cal O}_{l}(x,y) and (𝒪​(x,y))2subscript𝒪𝑥𝑦2({\\cal O}(x,y))_{2} by 𝒪u​(x,y)subscript𝒪𝑢𝑥𝑦{\\cal O}_{u}(x,y). Two fundamental requirements on approximating operators are the following: ≤isubscript𝑖\\leq_{i}-monotonicity: the values of an approximating operator should be more precise as its arguments are more precise, and exactness: exact arguments are mapped\nto exact values. These requirements result in the following definition: Let O:ℒ→ℒ:𝑂→ℒℒO:{\\cal L}\\rightarrow{\\cal L} and 𝒪:ℒ2→ℒ2:𝒪→superscriptℒ2superscriptℒ2{\\cal O}:{\\cal L}^{2}\\rightarrow{\\cal L}^{2}. 𝒪𝒪{\\cal O} is ≤isubscript𝑖\\leq_{i}-monotonic, if when (x1,y1)≤i(x2,y2)subscript𝑖subscript𝑥1subscript𝑦1subscript𝑥2subscript𝑦2(x_{1},y_{1})\\leq_{i}(x_{2},y_{2}), also 𝒪​(x1,y1)≤i𝒪​(x2,y2)subscript𝑖𝒪subscript𝑥1subscript𝑦1𝒪subscript𝑥2subscript𝑦2{\\cal O}(x_{1},y_{1})\\leq_{i}{\\cal O}(x_{2},y_{2});\n𝒪𝒪{\\cal O} is approximating, if it is ≤isubscript𝑖\\leq_{i}-monotonic and for any x∈ℒ𝑥ℒx\\in{\\cal L}, 𝒪l​(x,x)=𝒪u​(x,x)subscript𝒪𝑙𝑥𝑥subscript𝒪𝑢𝑥𝑥{\\cal O}_{l}(x,x)={\\cal O}_{u}(x,x).888In some papers (e.g., ), an approximation operator is defined as a symmetric ≤isubscript𝑖\\leq_{i}-monotonic operator,\ni.e. a ≤isubscript𝑖\\leq_{i}-monotonic operator s.t. for every x,y∈ℒ𝑥𝑦ℒx,y\\in{\\cal L}, 𝒪​(x,y)=(𝒪l​(x,y),𝒪l​(y,x))𝒪𝑥𝑦subscript𝒪𝑙𝑥𝑦subscript𝒪𝑙𝑦𝑥{\\cal O}(x,y)=({\\cal O}_{l}(x,y),{\\cal O}_{l}(y,x)) for some\n𝒪l:ℒ2→ℒ:subscript𝒪𝑙→superscriptℒ2ℒ{\\cal O}_{l}:{\\cal L}^{2}\\rightarrow{\\cal L}. However, the weaker condition we take here (taken from ) is actually\nsufficient for most results on AFT.   𝒪𝒪{\\cal O} is an approximation of O𝑂O, if it is ≤isubscript𝑖\\leq_{i}-monotonic and\n𝒪𝒪{\\cal O} extends O𝑂O, that is: 𝒪​(x,x)=(O​(x),O​(x))𝒪𝑥𝑥𝑂𝑥𝑂𝑥{\\cal O}(x,x)=(O(x),O(x)) (for every x∈ℒ𝑥ℒx\\in{\\cal L}). One can define an approximating operator 𝒪𝒪{\\cal O} without having to specify which operator O𝑂O\nit approximates, and indeed it will often be convenient to study approximating operators without having to refer to the approximated operator.\nHowever, one can easily obtain the operator O𝑂O that 𝒪𝒪{\\cal O} approximates by\nletting: O​(x)=𝒪l​(x,x)𝑂𝑥subscript𝒪𝑙𝑥𝑥O(x)={\\cal O}_{l}(x,x). Another operator that has a central role in AFT and which is used for expressing the semantics of many non-monotonic formalisms is the\nstable operator, defined next. For a complete lattice L=⟨ℒ,≤⟩𝐿ℒL={\\langle{\\cal L},\\leq\\rangle}, let 𝒪:ℒ2→ℒ2:𝒪→superscriptℒ2superscriptℒ2{\\cal O}:{\\cal L}^{2}\\rightarrow{\\cal L}^{2} be an approximating operator.\nWe denote: 𝒪l​(⋅,y)=λ​x.𝒪l​(x,y)formulae-sequencesubscript𝒪𝑙⋅𝑦𝜆𝑥subscript𝒪𝑙𝑥𝑦{\\cal O}_{l}(\\cdot,y)=\\lambda x.{\\cal O}_{l}(x,y) and 𝒪u​(x,⋅)=λ​y.𝒪u​(x,y)formulae-sequencesubscript𝒪𝑢𝑥⋅𝜆𝑦subscript𝒪𝑢𝑥𝑦{\\cal O}_{u}(x,\\cdot)=\\lambda y.{\\cal O}_{u}(x,y),\ni.e.: 𝒪l​(⋅,y)​(x)=𝒪l​(x,y)subscript𝒪𝑙⋅𝑦𝑥subscript𝒪𝑙𝑥𝑦{\\cal O}_{l}(\\cdot,y)(x)={\\cal O}_{l}(x,y) and 𝒪u​(x,⋅)​(y)=𝒪u​(x,y)subscript𝒪𝑢𝑥⋅𝑦subscript𝒪𝑢𝑥𝑦{\\cal O}_{u}(x,\\cdot)(y)={\\cal O}_{u}(x,y).\nThe stable operator for 𝒪𝒪{\\cal O} is: S(𝒪)(x,y)=(𝑙𝑓𝑝(𝒪l(.,y)),𝑙𝑓𝑝(𝒪u(x,.))S({\\cal O})(x,y)=(\\mathit{lfp}({\\cal O}_{l}(.,y)),\\mathit{lfp}({\\cal O}_{u}(x,.)). Stable operators capture the idea of minimizing truth, since for any ≤isubscript𝑖\\leq_{i}-monotonic operator 𝒪𝒪{\\cal O} on ℒ2superscriptℒ2{\\cal L}^{2},\nthe fixpoints of the stable operator S​(𝒪)𝑆𝒪S({\\cal O}) are ≤tsubscript𝑡\\leq_{t}-minimal fixpoints of 𝒪𝒪{\\cal O} [22, Theorem 4].\nAltogether, the following semantic notions are obtained: Given a complete lattice L=⟨ℒ,≤⟩𝐿ℒL={\\langle{\\cal L},\\leq\\rangle}, let 𝒪:ℒ2→ℒ2:𝒪→superscriptℒ2superscriptℒ2{\\cal O}:{\\cal L}^{2}\\rightarrow{\\cal L}^{2} be an approximating operator. Then: (x,y)𝑥𝑦(x,y) is a Kripke-Kleene fixpoint of 𝒪𝒪{\\cal O} if (x,y)=lfp≤i⁡(𝒪​(x,y))𝑥𝑦subscriptlfpsubscript𝑖𝒪𝑥𝑦(x,y)=\\operatorname{lfp}_{\\leq_{i}}({\\cal O}(x,y)). (x,y)𝑥𝑦(x,y) is a three-valued stable fixpoint of 𝒪𝒪{\\cal O} if (x,y)=S​(𝒪)​(x,y)𝑥𝑦𝑆𝒪𝑥𝑦(x,y)=S({\\cal O})(x,y). (x,x)𝑥𝑥(x,x) is a two-valued stable fixpoints of 𝒪𝒪{\\cal O} if (x,x)=S​(𝒪)​(x,x)𝑥𝑥𝑆𝒪𝑥𝑥(x,x)=S({\\cal O})(x,x). (x,y)𝑥𝑦(x,y) is the well-founded fixpoint of 𝒪𝒪{\\cal O} if it is the ≤isubscript𝑖\\leq_{i}-minimal (3-valued) stable fixpoint of 𝒪𝒪{\\cal O}. Denecker, Marek and Truszscyński  show that every approximation operator admits a unique ≤isubscript𝑖\\leq_{i}-minimal stable fixpoint.\nPelov, Denecker and Bruynooghe  show that for normal logic programs, the fixpoints based on the four-valued immediate consequence operator\nfor a logic program give rise to the following correspondences: the three-valued stable models coincides with the three-valued semantics as defined by Przymusinski ,\nthe well-founded model coincides with the homonymous semantics  , and the two-valued stable models coincide with the two-valued\n(or total) stable models of a logic program. For a normal logic program 𝒫𝒫{\\cal P}, an approximation of the operator 𝐼𝐶𝒫subscript𝐼𝐶𝒫\\mathit{IC}_{\\cal P}  can be obtained by first constructing a lower bound operator\nas follows:999Notice that the lattice under consideration is ⟨2𝒜𝒫,⊆⟩superscript2subscript𝒜𝒫\\langle 2^{{\\cal A}_{\\cal P}},\\subseteq\\rangle, i.e., elements of the lattice are sets of atoms. and then defining: Notice that the upper bound ℐ​𝒞𝒫u​(y,x)ℐsuperscriptsubscript𝒞𝒫𝑢𝑦𝑥{\\cal IC}_{\\cal P}^{u}(y,x) is defined as ℐ​𝒞𝒫l​(y,x)ℐsuperscriptsubscript𝒞𝒫𝑙𝑦𝑥{\\cal IC}_{\\cal P}^{l}(y,x), i.e. ℐ​𝒞𝒫ℐsubscript𝒞𝒫{\\cal IC}_{\\cal P} is a symmetric operator (see also\nFootnote 8). Pelov, Denecker and Bruynooghe  have shown that this operator approximates 𝐼𝐶𝒫subscript𝐼𝐶𝒫\\mathit{IC}_{\\cal P} for normal logic\nprograms 𝒫𝒫{\\cal P}. We now illustrate the behaviour of this operator with the following logic program: 𝐼𝐶𝒫subscript𝐼𝐶𝒫\\mathit{IC}_{\\cal P} is thus an operator over the lattice ⟨2{p,q,r},⊆⟩superscript2𝑝𝑞𝑟\\langle 2^{\\{p,q,r\\}},\\subseteq\\rangle. Now, Concerning the approximation ℐ​𝒞𝒫ℐsubscript𝒞𝒫{\\cal IC}_{\\cal P} of 𝐼𝐶𝒫subscript𝐼𝐶𝒫\\mathit{IC}_{\\cal P}, it holds, e.g., that: ℐ​𝒞𝒫l​(∅,{p,q,r})=∅​ as ​(∅,{p,q,r})​(¬q)=(∅,{p,q,r})​(¬p)=(∅,{p,q,r})​(r)=𝖴ℐsubscriptsuperscript𝒞𝑙𝒫𝑝𝑞𝑟 as 𝑝𝑞𝑟𝑞𝑝𝑞𝑟𝑝𝑝𝑞𝑟𝑟𝖴{\\cal IC}^{l}_{\\cal P}(\\emptyset,\\{p,q,r\\})=\\emptyset\\mbox{ as }(\\emptyset,\\{p,q,r\\})(\\lnot q)=(\\emptyset,\\{p,q,r\\})(\\lnot p)=(\\emptyset,\\{p,q,r\\})(r)={\\sf U}. ℐ​𝒞𝒫l​({p,q,r},∅)={p,q,r}​ as ​({p,q,r},∅)​(¬q)=({p,q,r},∅)​(¬p)=({p,q,r},∅)​(r)=𝖢ℐsubscriptsuperscript𝒞𝑙𝒫𝑝𝑞𝑟𝑝𝑞𝑟 as 𝑝𝑞𝑟𝑞𝑝𝑞𝑟𝑝𝑝𝑞𝑟𝑟𝖢{\\cal IC}^{l}_{\\cal P}(\\{p,q,r\\},\\emptyset)=\\{p,q,r\\}\\mbox{ as }(\\{p,q,r\\},\\emptyset)(\\lnot q)=(\\{p,q,r\\},\\emptyset)(\\lnot p)=(\\{p,q,r\\},\\emptyset)(r)={\\sf C}. We now illustrate the stable operator. It holds that lfp(ℐ𝒞𝒫(.,{p})={p}\\operatorname{lfp}({\\cal IC}_{\\cal P}(.,\\{p\\})=\\{p\\}, and therefore S​(ℐ​𝒞𝒫l)​({p})={p}𝑆ℐsubscriptsuperscript𝒞𝑙𝒫𝑝𝑝S({\\cal IC}^{l}_{\\cal P})(\\{p\\})=\\{p\\}. By symmetry of ℐ​𝒞𝒫ℐsubscript𝒞𝒫{\\cal IC}_{\\cal P}, ({p},{p})𝑝𝑝(\\{p\\},\\{p\\}) is a stable fixpoint of ℐ​𝒞𝒫ℐsubscript𝒞𝒫{\\cal IC}_{\\cal P}. Likewise, it can be observed that (∅,{p,q})𝑝𝑞(\\emptyset,\\{p,q\\}) and ({q},{q})𝑞𝑞(\\{q\\},\\{q\\}) are stable fixpoints of ℐ​𝒞𝒫ℐsubscript𝒞𝒫{\\cal IC}_{\\cal P}. It follows that (∅,{p,q})𝑝𝑞(\\emptyset,\\{p,q\\}) is the well-founded fixpoint of ℐ​𝒞𝒫ℐsubscript𝒞𝒫{\\cal IC}_{\\cal P}. We shall generalize this operator to the disjunctive case in Section 3."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Forgetting auxiliary atoms in forks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Artificial Intelligence",
+      "authors": "Felicidad Aguado, Pedro Cabalar, Jorge Fandinno, David Pearce, Gilberto Pérez, and Concepción Vidal"
+    },
+    {
+      "index": 1,
+      "title": "A well-founded semantics with disjunction",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ICLP’05",
+      "authors": "Joao Alcântara, Carlos Viegas Damásio, and Luís Moniz Pereira"
+    },
+    {
+      "index": 2,
+      "title": "Hex semantics via approximation fixpoint theory",
+      "abstract": "",
+      "year": "2013",
+      "venue": "LPNMR’13",
+      "authors": "Christian Antić, Thomas Eiter, and Michael Fink"
+    },
+    {
+      "index": 3,
+      "title": "Reasoning with logical bilattices",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Journal of Logic Language and Information",
+      "authors": "Ofer Arieli and Arnon Avron"
+    },
+    {
+      "index": 4,
+      "title": "Reasoning by Cases in Structured Argumentation.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SAC’17",
+      "authors": "Mathieu Beirlaen, Jesse Heyninck, and Christian Straßer",
+      "orig_title": "Reasoning by cases in structured argumentation",
+      "paper_id": "1703.08397v1"
+    },
+    {
+      "index": 5,
+      "title": "A critical assessment of pollock’s work on logic-based argumentation with suppositions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NMR’18",
+      "authors": "Mathieu Beirlaen, Jesse Heyninck, and Christian Straßer"
+    },
+    {
+      "index": 6,
+      "title": "How a computer should think",
+      "abstract": "",
+      "year": "1977",
+      "venue": "Contemporary Aspects of Philosophy",
+      "authors": "Nuel D. Belnap"
+    },
+    {
+      "index": 7,
+      "title": "A useful four-valued logic",
+      "abstract": "",
+      "year": "1977",
+      "venue": "Modern Uses of Multiple-Valued Logics",
+      "authors": "Nuel D. Belnap"
+    },
+    {
+      "index": 8,
+      "title": "Weighted abstract dialectical frameworks through the lens of approximation fixpoint theory",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI’19",
+      "authors": "Bart Bogaerts"
+    },
+    {
+      "index": 9,
+      "title": "Fixpoint semantics for active integrity constraints",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Artificial Intelligence",
+      "authors": "Bart Bogaerts and Luís Cruz-Filipe"
+    },
+    {
+      "index": 10,
+      "title": "Fixpoint Semantics for Recursive SHACL",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLP Technical Communications 2021",
+      "authors": "Bart Bogaerts and Maxime Jakubowski",
+      "orig_title": "Fixpoint semantics for recursive SHACL",
+      "paper_id": "2109.08285v1"
+    },
+    {
+      "index": 11,
+      "title": "Grounded fixpoints and their applications in knowledge representation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Artificial Intelligence",
+      "authors": "Bart Bogaerts, Joost Vennekens, and Marc Denecker"
+    },
+    {
+      "index": 12,
+      "title": "Safe inductions and their applications in knowledge representation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Artif. Intell.",
+      "authors": "Bart Bogaerts, Joost Vennekens, and Marc Denecker"
+    },
+    {
+      "index": 13,
+      "title": "Defaulting on reasons",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Noûs",
+      "authors": "Daniel Bonevac"
+    },
+    {
+      "index": 14,
+      "title": "Characterizations of the stable semantics by partial evaluation",
+      "abstract": "",
+      "year": "1995",
+      "venue": "LPNMR’95",
+      "authors": "Stefan Brass and Jürgen Dix"
+    },
+    {
+      "index": 15,
+      "title": "Analysing and extending well-founded and partial stable semantics using partial equilibrium logic",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ICLP’06",
+      "authors": "Pedro Cabalar, Sergei Odintsov, David Pearce, and Agustín Valverde"
+    },
+    {
+      "index": 16,
+      "title": "Partial equilibrium logic",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Annals of Mathematics and Artificial Intelligence",
+      "authors": "Pedro Cabalar, Sergei Odintsov, David Pearce, and Agustín Valverde"
+    },
+    {
+      "index": 17,
+      "title": "Approximation Fixpoint Theory and the Well-Founded Semantics of Higher-Order Logic Programs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Theory and Practice of Logic Programming",
+      "authors": "Angelos Charalambidis, Panos Rondogiannis, and Ioanna Symeonidou",
+      "orig_title": "Approximation fixpoint theory and the well-founded semantics of higher-order logic programs",
+      "paper_id": "1804.08335v1"
+    },
+    {
+      "index": 18,
+      "title": "A compositional typed higher-order logic with definitions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICLP",
+      "authors": "Ingmar Dasseville, Matthias van der Hallen, Bart Bogaerts, Gerda Janssens, and Marc Denecker"
+    },
+    {
+      "index": 19,
+      "title": "Approximation fixpoint theory and the semantics of logic and answers set programs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Correct reasoning",
+      "authors": "Marc Denecker, Maurice Bruynooghe, and Joost Vennekens"
+    },
+    {
+      "index": 20,
+      "title": "Ultimate approximations in nonmonotonic knowledge representation systems",
+      "abstract": "",
+      "year": "2002",
+      "venue": "KR’02",
+      "authors": "Marc Denecker, V Wiktor Marek, and Miroslaw Truszczynski"
+    },
+    {
+      "index": 21,
+      "title": "Approximations, stable operators, well-founded fixpoints and applications in nonmonotonic reasoning",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Logic-based Artificial Intelligence",
+      "authors": "Marc Denecker, Victor Marek, and Mirosław Truszczyński"
+    },
+    {
+      "index": 22,
+      "title": "Uniform semantic treatment of default and autoepistemic logics",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Artificial Intelligence",
+      "authors": "Marc Denecker, Victor Marek, and Mirosław Truszczyński"
+    },
+    {
+      "index": 23,
+      "title": "Computing ideal sceptical argumentation",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Artificial Intelligence",
+      "authors": "Phan Minh Dung, Paolo Mancarella, and Francesca Toni"
+    },
+    {
+      "index": 24,
+      "title": "Complexity results for disjunctive logic programming and application to nonmonotonic logics",
+      "abstract": "",
+      "year": "1993",
+      "venue": "ILPS’93",
+      "authors": "Thomas Eiter and Georg Gottlob"
+    },
+    {
+      "index": 25,
+      "title": "Recursive aggregates in disjunctive logic programs: Semantics and complexity",
+      "abstract": "",
+      "year": "2004",
+      "venue": "JELIA’04",
+      "authors": "Wolfgang Faber, Nicola Leone, and Gerald Pfeifer"
+    },
+    {
+      "index": 26,
+      "title": "Bottom-up computation of perfect models for disjunctive theories",
+      "abstract": "",
+      "year": "1995",
+      "venue": "The Journal of logic programming",
+      "authors": "José Alberto Fernández and Jack Minker"
+    },
+    {
+      "index": 27,
+      "title": "Bilattices and the semantics of logic programming",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Journal of Logic Programming",
+      "authors": "Melvin Fitting"
+    },
+    {
+      "index": 28,
+      "title": "Bilattices are nice things",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Self Reference",
+      "authors": "Melvin Fitting"
+    },
+    {
+      "index": 29,
+      "title": "Bilattice basics",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IfCoLog Journal of Logics and their Applications",
+      "authors": "Melvin Fitting"
+    },
+    {
+      "index": 30,
+      "title": "Classical negation in logic programs and disjunctive databases",
+      "abstract": "",
+      "year": "1991",
+      "venue": "New generation computing",
+      "authors": "Michael Gelfond and Vladimir Lifschitz"
+    },
+    {
+      "index": 31,
+      "title": "Disjunctive defaults",
+      "abstract": "",
+      "year": "1991",
+      "venue": "KR’91",
+      "authors": "Michael Gelfond, Halina Przymusinska, Vladimir Lifschitz, and Miroslaw Truszczynski"
+    },
+    {
+      "index": 32,
+      "title": "Vicious circle principle and logic programs with aggregates",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Theory and Practice of Logic Programming",
+      "authors": "Michael Gelfond and Yuanlin Zhang"
+    },
+    {
+      "index": 33,
+      "title": "Multi-valued logics: A uniform approach to reasoning in artificial intelligence",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Computer Intelligence",
+      "authors": "Matthew L. Ginsberg"
+    },
+    {
+      "index": 34,
+      "title": "Distributed autoepistemic logic and its application to access control",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IJCAI",
+      "authors": "Pieter Van Hertum, Marcos Cramer, Bart Bogaerts, and Marc Denecker"
+    },
+    {
+      "index": 35,
+      "title": "Argumentative reflections of approximation fixpoint theory",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Computational Models of Argument: COMMA 2020",
+      "authors": "Jesse Heyninck and Ofer Arieli"
+    },
+    {
+      "index": 36,
+      "title": "Approximation fixpoint theory for non-deterministic operators and its application in disjunctive logic programming",
+      "abstract": "",
+      "year": "2021",
+      "venue": "KR’21",
+      "authors": "Jesse Heyninck and Ofer Arieli"
+    },
+    {
+      "index": 37,
+      "title": "Conditional abstract dialectical frameworks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "AAAI’22",
+      "authors": "Jesse Heyninck, Matthias Thimm, Gabriele Kern-Isberner, Tjitze Rienstra, and Kenneth Skiba"
+    },
+    {
+      "index": 38,
+      "title": "Alternating Fixpoint Operator for Hybrid MKNF Knowledge Bases as an Approximator of AFT",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Theory and Practice of Logic Programming",
+      "authors": "Fangfang Liu and Jia-Huai You",
+      "orig_title": "Alternating fixpoint operator for hybrid MKNF knowledge bases as an approximator of AFT",
+      "paper_id": "2105.11071v3"
+    },
+    {
+      "index": 39,
+      "title": "Foundations of disjunctive logic programming",
+      "abstract": "",
+      "year": "1992",
+      "venue": "MIT press",
+      "authors": "Jorge Lobo, Jack Minker, and Arcot Rajasekar"
+    },
+    {
+      "index": 40,
+      "title": "Disjunctive logic programming: A survey and assessment",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Computational logic: logic programming and beyond",
+      "authors": "Jack Minker and Dietmar Seipel"
+    },
+    {
+      "index": 41,
+      "title": "A generalization of dung’s abstract framework for argumentation: Arguing with sets of attacking arguments",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ArgMAS’06",
+      "authors": "Søren Holbech Nielsen and Simon Parsons"
+    },
+    {
+      "index": 42,
+      "title": "Equilibrium logic",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Annals of Mathematics and Artificial Intelligence",
+      "authors": "David Pearce"
+    },
+    {
+      "index": 43,
+      "title": "Well-founded and stable semantics of logic programs with aggregates",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Theory and Practice of Logic Programming",
+      "authors": "Nikolay Pelov, Marc Denecker, and Maurice Bruynooghe"
+    },
+    {
+      "index": 44,
+      "title": "Semantics of disjunctive programs with monotone aggregates: an operator-based approach",
+      "abstract": "",
+      "year": "2004",
+      "venue": "NMR’04",
+      "authors": "Nikolay Pelov and Miroslaw Truszczynski"
+    },
+    {
+      "index": 45,
+      "title": "The well-founded semantics coincides with the three-valued stable semantics",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Fundamenta Informaticae",
+      "authors": "Teodor C. Przymusinski"
+    },
+    {
+      "index": 46,
+      "title": "Paraconsistent stable semantics for extended disjunctive programs",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Journal of Logic and Computation",
+      "authors": "Chiaki Sakama and Katsumi Inoue"
+    },
+    {
+      "index": 47,
+      "title": "An alternating well-founded semantics for query answering in disjunctive databases",
+      "abstract": "",
+      "year": "1998",
+      "venue": "FQAS’98",
+      "authors": "Dietmar Seipel"
+    },
+    {
+      "index": 48,
+      "title": "Powerdomains",
+      "abstract": "",
+      "year": "1976",
+      "venue": "MFCS’76",
+      "authors": "Michael B Smyth"
+    },
+    {
+      "index": 49,
+      "title": "Approximating operators and semantics for abstract dialectical frameworks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Artificial Intelligence",
+      "authors": "Hannes Strass"
+    },
+    {
+      "index": 50,
+      "title": "Analyzing the computational complexity of abstract dialectical frameworks via approximation fixpoint theory",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Artificial Intelligence",
+      "authors": "Hannes Strass and Johannes Peter Wallner"
+    },
+    {
+      "index": 51,
+      "title": "On the concept of logical consequence",
+      "abstract": "",
+      "year": "1936",
+      "venue": "Logic, semantics, metamathematics",
+      "authors": "Alfred Tarski"
+    },
+    {
+      "index": 52,
+      "title": "Strong and uniform equivalence of nonmonotonic theories–an algebraic approach",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Annals of Mathematics and Artificial Intelligence",
+      "authors": "Mirosław Truszczyński"
+    },
+    {
+      "index": 53,
+      "title": "Reducts of propositional theories, satisfiability relations, and generalizations of semantics of logic programs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Artificial Intelligence",
+      "authors": "Miroslaw Truszczyński"
+    },
+    {
+      "index": 54,
+      "title": "The semantics of predicate logic as a programming language",
+      "abstract": "",
+      "year": "1976",
+      "venue": "Journal of the ACM",
+      "authors": "Maarten H. van Emden and Robert A. Kowalski"
+    },
+    {
+      "index": 55,
+      "title": "The well-founded semantics for general logic programs",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Journal of the ACM",
+      "authors": "Allen Van Gelder, Kenneth A Ross, and John S Schlipf"
+    },
+    {
+      "index": 56,
+      "title": "Splitting an operator: Algebraic modularity results for logics with fixpoint semantics",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ACM Transactions on Computational Logic",
+      "authors": "Joost Vennekens, David Gilis, and Marc Denecker"
+    }
+  ]
+}

@@ -1,0 +1,2979 @@
+{
+  "paper_id": "2204.10378v1",
+  "title": "A Case for Transparent Reliability in DRAM Systems",
+  "abstract": "Abstract\nMass-produced commodity DRAM is the preferred choice of main memory for a broad\nrange of computing systems due to its favorable cost-per-bit. However, today’s\nsystems have diverse system-specific needs (e.g., performance, energy,\nreliability) that are difficult to address using one-size-fits-all\ngeneral-purpose DRAM. Unfortunately, although system designers can theoretically\nadapt commodity DRAM chips to meet their particular design goals (e.g., by\nexploiting slack in access timings to improve performance, or implementing\nsystem-level RowHammer mitigations), we observe that designers today lack the\nnecessary insight into commodity DRAM chips’ reliability characteristics to\nimplement these techniques in practice. In this work, we make a case for\nDRAM manufacturers to provide increased transparency into simple device\ncharacteristics (e.g., internal row address mapping, cell array organization)\nthat affect consumer-visible reliability. Doing so has negligible impact on\nmanufacturers given that these characteristics can be reverse-engineered using\nknown techniques; however, it has significant benefit for system designers, who\ncan then make informed decisions to better adapt commodity DRAM to meet modern\nsystems’ needs while preserving its cost advantages.\nTo support our argument, we study four ways that system designers can adapt\ncommodity DRAM chips to system-specific design goals: (1) improving DRAM\nreliability; (2) reducing DRAM refresh overheads; (3) reducing DRAM access\nlatency; and (4) defending against RowHammer attacks. We observe that adopting\nsolutions for any of the four goals requires system designers to make\nassumptions about a DRAM chip’s reliability characteristics. These assumptions\ndiscourage system designers from using such solutions in practice due to the\ndifficulty of both making and relying upon the assumption.\nWe identify DRAM standards as the root of the problem: current standards rigidly\nenforce a fixed operating point with no specifications for how a system\ndesigner might explore alternative operating points. To overcome this\nproblem, we introduce a two-step approach that reevaluates DRAM standards with\na focus on transparency of reliability characteristics so that system designers\nare encouraged to make the most of commodity DRAM technology for both current\nand future DRAM chips.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Field-Effect Transistor Memory",
+      "abstract": "",
+      "year": "1968",
+      "venue": "US Patent 3,387,286",
+      "authors": "R. H. Dennard"
+    },
+    {
+      "index": 1,
+      "title": "Design of Ion-Implanted MOSFET’s with Very Small Physical Dimensions",
+      "abstract": "",
+      "year": "1974",
+      "venue": "JSSC",
+      "authors": "R. H. Dennard, F. H. Gaensslen, H.-N. Yu, V. L. Rideout, E. Bassous, and A. R. LeBlanc"
+    },
+    {
+      "index": 2,
+      "title": "DRAM Circuit Design: Fundamental and High-Speed Topics",
+      "abstract": "",
+      "year": "2007",
+      "venue": "John Wiley & Sons",
+      "authors": "B. Keeth, R. J. Baker, B. Johnson, and F. Lin"
+    },
+    {
+      "index": 3,
+      "title": "IBM’s Robert H. Dennard and the Chip That Changed the World",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "J. Markoff"
+    },
+    {
+      "index": 4,
+      "title": "Memory Lane",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Nature Electronics"
+    },
+    {
+      "index": 5,
+      "title": "DRAM: The Invention of On-Demand Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 6,
+      "title": "Assessing Merged DRAM/Logic Technology",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Integration",
+      "authors": "Y.-B. Kim and T. W. Chen"
+    },
+    {
+      "index": 7,
+      "title": "JC-42 Solid State Memories",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "JEDEC"
+    },
+    {
+      "index": 8,
+      "title": "DDR3 SDRAM Specification",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": "JEDEC"
+    },
+    {
+      "index": 9,
+      "title": "DDR4 SDRAM Specification",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": "JEDEC"
+    },
+    {
+      "index": 10,
+      "title": "DDR5 SDRAM Specification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "JEDEC"
+    },
+    {
+      "index": 11,
+      "title": "High Bandwidth Memory (HBM) DRAM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "JEDEC Standard JESD235D",
+      "authors": "JEDEC"
+    },
+    {
+      "index": 12,
+      "title": "High Bandwidth Memory DRAM (HBM3)",
+      "abstract": "",
+      "year": "2022",
+      "venue": "JEDEC Standard JESD238",
+      "authors": "JEDEC"
+    },
+    {
+      "index": 13,
+      "title": "Low Power Double Data Rate 4 (LPDDR4) SDRAM Specification",
+      "abstract": "",
+      "year": "2014",
+      "venue": "JEDEC Standard JESD209–4B",
+      "authors": "JEDEC"
+    },
+    {
+      "index": 14,
+      "title": "Low Power Double Data Rate 5 (LPDDR5) SDRAM Specification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "JEDEC Standard JESD209–5A",
+      "authors": "JEDEC"
+    },
+    {
+      "index": 15,
+      "title": "Graphics Double Data Rate (GDDR5) SGRAM Standard",
+      "abstract": "",
+      "year": "2016",
+      "venue": "JEDEC Standard JESD212C",
+      "authors": "JEDEC"
+    },
+    {
+      "index": 16,
+      "title": "Graphics Double Data Rate (GDDR6) SGRAM Standard",
+      "abstract": "",
+      "year": "2021",
+      "venue": "JEDEC Standard JESD250C",
+      "authors": "JEDEC"
+    },
+    {
+      "index": 17,
+      "title": "A Study of the DRAM Industry",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Master’s thesis, Massachusetts Institute of Technology",
+      "authors": "J. Kang"
+    },
+    {
+      "index": 18,
+      "title": "A White Paper on the Benefits of Chipkill-Correct ECC for PC Server Main Memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IBM Microelectronics Division",
+      "authors": "T. J. Dell"
+    },
+    {
+      "index": 19,
+      "title": "A Strategic Analysis of the DRAM Industry After the Year 2000",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Master’s thesis, Massachusetts Institute of Technology",
+      "authors": "K. H. Lee"
+    },
+    {
+      "index": 20,
+      "title": "A Model for Analysis of the Effects of Redundancy and Error Correction on DRAM Memory Yield and Reliability",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Master’s thesis, MIT",
+      "authors": "J. A. Croswell"
+    },
+    {
+      "index": 21,
+      "title": "ArchShield: Architectural Framework for Assisting DRAM Scaling by Tolerating High Error Rates",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISCA",
+      "authors": "P. J. Nair, D.-H. Kim, and M. K. Qureshi"
+    },
+    {
+      "index": 22,
+      "title": "DRAM Scaling Error Evaluation Model Using Various Retention Time",
+      "abstract": "",
+      "year": "2017",
+      "venue": "DSN-W",
+      "authors": "S.-L. Gong, J. Kim, and M. Erez"
+    },
+    {
+      "index": 23,
+      "title": "Achieving Yield, Density and Performance Effective DRAM at Extreme Technology Sizes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "MEMSYS",
+      "authors": "B. R. Childers, J. Yang, and Y. Zhang"
+    },
+    {
+      "index": 24,
+      "title": "Cost Effective IC Manufacturing",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": "Integrated Circuit Engineering Corporation"
+    },
+    {
+      "index": 25,
+      "title": "Co-Architecting Controllers and DRAM to Enhance DRAM Process Scaling",
+      "abstract": "",
+      "year": "2014",
+      "venue": "The Memory Forum",
+      "authors": "U. Kang, H.-s. Yu, C. Park, H. Zheng, J. Halbert, K. Bains, S. Jang, and J. S. Choi"
+    },
+    {
+      "index": 26,
+      "title": "Defect Analysis and Cost-Effective Resilience Architecture for Future DRAM Devices",
+      "abstract": "",
+      "year": "2017",
+      "venue": "HPCA",
+      "authors": "S. Cha, O. Seongil, H. Shin, S. Hwang, K. Park, S. J. Jang, J. S. Choi, G. Y. Jin, Y. H. Son, H. Cho, J. H. Ahn, and N. S. Kim"
+    },
+    {
+      "index": 27,
+      "title": "ECC Brings Reliability and Power Efficiency to Mobile Devices",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Micron Technology Inc., Tech. Rep.",
+      "authors": "Micron Technology Inc."
+    },
+    {
+      "index": 28,
+      "title": "Technology Scaling Challenge and Future Prospects of DRAM and NAND Flash Memory",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IMW",
+      "authors": "S.-K. Park"
+    },
+    {
+      "index": 29,
+      "title": "CiDRA: A cache-Inspired DRAM resilience architecture",
+      "abstract": "",
+      "year": "2015",
+      "venue": "HPCA",
+      "authors": "Y. H. Son, S. Lee, O. Seongil, S. Kwon, N. S. Kim, and J. H. Ahn"
+    },
+    {
+      "index": 30,
+      "title": "Quarterly Report on Form 10-Q",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Micron Technologies, Inc., Tech. Rep.",
+      "authors": ""
+    },
+    {
+      "index": 31,
+      "title": "Understanding and Improving Latency of DRAM-Based Memory Systems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Ph.D. dissertation, Carnegie Mellon University",
+      "authors": "K. K. Chang"
+    },
+    {
+      "index": 32,
+      "title": "Reducing DRAM Latency at Low Cost by Exploiting Heterogeneity",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Ph.D. dissertation, Carnegie Mellon University",
+      "authors": "D. Lee"
+    },
+    {
+      "index": 33,
+      "title": "What Your DRAM Power Models Are Not Telling You: Lessons from a Detailed Experimental Study",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGMETRICS",
+      "authors": "S. Ghose, A. G. Yağlıkçı, R. Gupta, D. Lee, K. Kudrolli, W. X. Liu, H. Hassan, K. K. Chang, N. Chatterjee, A. Agrawal, M. O’Connor, and O. Mutlu"
+    },
+    {
+      "index": 34,
+      "title": "DRAM Datasheet Survey",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 35,
+      "title": "Reducing Memory Access Latency with Asymmetric DRAM Bank Organizations",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISCA",
+      "authors": "Y. H. Son, O. Seongil, Y. Ro, J. W. Lee, and J. H. Ahn"
+    },
+    {
+      "index": 36,
+      "title": "Tiered-Latency DRAM: A Low Latency and Low Cost DRAM Architecture",
+      "abstract": "",
+      "year": "2013",
+      "venue": "HPCA",
+      "authors": "D. Lee, Y. Kim, V. Seshadri, J. Liu, L. Subramanian, and O. Mutlu"
+    },
+    {
+      "index": 37,
+      "title": "Computer Architecture: A Quantitative Approach",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Elsevier",
+      "authors": "J. L. Hennessy and D. A. Patterson"
+    },
+    {
+      "index": 38,
+      "title": "Understanding Latency Variation in Modern DRAM Chips: Experimental Characterization, Analysis, and Optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "SIGMETRICS",
+      "authors": "K. K. Chang, A. Kashyap, H. Hassan, S. Ghose, K. Hsieh, D. Lee, T. Li, G. Pekhimenko, S. Khan, and O. Mutlu"
+    },
+    {
+      "index": 39,
+      "title": "The Remarkable Story of the DRAM Industry",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE SSCS News",
+      "authors": "R. Isaac"
+    },
+    {
+      "index": 40,
+      "title": "Multiple Clone Row DRAM: A Low Latency and Area Optimized DRAM",
+      "abstract": "",
+      "year": "",
+      "venue": "ISCA",
+      "authors": "J. Choi, W. Shin, J. Jang, J. Suh, Y. Kwon, Y. Moon, and L.-S. Kim"
+    },
+    {
+      "index": 41,
+      "title": "The Future of Microprocessors",
+      "abstract": "",
+      "year": "2011",
+      "venue": "CACM",
+      "authors": "S. Borkar and A. A. Chien"
+    },
+    {
+      "index": 42,
+      "title": "Nonblocking Memory Refresh",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ISCA",
+      "authors": "K. Nguyen, K. Lyu, X. Meng, V. Sridharan, and X. Jian"
+    },
+    {
+      "index": 43,
+      "title": "RLDRAM Memory",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Micron Technology",
+      "authors": ""
+    },
+    {
+      "index": 44,
+      "title": "FCRAM (Fast Cycle RAM)",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Fujitsu Semiconductor Limited",
+      "authors": ""
+    },
+    {
+      "index": 45,
+      "title": "Rugged Memory",
+      "abstract": "",
+      "year": "2021",
+      "venue": "SMART Modular Technologies",
+      "authors": ""
+    },
+    {
+      "index": 46,
+      "title": "IM ECC DRAM with Integrated Error Correcting Code",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Product Brief",
+      "authors": "Intelligent Memory"
+    },
+    {
+      "index": 47,
+      "title": "Bamboo ECC: Strong, Safe, and Flexible Codes For Reliable Computer Memory",
+      "abstract": "",
+      "year": "2015",
+      "venue": "HPCA",
+      "authors": "J. Kim, M. Sullivan, and M. Erez"
+    },
+    {
+      "index": 48,
+      "title": "Development of an Evaluation Model for the Design of Fault-Tolerant Solid State Mass Memory",
+      "abstract": "",
+      "year": "2000",
+      "venue": "ISCAS",
+      "authors": "G. C. Cardarilli, P. Marinucci, and A. Salsano"
+    },
+    {
+      "index": 49,
+      "title": "Virtualized and Flexible ECC for Main Memory",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ASPLOS",
+      "authors": "D. H. Yoon and M. Erez"
+    },
+    {
+      "index": 50,
+      "title": "LOT-ECC: Localized And Tiered Reliability Mechanisms For Commodity Memory Systems",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ISCA",
+      "authors": "A. N. Udipi, N. Muralimanohar, R. Balsubramonian, A. Davis, and N. P. Jouppi"
+    },
+    {
+      "index": 51,
+      "title": "Low-Power, Low-Storage-Overhead Chipkill Correct via Multi-Line Error Correction",
+      "abstract": "",
+      "year": "2013",
+      "venue": "SC",
+      "authors": "X. Jian, H. Duwe, J. Sartori, V. Sridharan, and R. Kumar"
+    },
+    {
+      "index": 52,
+      "title": "Frugal ECC: Efficient And Versatile Memory Error Protection Through Fine-Grained Compression",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SC",
+      "authors": "J. Kim, M. Sullivan, S.-L. Gong, and M. Erez"
+    },
+    {
+      "index": 53,
+      "title": "XED: Exposing On-Die Error Detection Information for Strong Memory Reliability",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ISCA",
+      "authors": "P. J. Nair, V. Sridharan, and M. K. Qureshi"
+    },
+    {
+      "index": 54,
+      "title": "Adaptive Reliability Chipkill Correct (ARCC)",
+      "abstract": "",
+      "year": "2013",
+      "venue": "HPCA",
+      "authors": "X. Jian and R. Kumar"
+    },
+    {
+      "index": 55,
+      "title": "Data-Aware DRAM Refresh to Squeeze the Margin of Retention Time in Hybrid Memory Cube",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICCAD",
+      "authors": "Y. Han, Y. Wang, H. Li, and X. Li"
+    },
+    {
+      "index": 56,
+      "title": "E-ECC: Low Power Erasure And Error Correction Schemes For Increasing Reliability Of Commodity DRAM Systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 International Symposium on Memory Systems",
+      "authors": "H.-M. Chen, A. Arunkumar, C.-J. Wu, T. Mudge, and C. Chakrabarti"
+    },
+    {
+      "index": 57,
+      "title": "E3CC: A Memory Error Protection Scheme With Novel Address Mapping for Subranked And Low-Power Memories",
+      "abstract": "",
+      "year": "2013",
+      "venue": "TACO",
+      "authors": "L. Chen, Y. Cao, and Z. Zhang"
+    },
+    {
+      "index": 58,
+      "title": "MUSE: Multi-Use Error Correcting Codes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2107.09245",
+      "authors": "E. Manzhosov, A. Hastings, M. Pancholi, R. Piersma, M. T. I. Ziad, and S. Sethumadhavan"
+    },
+    {
+      "index": 59,
+      "title": "Dvé: Improving DRAM Reliability and Performance On-Demand via Coherent Replication",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ISCA",
+      "authors": "A. Patil, V. Nagarajan, R. Balasubramonian, and N. Oswald"
+    },
+    {
+      "index": 60,
+      "title": "Reducing DRAM Refresh Power Consumption by Runtime Profiling of Retention Time and Dual-Row Activation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Microprocessors and Microsystems",
+      "authors": "H. Choi, D. Hong, J. Lee, and S. Yoo"
+    },
+    {
+      "index": 61,
+      "title": "Online Profiling for Cluster-Specific Variable Rate Refreshing in High-Density DRAM Systems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ETS",
+      "authors": "R. Sharifi and Z. Navabi"
+    },
+    {
+      "index": 62,
+      "title": "Energy-Efficient Cache Design Using Variable-Strength Error-Correcting Codes",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ISCA",
+      "authors": "A. R. Alameldeen, I. Wagner, Z. Chishti, W. Wu, C. Wilkerson, and S.-L. Lu"
+    },
+    {
+      "index": 63,
+      "title": "STTRAM Scaling and Retention Failure",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Intel Technology Journal",
+      "authors": "H. Naeimi, C. Augustine, A. Raychowdhury, S.-L. Lu, and J. Tschanz"
+    },
+    {
+      "index": 64,
+      "title": "Efficient Scrub Mechanisms for Error-Prone Emerging Memories",
+      "abstract": "",
+      "year": "2012",
+      "venue": "HPCA",
+      "authors": "M. Awasthi, M. Shevgoor, K. Sudan, B. Rajendran, R. Balasubramonian, and V. Srinivasan"
+    },
+    {
+      "index": 65,
+      "title": "Exploiting Expendable Process-Margins in DRAMs for Run-Time Performance Optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "DATE",
+      "authors": "K. Chandrasekar, S. Goossens, C. Weis, M. Koedam, B. Akesson, N. Wehn, and K. Goossens"
+    },
+    {
+      "index": 66,
+      "title": "“Solar-DRAM: Reducing DRAM Access Latency by Exploiting the Variation in Local Bitlines",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 67,
+      "title": "“Adaptive-Latency DRAM: Optimizing DRAM Timing for the Common-Case",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 68,
+      "title": "R. Ausavarungnirun",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 69,
+      "title": "“Reducing DRAM Latency Via Charge-Level-Aware Look-Ahead Partial Restoration",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 70,
+      "title": "“Restore Truncation for Performance Improvement in Future DRAM Systems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 71,
+      "title": "K. Kanellopoulos",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 72,
+      "title": "“Understanding Reduced-Voltage Operation in Modern DRAM Devices: Experimental Characterization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 73,
+      "title": "“Memory Power Management via Dynamic Voltage/Frequency Scaling",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 74,
+      "title": "“MemScale: Active Low-Power Modes for Main Memory",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 75,
+      "title": "“Retention-Aware Placement in DRAM (RAPID): Software Methods for Quasi-Non-Volatile DRAM",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 76,
+      "title": "“RAIDR: Retention-Aware Intelligent DRAM Refresh",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 77,
+      "title": "“The Reach Profiler (REAPER): Enabling the Mitigation of DRAM Retention Failures via Profiling at Aggressive Conditions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 78,
+      "title": "“SECRET: Selective Error Correction for Refresh Energy Reduction in DRAMs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 79,
+      "title": "“Smart Refresh: An Enhanced Memory Controller Design for Reducing Energy in Conventional and 3D Die-Stacked DRAMs",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 80,
+      "title": "“Content Aware Refresh: Exploiting the Asymmetry of DRAM Retention Errors to Reduce the Refresh Frequency of Less Vulnerable Data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 81,
+      "title": "“AVATAR: A Variable-Retention-Time (VRT) Aware Refresh for DRAM Systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 82,
+      "title": "“Lest We Remember: Cold-Boot Attacks on Encryption Keys",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 83,
+      "title": "“On the Practicability of Cold Boot Attacks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 84,
+      "title": "“Security Through Amnesia: A Software-Based Solution to the Cold Boot Attack on Disk Encryption",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 85,
+      "title": "K. Kanellopoullos",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 86,
+      "title": "“Flipping Bits in Memory Without Accessing Them: An Experimental Study of DRAM Disturbance Errors",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 87,
+      "title": "“About the Security Content of Mac EFI Security Update 2015-001",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 88,
+      "title": "Mithril: Cooperative Row Hammer Protection on Commodity DRAM Leveraging Managed Refresh",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Mithril: Cooperative Row Hammer Protection on Commodity DRAM Leveraging Managed Refresh",
+      "paper_id": "2108.06703v2"
+    },
+    {
+      "index": 89,
+      "title": "“Randomized Row-Swap: Mitigating Row Hammer by Breaking Spatial Correlation Between Aggressor and Victim Rows",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 90,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 91,
+      "title": "“The Price of Secrecy: How Hiding Internal DRAM Topologies Hurts Rowhammer Defenses",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 92,
+      "title": "“Stop! Hammer Time: Rethinking Our Approach to Rowhammer Mitigations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 93,
+      "title": "“Reverse Engineering of DRAMs: Row Hammer with Crosshair",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 94,
+      "title": "“Understanding and Modeling On-Die Error Correction in Modern DRAM: An Experimental Study Using Real Devices",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 95,
+      "title": "“DStress: Automatic Synthesis of DRAM Reliability Stress Viruses using Genetic Algorithms",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 96,
+      "title": "“The DRAM Latency PUF: Quickly Evaluating Physical Unclonable Functions by Exploiting the Latency-Reliability Tradeoff in Modern Commodity DRAM Devices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 97,
+      "title": "“Improving the Error Behavior of DRAM by Exploiting its Z-Channel Property",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 98,
+      "title": "A Deeper Look into RowHammer’s Sensitivities: Experimental Analysis of Real DRAM Chips and Implications on Future Attacks and Defenses",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“A Deeper Look into RowHammer’s Sensitivities: Experiemental Analysis of Real DRAM Chips and Implications on Future Attacks and Defenses",
+      "paper_id": "2110.10291v1"
+    },
+    {
+      "index": 99,
+      "title": "“Uncovering In-DRAM RowHammer Protection Mechanisms: A New Methodology",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 100,
+      "title": "“Improving Memory Reliability by Bounding DRAM Faults: DDR5 Improved Reliability Features",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 101,
+      "title": "JEP122H: Failure Mechanisms and Models for Semiconductor Devices",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 102,
+      "title": "JESD218: Solid-State Drive (SSD) Requirements and Endurance Test Method",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 103,
+      "title": "JESD219: Solid-State Drive (SSD) Endurance Workloads",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 104,
+      "title": "“Error Characterization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 105,
+      "title": "“Error Patterns in MLC NAND Flash Memory: Measurement",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 106,
+      "title": "“Errors in Flash-Memory-Based Solid-State Drives: Analysis",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 107,
+      "title": "“Data Retention in MLC NAND Flash Memory: Characterization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 108,
+      "title": "“HeatWatch: Improving 3D NAND Flash Memory Device Reliability by Exploiting Self-Recovery and Temperature Awareness",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 109,
+      "title": "“Improving 3D NAND Flash Memory Lifetime by Tolerating Early Retention Loss and Process Variation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 110,
+      "title": "“Flash Correct-And-Refresh: Retention-Aware Error Management for Increased Flash Memory Lifetime",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 111,
+      "title": "“Threshold Voltage Distribution in MLC NAND Flash Memory: Characterization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 112,
+      "title": "“Program Interference in MLC NAND Flash Memory: Characterization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 113,
+      "title": "“Read Disturb Errors in MLC NAND Flash Memory: Characterization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 114,
+      "title": "“Enabling Accurate and Practical Online Flash Channel Modeling for Modern MLC NAND Flash Memory",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 115,
+      "title": "“Memory Scaling: A Systems Architecture Perspective",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 116,
+      "title": "“Main Memory Scaling: Challenges and Solution Directions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 117,
+      "title": "“Research Problems and Opportunities in Memory Systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 118,
+      "title": "Processing Data Where It Makes Sense: Enabling In-Memory Computation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Processing Data Where It Makes Sense: Enabling In-Memory Computation",
+      "paper_id": "1903.03988v1"
+    },
+    {
+      "index": 119,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 120,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 121,
+      "title": "“Refresh Now and Then",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 122,
+      "title": "“Cosmic Rays Don’t Strike Twice: Understanding the Nature of DRAM Errors and the Implications for System Design",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 123,
+      "title": "“Revisiting Memory Errors in Large-Scale Production Data Centers: Analysis and Modeling of New Trends from the Field",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 124,
+      "title": "“Optimizing the DRAM Refresh Count for Merged DRAM/logic LSIs",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 125,
+      "title": "“ProactiveDRAM: A DRAM-Initiated Retention Management Scheme",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 126,
+      "title": "“The Efficacy of Error Mitigation Techniques for DRAM Retention Failures: A Comparative Experimental Study",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 127,
+      "title": "“A Case for Memory Content-Based Detection and Mitigation of Data-Dependent Failures in DRAM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 128,
+      "title": "“PARBOR: An Efficient System-Level Technique to Detect Data-Dependent Failures in DRAM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 129,
+      "title": "“Detecting and Mitigating Data-Dependent DRAM Failures by Exploiting Current Memory Content",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 130,
+      "title": "Refresh Triggered Computation: Improving the Energy Efficiency of Convolutional Neural Network Accelerators",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Refresh Triggered Computation: Improving the Energy Efficiency of Convolutional Neural Network Accelerators",
+      "paper_id": "1910.06672v2"
+    },
+    {
+      "index": 131,
+      "title": "“Dynamic Memory Design for Low Data-Retention Power",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 132,
+      "title": "“Block-Based Multiperiod Dynamic Memory Design for Low Data-Retention Power",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 133,
+      "title": "“Fault-Tolerant Refresh Power Reduction of DRAMs for Quasi-Nonvolatile Data Retention",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 134,
+      "title": "“Using Run-Time Reverse-Engineering to Optimize DRAM Refresh",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 135,
+      "title": "“ChargeCache: Reducing DRAM Latency by Exploiting Row Access Locality",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 136,
+      "title": "“Quantifying Server Memory Frequency Margin and Using it to Improve Performance in HPC Systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 137,
+      "title": "G. Tziantzioulis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 138,
+      "title": "K. Kanellopoulos",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 139,
+      "title": "QUAC-TRNG: High-Throughput True Random Number Generation Using Quadruple Row Activation in Commodity DRAM Chips",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“QUAC-TRNG: High-Throughput True Random Number Generation Using Quadruple Row Activation in Commodity DRAM Chips",
+      "paper_id": "2105.08955v2"
+    },
+    {
+      "index": 140,
+      "title": "“D-RaNGe: Using Commodity DRAM Devices to Generate True Random Numbers With Low Latency And High Throughput",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 141,
+      "title": "R. Ausavarungnirun",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 142,
+      "title": "“Fast Bulk Bitwise AND and OR in DRAM",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 143,
+      "title": "“Ambit: In-Memory Accelerator for Bulk Bitwise Operations Using Commodity DRAM Technology",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 144,
+      "title": "“In-DRAM Bulk Bitwise Execution Engine",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 145,
+      "title": "SIMDRAM: An End-to-End Framework for Bit-Serial SIMD Computing in DRAM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“SIMDRAM: An End-to-End Framework for Bit-Serial SIMD Computing in DRAM",
+      "paper_id": "2105.12839v2"
+    },
+    {
+      "index": 146,
+      "title": "Buddy-RAM: Improving the Performance and Efficiency of Bulk Bitwise Operations Using DRAM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Buddy-RAM: Improving the Performance and Efficiency of Bulk Bitwise Operations Using DRAM",
+      "paper_id": "1611.09988v1"
+    },
+    {
+      "index": 147,
+      "title": "“Throttling Support for Row-Hammer Counters",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 148,
+      "title": "Top Picks in Hardware and Embedded Security",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 149,
+      "title": "“ZebRAM: Comprehensive and Compatible Software Protection Against Rowhammer Attacks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 150,
+      "title": "“GuardION: Practical Mitigation of DMA-Based Rowhammer Attacks on ARM",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 151,
+      "title": "“CAn’t Touch This: Software-Only Mitigation Against Rowhammer Attacks Targeting Kernel Memory",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 152,
+      "title": "Availability and Serviceability (RAS) for Memory Interfaces",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 153,
+      "title": "“System RAS Implications of DRAM Soft Errors",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 154,
+      "title": "“Impact of Error Correction Code and Dynamic Memory Reconfiguration on High-Reliability/Low-Cost Server Memory",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 155,
+      "title": "“Utilizing Two Stage Scrubbing to Handle Single-Fault Multi-Error Cases in DRAM Systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 156,
+      "title": "Nanoscale Memory Repair. Springer SBM",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 157,
+      "title": "“ECC-ASPIRIN: An ECC-assisted Post-Package Repair Scheme for Aging Errors in DRAMs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 158,
+      "title": "“Post-Packaging Auto Repair Techniques for Fast Row Cycle Embedded DRAM",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 159,
+      "title": "TRRespass: Exploiting the Many Sides of Target Row Refresh",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“TRRespass: Exploiting the Many Sides of Target Row Refresh",
+      "paper_id": "2004.01807v1"
+    },
+    {
+      "index": 160,
+      "title": "“Memory Errors in Modern Systems: The Good",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 161,
+      "title": "“Flower and Fame: A Low Overhead Bit-Level Fault-Map and Fault-Tolerance Approach for Deeply Scaled Memories",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 162,
+      "title": "“Predicting and Mitigating Single-Event Upsets in DRAM using HOTH",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 163,
+      "title": "“Sustainable Fault Management and Error Correction for Next-Generation Main Memories",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 164,
+      "title": "for Hard Failures in Resistive Memories",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 165,
+      "title": "“SuDoku: Tolerating High-Rate of Transient Failures for Enabling Scalable STTRAM",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 166,
+      "title": "“Dynamic Partitioning To Mitigate Stuck-At Faults in Emerging Memories",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 167,
+      "title": "“Architecting Memory Systems Upon Highly Scaled Error-Prone Memory Technologies",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 168,
+      "title": "“RelaxFault Memory Repair",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 169,
+      "title": "H. Vandierendonck",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 170,
+      "title": "“Improving DRAM Fault Characterization Through Machine Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 171,
+      "title": "“Predicting DRAM Reliability in the Field with Machine Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 172,
+      "title": "“A Study of Dynamic Meta-Learning for Failure Prediction in Large-Scale Systems",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 173,
+      "title": "A. Sivasubramaniam",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 174,
+      "title": "“Cost-Aware Prediction of Uncorrected DRAM Errors in the Field",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 175,
+      "title": "“Error Detecting and Error Correcting Codes",
+      "abstract": "",
+      "year": "1950",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 176,
+      "title": "“Codes Correcteurs D’erreurs",
+      "abstract": "",
+      "year": "1959",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 177,
+      "title": "“On a Class of Error Correcting Binary Group Codes",
+      "abstract": "",
+      "year": "1960",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 178,
+      "title": "“Polynomial Codes Over Certain Finite Fields",
+      "abstract": "",
+      "year": "1960",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 179,
+      "title": "“UltraSPARC T1: Architecture and Physical Design of a 32-threaded General Purpose CPU",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 180,
+      "title": "“Flexible Auto-Refresh: Enabling Scalable and Energy-Efficient DRAM Refresh Reductions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 181,
+      "title": "“DRAM Refresh Mechanisms",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 182,
+      "title": "Improving DRAM Performance by Parallelizing Refreshes with Accesses",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Improving DRAM Performance by Parallelizing Refreshes with Accesses",
+      "paper_id": "1712.07754v1"
+    },
+    {
+      "index": 183,
+      "title": "“Hiding DRAM Refresh Overhead in Real-Time Cyclic Executives",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 184,
+      "title": "“Elastic Refresh: Techniques to Mitigate Refresh Penalties in High Density Memory",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 185,
+      "title": "“Understanding and Mitigating Refresh Overheads in High-Density DDR4 DRAM Systems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 186,
+      "title": "“A Case for Refresh Pausing in DRAM Memory Systems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 187,
+      "title": "“CREAM: A Concurrent-Refresh-Aware DRAM Memory Architecture",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 188,
+      "title": "“An Experimental Study of Data Retention Behavior in Modern DRAM Devices: Implications for Retention Time Profiling Mechanisms",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 189,
+      "title": "“Well Concentration: A Novel Scaling Limitation Factor Derived From DRAM Retention Time and Its Modeling",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 190,
+      "title": "“On the Retention Time Distribution of Dynamic Random Access Memory (DRAM)",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 191,
+      "title": "“Accelerating Pointer Chasing In 3D-Stacked Memory: Challenges",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 192,
+      "title": "“Clearing The Clouds: A Study Of Emerging Scale-Out Workloads On Modern Hardware",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 193,
+      "title": "“Full-System Analysis And Characterization Of Interactive Smartphone Applications",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 194,
+      "title": "“A Comparative Analysis Of Microarchitecture Effects On CPU and GPU Memory System Behavior",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 195,
+      "title": "“Moby: A Mobile Benchmark Suite For Architectural Simulators",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 196,
+      "title": "“Microarchitectural Implications Of Event-Driven Server-Side Web Applications",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 197,
+      "title": "DAMOV: A New Methodology and Benchmark Suite for Evaluating Data Movement Bottlenecks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“DAMOV: A New Methodology and Benchmark Suite for Evaluating Data Movement Bottlenecks",
+      "paper_id": "2105.03725v6"
+    },
+    {
+      "index": 198,
+      "title": "R. Ausavarungnirun",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 199,
+      "title": "R. Narayanaswami",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 200,
+      "title": "“SMASH: Co-Designing Software Compression and Hardware-Accelerated Indexing for Efficient Sparse Matrix Operations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 201,
+      "title": "“The Memory Gap and The Future of High Performance Memories",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 202,
+      "title": "“Hitting the Memory Wall: Implications of the Obvious",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 203,
+      "title": "“Stall-Time Fair Memory Access Scheduling for Chip Multiprocessors",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 204,
+      "title": "“Runahead Execution: An Alternative to Very Large Instruction Windows for Out-of-Order Processors",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 205,
+      "title": "“Profiling a Warehouse-scale Computer",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 206,
+      "title": "“DSPatch: Dual Spatial Pattern Prefetcher",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 207,
+      "title": "K. Kanellopoulos",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 208,
+      "title": "R. Ausavarungnirun",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 209,
+      "title": "“Processing-in-Memory: A Workload-driven Perspective",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 210,
+      "title": "“NUAT: A Non-Uniform Access Time Memory Controller",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 211,
+      "title": "“Demystifying Complex Workload-DRAM Interactions: An Experimental Study",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 212,
+      "title": "“Row Hammer Refresh Command",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 213,
+      "title": "The RowHammer Problem and Other Issues We May Face as Memory Becomes Denser",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“The RowHammer Problem and Other Issues we may Face as Memory Becomes Denser",
+      "paper_id": "1703.00626v1"
+    },
+    {
+      "index": 214,
+      "title": "“RowHammer: A Retrospective",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 215,
+      "title": "“Revisiting RowHammer: An Experimental Analysis of Modern Devices and Mitigation Techniques",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 216,
+      "title": "“SMASH: Synchronized Many-sided Rowhammer Attacks from JavaScript",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 217,
+      "title": "“Green Memory Solution",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 218,
+      "title": "“Exploiting Correcting Codes: On The Effectiveness Of ECC Memory Against Rowhammer Attacks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 219,
+      "title": "x16 DDR4 SDRAM Features - Excessive Row Activation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 220,
+      "title": "Are We Susceptible to Rowhammer? An End-to-End Methodology for Cloud Providers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Are We Susceptible to Rowhammer? An End-to-End Methodology for Cloud Providers",
+      "paper_id": "2003.04498v1"
+    },
+    {
+      "index": 221,
+      "title": "“Blacksmith: Scalable Rowhammering in the Frequency Domain",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 222,
+      "title": "“Graphene: Strong yet Lightweight Row Hammer Protection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 223,
+      "title": "“Security Analysis of the Silver Bullet Technique for RowHammer Prevention",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 224,
+      "title": "“DDR Memory Errors Caused by Row Hammer",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 225,
+      "title": "“Rethinking ECC in the Era of Row-Hammer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 226,
+      "title": "“CROW: A Low-Cost Substrate for Improving DRAM Performance",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 227,
+      "title": "“ANVIL: Software-Based Protection Against Next-Generation Rowhammer Attacks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 228,
+      "title": "“Making DRAM Stronger Against Row Hammering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 229,
+      "title": "Mitigating Wordline Crosstalk using Adaptive Trees of Counters",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Mitigating Wordline Crosstalk Using Adaptive Trees of Counters",
+      "paper_id": "1806.02498v1"
+    },
+    {
+      "index": 230,
+      "title": "“MRLoc : Mitigating Row-Hammering Based on Memory Locality",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 231,
+      "title": "“TWiCe: Preventing Row-Hammering by Exploiting Time Window Counters",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 232,
+      "title": "“Architectural Support for Mitigating Row Hammering in DRAM Memories",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 233,
+      "title": "“CAT-TWO: Counter-Based Adaptive Tree",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 234,
+      "title": "“Row Hammer Refresh Command",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 235,
+      "title": "“Distributed Row Hammer Tracking",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 236,
+      "title": "“Row Hammer Monitoring Based on Stored Row Hammer Threshold Value",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 237,
+      "title": "“Method and Circuit for Protecting a DRAM Memory Device from the Row Hammer Effect",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 238,
+      "title": "“ProTRR: Principled yet Optimal In-DRAM Target Row Refresh",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 239,
+      "title": "“Architectural Techniques to Enhance DRAM Scaling",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 240,
+      "title": "A Modern Primer on Processing in Memory",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“A Modern Primer on Processing in Memory",
+      "paper_id": "2012.03112v5"
+    },
+    {
+      "index": 241,
+      "title": "“A Case for Intelligent RAM",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 242,
+      "title": "“Shmoo Plotting: The Black Art of IC Testing",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 243,
+      "title": "T5833/T5833ES Memory Test System",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 244,
+      "title": "Magnum EPIC Ultra-high Performance Solution for Memory Device Test",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 245,
+      "title": "“SoftMC: A Flexible and Practical Open-Source Infrastructure for Enabling Experimental DRAM Studies",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 246,
+      "title": "“An FPGA-Based Test Platform for Analyzing Data Retention Time Distribution of DRAMs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 247,
+      "title": "“Retention Time Measurements and Modelling of Bit Error Rates of Wide I/O DRAM in MPSoCs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 248,
+      "title": "“DRAM Retention at Cryogenic Temperatures",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 249,
+      "title": "“Use of Commercial FPGA-Based Evaluation Boards for Single-Event Testing of DDR2 and DDR3 SDRAMS",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 250,
+      "title": "“MemTest86 Overview",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 251,
+      "title": "“Drammer: Deterministic Rowhammer Attacks on Mobile Platforms",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 252,
+      "title": "“A Raspberry Pi Operating System for Exploring Advanced Memory System Concepts",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 253,
+      "title": "“A 3.2Gbps/pin 8Gb 1.0V LPDDR4 SDRAM with Integrated ECC Engine for Sub-1V DRAM Core Operation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 254,
+      "title": "“A 3.2 Gbps/Pin 8 Gbit 1.0 V LPDDR4 SDRAM with Integrated ECC Engine for Sub-1 V DRAM Core Operation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 255,
+      "title": "“A 4.8 Gb/s/pin 2Gb LPDDR4 SDRAM with Sub-100μ𝜇\\muA Self-Refresh Current for IoT Applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 256,
+      "title": "“Understanding DDR4 in Pursuit of In-DRAM ECC",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 257,
+      "title": "Bit-Exact ECC Recovery (BEER): Determining DRAM On-Die ECC Functions by Exploiting DRAM Data Retention Characteristics",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Bit-Exact ECC Recovery (BEER): Determining DRAM On-Die ECC Functions by Exploiting DRAM Data Retention Characteristics",
+      "paper_id": "2009.07985v1"
+    },
+    {
+      "index": 258,
+      "title": "“Enabling Effective Error Mitigation in Memory Chips That Use On-Die Error-Correcting Codes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 259,
+      "title": "“Low-Cost Inter-Linked Subarrays (LISA): Enabling Fast Inter-Subarray Data Movement in DRAM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 260,
+      "title": "Exploiting DRAM Latency Variations for Generating True Random Numbers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Exploiting DRAM Latency Variations for Generating True Random Numbers",
+      "paper_id": "1808.02068v2"
+    },
+    {
+      "index": 261,
+      "title": "DR-STRaNGe: End-to-End System Design for DRAM-based True Random Number Generators",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“DR-STRaNGe: End-to-End System Design for DRAM-based True Random Number Generators",
+      "paper_id": "2201.01385v5"
+    },
+    {
+      "index": 262,
+      "title": "“LDPUF: Exploiting DRAM Latency Variations to Generate Robust Device Signatures",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 263,
+      "title": "“Half-DRAM: A High-Bandwidth and Low-Power DRAM Architecture from the Rethinking of Fine-Grained Activation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 264,
+      "title": "“Characterization of Data Retention Faults in DRAM Devices",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 265,
+      "title": "“Data Retention Analysis on Individual Cells of 256Mb DRAM in 110nm Technology",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 266,
+      "title": "“Theoretical Study of Deep-Trap-Assisted Anomalous Currents in Worst-Bit Cells of Dynamic Random-Access Memories (DRAM’s)",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 267,
+      "title": "“On DRAM Rowhammer and the Physics of Insecurity",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 268,
+      "title": "“Trap-Assisted DRAM Row Hammer Effect",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 269,
+      "title": "“Statistical Distributions of Row-Hammering Induced Failures in DDR3 Components",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 270,
+      "title": "“VRL-DRAM: Improving DRAM Performance Via Variable Refresh Latency",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 271,
+      "title": "“Analysis and Modeling of Memory Errors From Large-Scale Field Data Collection",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 272,
+      "title": "“A Large-Scale Study of Flash Memory Errors in the Field",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 273,
+      "title": "“Prediction of Data Retention Time Distribution of DRAM by Physics-Based Statistical Simulation",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 274,
+      "title": "“Statistical Modeling of Dynamic Random Access Memory Data Retention Characteristics",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 275,
+      "title": "“DRAM Yield Analysis and Optimization by a Statistical Design Approach",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 276,
+      "title": "“Local-Field-Enhancement Model of DRAM Retention Failure",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 277,
+      "title": "Per-Cell Retention Time Distribution Model for Gain-Cell Based eDRAMs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 278,
+      "title": "“A New Investigation of Data Retention Time in Truly Nanoscaled DRAMs",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 279,
+      "title": "“Analysis of Retention Time Distribution of Embedded DRAM-A New Method to Characterize Across-Chip Threshold Voltage Variation",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 280,
+      "title": "“AVERT: An Elaborate Model for Simulating Variable Retention Time in DRAMs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 281,
+      "title": "“A Meta-Stable Leakage Phenomenon in DRAM Charge Storage-Variable Hold Time",
+      "abstract": "",
+      "year": "1987",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 282,
+      "title": "“DRAM Variable Retention Time",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 283,
+      "title": "“Copula Models of Correlation: A DRAM Case Study",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 284,
+      "title": "“Characterization of the Variable Retention Time in Dynamic Random Access Memory",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 285,
+      "title": "“Study of Trap Models Related to the Variable Retention Time Phenomenon in DRAM",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 286,
+      "title": "“Detection of Variable Retention Time in DRAM",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 287,
+      "title": "“The Origin of Variable Retention Time in DRAM",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 288,
+      "title": "“Quantitative Identification for the Physical Origin of Variable Retention Time: A Vacancy-Oxygen Complex Defect Model",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 289,
+      "title": "Sentaurus Sdevice User’s Manual",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 290,
+      "title": "“2D-TCAD Simulation on Retention Time of Z2FET for DRAM Application",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 291,
+      "title": "“TCAD Modeling for Reliability",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 292,
+      "title": "A. Giray Yağlıkçı",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 293,
+      "title": "“In-DRAM Cache Management for Low Latency and Low Power 3D-Stacked DRAMs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 294,
+      "title": "FIGARO: Improving System Performance via Fine-Grained In-DRAM Data Relocation and Caching",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“FIGARO: Improving System Performance via Fine-Grained In-DRAM Data Relocation and Caching",
+      "paper_id": "2009.08437v1"
+    },
+    {
+      "index": 295,
+      "title": "“HBM3: Enabling Memory Resilience at Scale",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 296,
+      "title": "“Software-Only Reverse Engineering of Physical DRAM Mappings For RowHammer Attacks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 297,
+      "title": "“RHAT: Efficient RowHammer-Aware Test for Modern DRAM Modules",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 298,
+      "title": "DRAMDig: A Knowledge-assisted Tool to Uncover DRAM Address Mapping",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Dramdig: A Knowledge-Assisted Tool To Uncover DRAM Address Mapping",
+      "paper_id": "2004.02354v2"
+    },
+    {
+      "index": 299,
+      "title": "“DRAMA: Exploiting DRAM Addressing for Cross-CPU Attacks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 300,
+      "title": "“TRRScope: Understanding Target Row Refresh Mechanism for Modern DDR Protection",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 301,
+      "title": "“A Proposed SEU Tolerant Dynamic Random Access Memory (DRAM) Cell",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 302,
+      "title": "“Radiation Hardened & High Reliability Memories",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 303,
+      "title": "“Advanced Cell Structures for Dynamic RAMs",
+      "abstract": "",
+      "year": "1989",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 304,
+      "title": "“Two-Transistor DRAM Cell with High Alpha Particle Immunity",
+      "abstract": "",
+      "year": "1989",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 305,
+      "title": "“Design of a Fault-Tolerant Three-Dimensional Dynamic Random-Access Memory with On-Chip Error-Correcting Circuit",
+      "abstract": "",
+      "year": "1993",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 306,
+      "title": "“Rad Hard Memories",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 307,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 308,
+      "title": "“Thermoelectric Cooling to Survive Commodity DRAMs in Harsh Environment Automotive Electronics",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 309,
+      "title": "“Highly-reliable Integrated Circuits for Ground and Space Applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 310,
+      "title": "“All-Inclusive ECC: Thorough End-to-End Protection for Reliable Computer Memory",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 311,
+      "title": "“Exploiting OS-Level Memory Offlining for DRAM Power Management",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 312,
+      "title": "Error Correction Coding: Mathematical Methods and Algorithms. John Wiley & Sons",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 313,
+      "title": "Modern Coding Theory. Cambridge University Press",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 314,
+      "title": "Introduction to Coding Theory. Cambridge University Press",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 315,
+      "title": "Error-Correction Coding for Digital Communications. Springer SBM",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 316,
+      "title": "Error Control Coding: Fundamentals and Applications. Prentice Hall",
+      "abstract": "",
+      "year": "1982",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 317,
+      "title": "Error Control Coding: Fundamentals and Applications",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 318,
+      "title": "“Lightweight Opportunistic Memory Resilience",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 319,
+      "title": "“PAIR: Pin-aligned In-DRAM ECC architecture using expandability of Reed-Solomon code",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 320,
+      "title": "“DUO: Exposing On-Chip Redundancy to Rank-Level ECC for High Reliability",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 321,
+      "title": "“Minimal Aliasing Single-Error-Correction Codes for DRAM Reliability Improvement",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 322,
+      "title": "“Characterizing Application Memory Error Vulnerability to Optimize Datacenter Cost via Heterogeneous-Reliability Memory",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 323,
+      "title": "G. F. de Oliveira",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 324,
+      "title": "“ZEM: Zero-Cycle Bit-Masking Module for Deep Learning Refresh-Less DRAM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 325,
+      "title": "“Benchmarking a New Paradigm: Understanding a Modern Processing-in-Memory Architecture",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 326,
+      "title": "Benchmarking Memory-Centric Computing Systems: Analysis of Real Processing-in-Memory Hardware",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Benchmarking Memory-Centric Computing Systems: Analysis of Real Processing-in-Memory Hardware",
+      "paper_id": "2110.01709v2"
+    },
+    {
+      "index": 327,
+      "title": "“Towards Efficient Sparse Matrix Vector Multiplication on Real Processing-in-Memory Architectures",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 328,
+      "title": "“Improving DRAM Performance",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 329,
+      "title": "“Simultaneous Multi-Layer Access: Improving 3D-Stacked Memory Bandwidth at Low Cost",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 330,
+      "title": "“Simple Operations in Memory to Reduce Data Movement",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 331,
+      "title": "“In-DRAM Bulk Bitwise Execution Engine",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 332,
+      "title": "“DRAM-Based Authentication Using Deep Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 333,
+      "title": "“A Robust Authentication Methodology Using Physically Unclonable Functions in DRAM Arrays",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 334,
+      "title": "S. Katzenbeisser",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 335,
+      "title": "PreLatPUF: Exploiting DRAM Latency Variations for Generating Robust Device Signatures",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“PreLatPUF: Exploiting DRAM Latency Variations For Generating Robust Device Signatures",
+      "paper_id": "1808.02584v3"
+    },
+    {
+      "index": 336,
+      "title": "“Panopticon: A Complete In-DRAM Rowhammer Mitigation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 337,
+      "title": "“A Case for Exploiting Subarray-Level Parallelism (SALP) in DRAM",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 338,
+      "title": "“Experiments and Root Cause Analysis for Active-Precharge Hammering Fault In DDR3 SDRAM Under 3×\\times Nm Technology",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 339,
+      "title": "“Study of TID Effects on One Row Hammering using Gamma in DDR4 SDRAMs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 340,
+      "title": "“Active Precharge Hammering to Monitor Displacement Damage using High-Energy Protons in 3x-nm SDRAM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 341,
+      "title": "“Defeating Software Mitigations Against Rowhammer: A Surgical Precision Hammer",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 342,
+      "title": "“On DRAM Rowhammer and the Physics of Insecurity",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 343,
+      "title": "“Opening Up Ada-Tasking",
+      "abstract": "",
+      "year": "1990",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 344,
+      "title": "“Modelling and Test Generation for Crosstalk Faults in DSM Chips",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 345,
+      "title": "“mFIT: A Bump-in-the-Wire Tool for Plug-and-Play Analysis of Rowhammer Susceptibility Factors",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 346,
+      "title": "“Comparison of Accelerated DRAM Soft Error Rates Measured at Component and System Level",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 347,
+      "title": "G. F. de Oliveira Junior",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 348,
+      "title": "“DRAM Errors in the Wild: a Large-Scale Field Study",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 349,
+      "title": "“Half-Double: Next-Row-Over Assisted Rowhammer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 350,
+      "title": "“Block-Based Multi-Period Refresh For Energy Efficient Dynamic Memory",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 351,
+      "title": "“Lessons Learned from Memory Errors Observed Over the Lifetime of Cielo",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 352,
+      "title": "“Soft Error Rates with Inertial and Logical Masking",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 353,
+      "title": "” https://www.micron.com/products/dram/",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 354,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 355,
+      "title": "” https://www.nanya.com/en/Product/4596/NT5AD256M16E4-JR",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 356,
+      "title": "“The True Processing in Memory Accelerator",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 357,
+      "title": "“25.4 A 20nm 6GB Function-In-Memory DRAM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 358,
+      "title": "“Newton: A DRAM-Maker’s Accelerator-In-Memory (AiM) Architecture for Machine Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 359,
+      "title": "“184QPS/W 64Mb/mm 2 3D Logic-to-DRAM Hybrid Bonding with Process-Near-Memory Engine for Recommendation System",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 360,
+      "title": "“A Scalable Processing-In-Memory Accelerator for Parallel Graph Processing",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 361,
+      "title": "16Gb/s/pin GDDR6-based Accelerator-in-Memory supporting 1TFLOPS MAC Operation and Various Activation Functions for Deep-Learning Applications",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 362,
+      "title": "“Innovations in the Memory System",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 363,
+      "title": "“A DRAM Refresh Tutorial",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 364,
+      "title": "“Retention-Aware DRAM Auto-Refresh Scheme for Energy and Performance Efficiency",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    }
+  ]
+}

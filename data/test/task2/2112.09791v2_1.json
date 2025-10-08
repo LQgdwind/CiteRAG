@@ -1,0 +1,439 @@
+{
+  "paper_id": "2112.09791v2",
+  "title": "Query Adaptive Few-Shot Object Detection with Heterogeneous Graph Convolutional Networks",
+  "sections": {
+    "ablation study": "How do the graph convolutional layers help for FSOD? As shown in the Table 1 and Fig. 4, we analyze the impact of each component in our model. We first verify the effectiveness of the GCN layers.\nTo this end, we replace the GCN layers with fully-connected layers (MLP). Specifically, if we only consider a one-layer GCN, Eq. 4 becomes 𝒀=𝑨​𝑿​𝑾𝒀𝑨𝑿𝑾{\\boldsymbol{Y}}={\\boldsymbol{AXW}}, where 𝑨𝑨{\\boldsymbol{A}} is the adjacency matrix, and 𝑾𝑾{\\boldsymbol{W}} is the learnable parameter. Notice that the MLP baseline shares the same structure as GCN except that we remove the adjacency matrix 𝑨𝑨{\\boldsymbol{A}}. In other words, the MLP can be formulated as 𝒀=𝑿​𝑾𝒀𝑿𝑾{\\boldsymbol{Y}}={\\boldsymbol{XW}}. Compared with the GCN layer, the MLP baseline only uses self-connected edges in the graph, and as a result, each node updates its features independently. Comparing the MLP baseline in Table 1 (b) with the vanilla baseline model in Table 1 (a) and our heterogeneous GCNs in Table 1 (g), we can conclude that the additional learnable modules are useful, and the message passing among different nodes in the graph is crucial for the final performance. How do the three types of edges help for FSOD? We then analyze the roles of the three types of edges in our heterogeneous graph. Firstly, we experiment on using only one type of edges as shown in Table 1 (c-e). We notice that all three types of edges can improve the baseline model’s performance in Table 1 (b). This demonstrates the effectiveness of multi-class modeling, class-proposal mutual adaptation, and learning context-aware proposal features in our model. Among all three types of edges, we observe that the class-proposal edge is the most important. This is because the objective of FSOD is to calculate the similarity score between the proposal feature and class prototype, thereby preferring that both sides adapt to each other. By further adding proposal-proposal edges, we obtain the full Intra-Class Subgraph, which, as shown in Table 1 (f), further improves the performance owing to context-aware proposal features. Finally, our full model, shown in Table 1 (g), achieves the best results after introducing the Inter-Class Subgraph. The effectiveness of meta-learning and fine-tuning. We show the comparison results between meta-training-only and fine-tuning in Table 1 (g) and (h). We find that fine-tuning improves the performance in 10/30 shot settings. However, when examples are extremely scarce, e.g., 2-shot as in Table 1, the performance hardly improves as fine-tuning tends to over-fit with small samples. This demonstrates the strong generalization ability of our meta-learning-based model, and fine-tuning needs large number of samples to perform well. The roles of local and global context in the proposal-proposal edge. We show the ablation study of using local and global context in Table 2. We find that both local and global contextual information contributes to the model’s performance. Local context can provide missing features and help refine bounding boxes, especially when proposals are not accurate. Global scene-context, on the other hand, can provide complementary information from the global view. Using both context produces the best results. The efficacy of the bidirectional class-proposal edge. We show in Table 3 the results of using bidirectional class-proposal edges against using solely uni-directional edges. We observe that the model with mutual adaptation achieves better results than with any of the two types of uni-directional edges. The comparison between the class-proposal edge and non-local attention in [ref]14. We compare our proposed method with Hsieh et al.’s work [ref]14 in Table 3. Hsieh et al. [ref]14 proposes to use non-local attention (a.k.a co-attention) between the query image and the support image for feature enhancement. To compare its performance with our class-proposal edge, we use the official codebase of [ref]14 and perform training/testing in our FSOD pipeline. Our model outperforms Hsieh et al.’s method [ref]14 significantly. The main difference is that in [ref]14, each ‘pixel’ in the feature maps is regarded as a basic unit for co-attention. In contrast, the category-specific proposal is used as the basic node in our model. Compared with the ‘pixels’ in the feature maps used in [ref]14, the category-specific proposals could provide richer semantics related to the target object in the query image, and therefore are more suitable for mutual adaptation. The advantage of using base class memory in the Inter-Class Subgraph. We show in Table 6 the results of using different numbers of base classes in our Inter-Class Subgraph. If we only use novel classes, the model gains little advantage from multi-class modeling. However, the Inter-Class Subgraph sees massive improvement when introduced with all base-class prototypes, which could enhance novel-class prototypes with more robust features from base classes. In practice, we deploy all 60 base classes by default in our Inter-Class Subgraph. \n\n\n\n\nClass-class\nClass-proposal\nProposal-proposal\n2-shot\n10-shot\n30-shot\n\n\nAP\nAP50\nAP75\nAP\nAP50\nAP75\nAP\nAP50\nAP75\n\nMeta-training the model on base classes, and meta-testing on novel classes\n\n(a)\nw/o heterogeneous GCNs\n5.4\n11.6\n4.6\n7.6\n15.4\n6.8\n8.9\n17.8\n8.0\n\n(b)\nUsing MLP instead of GCN layers (only self-connected edges)\n5.9\n12.5\n5.1\n8.4\n17.0\n7.6\n9.8\n20.3\n8.8\n\n(c)\n✓\n\n\n6.3\n13.3\n5.5\n9.0\n17.7\n8.1\n10.6\n20.9\n9.6\n\n(d)\n\n✓\n\n7.6\n16.0\n6.5\n9.8\n19.7\n8.8\n11.2\n22.8\n10.1\n\n(e)\n\n\n✓\n6.7\n14.0\n5.8\n9.3\n18.5\n8.3\n10.8\n21.5\n9.7\n\n(f)\n\n✓\n✓\n7.6\n16.2\n6.5\n10.0\n20.1\n8.9\n11.3\n23.1\n10.1\n\n(g)\n✓\n✓\n✓\n7.8\n16.4\n6.6\n10.2\n20.4\n9.0\n11.5\n23.4\n10.3\n\nFine-tuning the model on novel classes, and testing on novel classes\n\n(h)\n✓\n✓\n✓\n7.6\n16.1\n6.2\n11.6\n23.9\n9.8\n16.5\n31.9\n15.5\n\n \n\n\n\nLocal\nGlobal\n2-shot\n10-shot\n\nAP\nAP50\nAP75\nAP\nAP50\nAP75\n\n\n\n✓\n\n6.6\n13.8\n5.7\n9.0\n17.9\n8.1\n\n\n✓\n6.4\n13.2\n5.7\n9.1\n17.9\n8.2\n\n✓\n✓\n6.7\n14.0\n5.8\n9.3\n18.5\n8.3\n\n \n\n\n\nModel\n2-shot\n10-shot\n\nAP\nAP50\nAP75\nAP\nAP50\nAP75\n\n\n\nclass→→\\rightarrowproposal\n6.4\n13.2\n5.9\n8.6\n17.1\n7.9\n\nclass←←\\leftarrowproposal\n7.2\n15.7\n5.7\n9.4\n19.1\n8.6\n\nclass↔↔\\leftrightarrowproposal\n7.6\n16.0\n6.5\n9.8\n19.7\n8.8\n\nNon-local attention [ref]14\n6.0\n12.8\n5.3\n8.3\n17.3\n7.4\n\n \n\n\n\n#GCN Layer\n2-shot\n10-shot\n\nAP\nAP50\nAP75\nAP\nAP50\nAP75\n\n1 w/ W\n5.0\n10.4\n4.3\n7.2\n14.2\n6.5\n\n\n\n1 w/o W\n6.3\n13.3\n5.5\n9.0\n17.7\n8.1\n\n2 w/o W\n6.1\n13.0\n5.3\n8.8\n17.6\n8.0\n\n3 w/o W\n5.8\n12.2\n4.9\n8.6\n17.3\n7.8\n\n \n\n\n\n#GCN Layer\n2-shot\n10-shot\n\nAP\nAP50\nAP75\nAP\nAP50\nAP75\n\n1 w/o W\n7.2\n15.6\n6.0\n9.4\n19.3\n8.4\n\n\n\n1 w/ W\n7.6\n16.2\n6.5\n10.0\n20.1\n8.9\n\n2 w/ W\n7.4\n15.9\n6.3\n9.8\n19.7\n8.8\n\n3 w/ W\n6.9\n14.5\n5.5\n9.2\n18.6\n8.1\n\n \n\n\n\n#Base Classes\n2-shot\n10-shot\n\nAP\nAP50\nAP75\nAP\nAP50\nAP75\n\n\n\n0\n6.0\n12.8\n5.1\n8.5\n17.0\n7.7\n\n20\n6.1\n13.1\n5.2\n8.6\n17.3\n7.7\n\n40\n6.3\n13.4\n5.4\n8.9\n17.5\n8.0\n\n60\n6.3\n13.3\n5.5\n9.0\n17.7\n8.1\n\n The analysis on different numbers of GCN layers in the Inter-Class and the Intra-Class Subgraphs. We show in Table 4 and 5 the results of applying different numbers of GCN layers in the two Subgraphs.\n(1) We first emphasize that proposal and class nodes should go through the same number of transformation layers in a siamese network before the final pairwise matching.\nIf we learn W𝑊W for the inter-class subgraph, the few-shot classes would have one more learnable layer than the proposals, and we show in Table 4 that the performance is worse. But for intra-class subgraphs, the GCN layers are applied to both proposals and few-shot classes. As shown in Table 5, learning W𝑊W does not violate the siamese structure, and could help improve performance.\n(2) As shown in both Table 4 and 5, using one GCN layer is sufficient in both subgraphs as we already connect edges to all neighbors that a node needs in our model.\nUsing more GCN layers are not helpful due to the over-smoothing problem  in GCNs. \n\n\n\nMethod / Shot\nVenue\nBackbone\nNovel Set 1\nNovel Set 2\nNovel Set 3\n\n1\n2\n3\n5\n10\n1\n2\n3\n5\n10\n1\n2\n3\n5\n10\n\nMeta-training the model on base classes, and meta-testing on novel classes\n\nFan et al. [ref]3†\nCVPR 2020\nResNet-101\n32.4\n22.1\n23.1\n31.7\n35.7\n14.8\n18.1\n24.4\n18.6\n19.5\n25.8\n20.9\n23.9\n27.8\n29.0\n\nQA-FewDet (Ours)\nThis work\nResNet-101\n41.0\n33.2\n35.3\n47.5\n52.0\n23.5\n29.4\n37.9\n35.9\n37.1\n33.2\n29.4\n37.6\n39.8\n41.5\n\nFine-tuning the model on novel classes, and testing on novel classes\n\nFSRW \nICCV 2019\nYOLOv2\n14.8\n15.5\n26.7\n33.9\n47.2\n15.7\n15.3\n22.7\n30.1\n40.5\n21.3\n25.6\n28.4\n42.8\n45.9\n\nMetaDet \nICCV 2019\nVGG16\n18.9\n20.6\n30.2\n36.8\n49.6\n21.8\n23.1\n27.8\n31.7\n43.0\n20.6\n23.9\n29.4\n43.9\n44.1\n\nMeta R-CNN \nICCV 2019\nResNet-101\n19.9\n25.5\n35.0\n45.7\n51.5\n10.4\n19.4\n29.6\n34.8\n45.4\n14.3\n18.2\n27.5\n41.2\n48.1\n\nTFA w/ fc [ref]37\nICML 2020\nResNet-101\n36.8\n29.1\n43.6\n55.7\n57.0\n18.2\n29.0\n33.4\n35.5\n39.0\n27.7\n33.6\n42.5\n48.7\n50.2\n\nTFA w/ cos [ref]37\nICML 2020\nResNet-101\n39.8\n36.1\n44.7\n55.7\n56.0\n23.5\n26.9\n34.1\n35.1\n39.1\n30.8\n34.8\n42.8\n49.5\n49.8\n\nXiao et al. \nECCV 2020\nResNet-101\n24.2\n35.3\n42.2\n49.1\n57.4\n21.6\n24.6\n31.9\n37.0\n45.7\n21.2\n30.0\n37.2\n43.8\n49.6\n\nMPSR \nECCV 2020\nResNet-101\n41.7\n42.5\n51.4\n55.2\n61.8\n24.4\n29.3\n39.2\n39.9\n47.8\n35.6\n41.8\n42.3\n48.0\n49.7\n\nFan et al. [ref]3 †\nCVPR 2020\nResNet-101\n37.8\n43.6\n51.6\n56.5\n58.6\n22.5\n30.6\n40.7\n43.1\n47.6\n31.0\n37.9\n43.7\n51.3\n49.8\n\nQA-FewDet (Ours)\nThis work\nResNet-101\n42.4\n51.9\n55.7\n62.6\n63.4\n25.9\n37.8\n46.6\n48.9\n51.1\n35.2\n42.9\n47.8\n54.8\n53.5\n\n \n\n\n\n\n1-shot\n2-shot\n3-shot\n5-shot\n10-shot\n30-shot\n\nMethod\nAP\nAP50\nAP75\nAP\nAP50\nAP75\nAP\nAP50\nAP75\nAP\nAP50\nAP75\nAP\nAP50\nAP75\nAP\nAP50\nAP75\n\nMeta-training the model on base classes, and meta-testing on novel classes\n\nFan et al. [ref]3†\n4.0\n8.5\n3.5\n5.4\n11.6\n4.6\n5.9\n12.5\n5.0\n6.9\n14.3\n6.0\n7.6\n15.4\n6.8\n8.9\n17.8\n8.0\n\nQA-FewDet (Ours)\n5.1\n10.5\n4.5\n7.8\n16.4\n6.6\n8.6\n17.7\n7.5\n9.5\n19.3\n8.5\n10.2\n20.4\n9.0\n11.5\n23.4\n10.3\n\nFine-tuning the model on novel classes, and testing on novel classes\n\n\nFSRW \n–\n–\n–\n–\n–\n–\n–\n–\n–\n –\n–\n–\n5.6\n12.3\n4.6\n9.1\n19.0\n7.6\n\nMetaDet \n–\n–\n–\n–\n–\n–\n–\n–\n–\n –\n–\n–\n7.1\n14.6\n6.1\n11.3\n21.7\n8.1\n\nMeta R-CNN \n–\n–\n–\n–\n–\n–\n–\n–\n–\n –\n–\n–\n8.7\n19.1\n6.6\n12.4\n25.3\n10.8\n\nTFA w/ fc [ref]37\n2.9\n5.7\n2.8\n4.3\n8.5\n4.1\n6.7\n12.6\n6.6\n8.4\n16.0\n8.4\n10.0\n19.2\n9.2\n13.4\n24.7\n13.2\n\nTFA w/ cos [ref]37\n3.4\n5.8\n3.8\n4.6\n8.3\n4.8\n6.6\n12.1\n6.5\n8.3\n15.3\n8.0\n10.0\n19.1\n9.3\n13.7\n24.9\n13.4\n\nXiao et al. ‡\n3.2\n8.9\n1.4\n4.9\n13.3\n2.3\n6.7\n18.6\n2.9\n8.1\n20.1\n4.4\n10.7\n25.6\n6.5\n15.9\n31.7\n15.1\n\nMPSR  †\n2.3\n4.1\n2.3\n3.5\n6.3\n3.4\n5.2\n9.5\n5.1\n6.7\n12.6\n6.4\n9.8\n17.9\n9.7\n14.1\n25.4\n14.2\n\nFan et al. [ref]3†\n4.2\n9.1\n3.0\n5.6\n14.0\n3.9\n6.6\n15.9\n4.9\n8.0\n18.5\n6.3\n9.6\n20.7\n7.7\n13.5\n28.5\n11.7\n\nQA-FewDet (Ours)\n4.9\n10.3\n4.4\n7.6\n16.1\n6.2\n8.4\n18.0\n7.3\n9.7\n20.3\n8.6\n11.6\n23.9\n9.8\n16.5\n31.9\n15.5\n\n"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A hierarchical graph network for 3d object detection on point clouds",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Jintai Chen, Biwen Lei, Qingyu Song, Haochao Ying, Danny Z Chen, and Jian Wu"
+    },
+    {
+      "index": 1,
+      "title": "The pascal visual object classes (voc) challenge",
+      "abstract": "",
+      "year": "2010",
+      "venue": "International journal of computer vision",
+      "authors": "Mark Everingham, Luc Van Gool, Christopher KI Williams, John Winn, and Andrew Zisserman"
+    },
+    {
+      "index": 2,
+      "title": "Few-Shot Object Detection with Attention-RPN and Multi-Relation Detector",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Qi Fan, Wei Zhuo, Chi-Keung Tang, and Yu-Wing Tai",
+      "orig_title": "Few-shot object detection with attention-rpn and multi-relation detector",
+      "paper_id": "1908.01998v4"
+    },
+    {
+      "index": 3,
+      "title": "Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Chelsea Finn, Pieter Abbeel, and Sergey Levine",
+      "orig_title": "Model-agnostic meta-learning for fast adaptation of deep networks",
+      "paper_id": "1703.03400v3"
+    },
+    {
+      "index": 4,
+      "title": "Dynamic Few-Shot Visual Learning without Forgetting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Spyros Gidaris and Nikos Komodakis",
+      "orig_title": "Dynamic few-shot visual learning without forgetting",
+      "paper_id": "1804.09458v1"
+    },
+    {
+      "index": 5,
+      "title": "Fast R-CNN",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Ross Girshick",
+      "orig_title": "Fast r-cnn",
+      "paper_id": "1504.08083v2"
+    },
+    {
+      "index": 6,
+      "title": "Meta Faster R-CNN: Towards Accurate Few-Shot Object Detection with Attentive Feature Alignment",
+      "abstract": "",
+      "year": "2022",
+      "venue": "AAAI",
+      "authors": "Guangxing Han, Shiyuan Huang, Jiawei Ma, Yicheng He, and Shih-Fu Chang",
+      "orig_title": "Meta faster r-cnn: Towards accurate few-shot object detection with attentive feature alignment",
+      "paper_id": "2104.07719v4"
+    },
+    {
+      "index": 7,
+      "title": "Revisiting faster r-cnn: A deeper look at region proposal network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICONIP",
+      "authors": "Guangxing Han, Xuan Zhang, and Chongrong Li"
+    },
+    {
+      "index": 8,
+      "title": "Single shot object detection with top-down refinement",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICIP",
+      "authors": "Guangxing Han, Xuan Zhang, and Chongrong Li"
+    },
+    {
+      "index": 9,
+      "title": "Semi-supervised dff: Decoupling detection and feature flow for video object detectors",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM international conference on Multimedia",
+      "authors": "Guangxing Han, Xuan Zhang, and Chongrong Li"
+    },
+    {
+      "index": 10,
+      "title": "Mask R-CNN",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick",
+      "orig_title": "Mask r-cnn",
+      "paper_id": "1703.06870v3"
+    },
+    {
+      "index": 11,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 12,
+      "title": "Distilling the Knowledge in a Neural Network",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NIPS Deep Learning and Representation Learning Workshop",
+      "authors": "Geoffrey Hinton, Oriol Vinyals, and Jeffrey Dean",
+      "orig_title": "Distilling the knowledge in a neural network",
+      "paper_id": "1503.02531v1"
+    },
+    {
+      "index": 13,
+      "title": "One-Shot Object Detection with Co-Attention and Co-Excitation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Ting-I Hsieh, Yi-Chen Lo, Hwann-Tzong Chen, and Tyng-Luh Liu",
+      "orig_title": "One-shot object detection with co-attention and co-excitation",
+      "paper_id": "1911.12529v1"
+    },
+    {
+      "index": 14,
+      "title": "Relation Networks for Object Detection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Han Hu, Jiayuan Gu, Zheng Zhang, Jifeng Dai, and Yichen Wei",
+      "orig_title": "Relation networks for object detection",
+      "paper_id": "1711.11575v2"
+    },
+    {
+      "index": 15,
+      "title": "Few-shot Object Detection via Feature Reweighting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Bingyi Kang, Zhuang Liu, Xin Wang, Fisher Yu, Jiashi Feng, and Trevor Darrell",
+      "orig_title": "Few-shot object detection via feature reweighting",
+      "paper_id": "1812.01866v2"
+    },
+    {
+      "index": 16,
+      "title": "Decoupling representation and classifier for long-tailed recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Bingyi Kang, Saining Xie, Marcus Rohrbach, Zhicheng Yan, Albert Gordo, Jiashi Feng, and Yannis Kalantidis"
+    },
+    {
+      "index": 17,
+      "title": "RepMet: Representative-based metric learning for classification and few-shot object detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Leonid Karlinsky, Joseph Shtok, Sivan Harary, Eli Schwartz, Amit Aides, Rogerio Feris, Raja Giryes, and Alex M Bronstein",
+      "orig_title": "Repmet: Representative-based metric learning for classification and few-shot object detection",
+      "paper_id": "1806.04728v3"
+    },
+    {
+      "index": 18,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Thomas N. Kipf and Max Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 19,
+      "title": "Deeper Insights into Graph Convolutional Networks for Semi-Supervised Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Qimai Li, Zhichao Han, and Xiao-Ming Wu",
+      "orig_title": "Deeper insights into graph convolutional networks for semi-supervised learning",
+      "paper_id": "1801.07606v1"
+    },
+    {
+      "index": 20,
+      "title": "Focal Loss for Dense Object Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and Piotr Dollár",
+      "orig_title": "Focal loss for dense object detection",
+      "paper_id": "1708.02002v2"
+    },
+    {
+      "index": 21,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "European conference on computer vision",
+      "authors": "Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva Ramanan, Piotr Dollár, and C Lawrence Zitnick",
+      "orig_title": "Microsoft coco: Common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 22,
+      "title": "SSD: Single Shot MultiBox Detector",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European conference on computer vision",
+      "authors": "Wei Liu, Dragomir Anguelov, Dumitru Erhan, Christian Szegedy, Scott Reed, Cheng-Yang Fu, and Alexander C Berg",
+      "orig_title": "Ssd: Single shot multibox detector",
+      "paper_id": "1512.02325v5"
+    },
+    {
+      "index": 23,
+      "title": "Structure Inference Net: Object Detection Using Scene-Level Context and Instance-Level Relationships",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Yong Liu, Ruiping Wang, Shiguang Shan, and Xilin Chen",
+      "orig_title": "Structure inference net: Object detection using scene-level context and instance-level relationships",
+      "paper_id": "1807.00119v1"
+    },
+    {
+      "index": 24,
+      "title": "Partner-Assisted Learning for Few-Shot Image Classification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Jiawei Ma, Hanchen Xie, Guangxing Han, Shih-Fu Chang, Aram Galstyan, and Wael Abd-Almageed",
+      "orig_title": "Partner-assisted learning for few-shot image classification",
+      "paper_id": "2109.07607v1"
+    },
+    {
+      "index": 25,
+      "title": "Hierarchical graph attention network for visual relationship detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Li Mi and Zhenzhong Chen"
+    },
+    {
+      "index": 26,
+      "title": "Activity graph transformer for temporal action localization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2101.08540",
+      "authors": "Megha Nawhal and Greg Mori"
+    },
+    {
+      "index": 27,
+      "title": "OS2D: One-Stage One-Shot Object Detection by Matching Anchor Features",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Anton Osokin, Denis Sumin, and Vasily Lomakin",
+      "orig_title": "Os2d: One-stage one-shot object detection by matching anchor features",
+      "paper_id": "2003.06800v2"
+    },
+    {
+      "index": 28,
+      "title": "Incremental few-shot object detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Juan-Manuel Perez-Rua, Xiatian Zhu, Timothy M Hospedales, and Tao Xiang"
+    },
+    {
+      "index": 29,
+      "title": "You Only Look Once: Unified, Real-Time Object Detection",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Joseph Redmon, Santosh Divvala, Ross Girshick, and Ali Farhadi",
+      "orig_title": "You only look once: Unified, real-time object detection",
+      "paper_id": "1506.02640v5"
+    },
+    {
+      "index": 30,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun",
+      "orig_title": "Faster r-cnn: Towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 31,
+      "title": "Prototypical Networks for Few-shot Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Jake Snell, Kevin Swersky, and Richard Zemel",
+      "orig_title": "Prototypical networks for few-shot learning",
+      "paper_id": "1703.05175v2"
+    },
+    {
+      "index": 32,
+      "title": "Learning to Compare: Relation Network for Few-Shot Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Flood Sung, Yongxin Yang, Li Zhang, Tao Xiang, Philip HS Torr, and Timothy M Hospedales",
+      "orig_title": "Learning to compare: Relation network for few-shot learning",
+      "paper_id": "1711.06025v2"
+    },
+    {
+      "index": 33,
+      "title": "FCOS: Fully Convolutional One-Stage Object Detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Zhi Tian, Chunhua Shen, Hao Chen, and Tong He",
+      "orig_title": "Fcos: Fully convolutional one-stage object detection",
+      "paper_id": "1904.01355v5"
+    },
+    {
+      "index": 34,
+      "title": "Graph Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Petar Veličković, Guillem Cucurull, Arantxa Casanova, Adriana Romero, Pietro Lio, and Yoshua Bengio",
+      "orig_title": "Graph attention networks",
+      "paper_id": "1710.10903v3"
+    },
+    {
+      "index": 35,
+      "title": "Matching Networks for One Shot Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Oriol Vinyals, Charles Blundell, Timothy Lillicrap, Daan Wierstra, et al.",
+      "orig_title": "Matching networks for one shot learning",
+      "paper_id": "1606.04080v2"
+    },
+    {
+      "index": 36,
+      "title": "Frustratingly Simple Few-Shot Object Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Xin Wang, Thomas E. Huang, Trevor Darrell, Joseph E Gonzalez, and Fisher Yu",
+      "orig_title": "Frustratingly simple few-shot object detection",
+      "paper_id": "2003.06957v1"
+    },
+    {
+      "index": 37,
+      "title": "Zero-shot Recognition via Semantic Embeddings and Knowledge Graphs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Xiaolong Wang, Yufei Ye, and Abhinav Gupta",
+      "orig_title": "Zero-shot recognition via semantic embeddings and knowledge graphs",
+      "paper_id": "1803.08035v2"
+    },
+    {
+      "index": 38,
+      "title": "Meta-learning to detect rare objects",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Yu-Xiong Wang, Deva Ramanan, and Martial Hebert"
+    },
+    {
+      "index": 39,
+      "title": "Multi-Scale Positive Sample Refinement for Few-Shot Object Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Jiaxi Wu, Songtao Liu, Di Huang, and Yunhong Wang",
+      "orig_title": "Multi-scale positive sample refinement for few-shot object detection",
+      "paper_id": "2007.09384v1"
+    },
+    {
+      "index": 40,
+      "title": "Few-shot Object Detection and Viewpoint Estimation for Objects in the Wild",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Yang Xiao and Renaud Marlet",
+      "orig_title": "Few-shot object detection and viewpoint estimation for objects in the wild",
+      "paper_id": "2007.12107v2"
+    },
+    {
+      "index": 41,
+      "title": "Spatial Temporal Graph Convolutional Networks for Skeleton-Based Action Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI conference on artificial intelligence",
+      "authors": "Sijie Yan, Yuanjun Xiong, and Dahua Lin",
+      "orig_title": "Spatial temporal graph convolutional networks for skeleton-based action recognition",
+      "paper_id": "1801.07455v2"
+    },
+    {
+      "index": 42,
+      "title": "Meta R-CNN : Towards General Solver for Instance-level Few-shot Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Xiaopeng Yan, Ziliang Chen, Anni Xu, Xiaoxi Wang, Xiaodan Liang, and Liang Lin",
+      "orig_title": "Meta r-cnn: Towards general solver for instance-level low-shot learning",
+      "paper_id": "1909.13032v2"
+    },
+    {
+      "index": 43,
+      "title": "Restoring Negative Information in Few-Shot Object Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Yukuan Yang, Fangyu Wei, Miaojing Shi, and Guoqi Li",
+      "orig_title": "Restoring negative information in few-shot object detection",
+      "paper_id": "2010.11714v2"
+    },
+    {
+      "index": 44,
+      "title": "Graph Convolutional Networks for Temporal Action Localization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Runhao Zeng, Wenbing Huang, Mingkui Tan, Yu Rong, Peilin Zhao, Junzhou Huang, and Chuang Gan",
+      "orig_title": "Graph convolutional networks for temporal action localization",
+      "paper_id": "1909.03252v1"
+    }
+  ]
+}

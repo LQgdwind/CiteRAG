@@ -1,0 +1,313 @@
+{
+  "paper_id": "2010.07386v2",
+  "title": "Valentine: Evaluating Matching Techniques for Dataset Discovery",
+  "sections": {
+    "vi-a methods description": "In what follows we briefly describe the schema matching methods that we either integrated or implemented in Valentine. Furthermore, we explicitly report any modifications we made while attempting to reproduce the original algorithms. Cupid . Cupid is a schema-based approach. Schemata are translated into tree structures representing the hierarchy of different elements (relations, attributes etc.). The overall similarity of two elements is the weighted similarity of i) Linguistic Matching and ii) Structural Matching. The first calculates the name similarity for each pair of elements from the two schemata belonging to the same category. Structural matching utilizes the tree transformations of the schemata to compute similarity between elements based on their context. The overall similarity of two elements is the weighted sum of the linguistic and structural similarities. Cupid is not openly-available, thus in our implementation we used WordNet555https://wordnet.princeton.edu/ as thesaurus, while we rely on the name similarity formula to compute data compatibility scores. Similarity Flooding . Similarity Flooding is a schema-based matching approach that relies on graphs, and outputs correspondence between any kind of elements (relations, attributes, data types) of two given schemata. Specifically, the schemata are transformed to directed graphs, which have as nodes every element and as edges the relationships that these elements have with each other (e.g. a relation has an attribute, which is of a certain type). The graphs are then merged into a propagation graph, where pairs of nodes having similar connections collapse into map pairs. The intuition of the algorithm is that each such map pair propagates its similarity to its neighbors, causing an update in their similarity score in an iterative manner, until convergence. In our study we have implemented from scratch the original method (since there exists only an outdated Java version of it from 2003), with the only difference that we use a string similarity of our own choice, i.e. Levenshtein distance , since there are no details on the actual function that the authors used. COMA . COMA combines multiple schema-based matchers. Schemata are represented as rooted directed acyclic graphs, where the associated elements are graph nodes connected by edges of different types (e.g. containment). The match result is a set of element pairs and their corresponding similarity score. COMA also supports human feedback by allowing users to indicate the correctness of the resulting matches, which is taken into consideration in next iterations, allegedly improving general accuracy.  extended COMA to also incorporate two instance-based matchers. In our experiments we use the COMA 3.0 Community Edition, where we use the default schema-based and instance-based strategies. Distribution-based Matching . Distribution-based Matching is an instance-based method. Relationships between different columns are captured by comparing the distribution of their respective data values. The method computes and refines clusters of relational attributes, using the Earth Mover’s Distance (EMD) between pairs of columns, which is a measure of distribution similarity of the corresponding instance sets. In the end, a number of disjoint clusters is given as output, wherein relational attributes are considered to be related. We implemented the original method (which was not openly-available) without any modifications, except for using another software for solving the integer programming problem in the last step of the algorithm, which decides the final clusters (we used PuLP666https://pythonhosted.org/PuLP/ instead of IBM CPLEX). SemProp [ref]18. SemProp tries to capture relationships between schema elements beyond syntactic similarity by making use of pre-trained word embeddings . SemProp first builds a semantic matcher that given a domain-specific ontology links attribute and table names to ontology classes using their embedding representation; then it relates disparate attributes and tables by transitively following these links. Pairs of elements that fail to be related by the semantic matcher are forwarded to a syntactic one. In our experimental evaluation, we make use of the open-sourced code for the Aurum\n dataset discovery system, which includes the SemProp matcher and a domain-specific ontology to make the method run on the ChEMBL datasets. EmbDI . EmbDI is a framework facilitating data integration tasks on relational data, by building relational embeddings. The authors propose a method for embedding values and attribute names of relations, by training them based on the input without using pre-trained embeddings. However, the method uses external knowledge, such as synonym dictionaries or pre-trained embeddings, in order to deal with more challenging cases. EmbDI is eligible for schema matching tasks, where it finds relationships between the columns of two datasets by comparing their corresponding embeddings. We integrated EmbDI in Valentine by importing the code777https://gitlab.eurecom.fr/cappuzzo/embdi accompanying the original paper. Jaccard-Levenshtein Matcher. As a simple baseline, we implemented a naive instance-based matcher computing all pairwise column similarities by using Jaccard similarity. We treat two values as being identical if their Levenshtein distance is below a given threshold. The method outputs a ranked list of column pairs, along with their respective similarity score."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Data integration for the relational web",
+      "abstract": "",
+      "year": "2009",
+      "venue": "VLDB",
+      "authors": "M. J. Cafarella, A. Halevy, and N. Khoussainova"
+    },
+    {
+      "index": 1,
+      "title": "Finding related tables",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ACM SIGMOD",
+      "authors": "A. Das Sarma, L. Fang, N. Gupta, A. Halevy, H. Lee, F. Wu, R. Xin, and C. Yu"
+    },
+    {
+      "index": 2,
+      "title": "Infogather: entity augmentation and attribute discovery by holistic matching with web tables",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ACM SIGMOD",
+      "authors": "M. Yakout, K. Ganjam, K. Chakrabarti, and S. Chaudhuri"
+    },
+    {
+      "index": 3,
+      "title": "Infogather+ semantic matching and annotation of numeric and time-varying attributes in web tables",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM SIGMOD",
+      "authors": "M. Zhang and K. Chakrabarti"
+    },
+    {
+      "index": 4,
+      "title": "Entitables: Smart assistance for entity-focused tables",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM SIGIR",
+      "authors": "S. Zhang and K. Balog"
+    },
+    {
+      "index": 5,
+      "title": "Stitching web tables for improving matching quality",
+      "abstract": "",
+      "year": "2017",
+      "venue": "VLDB",
+      "authors": "O. Lehmberg and C. Bizer"
+    },
+    {
+      "index": 6,
+      "title": "Aurum: A data discovery system",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE ICDE",
+      "authors": "R. C. Fernandez, Z. Abedjan et al."
+    },
+    {
+      "index": 7,
+      "title": "Table union search on open data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "VLDB",
+      "authors": "F. Nargesian, E. Zhu, K. Q. Pu, and R. J. Miller"
+    },
+    {
+      "index": 8,
+      "title": "Dataset Discovery in Data Lakes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE ICDE",
+      "authors": "A. Bogatu, A. A. Fernandes, N. W. Paton, and N. Konstantinou",
+      "orig_title": "Dataset discovery in data lakes",
+      "paper_id": "2011.10427v1"
+    },
+    {
+      "index": 9,
+      "title": "Finding related tables in data lakes for interactive data science",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM SIGMOD",
+      "authors": "Y. Zhang and Z. G. Ives"
+    },
+    {
+      "index": 10,
+      "title": "ARDA: Automatic Relational Data Augmentation for Machine Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.09758",
+      "authors": "N. Chepurko, R. Marcus, E. Zgraggen, R. C. Fernandez, T. Kraska, and D. Karger",
+      "orig_title": "Arda: Automatic relational data augmentation for machine learning",
+      "paper_id": "2003.09758v1"
+    },
+    {
+      "index": 11,
+      "title": "A survey of approaches to automatic schema matching",
+      "abstract": "",
+      "year": "2001",
+      "venue": "VLDBJ",
+      "authors": "E. Rahm and P. A. Bernstein"
+    },
+    {
+      "index": 12,
+      "title": "Comparison of schema matching evaluations",
+      "abstract": "",
+      "year": "2002",
+      "venue": "NODe",
+      "authors": "H.-H. Do, S. Melnik, and E. Rahm"
+    },
+    {
+      "index": 13,
+      "title": "Generic schema matching with cupid",
+      "abstract": "",
+      "year": "2001",
+      "venue": "VLDB",
+      "authors": "J. Madhavan, P. A. Bernstein, and E. Rahm"
+    },
+    {
+      "index": 14,
+      "title": "Similarity flooding: A versatile graph matching algorithm and its application to schema matching",
+      "abstract": "",
+      "year": "2002",
+      "venue": "IEEE ICDE",
+      "authors": "S. Melnik, H. Garcia-Molina, and E. Rahm"
+    },
+    {
+      "index": 15,
+      "title": "COMA: a system for flexible combination of schema matching approaches",
+      "abstract": "",
+      "year": "2002",
+      "venue": "VLDB",
+      "authors": "H.-H. Do and E. Rahm"
+    },
+    {
+      "index": 16,
+      "title": "Automatic discovery of attributes in relational databases",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ACM SIGMOD",
+      "authors": "M. Zhang, M. Hadjieleftheriou, B. C. Ooi et al."
+    },
+    {
+      "index": 17,
+      "title": "Seeping semantics: Linking datasets using word embeddings for data discovery",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE ICDE",
+      "authors": "R. C. Fernandez, E. Mansour et al."
+    },
+    {
+      "index": 18,
+      "title": "Creating Embeddings of Heterogeneous Relational Datasets for Data Integration Tasks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIGMOD",
+      "authors": "R. Cappuzzo, P. Papotti, and S. Thirumuruganathan",
+      "orig_title": "Creating embeddings of heterogeneous relational datasets for data integration tasks",
+      "paper_id": "1909.01120v2"
+    },
+    {
+      "index": 19,
+      "title": "Distributed representations of words and phrases and their compositionality",
+      "abstract": "",
+      "year": "2013",
+      "venue": "NIPS",
+      "authors": "T. Mikolov, I. Sutskever, K. Chen et al."
+    },
+    {
+      "index": 20,
+      "title": "Fast-join: An efficient method for fuzzy token matching based string similarity join",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE ICDE",
+      "authors": "J. Wang, G. Li, and J. Fe"
+    },
+    {
+      "index": 21,
+      "title": "JOSIE overlap set similarity search for finding joinable tables in data lakes",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM SIGMOD",
+      "authors": "E. Zhu, D. Deng, F. Nargesian, and R. J. Miller"
+    },
+    {
+      "index": 22,
+      "title": "STBenchmark: towards a benchmark for mapping systems",
+      "abstract": "",
+      "year": "2008",
+      "venue": "VLDB",
+      "authors": "B. Alexe, W.-C. Tan, and Y. Velegrakis"
+    },
+    {
+      "index": 23,
+      "title": "The IBench integration metadata generator",
+      "abstract": "",
+      "year": "2015",
+      "venue": "VLDB",
+      "authors": "P. C. Arocena, B. Glavic, R. Ciucanu, and R. J. Miller"
+    },
+    {
+      "index": 24,
+      "title": "ETuner: tuning schema matching software using synthetic scenarios",
+      "abstract": "",
+      "year": "2007",
+      "venue": "VLDBJ",
+      "authors": "Y. Lee, M. Sayyadian, A. Doan, and A. S. Rosenthal"
+    },
+    {
+      "index": 25,
+      "title": "TPC-DI: The first industry benchmark for data integration",
+      "abstract": "",
+      "year": "2014",
+      "venue": "VLDB",
+      "authors": "M. Poess, T. Rabl, H.-A. Jacobsen, and B. Caufield"
+    },
+    {
+      "index": 26,
+      "title": "The magellan data repository",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "S. Das, A. Doan, P. S. G. C., C. Gokhale, P. Konda, Y. Govind, and D. Paulsen"
+    },
+    {
+      "index": 27,
+      "title": "Instance matching with COMA++.",
+      "abstract": "",
+      "year": "2007",
+      "venue": "BTW workshops",
+      "authors": "D. Engmann and S. Massmann"
+    },
+    {
+      "index": 28,
+      "title": "Binary codes capable of correcting deletions, insertions, and reversals",
+      "abstract": "",
+      "year": "1966",
+      "venue": "Soviet physics doklady",
+      "authors": "V. I. Levenshtein"
+    },
+    {
+      "index": 29,
+      "title": "Evolution of the COMA match system",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICOM",
+      "authors": "S. Massmann, S. Raunich, D. Aumüller, P. Arnold, and E. Rahm"
+    },
+    {
+      "index": 30,
+      "title": "Ontology alignment evaluation initiative: six years of experience",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal on data semantics XV",
+      "authors": "J. Euzenat, C. Meilicke, H. Stuckenschmidt, P. Shvaiko, and C. Trojahn"
+    },
+    {
+      "index": 31,
+      "title": "Ontology matching benchmarks: generation, stability, and discriminability",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Journal of web semantics",
+      "authors": "J. Euzenat, M.-E. Roşoiu, and C. Trojahn"
+    },
+    {
+      "index": 32,
+      "title": "Xbenchmatch: a benchmark for XML schema matching tools",
+      "abstract": "",
+      "year": "2007",
+      "venue": "VLDB",
+      "authors": "F. Duchateau, Z. Bellahsene, and E. Hunt"
+    },
+    {
+      "index": 33,
+      "title": "Data integration and machine learning: A natural synergy",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM SIGMOD",
+      "authors": "X. L. Dong and T. Rekatsinas"
+    },
+    {
+      "index": 34,
+      "title": "Human-in-the-loop data integration",
+      "abstract": "",
+      "year": "2017",
+      "venue": "VLDB",
+      "authors": "G. Li"
+    },
+    {
+      "index": 35,
+      "title": "LSH Ensemble: Internet-Scale Domain Search",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1603.07410",
+      "authors": "E. Zhu, F. Nargesian, K. Q. Pu, and R. J. Miller",
+      "orig_title": "LSH ensemble: Internet-scale domain search",
+      "paper_id": "1603.07410v4"
+    },
+    {
+      "index": 36,
+      "title": "Lazo: A cardinality-based method for coupled estimation of jaccard similarity and containment",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE ICDE",
+      "authors": "R. C. Fernandez, J. Min, D. Nava, and S. Madden"
+    }
+  ]
+}

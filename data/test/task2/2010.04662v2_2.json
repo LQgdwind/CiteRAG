@@ -1,0 +1,491 @@
+{
+  "paper_id": "2010.04662v2",
+  "title": "Deterministic computation of the characteristic polynomial in the time of matrix multiplication",
+  "sections": {
+    "previous work": "Previous algorithms based on linear algebra over 𝕂𝕂\\mathbb{K} for computing the\ncharacteristic polynomial of 𝐌∈𝕂m×m𝐌superscript𝕂𝑚𝑚\\mathbf{{M}}\\in\\mathbb{K}^{m\\times m} mainly fall in three\ntypes of methods. combining the traces of the first n𝑛n powers of the input matrix using\nthe Newton identities reveals the coefficients of the characteristic\npolynomial. Known as the Faddeev-LeVerrier algorithm, it was introduced in\n, refined and rediscovered in\n  , and used in  to prove that\nthe problem is in the 𝒩​𝒞2𝒩superscript𝒞2\\mathcal{NC}^{2} parallel complexity class. introduced in  and improved in , this\napproach does not involve division, and is therefore well suited for\ncomputing over integral domains. Later developments in this field include\n[ref]1 , the latter reaching the best known cost bound of O(m2.6973log(m)c)\\mathchoice{O\\left(m^{2.6973}\\log(m)^{c}\\right)}{O(m^{2.6973}\\log(m)^{c})}{O(m^{2.6973}\\log(m)^{c})}{O(m^{2.6973}\\log(m)^{c})}\nring operations using a deterministic algorithm, for some constant c>0𝑐0c>0. based on sequences of iterates of vectors under the application of the\nmatrix: (𝐯,𝐌𝐯,𝐌2​𝐯,…)𝐯𝐌𝐯superscript𝐌2𝐯…(\\mathbf{{v}},\\mathbf{{M}}\\mathbf{{v}},\\mathbf{{M}}^{2}\\mathbf{{v}},\\ldots). These methods\nrely on the fact that the first linear dependency between these iterates\ndefines a polynomial which divides the characteristic polynomial. Some\nalgorithms construct the Krylov basis explicitly   , while others can be interpreted as an implicit\nKrylov iteration with structured vectors [ref]12 . Methods based on traces of powers use O​(m4)𝑂superscript𝑚4\\mathchoice{O\\left(m^{4}\\right)}{O(m^{4})}{O(m^{4})}{O(m^{4})} or\nO​(mω+1)𝑂superscript𝑚𝜔1\\mathchoice{O\\left(m^{\\omega+1}\\right)}{O(m^{\\omega+1})}{O(m^{\\omega+1})}{O(m^{\\omega+1})} field operations, and are mostly competitive for\ntheir parallel complexity. Methods based on determinant expansions use\nO​(m4)𝑂superscript𝑚4\\mathchoice{O\\left(m^{4}\\right)}{O(m^{4})}{O(m^{4})}{O(m^{4})} or O​(mω+1)𝑂superscript𝑚𝜔1\\mathchoice{O\\left(m^{\\omega+1}\\right)}{O(m^{\\omega+1})}{O(m^{\\omega+1})}{O(m^{\\omega+1})} field operations and are\nrelevant for division-free algorithms. Lastly, the Krylov methods run in\nO​(m3)𝑂superscript𝑚3\\mathchoice{O\\left(m^{3}\\right)}{O(m^{3})}{O(m^{3})}{O(m^{3})} [ref]12  or O​(mω​log⁡m)𝑂superscript𝑚𝜔𝑚\\mathchoice{O\\left(m^{\\omega}\\log m\\right)}{O(m^{\\omega}\\log m)}{O(m^{\\omega}\\log m)}{O(m^{\\omega}\\log m)}  field operations with deterministic algorithms, or in\nO​(mω)𝑂superscript𝑚𝜔\\mathchoice{O\\left(m^{\\omega}\\right)}{O(m^{\\omega})}{O(m^{\\omega})}{O(m^{\\omega})} field operations with the Las Vegas randomized\nalgorithm in . Note that the characteristic polynomial of 𝐌𝐌\\mathbf{{M}} cannot be computed\nfaster than the determinant of 𝐌𝐌\\mathbf{{M}}, since the latter is the constant\ncoefficient of the former. Furthermore, under the model of computation trees,\nthe determinant of m×m𝑚𝑚m\\times m matrices cannot be computed faster than\nthe product of two m×m𝑚𝑚m\\times m matrices\n[8, Sec. 16.4], a consequence of Baur and\nStrassen’s theorem . Another type of characteristic polynomial algorithms is based on operations on\nmatrices over 𝕂​[x]𝕂delimited-[]𝑥\\mathbb{K}[x], called polynomial matrices in what follows. Indeed\nthe characteristic polynomial may be obtained by calling a determinant\nalgorithm on the characteristic matrix x​𝐈m−𝐌𝑥subscript𝐈𝑚𝐌x\\mathbf{{I}}_{m}-\\mathbf{{M}}, which is\nin 𝕂​[x]m×m𝕂superscriptdelimited-[]𝑥𝑚𝑚\\mathbb{K}[x]^{m\\times m}. Existing algorithms, which accept any matrix in\n𝕂​[x]m×m𝕂superscriptdelimited-[]𝑥𝑚𝑚\\mathbb{K}[x]^{m\\times m} of degree d𝑑d as input, include the evaluation-interpolation method, which costs\nO​(mω+1​d+m3​𝖬′⁡(d))𝑂superscript𝑚𝜔1𝑑superscript𝑚3superscript𝖬′𝑑\\mathchoice{O\\left(m^{\\omega+1}d+m^{3}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(d\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}\\right)}{O(m^{\\omega+1}d+m^{3}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(d\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)})}{O(m^{\\omega+1}d+m^{3}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(d\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)})}{O(m^{\\omega+1}d+m^{3}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(d\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)})} field operations,\nrequires that the field 𝕂𝕂\\mathbb{K} is large enough, and mainly relies on\nthe computation of about m​d𝑚𝑑md determinants of matrices in\n𝕂m×msuperscript𝕂𝑚𝑚\\mathbb{K}^{m\\times m}; the algorithm of Mulders and Storjohann [ref]36 based on weak\nPopov form computation, which uses O​(m3​d2)𝑂superscript𝑚3superscript𝑑2\\mathchoice{O\\left(m^{3}d^{2}\\right)}{O(m^{3}d^{2})}{O(m^{3}d^{2})}{O(m^{3}d^{2})} field\noperations; retrieving the determinant as the product of the diagonal entries of\nthe Smith form, itself computed by a Las Vegas randomized algorithm in\nO(mω𝖬′(d)log(m)2)\\mathchoice{O\\left(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(d\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}\\log(m)^{2}\\right)}{O(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(d\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}\\log(m)^{2})}{O(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(d\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}\\log(m)^{2})}{O(m^{\\omega}\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(d\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}\\log(m)^{2})} field operations\n[45, Prop. 41], assuming 𝖬′⁡(d)∈O​(dω−1)superscript𝖬′𝑑𝑂superscript𝑑𝜔1\\mathchoice{\\operatorname{\\mathsf{M}}^{\\prime}\\!\\left(d\\right)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}{\\operatorname{\\mathsf{M}}^{\\prime}(d)}\\in\\mathchoice{O\\left(d^{\\omega-1}\\right)}{O(d^{\\omega-1})}{O(d^{\\omega-1})}{O(d^{\\omega-1})}; the algorithm based on unimodular triangularization in\n, which is deterministic and uses O(mωdlog(d)alog(m)b)\\mathchoice{O\\left(m^{\\omega}d\\log(d)^{a}\\log(m)^{b}\\right)}{O(m^{\\omega}d\\log(d)^{a}\\log(m)^{b})}{O(m^{\\omega}d\\log(d)^{a}\\log(m)^{b})}{O(m^{\\omega}d\\log(d)^{a}\\log(m)^{b})} field operations for some constants a,b∈ℤ>0𝑎𝑏subscriptℤabsent0a,b\\in\\mathbb{Z}_{>0}. In the last two items the cost bound is, up to logarithmic factors, the same as\nthe cost of multiplying matrices 𝕂​[x]m×m𝕂superscriptdelimited-[]𝑥𝑚𝑚\\mathbb{K}[x]^{m\\times m} of degree d𝑑d by\nrelying on both fast linear algebra over 𝕂𝕂\\mathbb{K} and fast arithmetic in\n𝕂​[x]𝕂delimited-[]𝑥\\mathbb{K}[x], as showed in . The last two of these cost bounds\ndo involve factors logarithmic in m𝑚m, whereas the first two have an\nexponent on m𝑚m which exceeds ω𝜔\\omega. In summary, the fastest characteristic polynomial algorithms either are\nrandomized or have a cost a logarithmic factor away from the lower bound. This\npaper, with Theorem 1.1, bridges this gap by proposing the first\ndeterministic algorithm with cost O​(mω)𝑂superscript𝑚𝜔\\mathchoice{O\\left(m^{\\omega}\\right)}{O(m^{\\omega})}{O(m^{\\omega})}{O(m^{\\omega})}."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Efficient algorithms for computing the characteristic polynomial in a domain",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Journal of Pure and Applied Algebra",
+      "authors": "Abdeljaoued, J., Malaschonok, G.I."
+    },
+    {
+      "index": 1,
+      "title": "On the complexity of partial derivatives",
+      "abstract": "",
+      "year": "1983",
+      "venue": "Theoretical computer science",
+      "authors": "Baur, W., Strassen, V.",
+      "orig_title": "The complexity of partial derivatives",
+      "paper_id": "1607.05494v2"
+    },
+    {
+      "index": 2,
+      "title": "A uniform approach for the fast computation of matrix-type Padé approximants",
+      "abstract": "",
+      "year": "1994",
+      "venue": "SIAM J. Matrix Anal. Appl.",
+      "authors": "Beckermann, B., Labahn, G."
+    },
+    {
+      "index": 3,
+      "title": "Shifted normal forms of polynomial matrices",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ISSAC’99, ACM",
+      "authors": "Beckermann, B., Labahn, G., Villard, G."
+    },
+    {
+      "index": 4,
+      "title": "Normal forms for general polynomial matrices",
+      "abstract": "",
+      "year": "2006",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Beckermann, B., Labahn, G., Villard, G."
+    },
+    {
+      "index": 5,
+      "title": "On computing the determinant in small parallel time using a small number of processors",
+      "abstract": "",
+      "year": "1984",
+      "venue": "Information Processing Letters",
+      "authors": "Berkowitz, S.J."
+    },
+    {
+      "index": 6,
+      "title": "Triangular factorization and inversion by fast matrix multiplication",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Mathematics of Computation",
+      "authors": "Bunch, J.R., Hopcroft, J.E."
+    },
+    {
+      "index": 7,
+      "title": "Algebraic Complexity Theory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Springer-Verlag Berlin Heidelberg",
+      "authors": "Bürgisser, P., Clausen, M., Shokrollahi, A."
+    },
+    {
+      "index": 8,
+      "title": "On fast multiplication of polynomials over arbitrary algebras",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Acta Inform.",
+      "authors": "Cantor, D.G., Kaltofen, E."
+    },
+    {
+      "index": 9,
+      "title": "On the minimum computation time of functions",
+      "abstract": "",
+      "year": "1966",
+      "venue": "",
+      "authors": "Cook, S.A."
+    },
+    {
+      "index": 10,
+      "title": "Fast parallel matrix inversion algorithms",
+      "abstract": "",
+      "year": "1975",
+      "venue": "16th Annual Symposium on Foundations of Computer Science (sfcs 1975)",
+      "authors": "Csanky, L."
+    },
+    {
+      "index": 11,
+      "title": "The numerical solution of the secular equation",
+      "abstract": "",
+      "year": "1937",
+      "venue": "Matem. Sbornik",
+      "authors": "Danilevskij, A.M."
+    },
+    {
+      "index": 12,
+      "title": "Fast Computation of the Rank Profile Matrix and the Generalized Bruhat Decomposition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Dumas, J.G., Pernet, C., Sultan, Z.",
+      "orig_title": "Fast computation of the rank profile matrix and the generalized Bruhat decomposition",
+      "paper_id": "1601.01798v2"
+    },
+    {
+      "index": 13,
+      "title": "Efficient computation of the characteristic polynomial",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ISSAC’05, ACM",
+      "authors": "Dumas, J.G., Pernet, C., Wan, Z."
+    },
+    {
+      "index": 14,
+      "title": "Abstract Algebra",
+      "abstract": "",
+      "year": "2004",
+      "venue": "John Wiley & Sons",
+      "authors": "Dummit, D.S., Foote, R.M."
+    },
+    {
+      "index": 15,
+      "title": "Collected Problems in Higher Algebra, Problem n°979",
+      "abstract": "",
+      "year": "1949",
+      "venue": "",
+      "authors": "Faddeev, D., Sominskii, I."
+    },
+    {
+      "index": 16,
+      "title": "Minimal Bases of Rational Vector Spaces, with Applications to Multivariable Linear Systems",
+      "abstract": "",
+      "year": "1975",
+      "venue": "SIAM Journal on Control",
+      "authors": "Forney, Jr., G.D."
+    },
+    {
+      "index": 17,
+      "title": "A simple recurrent formula for inverting a matrix (abstract)",
+      "abstract": "",
+      "year": "1949",
+      "venue": "Bull. of Amer. Math. Soc.",
+      "authors": "Frame, J."
+    },
+    {
+      "index": 18,
+      "title": "Modern Computer Algebra (third edition)",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Cambridge University Press",
+      "authors": "Gathen, J.v.z., Gerhard, J."
+    },
+    {
+      "index": 19,
+      "title": "Nearly optimal algorithms for canonical matrix forms",
+      "abstract": "",
+      "year": "1995",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Giesbrecht, M."
+    },
+    {
+      "index": 20,
+      "title": "On the complexity of polynomial matrix computations",
+      "abstract": "",
+      "year": "2003",
+      "venue": "ISSAC’03, ACM",
+      "authors": "Giorgi, P., Jeannerod, C.P., Villard, G."
+    },
+    {
+      "index": 21,
+      "title": "Certification of Minimal Approximant Bases",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ISSAC’18, ACM",
+      "authors": "Giorgi, P., Neiger, V.",
+      "orig_title": "Certification of minimal approximant bases",
+      "paper_id": "1802.01920v2"
+    },
+    {
+      "index": 22,
+      "title": "Triangular x𝑥x-basis decompositions and derandomization of linear algebra algorithms over K​[x]𝐾delimited-[]𝑥{K}[x]",
+      "abstract": "",
+      "year": "2012",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Gupta, S., Sarkar, S., Storjohann, A., Valeriote, J."
+    },
+    {
+      "index": 23,
+      "title": "Faster polynomial multiplication over finite fields",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. ACM",
+      "authors": "Harvey, D., Van Der Hoeven, J., Lecerf, G."
+    },
+    {
+      "index": 24,
+      "title": "A generalization of the fast LUP matrix decomposition algorithm and applications",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Journal of Algorithms",
+      "authors": "Ibarra, O.H., Moran, S., Hui, R."
+    },
+    {
+      "index": 25,
+      "title": "Fast Computation of Minimal Interpolation Bases in Popov Form for Arbitrary Shifts",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ISSAC’16, ACM",
+      "authors": "Jeannerod, C.P., Neiger, V., Schost, E., Villard, G.",
+      "orig_title": "Fast computation of minimal interpolation bases in Popov form for arbitrary shifts",
+      "paper_id": "1602.00651v2"
+    },
+    {
+      "index": 26,
+      "title": "Computing minimal interpolation bases",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Jeannerod, C.P., Neiger, V., Schost, E., Villard, G.",
+      "orig_title": "Computing minimal interpolation bases",
+      "paper_id": "1512.03503v2"
+    },
+    {
+      "index": 27,
+      "title": "Fast computation of approximant bases in canonical form",
+      "abstract": "",
+      "year": "2020",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Jeannerod, C.P., Neiger, V., Villard, G.",
+      "orig_title": "Fast computation of approximant bases in canonical form",
+      "paper_id": "1801.04553v2"
+    },
+    {
+      "index": 28,
+      "title": "Linear Systems",
+      "abstract": "",
+      "year": "1980",
+      "venue": "Prentice-Hall",
+      "authors": "Kailath, T."
+    },
+    {
+      "index": 29,
+      "title": "On the complexity of computing determinants",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Computational Complexity",
+      "authors": "Kaltofen, E., Villard, G."
+    },
+    {
+      "index": 30,
+      "title": "Fast algorithms for the characteristic polynomial",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Theoretical Computer Science",
+      "authors": "Keller-Gehrig, W."
+    },
+    {
+      "index": 31,
+      "title": "Fast, deterministic computation of the Hermite normal form and determinant of a polynomial matrix",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. Complexity",
+      "authors": "Labahn, G., Neiger, V., Zhou, W."
+    },
+    {
+      "index": 32,
+      "title": "Powers of Tensors and Fast Matrix Multiplication",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ISSAC’14, ACM",
+      "authors": "Le Gall, F.",
+      "orig_title": "Powers of tensors and fast matrix multiplication",
+      "paper_id": "1401.7714v1"
+    },
+    {
+      "index": 33,
+      "title": "Sur les variations séculaires des éléments elliptiques des sept plantètes principales",
+      "abstract": "",
+      "year": "1840",
+      "venue": "Journal des Mathématiques Pures et Appliquées",
+      "authors": "Le Verrier, U."
+    },
+    {
+      "index": 34,
+      "title": "Bruhat canonical form for linear systems",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Linear Algebra Appl.",
+      "authors": "Manthey, W., Helmke, U."
+    },
+    {
+      "index": 35,
+      "title": "On lattice reduction for polynomial matrices",
+      "abstract": "",
+      "year": "2003",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Mulders, T., Storjohann, A."
+    },
+    {
+      "index": 36,
+      "title": "Computing Popov and Hermite Forms of Rectangular Polynomial Matrices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ISSAC’18, ACM",
+      "authors": "Neiger, V., Rosenkilde, J., Solomatov, G.",
+      "orig_title": "Computing Popov and Hermite Forms of Rectangular Polynomial Matrices",
+      "paper_id": "1802.01928v2"
+    },
+    {
+      "index": 37,
+      "title": "Computing Canonical Bases of Modules of Univariate Relations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISSAC’17, ACM",
+      "authors": "Neiger, V., Vu, T.X.",
+      "orig_title": "Computing canonical bases of modules of univariate relations",
+      "paper_id": "1705.10649v1"
+    },
+    {
+      "index": 38,
+      "title": "Faster Algorithms for the Characteristic Polynomial",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ISSAC’07, ACM",
+      "authors": "Pernet, C., Storjohann, A."
+    },
+    {
+      "index": 39,
+      "title": "Invariant description of linear, time-invariant controllable systems",
+      "abstract": "",
+      "year": "1972",
+      "venue": "SIAM Journal on Control",
+      "authors": "Popov, V.M."
+    },
+    {
+      "index": 40,
+      "title": "A method of determining explicitly the coefficients of the characteristic equation",
+      "abstract": "",
+      "year": "1942",
+      "venue": "Annals of Mathematical Statistics",
+      "authors": "Samuelson, P.A."
+    },
+    {
+      "index": 41,
+      "title": "Normalization of row reduced matrices",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ISSAC’11, ACM",
+      "authors": "Sarkar, S., Storjohann, A."
+    },
+    {
+      "index": 42,
+      "title": "Une méthode pour la décomposition spectrale et l’inversion des matrices",
+      "abstract": "",
+      "year": "1948",
+      "venue": "Comptes-Rendus de l’Académie des Sciences",
+      "authors": "Souriau, J.M."
+    },
+    {
+      "index": 43,
+      "title": "Deterministic computation of the frobenius form",
+      "abstract": "",
+      "year": "2001",
+      "venue": "42nd IEEE Symposium on Foundations of Computer Science",
+      "authors": "Storjohann, A."
+    },
+    {
+      "index": 44,
+      "title": "High-order lifting and integrality certification",
+      "abstract": "",
+      "year": "2003",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Storjohann, A."
+    },
+    {
+      "index": 45,
+      "title": "Notes on computing minimal approximant bases",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Challenges in Symbolic Computation Software",
+      "authors": "Storjohann, A."
+    },
+    {
+      "index": 46,
+      "title": "Gaussian elimination is not optimal",
+      "abstract": "",
+      "year": "1969",
+      "venue": "Numer. Math.",
+      "authors": "Strassen, V."
+    },
+    {
+      "index": 47,
+      "title": "FFLAS-FFPACK: Finite Field Linear Algebra Subroutines / Package, version 2.4.3",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "The FFLAS-FFPACK Group"
+    },
+    {
+      "index": 48,
+      "title": "Linbox: Linear algebra over black-box matrices, version 1.6.3",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "The LinBox Group"
+    },
+    {
+      "index": 49,
+      "title": "The complexity of a scheme of functional elements realizing the multiplication of integers",
+      "abstract": "",
+      "year": "1963",
+      "venue": "Soviet Mathematics Doklady",
+      "authors": "Toom, A.L."
+    },
+    {
+      "index": 50,
+      "title": "A general module theoretic framework for vector M-Padé and matrix rational interpolation",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Numer. Algorithms",
+      "authors": "Van Barel, M., Bultheel, A."
+    },
+    {
+      "index": 51,
+      "title": "Linear Multivariable Systems",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Springer-Verlag New-York",
+      "authors": "Wolovich, W.A."
+    },
+    {
+      "index": 52,
+      "title": "Fast Order Basis and Kernel Basis Computation and Related Problems",
+      "abstract": "",
+      "year": "2012",
+      "venue": "University of Waterloo",
+      "authors": "Zhou, W."
+    },
+    {
+      "index": 53,
+      "title": "Efficient computation of order bases",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ISSAC’09, ACM",
+      "authors": "Zhou, W., Labahn, G."
+    },
+    {
+      "index": 54,
+      "title": "Efficient algorithms for order basis computation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "J. Symbolic Comput.",
+      "authors": "Zhou, W., Labahn, G."
+    },
+    {
+      "index": 55,
+      "title": "Computing column bases of polynomial matrices",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISSAC’13, ACM",
+      "authors": "Zhou, W., Labahn, G."
+    },
+    {
+      "index": 56,
+      "title": "Unimodular completion of polynomial matrices",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ISSAC’14, ACM",
+      "authors": "Zhou, W., Labahn, G."
+    },
+    {
+      "index": 57,
+      "title": "Computing minimal nullspace bases",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ISSAC’12, ACM",
+      "authors": "Zhou, W., Labahn, G., Storjohann, A."
+    }
+  ]
+}

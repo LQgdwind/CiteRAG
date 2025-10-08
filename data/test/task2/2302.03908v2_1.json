@@ -1,0 +1,419 @@
+{
+  "paper_id": "2302.03908v2",
+  "title": "Syntax and Domain Aware Model for Unsupervised Program Translation",
+  "sections": {
+    "i introduction": "Programming language is the main tool for creating desktop applications, websites, and mobile applications.\nTo develop different applications, many different programming languages have been invented over the years. The diverse programming languages can facilitate developers to build various applications of multiple environments and platforms.\nTo meet new business needs and environments, one software initially developed in a language needs to migrate to other languages  . Code migration is a crucial activity during software development and maintenance [ref]8. There is a tremendous need for translating programs between different programming languages. Early studies mainly relied on handcrafted translation rules to translate between two languages. The translation is poor in readability and correctness, and needs extra manual corrections. Therefore, the translation process is error-prone and time-consuming [ref]43.\nFor example, it takes about 5 years and $750 million for Australia Commonwealth Bank to convert the platform from COBOL to Java [ref]21.\nTo improve the quality and efficiency, researchers began to explore the automatic approaches to build a program translator   [ref]8 [ref]21. Based on the naturalness theory of programming languages, i.e., source code is repetitive and predictable, statistical machine learning methods have been used for modeling programs and code migration. Some previous work borrowed the idea from the natural language translation field and applied statistical machine translation (SMT) approaches  for code migration  . Among these studies, researchers build statistical models and optimize the parameters by analyzing the statistical relationships between bilingual data. Then they employ these statistical models to generate translations. With the development of deep learning technologies, in recent years, researchers have started to tackle program translation task using supervised sequence-to-sequence neural machine translation (NMT) methods , which need a large amount of parallel code resources to train. However, parallel resources are much more scarce in the programming language domain than in natural language.\nIt is costly to collect bilingual program data manually. Therefore, applying the NMT technology to code translation still faces many challenges. To ease this issue, unsupervised machine translation techniques are proposed for programming translation [ref]21 . TransCoder [ref]21 first applied unsupervised machine translation approaches for program translation task, leveraging huge monolingual programs from GitHub to train their model, covering C++, Java, and Python languages. Then they adopted the model to translate between C++, Java, and Python. However, the model still needs to be pre-trained using a large amount of monolingual code corpus, which is very expensive. Besides, it cannot fit well for the languages that are not seen during the pre-training procedure according to our experimental results. Cross-lingual transfer can reduce the demand for labeled data to perform corresponding tasks in a new language and thus can support applications in low-resource languages . We argue that facilitating cross-lingual transfer is an effective way to improve data utilization and save computing resources, which can benefit program translation systems.\nTransferring across programming languages is challenging due to the differences in morphology, syntax, and semantics.\nFor instance, the IF statements in Python and Java in Figure 1 have the same meaning but with different token orders.\nUnlike natural languages, programs have explicit syntax structure and rigorous grammar. The correlation between syntax structure is much closer, which can help to reduce the morphological differences across languages and extract language-invariant features. As seen from Figure 1, the sub-trees corresponding to x>y𝑥𝑦x\\textgreater y (highlighted in the figure) in the two ASTs have the same structure. Besides, the distance between node pairs can indicate the structural correlation between tokens, and further reflects specific patterns of code snippets. However, the syntax structure is not fully leveraged in existing program translation models [ref]21 .\nBesides, these models are pre-trained with several self-supervised tasks on specific code corpus. Thus, they are poor at distinguishing the characteristic of different languages and domains when transferring knowledge.\nTo this end, we proposed SDA-Trans, a Syntax and Domain-Aware model for program Translation. Specifically, we augment Transformer model with language syntax by incorporating the structured representations of the program into the self-attention mechanism. Besides, we design a new domain-distinguish pre-training task to extract domain-invariant features111The definition of the domain-invariant features can be found in Section III-A.. This task asks the model to distinguish which domain/language the model is translated from, and learn the task via adversarial training. This task will encourage the model to distill domain-invariant syntactic and semantic features.\nInspired by unsupervised machine translation approaches  [ref]21, we train SDA-Trans with the following steps: (1) Initializing parameters of the vanilla Transformer with Cross Programming Masked Language Model and Denoising Auto-Encoding tasks; (2) Augmenting the model with syntax information, and add domain-distinguish pre-training task to make our model domain-aware by adversarial training; (3) Tuning SDA-Trans with back-translation. Since SDA-Trans is designed to extract the syntax structure and domain-invariant features during pre-training, we hope it can learn enough knowledge from limited data, which can, in turn, save computing resources. We train our model on a smaller scale of Python and Java monolingual code corpus (which contains 165k Java methods and 251k Python methods) compared with existing large-scale pre-trained models. We evaluate SDA-Trans on program translation between Java, Python, and C++, where C++ language is never seen during pre-training. Experimental results show that SDA-Trans achieves a remarkable gain compared with the large-scale pre-trained unsupervised program translation methods.\nThe ablation study further shows that both syntax and domain augmentation contribute to the improvement.\nWe summarize the contributions of this paper as follows: We build a novel approach SDA-Trans for unsupervised program translation, which leverages the syntax structure and domain knowledge to enhance the model’s cross-lingual transfer ability. We present a new unsupervised training paradigm using a three-stage strategy: (1) initializing the model with CMLM and DAE objectives; (2) continuously training with syntax and domain augmentation; and (3) tuning with back-translation. Despite pre-trained with fewer data, SDA-Trans achieves impressive performance on program translation, which is comparable with the large-scale pre-trained models, especially on unseen language translation."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A Transformer-based Approach for Source Code Summarization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACL",
+      "authors": "Wasi Uddin Ahmad, Saikat Chakraborty, Baishakhi Ray, and Kai-Wei Chang",
+      "orig_title": "A transformer-based approach for source code summarization",
+      "paper_id": "2005.00653v1"
+    },
+    {
+      "index": 1,
+      "title": "Unified Pre-training for Program Understanding and Generation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NAACL-HLT",
+      "authors": "Wasi Uddin Ahmad, Saikat Chakraborty, Baishakhi Ray, and Kai-Wei Chang",
+      "orig_title": "Unified pre-training for program understanding and generation",
+      "paper_id": "2103.06333v2"
+    },
+    {
+      "index": 2,
+      "title": "Syntax-augmented multilingual BERT for cross-lingual transfer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACL/IJCNLP (1)",
+      "authors": "Wasi Uddin Ahmad, Haoran Li, Kai-Wei Chang, and Yashar Mehdad"
+    },
+    {
+      "index": 3,
+      "title": "Gate: graph attention transformer encoder for cross-lingual relation and event extraction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Wasi Uddin Ahmad, Nanyun Peng, and Kai-Wei Chang"
+    },
+    {
+      "index": 4,
+      "title": "Unsupervised Neural Machine Translation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR (Poster)",
+      "authors": "Mikel Artetxe, Gorka Labaka, Eneko Agirre, and Kyunghyun Cho",
+      "orig_title": "Unsupervised neural machine translation",
+      "paper_id": "1710.11041v2"
+    },
+    {
+      "index": 5,
+      "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio",
+      "orig_title": "Neural machine translation by jointly learning to align and translate",
+      "paper_id": "1409.0473v7"
+    },
+    {
+      "index": 6,
+      "title": "When Deep Learning Met Code Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ESEC/SIGSOFT FSE",
+      "authors": "José Cambronero, Hongyu Li, Seohyun Kim, Koushik Sen, and Satish Chandra",
+      "orig_title": "When deep learning met code search",
+      "paper_id": "1905.03813v4"
+    },
+    {
+      "index": 7,
+      "title": "Tree-to-tree Neural Networks for Program Translation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Xinyun Chen, Chang Liu, and Dawn Song",
+      "orig_title": "Tree-to-tree neural networks for program translation",
+      "paper_id": "1802.03691v3"
+    },
+    {
+      "index": 8,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NAACL-HLT (1)",
+      "authors": "Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova",
+      "orig_title": "BERT: pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 9,
+      "title": "CodeBERT: A Pre-Trained Model for Programming and Natural Languages",
+      "abstract": "",
+      "year": "2020",
+      "venue": "EMNLP (Findings)",
+      "authors": "Zhangyin Feng, Daya Guo, Duyu Tang, Nan Duan, Xiaocheng Feng, Ming Gong, Linjun Shou, Bing Qin, Ting Liu, Daxin Jiang, and Ming Zhou",
+      "orig_title": "Codebert: A pre-trained model for programming and natural languages",
+      "paper_id": "2002.08155v4"
+    },
+    {
+      "index": 10,
+      "title": "Domain-Adversarial Training of Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Journal of machine learning research",
+      "authors": "Yaroslav Ganin, Evgeniya Ustinova, Hana Ajakan, Pascal Germain, Hugo Larochelle, François Laviolette, Mario Marchand, and Victor Lempitsky",
+      "orig_title": "Domain-adversarial training of neural networks",
+      "paper_id": "1505.07818v4"
+    },
+    {
+      "index": 11,
+      "title": "Universal Neural Machine Translation for Extremely Low Resource Languages",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NAACL-HLT",
+      "authors": "Jiatao Gu, Hany Hassan, Jacob Devlin, and Victor O. K. Li",
+      "orig_title": "Universal neural machine translation for extremely low resource languages",
+      "paper_id": "1802.05368v2"
+    },
+    {
+      "index": 12,
+      "title": "DeepAM: Migrate APIs with Multi-modal Sequence to Sequence Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCAI",
+      "authors": "Xiaodong Gu, Hongyu Zhang, Dongmei Zhang, and Sunghun Kim",
+      "orig_title": "Deepam: Migrate apis with multi-modal sequence to sequence learning",
+      "paper_id": "1704.07734v1"
+    },
+    {
+      "index": 13,
+      "title": "Deep code search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICSE",
+      "authors": "Xiaodong Gu, Hongyu Zhang, and Sunghun Kim"
+    },
+    {
+      "index": 14,
+      "title": "GraphCodeBERT: Pre-training Code Representations with Data Flow",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Daya Guo, Shuo Ren, Shuai Lu, Zhangyin Feng, Duyu Tang, Shujie Liu, Long Zhou, Nan Duan, Alexey Svyatkovskiy, Shengyu Fu, Michele Tufano, Shao Kun Deng, Colin B. Clement, Dawn Drain, Neel Sundaresan, Jian Yin, Daxin Jiang, and Ming Zhou",
+      "orig_title": "Graphcodebert: Pre-training code representations with data flow",
+      "paper_id": "2009.08366v4"
+    },
+    {
+      "index": 15,
+      "title": "Dual Learning for Machine Translation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Di He, Yingce Xia, Tao Qin, Liwei Wang, Nenghai Yu, Tie-Yan Liu, and Wei-Ying Ma",
+      "orig_title": "Dual learning for machine translation",
+      "paper_id": "1611.00179v1"
+    },
+    {
+      "index": 16,
+      "title": "Deep code comment generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICPC",
+      "authors": "Xing Hu, Ge Li, Xin Xia, David Lo, and Zhi Jin"
+    },
+    {
+      "index": 17,
+      "title": "CodeSearchNet Challenge Evaluating the State of Semantic Code Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1909.09436",
+      "authors": "Hamel Husain, Ho-Hsiang Wu, Tiferet Gazit, Miltiadis Allamanis, and Marc Brockschmidt",
+      "orig_title": "Codesearchnet challenge: Evaluating the state of semantic code search",
+      "paper_id": "1909.09436v3"
+    },
+    {
+      "index": 18,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "Diederik P Kingma and Jimmy Ba"
+    },
+    {
+      "index": 19,
+      "title": "Statistical Machine Translation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Cambridge University Press",
+      "authors": "Philipp Koehn"
+    },
+    {
+      "index": 20,
+      "title": "Unsupervised Translation of Programming Languages",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.03511",
+      "authors": "Marie-Anne Lachaux, Baptiste Roziere, Lowik Chanussot, and Guillaume Lample",
+      "orig_title": "Unsupervised translation of programming languages",
+      "paper_id": "2006.03511v3"
+    },
+    {
+      "index": 21,
+      "title": "DOBF: A Deobfuscation Pre-Training Objective for Programming Languages",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Marie-Anne Lachaux, Baptiste Rozière, Marc Szafraniec, and Guillaume Lample",
+      "orig_title": "DOBF: A deobfuscation pre-training objective for programming languages",
+      "paper_id": "2102.07492v3"
+    },
+    {
+      "index": 22,
+      "title": "Unsupervised Machine Translation Using Monolingual Corpora Only",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR (Poster)",
+      "authors": "Guillaume Lample, Alexis Conneau, Ludovic Denoyer, and Marc’Aurelio Ranzato",
+      "orig_title": "Unsupervised machine translation using monolingual corpora only",
+      "paper_id": "1711.00043v2"
+    },
+    {
+      "index": 23,
+      "title": "Phrase-Based & Neural Unsupervised Machine Translation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "EMNLP",
+      "authors": "Guillaume Lample, Myle Ott, Alexis Conneau, Ludovic Denoyer, and Marc’Aurelio Ranzato",
+      "orig_title": "Phrase-based & neural unsupervised machine translation",
+      "paper_id": "1804.07755v2"
+    },
+    {
+      "index": 24,
+      "title": "BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACL",
+      "authors": "Mike Lewis, Yinhan Liu, Naman Goyal, Marjan Ghazvininejad, Abdelrahman Mohamed, Omer Levy, Veselin Stoyanov, and Luke Zettlemoyer",
+      "orig_title": "BART: denoising sequence-to-sequence pre-training for natural language generation, translation, and comprehension",
+      "paper_id": "1910.13461v1"
+    },
+    {
+      "index": 25,
+      "title": "Multi-task learning based pre-trained language model for code completion",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/ACM International Conference on Automated Software Engineering",
+      "authors": "Fang Liu, Ge Li, Yunfei Zhao, and Zhi Jin"
+    },
+    {
+      "index": 26,
+      "title": "Lexical statistical machine translation for language migration",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Foundations of Software Engineering",
+      "authors": "Anh Tuan Nguyen, Tung Thanh Nguyen, and Tien N Nguyen"
+    },
+    {
+      "index": 27,
+      "title": "Divide-and-conquer approach for multi-phase statistical migration for source code (t)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE/ACM International Conference on Automated Software Engineering (ASE)",
+      "authors": "Anh Tuan Nguyen, Tung Thanh Nguyen, and Tien N Nguyen"
+    },
+    {
+      "index": 28,
+      "title": "Integrating tree path in transformer for code representation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Han Peng, Ge Li, Wenhan Wang, Yunfei Zhao, and Zhi Jin"
+    },
+    {
+      "index": 29,
+      "title": "Language models are unsupervised multitask learners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "OpenAI blog",
+      "authors": "Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever, et al."
+    },
+    {
+      "index": 30,
+      "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu",
+      "orig_title": "Exploring the limits of transfer learning with a unified text-to-text transformer",
+      "paper_id": "1910.10683v4"
+    },
+    {
+      "index": 31,
+      "title": "Leveraging Automated Unit Tests for Unsupervised Code Translation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICLR",
+      "authors": "Baptiste Rozière, Jie Zhang, François Charton, Mark Harman, Gabriel Synnaeve, and Guillaume Lample",
+      "orig_title": "Leveraging automated unit tests for unsupervised code translation",
+      "paper_id": "2110.06773v2"
+    },
+    {
+      "index": 32,
+      "title": "Improving neural machine translation models with monolingual data",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACL (1)",
+      "authors": "Rico Sennrich, Barry Haddow, and Alexandra Birch"
+    },
+    {
+      "index": 33,
+      "title": "Pythia: AI-assisted Code Completion System",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM SIGKDD International Conference on Knowledge Discovery & Data Mining",
+      "authors": "Alexey Svyatkovskiy, Ying Zhao, Shengyu Fu, and Neel Sundaresan",
+      "orig_title": "Pythia: Ai-assisted code completion system",
+      "paper_id": "1912.00742v1"
+    },
+    {
+      "index": 34,
+      "title": "Visualizing Data using GTSNE",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of machine learning research",
+      "authors": "Laurens Van der Maaten and Geoffrey Hinton",
+      "orig_title": "Visualizing data using t-sne",
+      "paper_id": "2108.01301v1"
+    },
+    {
+      "index": 35,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 36,
+      "title": "Graph Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR (Poster)",
+      "authors": "Petar Velickovic, Guillem Cucurull, Arantxa Casanova, Adriana Romero, Pietro Liò, and Yoshua Bengio",
+      "orig_title": "Graph attention networks",
+      "paper_id": "1710.10903v3"
+    },
+    {
+      "index": 37,
+      "title": "Dynamic Neural Program Embeddings for Program Repair",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR (Poster)",
+      "authors": "Ke Wang, Rishabh Singh, and Zhendong Su",
+      "orig_title": "Dynamic neural program embeddings for program repair",
+      "paper_id": "1711.07163v4"
+    },
+    {
+      "index": 38,
+      "title": "CodeT5: Identifier-aware Unified Pre-trained Encoder-Decoder Models for Code Understanding and Generation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "EMNLP (1)",
+      "authors": "Yue Wang, Weishi Wang, Shafiq R. Joty, and Steven C. H. Hoi",
+      "orig_title": "Codet5: Identifier-aware unified pre-trained encoder-decoder models for code understanding and generation",
+      "paper_id": "2109.00859v1"
+    },
+    {
+      "index": 39,
+      "title": "AURA: a hybrid approach to identify framework evolution",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ICSE (1)",
+      "authors": "Wei Wu, Yann-Gaël Guéhéneuc, Giuliano Antoniol, and Miryung Kim"
+    },
+    {
+      "index": 40,
+      "title": "A contextual alignment enhanced cross graph attention network for cross-lingual entity alignment",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Computational Linguistics",
+      "authors": "Zhiwen Xie, Runjie Zhu, Kunsong Zhao, Jin Liu, Guangyou Zhou, and Xiangji Huang"
+    },
+    {
+      "index": 41,
+      "title": "Graph-based, Self-Supervised Program Repair from Diagnostic Feedback",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "Michihiro Yasunaga and Percy Liang",
+      "orig_title": "Graph-based, self-supervised program repair from diagnostic feedback",
+      "paper_id": "2005.10636v2"
+    },
+    {
+      "index": 42,
+      "title": "Mining API mapping for language migration",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ICSE (1)",
+      "authors": "Hao Zhong, Suresh Thummalapenta, Tao Xie, Lu Zhang, and Qing Wang"
+    },
+    {
+      "index": 43,
+      "title": "Language-Agnostic Representation Learning of Source Code from Structure and Context",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Daniel Zügner, Tobias Kirschstein, Michele Catasta, Jure Leskovec, and Stephan Günnemann",
+      "orig_title": "Language-agnostic representation learning of source code from structure and context",
+      "paper_id": "2103.11318v1"
+    }
+  ]
+}

@@ -1,0 +1,435 @@
+{
+  "paper_id": "2202.09729v1",
+  "title": "It’s Raw! Audio Generation with State-Space Models",
+  "sections": {
+    "related work": "This work focuses primarily on the task of generating raw audio waveforms without conditioning information.\nMost past work on waveform generation involves conditioning on localized intermediate representations like\nspectrograms [ref]38  [ref]34,\nlinguistic features [ref]39  ,\nor discrete audio codes    .\nSuch intermediaries provide copious information about the underlying content of a waveform, enabling generative models to produce globally-coherent waveforms while only modeling local structure. In contrast, modeling waveforms in an unconditional fashion requires learning both local and global structure with a single model, and is thus more challenging.\nPast work in this setting can be categorized into\nAR approaches [ref]39  , where audio samples are generated one at a time given previous audio samples,\nand non-AR approaches 0 , where entire waveforms are generated in a single pass.\nWhile non-AR approaches tend to generate waveforms more efficiently,\nAR approaches have two key advantages.\nFirst, unlike non-AR approaches, they can generate waveforms of unbounded length.\nSecond, they can tractably compute exact likelihoods,\nallowing them to be used for compression  and posterior sampling 9. In addition to these two advantages, new architectures for AR modeling of audio have the potential to bring about a cascade of improvements in audio generation more broadly.\nFor example, while the WaveNet architecture was originally developed for AR modeling (in both conditional and unconditional settings),\nit has since become a fundamental piece of infrastructure in numerous audio generation systems.\nFor instance,\nWaveNet is\ncommonly used to vocode\nintermediaries such as spectrograms [ref]38 or discrete audio codes  into waveforms, often in the context of text-to-speech (TTS) systems.\nAdditionally, it serves as the backbone for several families of non-AR generative models of audio in both the conditional and unconditional settings: Distillation: Parallel WaveNet  and ClariNet  distill parallelizable flow models from a teacher WaveNet model. Likelihood-based flow models: WaveFlow , WaveGlow [ref]34, and FloWaveNet  all use WaveNet as a core component of reversible flow architectures. Autoencoders: WaveNet Autoencoder 1 and WaveVAE , which use WaveNets in their encoders. Generative adversarial networks (GAN): Parallel WaveGAN  and GAN-TTS , which use WaveNets in their discriminators. Diffusion probabilistic models: WaveGrad  and DiffWave  learn a reversible noise diffusion process on top of dilated convolutional architectures. In particular, we point out that DiffWave represents the state-of-the-art for unconditional waveform generation, and incorporates\nWaveNet as a black box. Despite its prevalence,\nWaveNet is unable to model long-term structure beyond the length of its receptive field (up to 333s), and in practice, may even fail to leverage available information beyond a few tens of milliseconds [ref]38.\nHence,\nwe develop an alternative to WaveNet which can leverage unbounded context.\nWe focus primarily on evaluating our proposed architecture SaShiMi in the fundamental AR setting,\nand additionally demonstrate that, like WaveNet,\nSaShiMi can also transfer to non-AR settings."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "High Fidelity Speech Synthesis with Adversarial Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Mikołaj Bińkowski, Jeff Donahue, Sander Dieleman, Aidan Clark, Erich Elsen, Norman Casagrande, Luis C Cobo, and Karen Simonyan",
+      "orig_title": "High fidelity speech synthesis with adversarial networks",
+      "paper_id": "1909.11646v2"
+    },
+    {
+      "index": 1,
+      "title": "On the opportunities and risks of foundation models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2108.07258",
+      "authors": "Rishi Bommasani, Drew A Hudson, Ehsan Adeli, Russ Altman, Simran Arora, Sydney von Arx, Michael S Bernstein, Jeannette Bohg, Antoine Bosselut, Emma Brunskill, et al."
+    },
+    {
+      "index": 2,
+      "title": "Language Models are Few-Shot Learners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2005.14165",
+      "authors": "Tom B Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al.",
+      "orig_title": "Language models are few-shot learners",
+      "paper_id": "2005.14165v4"
+    },
+    {
+      "index": 3,
+      "title": "Wavegrad: Estimating gradients for waveform generation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Nanxin Chen, Yu Zhang, Heiga Zen, Ron J Weiss, Mohammad Norouzi, and William Chan"
+    },
+    {
+      "index": 4,
+      "title": "Generating Long Sequences with Sparse Transformers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.10509",
+      "authors": "Rewon Child, Scott Gray, Alec Radford, and Ilya Sutskever",
+      "orig_title": "Generating long sequences with sparse transformers",
+      "paper_id": "1904.10509v1"
+    },
+    {
+      "index": 5,
+      "title": "Language Modeling with Gated Convolutional Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International conference on machine learning",
+      "authors": "Yann N Dauphin, Angela Fan, Michael Auli, and David Grangier",
+      "orig_title": "Language modeling with gated convolutional networks",
+      "paper_id": "1612.08083v3"
+    },
+    {
+      "index": 6,
+      "title": "Samplernn",
+      "abstract": "",
+      "year": "2017",
+      "venue": "https://github.com/deepsound-project/samplernn-pytorch",
+      "authors": "DeepSound"
+    },
+    {
+      "index": 7,
+      "title": "Jukebox: A Generative Model for Music",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2005.00341",
+      "authors": "Prafulla Dhariwal, Heewoo Jun, Christine Payne, Jong Wook Kim, Alec Radford, and Ilya Sutskever",
+      "orig_title": "Jukebox: A generative model for music",
+      "paper_id": "2005.00341v1"
+    },
+    {
+      "index": 8,
+      "title": "The challenge of realistic music generation: modelling raw audio at scale",
+      "abstract": "",
+      "year": "2018",
+      "venue": "32nd International Conference on Neural Information Processing Systems",
+      "authors": "Sander Dieleman, Aäron van den Oord, and Karen Simonyan",
+      "orig_title": "The challenge of realistic music generation: modelling raw audio at scale",
+      "paper_id": "1806.10474v1"
+    },
+    {
+      "index": 9,
+      "title": "Adversarial Audio Synthesis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Chris Donahue, Julian McAuley, and Miller Puckette",
+      "orig_title": "Adversarial audio synthesis",
+      "paper_id": "1802.04208v3"
+    },
+    {
+      "index": 10,
+      "title": "Neural Audio Synthesis of Musical Notes with WaveNet Autoencoders",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Jesse Engel, Cinjon Resnick, Adam Roberts, Sander Dieleman, Mohammad Norouzi, Douglas Eck, and Karen Simonyan",
+      "orig_title": "Neural audio synthesis of musical notes with wavenet autoencoders",
+      "paper_id": "1704.01279v1"
+    },
+    {
+      "index": 11,
+      "title": "HiPPO: Recurrent Memory with Optimal Polynomial Projections",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Albert Gu, Tri Dao, Stefano Ermon, Atri Rudra, and Christopher Ré",
+      "orig_title": "Hippo: Recurrent memory with optimal polynomial projections",
+      "paper_id": "2008.07669v2"
+    },
+    {
+      "index": 12,
+      "title": "Efficiently Modeling Long Sequences with Structured State Spaces",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Albert Gu, Karan Goel, and Christopher Ré",
+      "orig_title": "Efficiently modeling long sequences with structured state spaces",
+      "paper_id": "2111.00396v3"
+    },
+    {
+      "index": 13,
+      "title": "DeLiGAN : Generative Adversarial Networks for Diverse and Limited Data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Swaminathan Gurumurthy, Ravi Kiran Sarvadevabhatla, and R Venkatesh Babu",
+      "orig_title": "Deligan: Generative adversarial networks for diverse and limited data",
+      "paper_id": "1706.02071v1"
+    },
+    {
+      "index": 14,
+      "title": "Gaussian Error Linear Units (GELUs)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.08415",
+      "authors": "Dan Hendrycks and Kevin Gimpel",
+      "orig_title": "Gaussian error linear units (gelus)",
+      "paper_id": "1606.08415v5"
+    },
+    {
+      "index": 15,
+      "title": "GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Martin Heusel, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and Sepp Hochreiter",
+      "orig_title": "Gans trained by a two time-scale update rule converge to a local nash equilibrium",
+      "paper_id": "1706.08500v6"
+    },
+    {
+      "index": 16,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural computation",
+      "authors": "Sepp Hochreiter and Jürgen Schmidhuber"
+    },
+    {
+      "index": 17,
+      "title": "Gradient flow in recurrent nets: the difficulty of learning long-term dependencies",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": "Sepp Hochreiter, Yoshua Bengio, Paolo Frasconi, Jürgen Schmidhuber, et al."
+    },
+    {
+      "index": 18,
+      "title": "Parallel and Flexible Sampling from Autoregressive Models via Langevin Dynamics",
+      "abstract": "",
+      "year": "2021",
+      "venue": "The International Conference on Machine Learning (ICML)",
+      "authors": "Vivek Jayaram and John Thickstun",
+      "orig_title": "Parallel and flexible sampling from autoregressive models via langevin dynamics",
+      "paper_id": "2105.08164v2"
+    },
+    {
+      "index": 19,
+      "title": "Efficient Neural Audio Synthesis",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Nal Kalchbrenner, Erich Elsen, Karen Simonyan, Seb Noury, Norman Casagrande, Edward Lockhart, Florian Stimberg, Aäron van den Oord, Sander Dieleman, and Koray Kavukcuoglu",
+      "orig_title": "Efficient neural audio synthesis",
+      "paper_id": "1802.08435v2"
+    },
+    {
+      "index": 20,
+      "title": "FloWaveNet : A Generative Flow for Raw Audio",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Sungwon Kim, Sang-Gil Lee, Jongyoon Song, Jaehyeon Kim, and Sungroh Yoon",
+      "orig_title": "Flowavenet: A generative flow for raw audio",
+      "paper_id": "1811.02155v3"
+    },
+    {
+      "index": 21,
+      "title": "WAVENET BASED LOW RATE SPEECH CODING",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 IEEE international conference on acoustics, speech and signal processing (ICASSP)",
+      "authors": "W Bastiaan Kleijn, Felicia SC Lim, Alejandro Luebs, Jan Skoglund, Florian Stimberg, Quan Wang, and Thomas C Walters",
+      "orig_title": "Wavenet based low rate speech coding",
+      "paper_id": "1712.01120v1"
+    },
+    {
+      "index": 22,
+      "title": "Diffwave: A versatile diffusion model for audio synthesis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Zhifeng Kong, Wei Ping, Jiaji Huang, Kexin Zhao, and Bryan Catanzaro"
+    },
+    {
+      "index": 23,
+      "title": "MelGAN: Generative Adversarial Networks for Conditional Waveform Synthesis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Kundan Kumar, Rithesh Kumar, Thibault de Boissiere, Lucas Gestin, Wei Zhen Teoh, Jose Sotelo, Alexandre de Brébisson, Yoshua Bengio, and Aaron C Courville",
+      "orig_title": "Melgan: Generative adversarial networks for conditional waveform synthesis",
+      "paper_id": "1910.06711v3"
+    },
+    {
+      "index": 24,
+      "title": "Generative spoken language modeling from raw audio",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2102.01192",
+      "authors": "Kushal Lakhotia, Evgeny Kharitonov, Wei-Ning Hsu, Yossi Adi, Adam Polyak, Benjamin Bolte, Tu-Anh Nguyen, Jade Copet, Alexei Baevski, Adelrahman Mohamed, et al."
+    },
+    {
+      "index": 25,
+      "title": "Neural Speech Synthesis with Transformer Network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Naihan Li, Shujie Liu, Yanqing Liu, Sheng Zhao, and Ming Liu",
+      "orig_title": "Neural speech synthesis with transformer network",
+      "paper_id": "1809.08895v3"
+    },
+    {
+      "index": 26,
+      "title": "A ConvNet for the 2020s",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2201.03545",
+      "authors": "Zhuang Liu, Hanzi Mao, Chao-Yuan Wu, Christoph Feichtenhofer, Trevor Darrell, and Saining Xie",
+      "orig_title": "A convnet for the 2020s",
+      "paper_id": "2201.03545v2"
+    },
+    {
+      "index": 27,
+      "title": "Samplernn: An unconditional end-to-end neural audio generation model",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Soroush Mehri, Kundan Kumar, Ishaan Gulrajani, Rithesh Kumar, Shubham Jain, Jose Sotelo, Aaron Courville, and Yoshua Bengio"
+    },
+    {
+      "index": 28,
+      "title": "Expediting TTS Synthesis with Adversarial Vocoding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "INTERSPEECH",
+      "authors": "Paarth Neekhara, Chris Donahue, Miller Puckette, Shlomo Dubnov, and Julian McAuley",
+      "orig_title": "Expediting tts synthesis with adversarial vocoding",
+      "paper_id": "1904.07944v2"
+    },
+    {
+      "index": 29,
+      "title": "On the difficulty of training recurrent neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "International conference on machine learning",
+      "authors": "Razvan Pascanu, Tomas Mikolov, and Yoshua Bengio"
+    },
+    {
+      "index": 30,
+      "title": "Non-Autoregressive Neural Text-to-Speech",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International conference on machine learning",
+      "authors": "Kainan Peng, Wei Ping, Zhao Song, and Kexin Zhao",
+      "orig_title": "Non-autoregressive neural text-to-speech",
+      "paper_id": "1905.08459v3"
+    },
+    {
+      "index": 31,
+      "title": "ClariNet: Parallel Wave Generation in End-to-End Text-to-Speech",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Wei Ping, Kainan Peng, and Jitong Chen",
+      "orig_title": "Clarinet: Parallel wave generation in end-to-end text-to-speech",
+      "paper_id": "1807.07281v3"
+    },
+    {
+      "index": 32,
+      "title": "WaveFlow: A Compact Flow-based Model for Raw Audio",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Wei Ping, Kainan Peng, Kexin Zhao, and Zhao Song",
+      "orig_title": "Waveflow: A compact flow-based model for raw audio",
+      "paper_id": "1912.01219v4"
+    },
+    {
+      "index": 33,
+      "title": "WaveGlow: A Flow-based Generative Network for Speech Synthesis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICASSP 2019-2019 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "Ryan Prenger, Rafael Valle, and Bryan Catanzaro",
+      "orig_title": "Waveglow: A flow-based generative network for speech synthesis",
+      "paper_id": "1811.00002v1"
+    },
+    {
+      "index": 34,
+      "title": "Zero-Shot Text-to-Image Generation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2102.12092",
+      "authors": "Aditya Ramesh, Mikhail Pavlov, Gabriel Goh, Scott Gray, Chelsea Voss, Alec Radford, Mark Chen, and Ilya Sutskever",
+      "orig_title": "Zero-shot text-to-image generation",
+      "paper_id": "2102.12092v2"
+    },
+    {
+      "index": 35,
+      "title": "Improved Techniques for Training GANs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Tim Salimans, Ian Goodfellow, Wojciech Zaremba, Vicki Cheung, Alec Radford, and Xi Chen",
+      "orig_title": "Improved techniques for training gans",
+      "paper_id": "1606.03498v1"
+    },
+    {
+      "index": 36,
+      "title": "Pixelcnn++: Improving the pixelcnn with discretized logistic mixture likelihood and other modifications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Tim Salimans, Andrej Karpathy, Xi Chen, and Diederik P Kingma"
+    },
+    {
+      "index": 37,
+      "title": "Natural tts synthesis by conditioning wavenet on mel spectrogram predictions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "Jonathan Shen, Ruoming Pang, Ron J Weiss, Mike Schuster, Navdeep Jaitly, Zongheng Yang, Zhifeng Chen, Yu Zhang, Yuxuan Wang, Rj Skerrv-Ryan, et al."
+    },
+    {
+      "index": 38,
+      "title": "WaveNet: A Generative Model for Raw Audio",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1609.03499",
+      "authors": "Aäron van den Oord, Sander Dieleman, Heiga Zen, Karen Simonyan, Oriol Vinyals, Alex Graves, Nal Kalchbrenner, Andrew Senior, and Koray Kavukcuoglu",
+      "orig_title": "Wavenet: A generative model for raw audio",
+      "paper_id": "1609.03499v2"
+    },
+    {
+      "index": 39,
+      "title": "Neural Discrete Representation Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Aaron Van Den Oord, Oriol Vinyals, et al.",
+      "orig_title": "Neural discrete representation learning",
+      "paper_id": "1711.00937v2"
+    },
+    {
+      "index": 40,
+      "title": "Parallel WaveNet: Fast High-Fidelity Speech Synthesis",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on machine learning",
+      "authors": "Aäron van den Oord, Yazhe Li, Igor Babuschkin, Karen Simonyan, Oriol Vinyals, Koray Kavukcuoglu, George Driessche, Edward Lockhart, Luis Cobo, Florian Stimberg, et al.",
+      "orig_title": "Parallel wavenet: Fast high-fidelity speech synthesis",
+      "paper_id": "1711.10433v1"
+    },
+    {
+      "index": 41,
+      "title": "Speech commands: A dataset for limited-vocabulary speech recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ArXiv, abs/1804.03209",
+      "authors": "Pete Warden"
+    },
+    {
+      "index": 42,
+      "title": "Aggregated Residual Transformations for Deep Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Saining Xie, Ross Girshick, Piotr Dollár, Zhuowen Tu, and Kaiming He",
+      "orig_title": "Aggregated residual transformations for deep neural networks",
+      "paper_id": "1611.05431v2"
+    },
+    {
+      "index": 43,
+      "title": "Parallel WaveGAN: A fast waveform generation model based on generative adversarial networks with multi-resolution spectrogram",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICASSP 2020-2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "Ryuichi Yamamoto, Eunwoo Song, and Jae-Min Kim",
+      "orig_title": "Parallel wavegan: A fast waveform generation model based on generative adversarial networks with multi-resolution spectrogram",
+      "paper_id": "1910.11480v2"
+    },
+    {
+      "index": 44,
+      "title": "Activation Maximization Generative Adversarial Nets",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Zhiming Zhou, Han Cai, Shu Rong, Yuxuan Song, Kan Ren, Weinan Zhang, Jun Wang, and Yong Yu",
+      "orig_title": "Activation maximization generative adversarial nets",
+      "paper_id": "1703.02000v9"
+    }
+  ]
+}

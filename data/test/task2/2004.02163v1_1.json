@@ -1,0 +1,391 @@
+{
+  "paper_id": "2004.02163v1",
+  "title": "On the Convergence Analysis of Asynchronous SGD for Solving Consistent Linear Systems",
+  "sections": {
+    "centralized algorithms—related work": "As the digital data and computing power of the processors are increasing, in the past decade, there has been a strong focus on developing the parallel versions of stochastic algorithms. Based on the communication protocol, these parallel algorithms can be broadly classified as centralized (that follows a master-worker architecture) and decentralized (for example, Allreduce communication strategy, see  ). In this paper we will follow the centralized set-up, where a master node coordinates with all the worker nodes.\nDepending on the update rule, the centralized algorithms can be further categorized into two categories—synchronous and asynchronous. In this scope, for completeness, we will quote a few representatives of each of those categories. While Zinkevich et al.  proposed and analyzed synchronous parallel SGD, Richtárik and Takáč in [ref]34 showed by parallelizing, randomized block coordinate descent methods can be accelerated. Yang  proposed a distributed stochastic dual coordinate ascent algorithm in a star-shaped distributed network, and analyzed the trade-off between computation and communication. In a similar sprit, Jaggi et al.  proposed Communication-efficient distributed dual Coordinate Ascent or COCOA that uses an arbitrary dual optimization method on the local data on each computing node in parallel and reduces communication (we refer to the references in   for distributed primal-dual methods; additionally, see  for application to distributed MPC). Fercoq and Richtárik in  proposed APPROX or Accelerated Parallel PROXimal method—a unison of three ideas, that is, acceleration, parallelization, and proximal method. In , Richtárik and Takáč proposed and analyzed a hybrid coordinate descent method known as HYDRA that partitions the coordinates over the nodes, independently from the other nodes, and applies updates to the selected coordinates in parallel (we also refer to   and HYDRA-2  for more insights). In a similar line of work, Shamir et al.  proposed a distributed approximate Newton-type method or DANE. Synchronous stochastic algorithms are well explored regarding their convergence rates, acceleration, and parallelization  . However, they may suffer from the memory locking, that is, the processors or the computing nodes need to wait for the update from the slowest node. Hogwild! by Recht et al.  is one of the prime example of asynchronous stochastic algorithms and first one of its kind which do not use the memory locking protocol and as a result, the computing nodes can modify the parameters at the same time. De Sa et al.  proposed Buckwild! which is a low-precision asynchronous SGD. Additionally, they analyzed Hogwild! type algorithms with relaxed assumptions and analyzed asynchronous SGD algorithms for (non-convex) matrix-completion type problems (also see ). Chaturapruek et al.  showed that for convex problems, under similar conditions as regular SGD, asynchronous SGD achieves similar asymptotic convergence rate. However, as in  the perturbed iterate analysis of Mania et al.  and Leblond et al. 0 for proving the convergence of asynchronous SGD use rigorous sparsity assumption.\nNoel et al. 9 proposed Dogwild! that is distributed hogwild for CPU and GPU. In the advent of the deep neural networks, asynchronous parallel SGD type algorithms are highly deployed in practice. Recently, Lian et al.  showed that in their setting, proposed asynchronous parallel algorithms can achieve a linear speedup if the number of workers are bounded by the square root of the total number of iterations. In 2017, Zheng et al. 4 proposed an algorithm called delay compensated asynchronous SGD (DC-ASGD) for training deep neural networks and to compensate the delayed gradient update by the local workers to the global model. With experimental validity on deep neural networks, Zheng et al. claimed that their DC-ASGD outperforms both synchronous SGD and asynchronous SGD, and nearly approaches the performance of sequential SGD. Among the others, asynchronous algorithms by Aytekin et. al , distributed SDCA by Ma et. al , distributed SVRG by Lee et. al,  and Zhao and Li 3, asynchronous parallel SAGA by Leblond et al. 0, proximal asynchronous SAGA by Pedregosa et al. , are to name a few. We refer the readers to   for an in-depth understanding. We provide a table of the most frequently used notation in this paper for convenience (See Appendix B).\nHere we include some basic notations. We write the matrices\nin bold uppercase letters and denote vectors and scalars by simple lowercase letters. We define the range space and null space of a matrix 𝐀∈ℝm×n𝐀superscriptℝ𝑚𝑛{\\bf A}\\in\\mathbb{R}^{m\\times n} as Im​(𝐀):={y∈ℝm:y=𝐀​x}assignIm𝐀conditional-set𝑦superscriptℝ𝑚𝑦𝐀𝑥{\\rm Im}({\\bf A}):=\\{y\\in\\mathbb{R}^{m}:y={\\bf A}x\\} and N​(𝐀):={x∈ℝn:𝐀​x=0}assign𝑁𝐀conditional-set𝑥superscriptℝ𝑛𝐀𝑥0N({\\bf A}):=\\{x\\in\\mathbb{R}^{n}:{\\bf A}x=0\\}, respectively. We further define the Euclidean inner product as ⟨⋅,⋅⟩⋅⋅\\langle\\cdot,\\cdot\\rangle and for a symmetric positive definite matrix 𝐁𝐁{\\bf B}, we denote ⟨⋅,⋅⟩𝐁subscript⋅⋅𝐁\\langle\\cdot,\\cdot\\rangle_{{\\bf B}} as the 𝐁𝐁{\\bf B}-inner product and define ‖x‖𝐁=x⊤​𝐁​xsubscriptnorm𝑥𝐁superscript𝑥top𝐁𝑥\\|x\\|_{{\\bf B}}=\\sqrt{x^{\\top}{\\bf B}x} as the (semi)-norm induced by it. The paper is organized as follows. In Section 2, we review some key results related to the stochastic reformulation of linear systems and describe the synchronous parallel method by Richtárik and Takáč, in . Next in Section 3, we present our asynchronous parallel SGD. We compare the convergence rates of the asynchronous SGD with the synchronous parallel method in Section 4."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Analysis and Implementation of an Asynchronous Optimization Algorithm for the Parameter Server",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv",
+      "authors": "A. Aytekin, H. R. Feyzmahdavian, and M. Johansson",
+      "orig_title": "Analysis and implementation of an asynchronous optimization algorithm for the parameter server",
+      "paper_id": "1610.05507v1"
+    },
+    {
+      "index": 1,
+      "title": "Demystifying Parallel and Distributed Deep Learning: An In-Depth Concurrency Analysis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Computing Surveys (CSUR)",
+      "authors": "T. Ben-Nun and T. Hoefler",
+      "orig_title": "Demystifying parallel and distributed deep learning: An in-depth concurrency analysis",
+      "paper_id": "1802.09941v2"
+    },
+    {
+      "index": 2,
+      "title": "Parallel and distributed computation: numerical methods",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": "D. P Bertsekas and J. N Tsitsiklis"
+    },
+    {
+      "index": 3,
+      "title": "Parallel coordinate descent for l1-regularized loss minimization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "International Conference on Machine Learning",
+      "authors": "J. K. Bradley, A. Kyrola, D. Bickson, and C. Guestrin"
+    },
+    {
+      "index": 4,
+      "title": "Asynchronous stochastic convex optimization: the noise is in the noise and sgd don’t care",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "S. Chaturapruek, J. C. Duchi, and C. Ré"
+    },
+    {
+      "index": 5,
+      "title": "Chaotic relaxation",
+      "abstract": "",
+      "year": "1969",
+      "venue": "Linear Algebra and its Applications",
+      "authors": "D. Chazan and W. Miranker"
+    },
+    {
+      "index": 6,
+      "title": "Understanding and optimizing asynchronous low-precision stochastic gradient descent",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM SIGARCH Computer Architecture News",
+      "authors": "C. M. De Sa, M. Feldman, C. Ré, and K. Olukotun"
+    },
+    {
+      "index": 7,
+      "title": "Taming the Wild: A Unified Analysis of Hogwild!-Style Algorithms",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "C. M. De Sa, C. Zhang, K. Olukotun, and C. Ré",
+      "orig_title": "Taming the wild: A unified analysis of Hogwild-style algorithms",
+      "paper_id": "1506.06438v2"
+    },
+    {
+      "index": 8,
+      "title": "Optimal distributed online prediction using mini-batches",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "O. Dekel, R. Gilad-Bachrach, O. Shamir, and L. Xiao"
+    },
+    {
+      "index": 9,
+      "title": "On the Discrepancy between the Theoretical Analysis and Practical Implementations of Compressed Communication for Distributed Deep Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "A. Dutta, E. Bergou, A. M. Abdelmoniem, C. Y. Ho, A. N. Sahu, M. Canini, and P. Kalnis",
+      "orig_title": "On the discrepancy between the theoretical analysis and practical implementations of compressed communication for distributed deep learning",
+      "paper_id": "1911.08250v1"
+    },
+    {
+      "index": 10,
+      "title": "Fast distributed coordinate descent for non-strongly convex losses",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE International Workshop on Machine Learning for Signal Processing",
+      "authors": "O. Fercoq, Z. Qu, P. Richtárik, and M. Takáč"
+    },
+    {
+      "index": 11,
+      "title": "Accelerated, parallel, and proximal coordinate descent",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIAM Journal on Optimization",
+      "authors": "O. Fercoq and P. Richtárik"
+    },
+    {
+      "index": 12,
+      "title": "A delayed proximal gradient method with linear convergence rate",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE International Workshop on Machine Learning for Signal Processing (MLSP)",
+      "authors": "H. R. Feyzmahdavian, A. Aytekin, and M. Johansson"
+    },
+    {
+      "index": 13,
+      "title": "On asynchronous iterations",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Journal of Computational and Applied Mathematics",
+      "authors": "A. Frommer and D. B. Szyld"
+    },
+    {
+      "index": 14,
+      "title": "Distributed asynchronous online learning for natural language processing",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Conference on Computational Natural Language Learning",
+      "authors": "K. Gimpel, D. Das, and N. A. Smith"
+    },
+    {
+      "index": 15,
+      "title": "Randomized iterative methods for linear systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIAM Journal on Matrix Analysis and Applications",
+      "authors": "R. M. Gower and P. Richtárik"
+    },
+    {
+      "index": 16,
+      "title": "Stochastic Dual Ascent for Solving Linear Systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv",
+      "authors": "R. M. Gower and P. Richtárik",
+      "orig_title": "Stochastic dual ascent for solving linear systems",
+      "paper_id": "1512.06890v2"
+    },
+    {
+      "index": 17,
+      "title": "Communication-Efficient Distributed Dual Coordinate Ascent",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "M. Jaggi, V. Smith, M. Takáč, J. Terhorst, S. Krishnan, T. Hofmann, and M. Jordan",
+      "orig_title": "Communication-efficient distributed dual coordinate ascent",
+      "paper_id": "1409.1458v2"
+    },
+    {
+      "index": 18,
+      "title": "Accelerating stochastic gradient descent using predictive variance reduction",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "R. Johnson and T. Zhang"
+    },
+    {
+      "index": 19,
+      "title": "ASAGA: Asynchronous Parallel SAGA",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Artificial Intelligence and Statistics",
+      "authors": "R. Leblond, F. Pedregosa, and S. Lacoste-Julien"
+    },
+    {
+      "index": 20,
+      "title": "Distributed Stochastic Variance Reduced Gradient Methods and A Lower Bound for Communication Complexity",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv",
+      "authors": "J. D. Lee, Q Lin, T. Ma, and T. Yang",
+      "orig_title": "Distributed stochastic variance reduced gradient methods and a lower bound for communication complexity",
+      "paper_id": "1507.07595v2"
+    },
+    {
+      "index": 21,
+      "title": "Asynchronous parallel stochastic gradient for nonconvex optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "X. Lian, Y. Huang, Y. Li, and J. Liu"
+    },
+    {
+      "index": 22,
+      "title": "Adding vs. averaging in distributed primal dual optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning",
+      "authors": "C. Ma, V. Smith, M. Jaggi, M.Jordan, P. Richtárik, and M. Takáč"
+    },
+    {
+      "index": 23,
+      "title": "Perturbed Iterate Analysis for Asynchronous Stochastic Optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIAM Journal on Optimization",
+      "authors": "H. Mania, X. Pan, D. Papailiopoulos, B. Recht, K. Ramchandran, and M. Jordan",
+      "orig_title": "Perturbed iterate analysis for asynchronous stochastic optimization",
+      "paper_id": "1507.06970v2"
+    },
+    {
+      "index": 24,
+      "title": "Distributed block coordinate descent for minimizing partially separable functions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Numerical Analysis and Optimization",
+      "authors": "J. Mareček, P. Richtárik, and M. Takáč"
+    },
+    {
+      "index": 25,
+      "title": "Matrix analysis and applied linear algebra, 2000",
+      "abstract": "",
+      "year": "2000",
+      "venue": "SIAM",
+      "authors": "C. D. Meyer"
+    },
+    {
+      "index": 26,
+      "title": "Efficient parallel coordinate descent algorithm for convex optimization problems with separable constraints: Application to distributed MPC",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Journal of Process Control",
+      "authors": "I. Necoara and D. Clipici"
+    },
+    {
+      "index": 27,
+      "title": "SGD and Hogwild! convergence without the bounded gradients Assumption",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "L. Nguyen, P. H. Nguyen, M. Dijk, P. Richtárik, K. Scheinberg, and M. Takáč"
+    },
+    {
+      "index": 28,
+      "title": "Dogwild!-distributed hogwild for CPU & GPU",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NIPS Workshop on Distributed Machine Learning and Matrix Computations",
+      "authors": "C. Noel and S. Osindero"
+    },
+    {
+      "index": 29,
+      "title": "Breaking the Nonsmooth Barrier: A Scalable Parallel Method for Composite Optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing System",
+      "authors": "F. Pedregosa, R. Leblond, F. Pedregosa, and S. Lacoste-Julien",
+      "orig_title": "Breaking the nonsmooth barrier: A scalable parallel method for composite optimization",
+      "paper_id": "1707.06468v3"
+    },
+    {
+      "index": 30,
+      "title": "Polynomials, 2009",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Springer",
+      "authors": "V. V. Prasolov"
+    },
+    {
+      "index": 31,
+      "title": "Hogwild: A lock-free approach to parallelizing stochastic gradient descent",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "B. Recht, C. Re, S. Wright, and F. Niu"
+    },
+    {
+      "index": 32,
+      "title": "Distributed coordinate descent method for learning with big data",
+      "abstract": "",
+      "year": "2016",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "P. Richtárik and M. Takáč"
+    },
+    {
+      "index": 33,
+      "title": "Parallel coordinate descent methods for big data optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Mathematical Programming",
+      "authors": "P. Richtárik and M. Takáč"
+    },
+    {
+      "index": 34,
+      "title": "Stochastic Reformulations of Linear Systems: Algorithms and Convergence Theory",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv",
+      "authors": "P. Richtárik and M. Takáč",
+      "orig_title": "Stochastic reformulations of linear systems: Algorithms and convergence theory",
+      "paper_id": "1706.01108v4"
+    },
+    {
+      "index": 35,
+      "title": "A stochastic approximation method",
+      "abstract": "",
+      "year": "1951",
+      "venue": "Annals of Mathematical Statistics",
+      "authors": "H. Robbins and S. Monro"
+    },
+    {
+      "index": 36,
+      "title": "Pegasos: Primal estimated sub-gradient solver for SVM",
+      "abstract": "",
+      "year": "2007",
+      "venue": "24th International Conference on Machine Learning (ICML)",
+      "authors": "S. Shalev-Shwartz, Y. Singer, and N. Srebro"
+    },
+    {
+      "index": 37,
+      "title": "Accelerated mini-batch stochastic dual coordinate ascent",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "S. Shalev-Shwartz and T. Zhang"
+    },
+    {
+      "index": 38,
+      "title": "Communication-efficient distributed optimization using an approximate newton-type method",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International conference on machine learning",
+      "authors": "O. Shamir, N. Srebro, and T. Zhang"
+    },
+    {
+      "index": 39,
+      "title": "Mini-batch primal and dual methods for SVMs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "M. Takác, A. Singh Bijral, P. Richtárik, and N. Srebro"
+    },
+    {
+      "index": 40,
+      "title": "Compressed communication for distributed deep learning: Survey and quantitative evaluation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "H. Xu, C.-Y. Ho, A. M. Abdelmoniem, A. Dutta, E. H. Bergou, K. Karatsenidis, M. Canini, and P. Kalnis"
+    },
+    {
+      "index": 41,
+      "title": "Trading computation for communication: Distributed stochastic dual coordinate ascent",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "T. Yang"
+    },
+    {
+      "index": 42,
+      "title": "Fast asynchronous parallel stochastic gradient descent: A lock-free approach with convergence guarantee",
+      "abstract": "",
+      "year": "2016",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "S. Y. Zhao and W. J. Li"
+    },
+    {
+      "index": 43,
+      "title": "Asynchronous Stochastic Gradient Descent with Delay Compensation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "S. Zheng, Q. Meng, T. Wang, W. Chen, N. Yu, Z.-M. Ma, and T.-Y. Liu",
+      "orig_title": "Asynchronous stochastic gradient descent with delay compensation",
+      "paper_id": "1609.08326v6"
+    },
+    {
+      "index": 44,
+      "title": "Parallelized stochastic gradient descent",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "M. Zinkevich, M. Weimer, L. Li, and A. J. Smola"
+    }
+  ]
+}

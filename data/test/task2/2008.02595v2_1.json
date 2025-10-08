@@ -1,0 +1,491 @@
+{
+  "paper_id": "2008.02595v2",
+  "title": "Gibbs Sampling with People",
+  "sections": {
+    "introduction": "Humans continuously extract semantic representations\nfrom complex perceptual inputs, re-expressing them as meaningful information that can be efficiently communicated to primary cognitive processes such as memory, decision-making, and language   . Effective semantic representation seems to be a prerequisite for intelligent behavior, and is correspondingly a core topic of study in both cognitive science and machine learning 4  . One way of studying semantic representations in humans is to present participants with stimuli that exhaustively sample from a stimulus space (e.g., the space of visible colors) and ask them\nto evaluate these stimuli\n(e.g., ).\nUnfortunately, this method works poorly for high-dimensional stimuli whose parameter spaces are too large to explore exhaustively. An alternative approach is to hand-construct stimulus sets to test specific hypotheses about semantic representations (e.g., that slow melodies tend to sound sad, [ref]28);\nhowever, this approach relies heavily on prior domain knowledge, and is poorly suited to exploratory research. Markov Chain Monte Carlo with People (MCMCP) addresses this problem   .\nMCMCP takes as input a stimulus space (e.g., visible colors)\nand a target semantic category (e.g., ‘danger’).\nIn each trial, participants are presented with two stimuli\nand are asked which comes from the category.\nBy virtue of MCMCP’s adaptive procedure,\nstimulus selection becomes progressively biased\ntowards parts of the stimulus space that represent the category.\nThe resulting process iteratively characterizes the\nsubjective mapping\nbetween the stimulus space and the semantic concept\nfor a given participant or participant group.\nThe technique provides a way for cognitive scientists to systematically quantify subjective aspects of perception,\nfor example the way in which participants from a\nparticular musical culture hear certain chords as ‘consonant’,\nor the way in which participants have certain subjective ideas\nof what a ‘serious’ face looks like.\nThe approach has been shown to outperform reverse correlation, a related non-adaptive method for mapping semantic categories to perceptual spaces . According to the underlying theory, MCMCP converges asymptotically to the participant’s internal probabilistic representation of a given semantic category within a stimulus space . However, its practical convergence rate is limited for several reasons. The first concerns the response interface: MCMCP is traditionally limited to binary choice responses, which can only provide a small amount of information per trial (1 bit), much less than the theoretical limit of other response interfaces (e.g., sliders). The second depends on the proposal function that generates successive stimuli: a too-narrow proposal function makes the process slow to find the modes of the distribution, whereas a too-wide proposal function makes it harder for the process to estimate the mode with much precision 2 . Here we present a new technique for addressing these problems, termed Gibbs Sampling with People (GSP). While MCMCP corresponds to a human instantiation of the Metropolis-Hastings MCMC sampler, GSP corresponds to a human instantiation of a Gibbs sampler.\nCrucially, unlike 3, GSP has participants respond with a continuous slider rather than a binary choice. This has two effects: first, it substantially increases the upper bound of information per trial, and second, it eliminates the need to calibrate a proposal function.\nWe further show how GSP can be formulated in utility theory, thereby generalizing the approach from discrete to continuous semantic representations, and we show how GSP can be shifted towards deterministic optimization through an aggregation process.\n This paper continues with a review of MCMCP and a theoretical account of GSP.\nWe then describe four studies applying GSP to various visual and auditory domains, ranging from simple low-dimensional problems to complex high-dimensional problems parameterized by deep neural networks.\nThese studies include experiments directly implementing GSP and MCMCP, control experiments investigating different hyperparameters, and validation experiments for the generated outputs. All combined, these 25 experiments represent data from 5,178 human participants.111Appendices, code, and raw data are hosted at https://doi.org/10.17605/OSF.IO/RZK4S."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "The adaptive character of thought",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Lawrence Erlbaum Associates",
+      "authors": "J. R. Anderson"
+    },
+    {
+      "index": 1,
+      "title": "Acoustic profiles in vocal emotion expression..",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Journal of Personality and Social Psychology",
+      "authors": "R. Banse and K. R. Scherer"
+    },
+    {
+      "index": 2,
+      "title": "Path models of vocal emotion communication.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PLOS ONE",
+      "authors": "T. Bänziger, G. Hosoya, and K. R. Scherer"
+    },
+    {
+      "index": 3,
+      "title": "Monte Carlo calculations of the radial distribution functions for a proton-electron plasma.",
+      "abstract": "",
+      "year": "1965",
+      "venue": "Australian Journal of Physics",
+      "authors": "A. A. Barker"
+    },
+    {
+      "index": 4,
+      "title": "Vocal similarity predicts the relative attraction of musical chords.",
+      "abstract": "",
+      "year": "2018",
+      "venue": "National Academy of Sciences",
+      "authors": "D. L. Bowling, D. Purves, and K. Z. Gill"
+    },
+    {
+      "index": 5,
+      "title": "Evidence for attractors in English intonation.",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Journal of the Acoustical Society of America",
+      "authors": "B. Braun, G. Kochanski, E. Grabe, and B. S. Rosner"
+    },
+    {
+      "index": 6,
+      "title": "Visualising mental representations: a primer on noise-based reverse correlation in social psychology.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "European Review of Social Psychology",
+      "authors": "L. Brinkman, A. Todorov, and R. Dotsch"
+    },
+    {
+      "index": 7,
+      "title": "HARVARD corpus speech shaped noise and speech-modulated noise for SIN test.",
+      "abstract": "",
+      "year": "2019",
+      "venue": "University of Salford",
+      "authors": "P. Demonte"
+    },
+    {
+      "index": 8,
+      "title": "Demographics and dynamics of Mechanical Turk workers.",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM International Conference on Web Search and Data Mining",
+      "authors": "D. Difallah, E. Filatova, and P. Ipeirotis"
+    },
+    {
+      "index": 9,
+      "title": "Repeated imitation makes human vocalizations more word-like.",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Royal Society B: Biological Sciences",
+      "authors": "P. Edmiston, M. Perlman, and G. Lupyan"
+    },
+    {
+      "index": 10,
+      "title": "Sampling-based approaches to calculating marginal densities.",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "A. E. Gelfand and A. F. M. Smith"
+    },
+    {
+      "index": 11,
+      "title": "Markov Chain Monte Carlo in practice.",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Chapman & Hall",
+      "authors": "W. R. Gilks, S. Richardson, and D. J. Spiegelhalter (Eds.)"
+    },
+    {
+      "index": 12,
+      "title": "Subjective randomness as statistical inference.",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Cognitive Psychology",
+      "authors": "T. L. Griffiths, D. Daniels, J. L. Austerweil, and J. B. Tenenbaum"
+    },
+    {
+      "index": 13,
+      "title": "Topics in semantic representation.",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Psychological Review",
+      "authors": "T. L. Griffiths, M. Steyvers, and J. B. Tenenbaum"
+    },
+    {
+      "index": 14,
+      "title": "EmoteControl: A system for live-manipulation of emotional cues in music.",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Audio Mostly Conference: A Journey in Sound",
+      "authors": "A. M. Grimaud, T. Eerola, and N. Collins"
+    },
+    {
+      "index": 15,
+      "title": "Fair Generative Modeling via Weak Supervision",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv",
+      "authors": "A. Grover, K. Choi, R. Shu, and S. Ermon",
+      "orig_title": "Fair generative modeling via weak supervision.",
+      "paper_id": "1910.12008v2"
+    },
+    {
+      "index": 16,
+      "title": "GANSpace: Discovering Interpretable GAN Controls",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv",
+      "authors": "E. Härkönen, A. Hertzmann, J. Lehtinen, and S. Paris",
+      "orig_title": "GANSpace: discovering interpretable GAN controls.",
+      "paper_id": "2004.02546v3"
+    },
+    {
+      "index": 17,
+      "title": "Simultaneous consonance in music perception and composition.",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Psychological Review",
+      "authors": "P. M. C. Harrison and M. T. Pearce"
+    },
+    {
+      "index": 18,
+      "title": "Most people are not WEIRD.",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Nature",
+      "authors": "J. Henrich, S. J. Heine, and A. Norenzayan"
+    },
+    {
+      "index": 19,
+      "title": "Identifying representations of categories of discrete items using Markov chain Monte Carlo with People.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Annual Meeting of the Cognitive Science Society",
+      "authors": "A. Hsu, J. Martin, A. Sanborn, and T. Griffiths"
+    },
+    {
+      "index": 20,
+      "title": "IEEE recommended practice for speech quality measurements.",
+      "abstract": "",
+      "year": "1969",
+      "venue": "IEEE",
+      "authors": ""
+    },
+    {
+      "index": 21,
+      "title": "Cross-cultural work in music cognition: challenges, insights, and recommendations.",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Music Perception",
+      "authors": "N. Jacoby, E. H. Margulis, M. Clayton, E. Hannon, H. Honing, J. Iversen, T. R. Klein, S. A. Mehr, L. Pearson, I. Peretz, M. Perlman, R. Polak, A. Ravignani, P. E. Savage, G. Steingo, C. J. Stevens, L. Trainor, S. Trehub, M. Veal, and M. Wald-Fuhrmann"
+    },
+    {
+      "index": 22,
+      "title": "Integer ratio priors on musical rhythm revealed cross-culturally by iterated reproduction.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Current Biology",
+      "authors": "N. Jacoby and J. H. McDermott"
+    },
+    {
+      "index": 23,
+      "title": "Universal and non-universal features of musical pitch perception revealed by singing.",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Current Biology",
+      "authors": "N. Jacoby, E. A. Undurraga, M. J. McPherson, J. Valdés, T. Ossandón, and J. H. McDermott"
+    },
+    {
+      "index": 24,
+      "title": "Color spaces for computer graphics.",
+      "abstract": "",
+      "year": "1978",
+      "venue": "Annual Conference on Computer Graphics and Interactive Techniques",
+      "authors": "G. H. Joblove and D. Greenberg"
+    },
+    {
+      "index": 25,
+      "title": "Models of semantic memory.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Oxford handbook of mathematical and computational psychology",
+      "authors": "M. N. Jones, J. Willits, S. Dennis, and M. Jones"
+    },
+    {
+      "index": 26,
+      "title": "Communication of emotions in vocal expression and music performance: Different channels, same code?.",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Psychological Bulletin",
+      "authors": "P. N. Juslin and P. Laukka"
+    },
+    {
+      "index": 27,
+      "title": "Musical expression of emotions: Modelling listeners’ judgements of composed and performed features.",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Music Analysis",
+      "authors": "P. N. Juslin and E. Lindström"
+    },
+    {
+      "index": 28,
+      "title": "A Style-Based Generator Architecture for Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition CVPR",
+      "authors": "T. Karras, S. Laine, and T. Aila",
+      "orig_title": "A style-based generator architecture for generative adversarial networks.",
+      "paper_id": "1812.04948v3"
+    },
+    {
+      "index": 29,
+      "title": "Analyzing and Improving the Image Quality of StyleGAN",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv",
+      "authors": "T. Karras, S. Laine, M. Aittala, J. Hellsten, J. Lehtinen, and T. Aila",
+      "orig_title": "Analyzing and improving the image quality of StyleGAN.",
+      "paper_id": "1912.04958v2"
+    },
+    {
+      "index": 30,
+      "title": "The World Color Survey.",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CSLI Publications",
+      "authors": "P. Kay, B. Berlin, L. Maffi, W. R. Merrifield, and R. Cook"
+    },
+    {
+      "index": 31,
+      "title": "Structure emerges faster during cultural transmission in children than in adults.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Cognition",
+      "authors": "V. Kempe, N. Gauvrit, and D. Forsyth"
+    },
+    {
+      "index": 32,
+      "title": "Cumulative cultural evolution in the laboratory: an experimental approach to the origins of structure in human language.",
+      "abstract": "",
+      "year": "2008",
+      "venue": "National Academy of Sciences",
+      "authors": "S. Kirby, H. Cornish, and K. Smith"
+    },
+    {
+      "index": 33,
+      "title": "Cultural familiarity and musical expertise impact the pleasantness of consonance/dissonance but not its perceived tension.",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Scientific Reports",
+      "authors": "I. Lahdelma and T. Eerola"
+    },
+    {
+      "index": 34,
+      "title": "The expression and recognition of emotions in the voice across five nations: A lens model analysis based on acoustic features.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Journal of Personality and Social Psychology",
+      "authors": "P. Laukka, H. A. Elfenbein, N. S. Thingujam, T. Rockstuhl, F. K. Iraki, W. Chui, and J. Althoff"
+    },
+    {
+      "index": 35,
+      "title": "Cross-cultural emotion recognition and in-group advantage in vocal expression: A meta-analysis.",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Emotion Review",
+      "authors": "P. Laukka and H. A. Elfenbein"
+    },
+    {
+      "index": 36,
+      "title": "Testing the efficiency of Markov chain Monte Carlo with people using facial affect categories.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Cognitive Science",
+      "authors": "J. B. Martin, T. L. Griffiths, and A. N. Sanborn"
+    },
+    {
+      "index": 37,
+      "title": "Indifference to dissonance in native Amazonians reveals cultural variation in music perception.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Nature",
+      "authors": "J. H. McDermott, A. F. Schultz, E. A. Undurraga, and R. A. Godoy"
+    },
+    {
+      "index": 38,
+      "title": "Conditional logit analysis of qualitative choice behaviour.",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Frontiers in Econometrics",
+      "authors": "D. McFadden"
+    },
+    {
+      "index": 39,
+      "title": "Learning semantic representations of objects and their parts.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Machine Learning",
+      "authors": "G. Mesnil, A. Bordes, J. Weston, G. Chechik, and Y. Bengio"
+    },
+    {
+      "index": 40,
+      "title": "Cross-cultural emotional prosody recognition: Evidence from Chinese and British listeners.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Cognition & Emotion",
+      "authors": "S. Paulmann and A. K. Uskul"
+    },
+    {
+      "index": 41,
+      "title": "Tonal consonance and critical bandwidth.",
+      "abstract": "",
+      "year": "1965",
+      "venue": "Journal of the Acoustical Society of America",
+      "authors": "R. Plomp and W. J. M. Levelt"
+    },
+    {
+      "index": 42,
+      "title": "Cognitive representations of semantic categories..",
+      "abstract": "",
+      "year": "1975",
+      "venue": "Journal of Experimental Psychology: General",
+      "authors": "E. Rosch"
+    },
+    {
+      "index": 43,
+      "title": "A more rational model of categorization.",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Annual Conference of the Cognitive Science Society",
+      "authors": "A. N. Sanborn, T. L. Griffiths, and D. J. Navarro"
+    },
+    {
+      "index": 44,
+      "title": "Markov Chain Monte Carlo with People.",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Sanborn and T. L. Griffiths"
+    },
+    {
+      "index": 45,
+      "title": "Uncovering mental representations with Markov chain Monte Carlo.",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Cognitive Psychology",
+      "authors": "A. N. Sanborn, T. L. Griffiths, and R. M. Shiffrin"
+    },
+    {
+      "index": 46,
+      "title": "Exploring the structure of mental representations by implementing computer algorithms with people.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Cognitive Modeling in Perception and Memory: A Festschrift for Richard M. Shiffrin",
+      "authors": "A. N. Sanborn and T. L. Griffiths"
+    },
+    {
+      "index": 47,
+      "title": "Acoustic patterning of emotion vocalizations.",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Oxford Handbook of Voice Perception",
+      "authors": "K. R. Scherer"
+    },
+    {
+      "index": 48,
+      "title": "How we’ve taught algorithms to see identity: Constructing race and gender in image databases for facial analysis.",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM on Human-Computer Interaction",
+      "authors": "M. K. Scheuerman, K. Wade, C. Lustig, and J. R. Brubaker"
+    },
+    {
+      "index": 49,
+      "title": "Tuning, timbre, spectrum, scale.",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Springer",
+      "authors": "W. A. Sethares"
+    },
+    {
+      "index": 50,
+      "title": "A re-examination of probability matching and rational choice.",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Journal of Behavioral Decision Making",
+      "authors": "D. R. Shanks, R. J. Tunney, and J. D. McCarthy"
+    },
+    {
+      "index": 51,
+      "title": "Music and movement share a dynamic structure that supports universal expressions of emotion.",
+      "abstract": "",
+      "year": "2013",
+      "venue": "National Academy of Sciences",
+      "authors": "B. Sievers, L. Polansky, M. Casey, and T. Wheatley"
+    },
+    {
+      "index": 52,
+      "title": "Emergence of combinatorial structure and economy through iterated learning with continuous acoustic signals.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Journal of Phonetics",
+      "authors": "T. Verhoef, S. Kirby, and B. De Boer"
+    },
+    {
+      "index": 53,
+      "title": "An economist’s perspective on probability matching.",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Journal of Economic Surveys",
+      "authors": "N. Vulkan"
+    },
+    {
+      "index": 54,
+      "title": "Alternative Semantic Representations for Zero-Shot Human Action Recognition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "European Conference on Machine Learning and Knowledge Discovery in Databases",
+      "authors": "Q. Wang and K. Chen",
+      "orig_title": "Alternative semantic representations for zero-shot human action recognition.",
+      "paper_id": "1706.09317v1"
+    },
+    {
+      "index": 55,
+      "title": "A Bayesian observer model constrained by efficient coding can explain ‘anti-Bayesian’ percepts.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature Neuroscience",
+      "authors": "X. Wei and A. A. Stocker"
+    },
+    {
+      "index": 56,
+      "title": "Motion illusions as optimal percepts.",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Nature Neuroscience",
+      "authors": "Y. Weiss, E. P. Simoncelli, and E. H. Adelson"
+    },
+    {
+      "index": 57,
+      "title": "Headphone screening to facilitate web-based auditory experiments.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Attention, Perception, & Psychophysics",
+      "authors": "K. J. Woods, M. H. Siegel, J. Traer, and J. H. McDermott"
+    },
+    {
+      "index": 58,
+      "title": "A rational analysis of the effects of memory biases on serial reproduction.",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Cognitive Psychology",
+      "authors": "J. Xu and T. L. Griffiths"
+    }
+  ]
+}

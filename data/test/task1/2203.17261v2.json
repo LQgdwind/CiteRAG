@@ -1,0 +1,577 @@
+{
+  "paper_id": "2203.17261v2",
+  "title": "R2L: Distilling Neural Radiance Field to Neural Light Field for Efficient Novel View Synthesis",
+  "abstract": "Abstract\nRecent research explosion on Neural Radiance Field (NeRF) shows the encouraging potential to represent complex scenes with neural networks. One major drawback of NeRF is its prohibitive inference time: Rendering a single pixel requires querying the NeRF network hundreds of times. To resolve it, existing efforts mainly attempt to reduce the number of required sampled points. However, the problem of iterative sampling still exists. On the other hand, Neural Light Field (NeLF) presents a more straightforward representation over NeRF in novel view synthesis – the rendering of a pixel amounts to one single forward pass without ray-marching. In this work, we present a deep residual MLP network (88 layers) to effectively learn the light field. We show the key to successfully learning such a deep NeLF network is to have sufficient data, for which we transfer the knowledge from a pre-trained NeRF model via data distillation. Extensive experiments on both synthetic and real-world scenes show the merits of our method over other counterpart algorithms. On the synthetic scenes, we achieve 26∼35×26\\sim 35\\times FLOPs reduction (per camera ray) and 28∼31×28\\sim 31\\times runtime speedup, meanwhile delivering significantly better (1.4∼2.8similar-to1.42.81.4\\sim 2.8 dB average PSNR improvement) rendering quality than NeRF without any customized parallelism requirement.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "The plenoptic function and the elements of early vision, vol. 2",
+      "abstract": "",
+      "year": "1991",
+      "venue": "MIT Press",
+      "authors": "Adelson, E.H., Bergen, J.R., et al."
+    },
+    {
+      "index": 1,
+      "title": "Single lens stereo with a plenoptic camera",
+      "abstract": "",
+      "year": "1992",
+      "venue": "TPAMI",
+      "authors": "Adelson, E.H., Wang, J.Y."
+    },
+    {
+      "index": 2,
+      "title": "Flip: A difference evaluator for alternating images",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM in Computer Graphics and Interactive Techniques",
+      "authors": "Andersson, P., Nilsson, J., Akenine-Möller, T., Oskarsson, M., Åström, K., Fairchild, M.D."
+    },
+    {
+      "index": 3,
+      "title": "Learning neural light fields with ray-space embedding networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Attal, B., Huang, J.B., Zollhoefer, M., Kopf, J., Kim, C."
+    },
+    {
+      "index": 4,
+      "title": "Do deep nets really need to be deep?",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NeurIPS",
+      "authors": "Ba, J., Caruana, R."
+    },
+    {
+      "index": 5,
+      "title": "​​Mip-NeRF: A Multiscale Representation for Anti-Aliasing Neural Radiance Fields​",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.13415",
+      "authors": "Barron, J.T., Mildenhall, B., Tancik, M., Hedman, P., Martin-Brualla, R., Srinivasan, P.P.",
+      "orig_title": "Mip-nerf: A multiscale representation for anti-aliasing neural radiance fields",
+      "paper_id": "2103.13415v3"
+    },
+    {
+      "index": 6,
+      "title": "X-Fields: Implicit Neural View-, Light- and Time-Image Interpolation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACMTOG",
+      "authors": "Bemana, M., Myszkowski, K., Seidel, H.P., Ritschel, T.",
+      "orig_title": "X-fields: Implicit neural view-, light-and time-image interpolation",
+      "paper_id": "2010.00450v1"
+    },
+    {
+      "index": 7,
+      "title": "Model compression",
+      "abstract": "",
+      "year": "2006",
+      "venue": "SIGKDD",
+      "authors": "Buciluǎ, C., Caruana, R., Niculescu-Mizil, A."
+    },
+    {
+      "index": 8,
+      "title": "Learning efficient object detection models with knowledge distillation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "Chen, G., Choi, W., Yu, X., Han, T., Chandraker, M."
+    },
+    {
+      "index": 9,
+      "title": "Learning Implicit Fields for Generative Shape Modeling",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Chen, Z., Zhang, H.",
+      "orig_title": "Learning implicit fields for generative shape modeling",
+      "paper_id": "1812.02822v5"
+    },
+    {
+      "index": 10,
+      "title": "Neural volume rendering: Nerf and beyond",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2101.05204",
+      "authors": "Dellaert, F., Yen-Chen, L."
+    },
+    {
+      "index": 11,
+      "title": "Fastnerf: High-fidelity neural rendering at 200fps",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.10380",
+      "authors": "Garbin, S.J., Kowalski, M., Johnson, M., Shotton, J., Valentin, J."
+    },
+    {
+      "index": 12,
+      "title": "The lumigraph",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Annual Conference on Computer Graphics and Interactive Techniques",
+      "authors": "Gortler, S.J., Grzeszczuk, R., Szeliski, R., Cohen, M.F."
+    },
+    {
+      "index": 13,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "He, K., Zhang, X., Ren, S., Sun, J.",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 14,
+      "title": "Baking Neural Radiance Fields for Real-Time View Synthesis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.14645",
+      "authors": "Hedman, P., Srinivasan, P.P., Mildenhall, B., Barron, J.T., Debevec, P.",
+      "orig_title": "Baking neural radiance fields for real-time view synthesis",
+      "paper_id": "2103.14645v1"
+    },
+    {
+      "index": 15,
+      "title": "Beyond hard negative mining: Efficient detector learning via block-circulant decomposition",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CVPR",
+      "authors": "Henriques, J.F., Carreira, J., Caseiro, R., Batista, J."
+    },
+    {
+      "index": 16,
+      "title": "Knowledge Transfer via Distillation of Activation Boundaries Formed by Hidden Neurons",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "Heo, B., Lee, M., Yun, S., Choi, J.Y.",
+      "orig_title": "Knowledge transfer via distillation of activation boundaries formed by hidden neurons",
+      "paper_id": "1811.03233v2"
+    },
+    {
+      "index": 17,
+      "title": "Distilling the Knowledge in a Neural Network",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NeurIPS Workshop",
+      "authors": "Hinton, G., Vinyals, O., Dean, J.",
+      "orig_title": "Distilling the knowledge in a neural network",
+      "paper_id": "1503.02531v1"
+    },
+    {
+      "index": 18,
+      "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICML",
+      "authors": "Ioffe, S., Szegedy, C."
+    },
+    {
+      "index": 19,
+      "title": "Tinybert: Distilling bert for natural language understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1909.10351",
+      "authors": "Jiao, X., Yin, Y., Shang, L., Jiang, X., Chen, X., Li, L., Wang, F., Liu, Q."
+    },
+    {
+      "index": 20,
+      "title": "Ray tracing volume densities",
+      "abstract": "",
+      "year": "1984",
+      "venue": "SIGGRAPH",
+      "authors": "Kajiya, J.T., Von Herzen, B.P."
+    },
+    {
+      "index": 21,
+      "title": "Learning-Based View Synthesis for Light Field Cameras",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Transactions on Graphics",
+      "authors": "Kalantari, N.K., Wang, T.C., Ramamoorthi, R.",
+      "orig_title": "Learning-based view synthesis for light field cameras",
+      "paper_id": "1609.02974v1"
+    },
+    {
+      "index": 22,
+      "title": "An introduction to computational learning theory",
+      "abstract": "",
+      "year": "1994",
+      "venue": "MIT Press",
+      "authors": "Kearns, M.J., Vazirani, U.V., Vazirani, U."
+    },
+    {
+      "index": 23,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Kingma, D.P., Ba, J."
+    },
+    {
+      "index": 24,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "NeurIPS",
+      "authors": "Krizhevsky, A., Sutskever, I., Hinton, G.E."
+    },
+    {
+      "index": 25,
+      "title": "Light field rendering",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Annual Conference on Computer Graphics and Interactive Techniques",
+      "authors": "Levoy, M., Hanrahan, P."
+    },
+    {
+      "index": 26,
+      "title": "Neural Scene Flow Fields for Space-Time View Synthesis of Dynamic Scenes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Li, Z., Niklaus, S., Snavely, N., Wang, O.",
+      "orig_title": "Neural scene flow fields for space-time view synthesis of dynamic scenes",
+      "paper_id": "2011.13084v3"
+    },
+    {
+      "index": 27,
+      "title": "AutoInt: Automatic Integration for Fast Neural Volume Rendering",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Lindell, D.B., Martel, J.N., Wetzstein, G.",
+      "orig_title": "Autoint: Automatic integration for fast neural volume rendering",
+      "paper_id": "2012.01714v2"
+    },
+    {
+      "index": 28,
+      "title": "NeuLF: Efficient Novel View Synthesis with Neural 4D Light Field",
+      "abstract": "",
+      "year": "2022",
+      "venue": "EGSR",
+      "authors": "Liu, C., Li, Z., Yuan, J., Xu, Y.",
+      "orig_title": "Neulf: Efficient novel view synthesis with neural 4d light field",
+      "paper_id": "2105.07112v7"
+    },
+    {
+      "index": 29,
+      "title": "Neural Sparse Voxel Fields",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "Liu, L., Gu, J., Zaw Lin, K., Chua, T.S., Theobalt, C.",
+      "orig_title": "Neural sparse voxel fields",
+      "paper_id": "2007.11571v2"
+    },
+    {
+      "index": 30,
+      "title": "Knowledge distillation via instance relationship graph",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Liu, Y., Cao, J., Li, B., Yuan, C., Hu, W., Li, Y., Duan, Y."
+    },
+    {
+      "index": 31,
+      "title": "Occupancy Networks: Learning 3D Reconstruction in Function Space",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Mescheder, L., Oechsle, M., Niemeyer, M., Nowozin, S., Geiger, A.",
+      "orig_title": "Occupancy networks: Learning 3d reconstruction in function space",
+      "paper_id": "1812.03828v2"
+    },
+    {
+      "index": 32,
+      "title": "Local Light Field Fusion: Practical View Synthesis with Prescriptive Sampling Guidelines",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Transactions on Graphics",
+      "authors": "Mildenhall, B., Srinivasan, P.P., Ortiz-Cayon, R., Kalantari, N.K., Ramamoorthi, R., Ng, R., Kar, A.",
+      "orig_title": "Local light field fusion: Practical view synthesis with prescriptive sampling guidelines",
+      "paper_id": "1905.00889v1"
+    },
+    {
+      "index": 33,
+      "title": "NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Mildenhall, B., Srinivasan, P.P., Tancik, M., Barron, J.T., Ramamoorthi, R., Ng, R.",
+      "orig_title": "Nerf: Representing scenes as neural radiance fields for view synthesis",
+      "paper_id": "2003.08934v2"
+    },
+    {
+      "index": 34,
+      "title": "DONeRF: Towards Real-Time Rendering of Compact Neural Radiance Fields using Depth Oracle Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Computer Graphics Forum",
+      "authors": "Neff, T., Stadlbauer, P., Parger, M., Kurz, A., Mueller, J.H., Chaitanya, C.R.A., Kaplanyan, A.S., Steinberger, M.",
+      "orig_title": "DONeRF: Towards Real-Time Rendering of Compact Neural Radiance Fields using Depth Oracle Networks",
+      "paper_id": "2103.03231v4"
+    },
+    {
+      "index": 35,
+      "title": "DeepSDF: Learning Continuous Signed Distance Functions for Shape Representation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Park, J.J., Florence, P., Straub, J., Newcombe, R., Lovegrove, S.",
+      "orig_title": "Deepsdf: Learning continuous signed distance functions for shape representation",
+      "paper_id": "1901.05103v1"
+    },
+    {
+      "index": 36,
+      "title": "Relational Knowledge Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Park, W., Kim, D., Lu, Y., Cho, M.",
+      "orig_title": "Relational knowledge distillation",
+      "paper_id": "1904.05068v2"
+    },
+    {
+      "index": 37,
+      "title": "Learning Deep Representations with Probabilistic Knowledge Transfer",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Passalis, N., Tefas, A.",
+      "orig_title": "Learning deep representations with probabilistic knowledge transfer",
+      "paper_id": "1803.10837v3"
+    },
+    {
+      "index": 38,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga, L., et al.",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 39,
+      "title": "Correlation Congruence for Knowledge Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Peng, B., Jin, X., Liu, J., Li, D., Wu, Y., Liu, Y., Zhou, S., Zhang, Z.",
+      "orig_title": "Correlation congruence for knowledge distillation",
+      "paper_id": "1904.01802v1"
+    },
+    {
+      "index": 40,
+      "title": "TermiNeRF: Ray Termination Prediction for Efficient Neural Rendering",
+      "abstract": "",
+      "year": "2021",
+      "venue": "3DV",
+      "authors": "Piala, M., Clark, R.",
+      "orig_title": "Terminerf: Ray termination prediction for efficient neural rendering",
+      "paper_id": "2111.03643v1"
+    },
+    {
+      "index": 41,
+      "title": "DeRF: Decomposed Radiance Fields",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Rebain, D., Jiang, W., Yazdani, S., Li, K., Yi, K.M., Tagliasacchi, A.",
+      "orig_title": "Derf: Decomposed radiance fields",
+      "paper_id": "2011.12490v1"
+    },
+    {
+      "index": 42,
+      "title": "Kilonerf: Speeding up neural radiance fields with thousands of tiny mlps",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Reiser, C., Peng, S., Liao, Y., Geiger, A."
+    },
+    {
+      "index": 43,
+      "title": "FitNets: Hints for Thin Deep Nets",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Romero, A., Ballas, N., Kahou, S.E., Chassang, A., Gatta, C., Bengio, Y.",
+      "orig_title": "Fitnets: Hints for thin deep nets",
+      "paper_id": "1412.6550v4"
+    },
+    {
+      "index": 44,
+      "title": "Training Region-based Object Detectors with Online Hard Example Mining",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Shrivastava, A., Gupta, A., Girshick, R.",
+      "orig_title": "Training region-based object detectors with online hard example mining",
+      "paper_id": "1604.03540v1"
+    },
+    {
+      "index": 45,
+      "title": "Light Field Networks: Neural Scene Representations with Single-Evaluation Rendering",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Sitzmann, V., Rezchikov, S., Freeman, W.T., Tenenbaum, J.B., Durand, F.",
+      "orig_title": "Light field networks: Neural scene representations with single-evaluation rendering",
+      "paper_id": "2106.02634v2"
+    },
+    {
+      "index": 46,
+      "title": "Dropout: a simple way to prevent neural networks from overfitting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "JMLR",
+      "authors": "Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., Salakhutdinov, R."
+    },
+    {
+      "index": 47,
+      "title": "Light field neural rendering",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Suhail, M., Esteves, C., Sigal, L., Makadia, A."
+    },
+    {
+      "index": 48,
+      "title": "Neural Geometric Level of Detail: Real-time Rendering with Implicit 3D Shapes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Takikawa, T., Litalien, J., Yin, K., Kreis, K., Loop, C., Nowrouzezahrai, D., Jacobson, A., McGuire, M., Fidler, S.",
+      "orig_title": "Neural geometric level of detail: Real-time rendering with implicit 3d shapes",
+      "paper_id": "2101.10994v1"
+    },
+    {
+      "index": 49,
+      "title": "Contrastive Representation Distillation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Tian, Y., Krishnan, D., Isola, P.",
+      "orig_title": "Contrastive representation distillation",
+      "paper_id": "1910.10699v3"
+    },
+    {
+      "index": 50,
+      "title": "Similarity-Preserving Knowledge Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Tung, F., Mori, G.",
+      "orig_title": "Similarity-preserving knowledge distillation",
+      "paper_id": "1907.09682v2"
+    },
+    {
+      "index": 51,
+      "title": "The nature of statistical learning theory",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Springer Science & Business Media",
+      "authors": "Vapnik, V."
+    },
+    {
+      "index": 52,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, Ł., Polosukhin, I.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 53,
+      "title": "Collaborative Distillation for Ultra-Resolution Universal Style Transfer",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Wang, H., Li, Y., Wang, Y., Hu, H., Yang, M.H.",
+      "orig_title": "Collaborative distillation for ultra-resolution universal style transfer",
+      "paper_id": "2003.08436v2"
+    },
+    {
+      "index": 54,
+      "title": "Knowledge Distillation and Student-Teacher Learning for Visual Intelligence: A Review and New Outlooks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "TPAMI",
+      "authors": "Wang, L., Yoon, K.J.",
+      "orig_title": "Knowledge distillation and student-teacher learning for visual intelligence: A review and new outlooks",
+      "paper_id": "2004.05937v7"
+    },
+    {
+      "index": 55,
+      "title": "Image quality assessment: from error visibility to structural similarity",
+      "abstract": "",
+      "year": "2004",
+      "venue": "TIP",
+      "authors": "Wang, Z., Bovik, A.C., Sheikh, H.R., Simoncelli, E.P."
+    },
+    {
+      "index": 56,
+      "title": "NeX: Real-time View Synthesis with Neural Basis Expansion",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Wizadwongsa, S., Phongthawee, P., Yenphraphai, J., Suwajanakorn, S.",
+      "orig_title": "Nex: Real-time view synthesis with neural basis expansion",
+      "paper_id": "2103.05606v2"
+    },
+    {
+      "index": 57,
+      "title": "Nerf-pytorch",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Yen-Chen, L."
+    },
+    {
+      "index": 58,
+      "title": "PlenOctrees for Real-time Rendering of Neural Radiance Fields",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Yu, A., Li, R., Tancik, M., Li, H., Ng, R., Kanazawa, A.",
+      "orig_title": "Plenoctrees for real-time rendering of neural radiance fields",
+      "paper_id": "2103.14024v2"
+    },
+    {
+      "index": 59,
+      "title": "pixelNeRF: Neural Radiance Fields from One or Few Images",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Yu, A., Ye, V., Tancik, M., Kanazawa, A.",
+      "orig_title": "pixelnerf: Neural radiance fields from one or few images",
+      "paper_id": "2012.02190v3"
+    },
+    {
+      "index": 60,
+      "title": "Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via Attention Transfer",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Zagoruyko, S., Komodakis, N.",
+      "orig_title": "Paying more attention to attention: Improving the performance of convolutional neural networks via attention transfer",
+      "paper_id": "1612.03928v3"
+    },
+    {
+      "index": 61,
+      "title": "The Unreasonable Effectiveness of Deep Features as a Perceptual Metric",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Zhang, R., Isola, P., Efros, A.A., Shechtman, E., Wang, O.",
+      "orig_title": "The unreasonable effectiveness of deep features as a perceptual metric",
+      "paper_id": "1801.03924v2"
+    }
+  ]
+}

@@ -1,0 +1,465 @@
+{
+  "paper_id": "2404.05879v3",
+  "title": "Rapid and Precise Topological Comparison with Merge Tree Neural Networks",
+  "sections": {
+    "rapid and precise topological comparison with merge tree neural networks": "Merge trees are a valuable tool in the scientific visualization of scalar\nfields; however, current\nmethods for merge tree comparisons are computationally expensive, primarily\ndue to the exhaustive matching between tree nodes. To address this\nchallenge, we introduce the Merge Tree Neural Networks (MTNN), a learned neural network model designed for merge\ntree comparison. The MTNN enables rapid\nand high-quality similarity computation. We first demonstrate how graph\nneural networks, which emerged as effective encoders for graphs,\ncan be trained to produce embeddings of merge trees in vector spaces for\nefficient similarity comparison. Next, we formulate the novel MTNN\nmodel that further improves the similarity comparisons by integrating the\ntree and node embeddings with a new topological attention mechanism. We\ndemonstrate the effectiveness of our model on real-world data in different\ndomains and examine our model’s generalizability across various datasets.\nOur experimental analysis demonstrates our approach’s superiority in\naccuracy and efficiency. In particular, we speed up the prior\nstate-of-the-art by more than 100×100\\times on the benchmark datasets while\nmaintaining an error rate below 0.1%percent0.10.1\\%. (a) Merge tree distances, where trees are matched and edited, are computationally heavy and slow to compute. This leads to analyses\nthat can be a bottleneck in scientific workflows. (b) Here, we show an MDS visualization of a test dataset and the significant runtime necessary to produce a pair-wise distance matrix. (c) Rather than\ndirectly compute tree distances, we treat merge tree comparison as a\nlearning task using our novel Merge Tree Neural Networks (MTNN) to calculate the similarity. (d) MDS of the same data as (b) using MTNN. This\nreduces comparison times by orders of magnitude (5, here) with extremely low\nerror added compared to the state-of-the-art merge tree distance.\n\n\\useunder\\ul\n Introduction A fundamental challenge in scientific visualization is analyzing and visualizing\ndata, such as scalar fields, at speeds that support real-time\nexploration. Consider Topological Data Analysis\n(TDA) 7, which is now a critical component in\nmany visualization pipelines due to its ability to extract and succinctly\nsummarize structural information from complex datasets. TDA has been shown to\neffectively visualize  3 and\nanalyze a wide range of applications in\nchemistry  [ref]9,\nneuroscience , social\nnetworks , material\nscience 3, energy , and\nmedical domains 7  ,\nto name a few. However, TDA approaches can be quite slow to compute due to their\ncomputational expense. Therefore, they are difficult to use in scenarios where a\nquick answer is needed for an analysis. In particular, Merge Trees\n(MTs) 7 serve as\nexpressive topological descriptors that capture the complex structure of data,\nencoding the evolution of topological features with a history that records how\ntheir components merge. Despite being a powerful tool in various domains,\nthe computational cost associated with distance calculations for merge trees has been a\nsignificant limitation. This is due to the core operation of computing the\ndistance on merge trees needs to compare the optimal matching between each node of the merge trees.\nThis matching is known to be\nNP-hard 0.\nGiven the importance, yet great difficulty, of computing merge tree distances, a variety of metrics and pseudo-metrics have been proposed, such as functional distortion\ndistance , edit\ndistance , interleaving\ndistance 0 , and distances\nbased on branch decomposition and matching . While many\nof these distance metrics are computationally challenging, it is worth noting\nthat they are not universally NP-Hard . Some\nmetrics may have polynomial-time algorithms under specific conditions.\nHowever, these methods usually require complicated design and implementation\nbased on discrete optimizations. Despite not being exponential, the time\ncomplexity is usually still polynomial or sub-exponential in the number of nodes\nin the merge trees. In this work, we take a different approach. To address the challenge of fast\ncomparisons, we re-frame it as a learning task. Once the similarities\nof merge trees become learnable, we can reduce the comparison runtime by\navoiding the need to compute matchings between two MTs. To do so, we first need an\nencoder to map merge trees into a vector space, and learn this embedding model to\nposition similar merge trees closely and dissimilar ones far apart in this space. We\nfocus our investigation on Graph Neural Networks (GNNs) as our primary encoder,\na technique extensively studied for graph embeddings yet unexplored for merge trees. In the following, we introduce the first Merge Tree Neural Networks (MTNN)\nthat uses GNNs to learn merge tree similarity. In particular, we design a neural network\nmodel that maps a pair of merge trees into a similarity score. At the training stage,\nthe parameters involved in this model are learned by minimizing the\ndifference between the predicted similarity scores and a ground truth, where\neach training data point is a pair of merge trees with their true similarity score. At\nthe test stage, we can obtain a predicted similarity score by feeding the\nlearned model with any pair of unseen merge trees. To effectively learn both the structural and topological information of merge trees, we\nneed to design the neural network architecture carefully. Traditional GNNs can\nonly encode structural information of graphs, not merge trees. We introduce two key\nstrategies to address this gap: firstly, we employ the Graph Isomorphism Network\n(GIN) as our encoder, which excels in identifying structural distinctions in merge trees due to its design for graph isomorphism tasks. Secondly, we develop an innovative\ntopological attention mechanism designed to identify and highlight\nimportant nodes within a merge tree. This mechanism re-weight nodes based on\ntheir ground truth MT distance and nodes’ topological significance (persistence). We conduct our experiments on five datasets: a synthetic\npoint cloud, two datasets from time-varying flow simulations, one from a\nrepeating pattern flow simulation, and one of 3D shapes. On all datasets, MTNN\nsignificantly enhances efficiency, accelerating the runtime by over 100 times\nwhile maintaining a low error rate when compared to a target MT similarity\nmetric . Our contributions can be summarized as follows: The first neural network model for merge tree similarity, called MTNN; A novel topological-based attention mechanism for GNNs; An evaluation that shows MTNN’s extremely precise(<0.1%absentpercent0.1<0.1\\% mean\nsquared error) and fast (>100×>100\\times speedup) similarity measures; An evaluation of the generalizability of trained models; and An open-source implementation for\nreproducibility 111https://osf.io/2n8dy/?view_only=fd8d0de16b4548f9adc33c091a9aa1f6. The paper is organized as follows: Section 1 discusses related work,\nfocusing on the computation of distance between merge trees and the application of\nlearning methods for graph similarity. Section 2 provides the\nnecessary preliminary background. In Section 3, we examine the\nusing GNNs for merge trees. Our proposed model, MTNN, is detailed in\nSection 4. Section 5 presents our results, and\nSection 6 concludes the paper."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Computing the gromov-hausdorff distance for metric trees",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Transactions on Algorithms (TALG)",
+      "authors": "P. K. Agarwal, K. Fox, A. Nath, A. Sidiropoulos, and Y. Wang"
+    },
+    {
+      "index": 1,
+      "title": "Extracting knowledge from the geometric shape of social network data using topological data analysis",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Entropy",
+      "authors": "K. Almgren, M. Kim, and J. Lee"
+    },
+    {
+      "index": 2,
+      "title": "Vector field topology of time-dependent flows in a steady reference frame",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "I. Baeza Rojo and T. Günther"
+    },
+    {
+      "index": 3,
+      "title": "SimGNN: A Neural Network Approach to Fast Graph Similarity Computation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "twelfth ACM international conference on web search and data mining",
+      "authors": "Y. Bai, H. Ding, S. Bian, T. Chen, Y. Sun, and W. Wang",
+      "orig_title": "Simgnn: A neural network approach to fast graph similarity computation",
+      "paper_id": "1808.05689v4"
+    },
+    {
+      "index": 4,
+      "title": "Learning-based Efficient Graph Similarity Computation via Multi-Scale Convolutional Set Matching",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI conference on artificial intelligence",
+      "authors": "Y. Bai, H. Ding, K. Gu, Y. Sun, and W. Wang",
+      "orig_title": "Learning-based efficient graph similarity computation via multi-scale convolutional set matching",
+      "paper_id": "1809.04440v2"
+    },
+    {
+      "index": 5,
+      "title": "Measuring distance between reeb graphs",
+      "abstract": "",
+      "year": "2014",
+      "venue": "thirtieth annual symposium on Computational geometry",
+      "authors": "U. Bauer, X. Ge, and Y. Wang"
+    },
+    {
+      "index": 6,
+      "title": "The reeb graph edit distance is universal",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Foundations of Computational Mathematics",
+      "authors": "U. Bauer, C. Landi, and F. Mémoli"
+    },
+    {
+      "index": 7,
+      "title": "Measuring the distance between merge trees",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Springer",
+      "authors": "K. Beketayev, D. Yeliussizov, D. Morozov, G. H. Weber, and B. Hamann"
+    },
+    {
+      "index": 8,
+      "title": "Topoms: Comprehensive topological exploration for molecular and condensed-matter systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of Computational Chemistry",
+      "authors": "H. Bhatia, A. G. Gyulassy, V. Lordi, J. E. Pask, V. Pascucci, and P.-T. Bremer"
+    },
+    {
+      "index": 9,
+      "title": "Computing a Stable Distance on Merge Trees",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "B. Bollen, P. Tennakoon, and J. A. Levine",
+      "orig_title": "Computing a stable distance on merge trees",
+      "paper_id": "2210.08644v1"
+    },
+    {
+      "index": 10,
+      "title": "Interactive exploration and analysis of large-scale simulations using topology-based data segmentation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "P.-T. Bremer, G. Weber, J. Tierny, V. Pascucci, M. Day, and J. Bell"
+    },
+    {
+      "index": 11,
+      "title": "Numerical geometry of non-rigid shapes",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Springer Science & Business Media",
+      "authors": "A. M. Bronstein, M. M. Bronstein, and R. Kimmel"
+    },
+    {
+      "index": 12,
+      "title": "Multidimensional scaling",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Measurement, judgment and decision making",
+      "authors": "J. D. Carroll and P. Arabie"
+    },
+    {
+      "index": 13,
+      "title": "Siamese neural networks: An overview",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Artificial neural networks",
+      "authors": "D. Chicco"
+    },
+    {
+      "index": 14,
+      "title": "Decorated merge trees for persistent topology",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Journal of Applied and Computational Topology",
+      "authors": "J. Curry, H. Hang, W. Mio, T. Needham, and O. B. Okutan"
+    },
+    {
+      "index": 15,
+      "title": "The edit distance for reeb graphs of surfaces",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Discrete & Computational Geometry",
+      "authors": "B. Di Fabio and C. Landi"
+    },
+    {
+      "index": 16,
+      "title": "Computational Topology: An Introduction",
+      "abstract": "",
+      "year": "2010",
+      "venue": "American Mathematical Soc.",
+      "authors": "H. Edelsbrunner and J. Harer"
+    },
+    {
+      "index": 17,
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1903.02428",
+      "authors": "M. Fey and J. E. Lenssen",
+      "orig_title": "Fast graph representation learning with pytorch geometric",
+      "paper_id": "1903.02428v3"
+    },
+    {
+      "index": 18,
+      "title": "A survey of graph edit distance",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Pattern Analysis and applications",
+      "authors": "X. Gao, B. Xiao, D. Tao, and X. Li"
+    },
+    {
+      "index": 19,
+      "title": "Intrinsic Interleaving Distance for Merge Trees",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.00063",
+      "authors": "E. Gasparovic, E. Munch, S. Oudot, K. Turner, B. Wang, and Y. Wang",
+      "orig_title": "Intrinsic interleaving distance for merge trees",
+      "paper_id": "1908.00063v2"
+    },
+    {
+      "index": 20,
+      "title": "Characterizing molecular interactions in chemical systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "D. Günther, R. A. Boto, J. Contreras-Garcia, J.-P. Piquemal, and J. Tierny"
+    },
+    {
+      "index": 21,
+      "title": "Generic objective vortices for flow visualization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Transactions on Graphics (Proc. SIGGRAPH)",
+      "authors": "T. Günther, M. Gross, and H. Theisel"
+    },
+    {
+      "index": 22,
+      "title": "Stability of dissipation elements: A case study in combustion",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computer Graphics Forum",
+      "authors": "A. Gyulassy, P.-T. Bremer, R. Grout, H. Kolla, J. Chen, and V. Pascucci"
+    },
+    {
+      "index": 23,
+      "title": "Inductive Representation Learning on Large Graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "W. Hamilton, Z. Ying, and J. Leskovec",
+      "orig_title": "Inductive representation learning on large graphs",
+      "paper_id": "1706.02216v4"
+    },
+    {
+      "index": 24,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 25,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1609.02907",
+      "authors": "T. N. Kipf and M. Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 26,
+      "title": "Persistent homology for the quantitative evaluation of architectural features in prostate cancer histology",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Scientific Reports",
+      "authors": "P. Lawson, A. B. Sholl, J. Q. Brown, B. T. Fasy, and C. Wenk"
+    },
+    {
+      "index": 27,
+      "title": "Sketching merge trees for scientific visualization",
+      "abstract": "",
+      "year": "2023",
+      "venue": "2023 Topological Data Analysis and Visualization (TopoInVis)",
+      "authors": "M. Li, S. Palande, L. Yan, and B. Wang"
+    },
+    {
+      "index": 28,
+      "title": "Graph matching networks for learning the similarity of graph structured objects",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International conference on machine learning",
+      "authors": "Y. Li, C. Gu, T. Dullien, O. Vinyals, and P. Kohli"
+    },
+    {
+      "index": 29,
+      "title": "Topology-inspired partition-based sensitivity analysis and visualization of nuclear simulations",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE PacificVis",
+      "authors": "D. Maljovec, B. Wang, P. Rosen, A. Alfonsi, G. Pastore, C. Rabiti, and V. Pascucci"
+    },
+    {
+      "index": 30,
+      "title": "Weighted persistent homology for biomolecular data analysis",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Scientific Reports",
+      "authors": "Z. Meng, D. V. Anand, Y. Lu, J. Wu, and K. Xia"
+    },
+    {
+      "index": 31,
+      "title": "Interleaving distance between merge trees",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Discrete and Computational Geometry",
+      "authors": "D. Morozov, K. Beketayev, and G. Weber"
+    },
+    {
+      "index": 32,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, T. Killeen, Z. Lin, N. Gimelshein, L. Antiga, et al.",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 33,
+      "title": "Wasserstein Auto-Encoders of Merge Trees (and Persistence Diagrams)",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "M. Pont and J. Tierny",
+      "orig_title": "Wasserstein auto-encoders of merge trees (and persistence diagrams)",
+      "paper_id": "2307.02509v2"
+    },
+    {
+      "index": 34,
+      "title": "Principal geodesic analysis of merge trees (and persistence diagrams)",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "M. Pont, J. Vidal, and J. Tierny"
+    },
+    {
+      "index": 35,
+      "title": "Free computational fluid dynamics",
+      "abstract": "",
+      "year": "2004",
+      "venue": "ClusterWorld",
+      "authors": "S. Popinet"
+    },
+    {
+      "index": 36,
+      "title": "Slow learning and fast inference: Efficient graph similarity computation via knowledge distillation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "C. Qin, H. Zhao, L. Wang, H. Wang, Y. Zhang, and Y. Fu"
+    },
+    {
+      "index": 37,
+      "title": "A domain-oblivious approach for learning concise representations of filtered topological spaces for clustering",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "Y. Qin, B. T. Fasy, C. Wenk, and B. Summa"
+    },
+    {
+      "index": 38,
+      "title": "Topological guided detection of extreme wind phenomena: Implications for wind energy",
+      "abstract": "",
+      "year": "2023",
+      "venue": "2023 Workshop on Energy Data Visualization (EnergyVis)",
+      "authors": "Y. Qin, G. Johnson, and B. Summa"
+    },
+    {
+      "index": 39,
+      "title": "Extended branch decomposition graphs: Structural comparison of scalar data",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computer Graphics Forum",
+      "authors": "H. Saikia, H.-P. Seidel, and T. Weinkauf"
+    },
+    {
+      "index": 40,
+      "title": "Global feature tracking and similarity estimation in time-dependent scalar fields",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Computer Graphics Forum",
+      "authors": "H. Saikia and T. Weinkauf"
+    },
+    {
+      "index": 41,
+      "title": "Reasoning with neural tensor networks for knowledge base completion",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in neural information processing systems",
+      "authors": "R. Socher, D. Chen, C. D. Manning, and A. Ng"
+    },
+    {
+      "index": 42,
+      "title": "The paraview guide, vol. 366",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Kitware Clifton Park, NY",
+      "authors": "A. H. Squillacote, J. Ahrens, C. Law, B. Geveci, K. Moreland, and B. King"
+    },
+    {
+      "index": 43,
+      "title": "Edit distance between merge trees",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "R. Sridharamurthy, T. B. Masood, A. Kamakshidasan, and V. Natarajan"
+    },
+    {
+      "index": 44,
+      "title": "Comparative Analysis of Merge Trees using Local Tree Edit Distance",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "R. Sridharamurthy and V. Natarajan",
+      "orig_title": "Comparative analysis of merge trees using local tree edit distance",
+      "paper_id": "2111.04382v1"
+    },
+    {
+      "index": 45,
+      "title": "The Topology ToolKit",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "J. Tierny, G. Favelier, J. A. Levine, C. Gueunet, and M. Michaux",
+      "orig_title": "The topology toolkit",
+      "paper_id": "1805.09110v2"
+    },
+    {
+      "index": 46,
+      "title": "Taming Horizontal Instability in Merge Trees: On the Computation of a Comprehensive Deformation-based Edit Distance",
+      "abstract": "",
+      "year": "2023",
+      "venue": "2023 Topological Data Analysis and Visualization (TopoInVis)",
+      "authors": "F. Wetzels, M. Anders, and C. Garth",
+      "orig_title": "Taming horizontal instability in merge trees: On the computation of a comprehensive deformation-based edit distance",
+      "paper_id": "2308.08484v1"
+    },
+    {
+      "index": 47,
+      "title": "Branch Decomposition-Independent Edit Distances for Merge Trees",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Computer Graphics Forum",
+      "authors": "F. Wetzels, H. Leitte, and C. Garth",
+      "orig_title": "Branch decomposition-independent edit distances for merge trees",
+      "paper_id": "2204.02919v1"
+    },
+    {
+      "index": 48,
+      "title": "Persistent homology analysis of protein structure, flexibility, and folding",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International journal for numerical methods in biomedical engineering",
+      "authors": "K. Xia and G.-W. Wei"
+    },
+    {
+      "index": 49,
+      "title": "How Powerful are Graph Neural Networks?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.00826",
+      "authors": "K. Xu, W. Hu, J. Leskovec, and S. Jegelka",
+      "orig_title": "How powerful are graph neural networks?",
+      "paper_id": "1810.00826v3"
+    },
+    {
+      "index": 50,
+      "title": "Geometry-Aware Merge Tree Comparisons for Time-Varying Data with Interleaving Distances",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "L. Yan, T. B. Masood, F. Rasheed, I. Hotz, and B. Wang",
+      "orig_title": "Geometry aware merge tree comparisons for time-varying data with interleaving distances",
+      "paper_id": "2107.14373v1"
+    },
+    {
+      "index": 51,
+      "title": "A Structural Average of Labeled Merge Trees for Uncertainty Visualization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "L. Yan, Y. Wang, E. Munch, E. Gasparovic, and B. Wang",
+      "orig_title": "A structural average of labeled merge trees for uncertainty visualization",
+      "paper_id": "1908.00113v2"
+    },
+    {
+      "index": 52,
+      "title": "Comparing stars: On approximating graph edit distance",
+      "abstract": "",
+      "year": "2009",
+      "venue": "VLDB Endowment",
+      "authors": "Z. Zeng, A. K. Tung, J. Wang, J. Feng, and L. Zhou"
+    }
+  ]
+}

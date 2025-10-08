@@ -1,0 +1,387 @@
+{
+  "paper_id": "2308.03572v5",
+  "title": "Provably Efficient Learning in Partially Observable Contextual Bandit",
+  "sections": {
+    "task 3: transfer from partially observable contextual bandit to partially observable contextual bandit": "We will now consider a more challenging scenario in which knowledge is transferred between two partially observable contextual bandit agents.\nIn this task, the expert only provides partial model knowledge F^​(a,y,w)^𝐹𝑎𝑦𝑤\\hat{F}(a,y,w) to the agent,\nwhile the agent can have prior information F^​(u)^𝐹𝑢\\hat{F}(u).\nIn this setting, the causal effect 𝔼​[y|d​o​(a),w]𝔼delimited-[]conditional𝑦𝑑𝑜𝑎𝑤\\mathbb{E}[y|do(a),w] is partially identified. Similarly, we need to solve the following optimization problem: and discrete it as Section 3.1 does.\nThe object is Algorithm 3 provides causal bounds for several discrete points,\nwhich can be generalized to the entire space 𝒴×𝒲𝒴𝒲\\mathcal{Y}\\times\\mathcal{W} through interpolation. Contextual bandit.\nWe will begin by discussing discrete contexts and then move on to more general function approximation problems.\nThe objective is to minimize the regret as shown in (2).\nSuppose that the true causal effect 𝔼​[Y|d​o​(a),w]𝔼delimited-[]conditional𝑌𝑑𝑜𝑎𝑤\\mathbb{E}[Y|do(a),w] falls within the interval [l​(w,a),h​(w,a)]𝑙𝑤𝑎ℎ𝑤𝑎[l(w,a),h(w,a)].\nWe define the set 𝒜∗​(x)superscript𝒜𝑥\\mathcal{A}^{*}(x) as follows: This set eliminates suboptimal context-action pairs (w,a)𝑤𝑎(w,a) through causal bounds.\nRecall that the context-dependent optimal expected reward is denoted μw∗=maxa∈𝒜⁡𝔼​[Y|d​o​(a),w]superscriptsubscript𝜇𝑤subscript𝑎𝒜𝔼delimited-[]conditional𝑌𝑑𝑜𝑎𝑤\\mu_{w}^{*}=\\max_{a\\in\\mathcal{A}}\\mathbb{E}[Y|do(a),w]. Consider a contextual bandit problem with |𝒜|<∞𝒜|\\mathcal{A}|<\\infty and |𝒲|<∞𝒲|\\mathcal{W}|<\\infty.\nFor each arm a∈𝒜𝑎𝒜a\\in\\mathcal{A} and expected conditional reward μw,asubscript𝜇𝑤𝑎\\mu_{w,a} bounded by [l​(w,a),h​(w,a)]𝑙𝑤𝑎ℎ𝑤𝑎[l(w,a),h(w,a)].\nFor any given context w∈𝒲𝑤𝒲w\\in\\mathcal{W}, suppose w𝑤w occurs for Twsubscript𝑇𝑤T_{w} times.\nThen in the Algorithm 2, the conditional number of draws 𝔼​[Na​(Tw)]𝔼delimited-[]subscript𝑁𝑎subscript𝑇𝑤\\mathbb{E}[N_{a}(T_{w})] for any sub-optimal arm is upper bounded as: In this scenario, the classical agent minimizes regrets for |𝒲|𝒲|\\mathcal{W}| independent bandit instances.\nThe above theorem (Theorem 3.3) shows how causal bounds improve the performance of classical bandit algorithms by controlling the number of times each arm is pulled.\nNote that Theorem 3.2 is a special case when |W|=1𝑊1|W|=1. Compared with ,\nauthors provide gap-dependent regret bounds for tabular reinforcement learning\nwhich removes state-action pairs that are not reached by an optimal policy, i.e., This result shows similarity in our transfer learning setting as\nwe can model each context as a state and apply the generic RL methods.\nHowever, our method still outperforms generic RL algorithms\nas the contexts can not be affected by the actions.\nHence, the goal of RL algorithms for optimal state-action (context-action) pair is not realizable,\nso the define the regret (2) with respect to a context-dependent optimal action. Consider a contextual bandit problem with |𝒜|<∞𝒜|\\mathcal{A}|<\\infty and |𝒲|<∞𝒲|\\mathcal{W}|<\\infty.\nDenote Then the regret of Algorithm 4 satisfies The result does not scale with |𝒜∗​(w)|superscript𝒜𝑤\\sqrt{|\\mathcal{A}^{*}(w)|} but with |𝒜∗~​(w)|~superscript𝒜𝑤\\sqrt{|\\widetilde{\\mathcal{A}^{*}}(w)|}.\nAlthough our Algorithm 4 does not explicitly remove suboptimal arms in 𝒜∗~​(w)−𝒜∗​(w)~superscript𝒜𝑤superscript𝒜𝑤\\widetilde{\\mathcal{A}^{*}}(w)-\\mathcal{A}^{*}(w),\nthe property of UCB can still control the number of such suboptimal arms due to truncation by causal upper bounds. Using Cauchy-Schwarz inequality, we have This inequality shows clearly that any elimination of suboptimal arms will improve transfer learning algorithms.\nIt also implies that our regret result outperform that of  in terms of minimax versions,\nas the minimax regret in  scales with the right hand side. Denote the contextual bandit instances with prior knowledge l​(w,a)𝑙𝑤𝑎l(w,a) and h​(w,a)ℎ𝑤𝑎h(w,a) as Suppose |𝒜|<∞𝒜|\\mathcal{A}|<\\infty and |𝒲|<∞𝒲|\\mathcal{W}|<\\infty. Then for any algorithm 𝖠𝖠\\mathsf{A}, there exists an absolute constant c>0𝑐0c>0 such that The lower bound result indicates that our Algorithm 3 is near-optimal up to logarithmic terms in T𝑇T. Function approximation.\nNext, we consider continuous and general context distributions.\nSince contexts are infinite, it is impossible to learn an optimal policy,\nexcept when the reward has specific function structures, such as linear.\nTherefore, we consider the following function approximation setting under the realizability assumption.\nOnce again, we assume that the true causal effect falls within [l​(w,a),h​(w,a)]𝑙𝑤𝑎ℎ𝑤𝑎[l(w,a),h(w,a)]. We eliminates the functions that cannot be the true reward function using causal bound: and modify the best arm candidate set as following Our algorithm (Algorithm 5) is based on the inverse gap weighting technique (IGW)   0 [ref]34.\nIn previous literature concerning IGW, this strategy is employed using a fixed action set size |𝒜|𝒜|\\mathcal{A}|,\nand the learning rate γ𝛾\\gamma is typically chosen to follow fixed non-adaptive schedule  [ref]34.\nHowever, our algorithm differs from these existing approaches in three aspects.\nFirstly, we only apply the IGW scheme to functions and actions that are not eliminated by causal bounds.\nSecondly, we select the learning rate γtsubscript𝛾𝑡\\gamma_{t} to be context-dependent, capturing the influence of causal bounds on the arm set.\nThis adaptive approach enhances the efficiency of our algorithm in the online learning process,\nresulting in improved performance in the transfer learning task.\nThirdly, in comparison with 0, our regret order in T𝑇T is 𝒪​(T​log⁡(δ−1​log⁡T))𝒪𝑇superscript𝛿1𝑇\\mathcal{O}(\\sqrt{T\\log(\\delta^{-1}\\log T)}) instead of 𝒪​(T​log⁡(δ−1​T2)​log⁡T)𝒪𝑇superscript𝛿1superscript𝑇2𝑇\\mathcal{O}(\\sqrt{T\\log(\\delta^{-1}T^{2})}\\log T).\nBy eliminating suboptimal functions using certain causal bounds rather than relying on data-driven upper confidence bounds on the policy space,\nwe are able to save additional log⁡T𝑇\\log T terms. In Algorithm 5, one needs to compute ℱ∗superscriptℱ\\mathcal{F}^{*} and 𝒜∗​(w)superscript𝒜𝑤\\mathcal{A}^{*}(w).\nA naive way costs 𝒪​(|ℱ|)𝒪ℱ\\mathcal{O}(|\\mathcal{F}|) time complexity,\nwhich becomes inefficient for large |ℱ|ℱ|\\mathcal{F}| and infeasible for infinite |ℱ|ℱ|\\mathcal{F}|.\nActually, we can implicitly compute ℱ∗superscriptℱ\\mathcal{F}^{*} by clipping, i.e., using as the estimator at the epoch m𝑚m.\nAs f^msubscript^𝑓𝑚\\hat{f}_{m} gets closer to the true reward function f∗superscript𝑓f^{*},\nwhich is within the causal bounds,\nthe causal bounds gradually lose their constraint effect.\nFor computing 𝒜∗​(w)superscript𝒜𝑤\\mathcal{A}^{*}(w), we refer readers to the section 4 of 0,\nwhere a systematic method for computing 𝒜∗​(w)superscript𝒜𝑤\\mathcal{A}^{*}(w) within a given accuracy is provided. Another option to implement Algorithm 5 is to compute 𝔼W​[|𝒜∗​(W)|]subscript𝔼𝑊delimited-[]superscript𝒜𝑊\\mathbb{E}_{W}[|\\mathcal{A}^{*}(W)|] using expert knowledge F​(a,y,w)𝐹𝑎𝑦𝑤F(a,y,w).\nWe can set γt=η​𝔼W​[|𝒜∗​(W)|]​τm−1log⁡(2​δ−1​|ℱ∗|​log⁡T)subscript𝛾𝑡𝜂subscript𝔼𝑊delimited-[]superscript𝒜𝑊subscript𝜏𝑚12superscript𝛿1superscriptℱ𝑇\\gamma_{t}=\\sqrt{\\frac{\\eta\\mathbb{E}_{W}[|\\mathcal{A}^{*}(W)|]\\tau_{m-1}}{\\log(2\\delta^{-1}|\\mathcal{F}^{*}|\\log T)}}, so that γtsubscript𝛾𝑡\\gamma_{t} remains constant within an epoch.\nOur proof still holds for this option, and the regret order is the same as in Theorem 3.6.\nIntuitively, |𝒜​(wt)|𝒜subscript𝑤𝑡|\\mathcal{A}(w_{t})| is a sample from an induced distribution with a mean of 𝔼W​[|𝒜∗​(W)|]subscript𝔼𝑊delimited-[]superscript𝒜𝑊\\mathbb{E}_{W}[|\\mathcal{A}^{*}(W)|],\nso on average, the regrets of both options are of the same order. Consider a contextual bandit problem with |𝒜|<∞𝒜|\\mathcal{A}|<\\infty and |ℱ|<∞ℱ|\\mathcal{F}|<\\infty.\nSuppose that the realizability 2.1 holds.\nThen with probability at least 1−δ1𝛿1-\\delta, the expected regret 𝔼​[R​e​g​(T)]𝔼delimited-[]𝑅𝑒𝑔𝑇\\mathbb{E}[Reg(T)] of Algorithm 5 is upper bounded by As pointed out by 0, the gap-dependent regret of general contextual bandits is not possible, so we only consider minimax regrets.\nPrevious works such as [ref]41 and  have also explored transfer learning in general contextual bandits,\nbut the method in [ref]41 relies on instrumental variables,\nand their regrets scale with |Π|Π\\sqrt{|\\Pi|} instead of the more desirable log⁡|Π|Π\\sqrt{\\log|\\Pi|}.\nHowever, finding instrumental variables is still an open problem in academia.\nAdditionally, the authors of [ref]41 treat each basis policy as an independent arm in bandit problems,\nwhich is often invalid as similar policies can provide information to each other.\nFor example, exploring the optimal policy can also provide information about the second optimal policy,\nsince these two policies typically yield similar actions and only differ in a small amount of contexts.\nThis insight helps explain why their regret depends on |Π|Π\\sqrt{|\\Pi|} (as |Π|=|ℱ|Πℱ|\\Pi|=|\\mathcal{F}|) rather than more desirable log⁡|Π|Π\\sqrt{\\log|\\Pi|}. We also prove that our upper bound in Theorem 3.6 matches the lower bound in transfer learning.\nDenote the contextual bandit instances with prior knowledge l​(w,a)𝑙𝑤𝑎l(w,a) and h​(w,a)ℎ𝑤𝑎h(w,a) as Consider a contextual bandit problem with |𝒜|<∞𝒜|\\mathcal{A}|<\\infty and |ℱ|<∞ℱ|\\mathcal{F}|<\\infty.\nAssume that the agent has access to the function space ℱℱ\\mathcal{F} and the realizability assumption holds.\nThen for any algorithm 𝖠𝖠\\mathsf{A}, we have Infinite function classes.\nIt is worth noting that Algorithm 5 and Theorem 3.6 can be easily\nextended to handle infinite ℱℱ\\mathcal{F} using standard learning-theoretic tools such as metric entropy.\nSuppose ℱℱ\\mathcal{F} is equipped with a maximum norm ∥⋅∥\\|\\cdot\\|.\nWe can consider an ϵitalic-ϵ\\epsilon-covering ℱϵ∗subscriptsuperscriptℱitalic-ϵ\\mathcal{F}^{*}_{\\epsilon} of ℱ∗superscriptℱ\\mathcal{F}^{*} under maximum norm.\nSince |ℱϵ∗|subscriptsuperscriptℱitalic-ϵ|\\mathcal{F}^{*}_{\\epsilon}| is finite, we can directly replace ℱ∗superscriptℱ\\mathcal{F}^{*} with ℱϵ∗subscriptsuperscriptℱitalic-ϵ\\mathcal{F}^{*}_{\\epsilon}\nand do not change any algorithmic procedure.\nThanks to the property of ϵitalic-ϵ\\epsilon-covering,\nthere exists a function fϵ∗∈ℱϵ∗superscriptsubscript𝑓italic-ϵsubscriptsuperscriptℱitalic-ϵf_{\\epsilon}^{*}\\in\\mathcal{F}^{*}_{\\epsilon} such that\n‖fϵ∗−f∗‖≤ϵ.normsuperscriptsubscript𝑓italic-ϵsuperscript𝑓italic-ϵ\\|f_{\\epsilon}^{*}-f^{*}\\|\\leq\\epsilon.\nHence, the regret can be bounded by By replacing the dependence on log⁡|ℱ∗|superscriptℱ\\log|\\mathcal{F}^{*}| in the algorithm’s parameters with log⁡|ℱϵ∗|subscriptsuperscriptℱitalic-ϵ\\log|\\mathcal{F}^{*}_{\\epsilon}| and setting ϵ=1Titalic-ϵ1𝑇\\epsilon=\\frac{1}{T},\nwe obtain a similar result as Theorem 3.6 up to an additive constant of 111. Let (ℱ,∥⋅∥)(\\mathcal{F},\\|\\cdot\\|) be a normed space. The set {f1,⋯,fN}subscript𝑓1⋯subscript𝑓𝑁\\{f_{1},\\cdots,f_{N}\\} is an ϵitalic-ϵ\\epsilon-covering of ℱℱ\\mathcal{F} if\n∀f∈ℱfor-all𝑓ℱ\\forall f\\in\\mathcal{F}, there exists i∈[N]𝑖delimited-[]𝑁i\\in[N] such that ‖f−fi‖≤ϵnorm𝑓subscript𝑓𝑖italic-ϵ\\|f-f_{i}\\|\\leq\\epsilon.\nThe covering number N(ℱ,∥⋅∥,ϵ)N(\\mathcal{F},\\|\\cdot\\|,\\epsilon) is defined as the minimum cardinality N𝑁N of the covering set over all ϵitalic-ϵ\\epsilon-coverings of ℱℱ\\mathcal{F}. It clear that R​e​g​(T)𝑅𝑒𝑔𝑇Reg(T) scales with logN(ℱ∗,∥⋅∥,ϵ)\\sqrt{\\log N(\\mathcal{F}^{*},\\|\\cdot\\|,\\epsilon)}.\nNote that N(ℱ∗,∥⋅∥,ϵ)≤N(ℱ,∥⋅∥,ϵ)N(\\mathcal{F}^{*},\\|\\cdot\\|,\\epsilon)\\leq N(\\mathcal{F},\\|\\cdot\\|,\\epsilon) as ℱ∗⊂ℱsuperscriptℱℱ\\mathcal{F}^{*}\\subset\\mathcal{F}.\nThe covering number shows clearly how extra causal bounds help improve the algorithm performance by shrinking the search space.\nLet m=infw,al​(w,a)𝑚subscriptinfimum𝑤𝑎𝑙𝑤𝑎m=\\inf_{w,a}l(w,a) and M=supw,ah​(w,a)𝑀subscriptsupremum𝑤𝑎ℎ𝑤𝑎M=\\sup_{w,a}h(w,a).\nThese bounds chip away the surface of the unit sphere and scoop out the concentric sphere of radius m𝑚m.\nTherefore, the transfer learning algorithm only needs to search within a spherical shell with a thickness of at most M−m𝑀𝑚M-m."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Contextual bandit learning with predictable rewards",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Artificial Intelligence and Statistics",
+      "authors": "A. Agarwal, M. Dudík, S. Kale, J. Langford, and R. Schapire"
+    },
+    {
+      "index": 1,
+      "title": "Bandits with unobserved confounders: A causal approach",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "E. Bareinboim, A. Forney, and J. Pearl"
+    },
+    {
+      "index": 2,
+      "title": "Transfer Learning for Contextual Multi-armed Bandits",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2211.12612",
+      "authors": "C. Cai, T. T. Cai, and H. Li",
+      "orig_title": "Transfer learning for contextual multi-armed bandits",
+      "paper_id": "2211.12612v2"
+    },
+    {
+      "index": 3,
+      "title": "Contextual bandits with linear payoff functions",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Fourteenth International Conference on Artificial Intelligence and Statistics",
+      "authors": "W. Chu, L. Li, L. Reyzin, and R. Schapire"
+    },
+    {
+      "index": 4,
+      "title": "Beyond Value-Function Gaps: Improved Instance-Dependent Regret Bounds for Episodic Reinforcement Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "C. Dann, T. V. Marinov, M. Mohri, and J. Zimmert",
+      "orig_title": "Beyond value-function gaps: Improved instance-dependent regret bounds for episodic reinforcement learning",
+      "paper_id": "2107.01264v2"
+    },
+    {
+      "index": 5,
+      "title": "An automated approach to causal inference in discrete settings",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "G. Duarte, N. Finkelstein, D. Knox, J. Mummolo, and I. Shpitser"
+    },
+    {
+      "index": 6,
+      "title": "Minimax theorems",
+      "abstract": "",
+      "year": "1953",
+      "venue": "National Academy of Sciences of the United States of America",
+      "authors": "K. Fan"
+    },
+    {
+      "index": 7,
+      "title": "Beyond ucb: Optimal and efficient contextual bandits with regression oracles",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "D. Foster and A. Rakhlin"
+    },
+    {
+      "index": 8,
+      "title": "Practical Contextual Bandits with Regression Oracles",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "D. Foster, A. Agarwal, M. Dudík, H. Luo, and R. Schapire",
+      "orig_title": "Practical contextual bandits with regression oracles",
+      "paper_id": "1803.01088v1"
+    },
+    {
+      "index": 9,
+      "title": "Instance-dependent complexity of contextual bandits and reinforcement learning: A disagreement-based perspective",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2010.03104",
+      "authors": "D. J. Foster, A. Rakhlin, D. Simchi-Levi, and Y. Xu"
+    },
+    {
+      "index": 10,
+      "title": "Dual Instrumental Method for Confounded Kernelized Bandits",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2209.03224",
+      "authors": "X. Gong and J. Zhang",
+      "orig_title": "Dual instrumental method for confounded kernelized bandits",
+      "paper_id": "2209.03224v1"
+    },
+    {
+      "index": 11,
+      "title": "Provably efficient offline reinforcement learning for partially observable Markov decision processes",
+      "abstract": "",
+      "year": "2022",
+      "venue": "39th International Conference on Machine Learning",
+      "authors": "H. Guo, Q. Cai, Y. Zhang, Z. Yang, and Z. Wang"
+    },
+    {
+      "index": 12,
+      "title": "Provably Efficient Reinforcement Learning with Linear Function Approximation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "C. Jin, Z. Yang, Z. Wang, and M. I. Jordan",
+      "orig_title": "Provably efficient reinforcement learning with linear function approximation",
+      "paper_id": "1907.05388v2"
+    },
+    {
+      "index": 13,
+      "title": "Instrument-armed bandits",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Algorithmic Learning Theory",
+      "authors": "N. Kallus"
+    },
+    {
+      "index": 14,
+      "title": "Causal Bandits: Learning Good Interventions via Causal Inference",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "F. Lattimore, T. Lattimore, and M. D. Reid",
+      "orig_title": "Causal bandits: Learning good interventions via causal inference",
+      "paper_id": "1606.03203v1"
+    },
+    {
+      "index": 15,
+      "title": "Bandit algorithms",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Cambridge University Press",
+      "authors": "T. Lattimore and C. Szepesvári"
+    },
+    {
+      "index": 16,
+      "title": "Sequential transfer in multi-armed bandit with finite set of models",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Lazaric, E. Brunskill, et al."
+    },
+    {
+      "index": 17,
+      "title": "Probabilities of causation with nonbinary treatment and effect",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2208.09568",
+      "authors": "A. Li and J. Pearl"
+    },
+    {
+      "index": 18,
+      "title": "Bounds on Causal Effects and Application to High Dimensional Data",
+      "abstract": "",
+      "year": "2022",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "A. Li and J. Pearl",
+      "orig_title": "Bounds on causal effects and application to high dimensional data",
+      "paper_id": "2106.12121v1"
+    },
+    {
+      "index": 19,
+      "title": "Unit Selection with Nonbinary Treatment and Effect",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2208.09569",
+      "authors": "A. Li and J. Pearl",
+      "orig_title": "Unit selection with nonbinary treatment and effect",
+      "paper_id": "2208.09569v1"
+    },
+    {
+      "index": 20,
+      "title": "Learning probabilities of causation from finite population data",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2210.08453",
+      "authors": "A. Li, S. Jiang, Y. Sun, and J. Pearl"
+    },
+    {
+      "index": 21,
+      "title": "Epsilon-identifiability of causal quantities",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2301.12022",
+      "authors": "A. Li, S. Mueller, and J. Pearl"
+    },
+    {
+      "index": 22,
+      "title": "A contextual-bandit approach to personalized news article recommendation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "19th international conference on World wide web",
+      "authors": "L. Li, W. Chu, J. Langford, and R. E. Schapire"
+    },
+    {
+      "index": 23,
+      "title": "Transferable contextual bandit for cross-domain recommendation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "B. Liu, Y. Wei, Y. Zhang, Z. Yan, and Q. Yang"
+    },
+    {
+      "index": 24,
+      "title": "Learning without knowing: Unobserved context in continuous transfer reinforcement learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Learning for Dynamics and Control",
+      "authors": "C. Liu, Y. Zhang, Y. Shen, and M. M. Zavlanos"
+    },
+    {
+      "index": 25,
+      "title": "Pessimism in the Face of Confounders: Provably Efficient Offline Reinforcement Learning in Partially Observable Markov Decision Processes",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "M. Lu, Y. Min, Z. Wang, and Z. Yang",
+      "orig_title": "Pessimism in the face of confounders: Provably efficient offline reinforcement learning in partially observable markov decision processes",
+      "paper_id": "2205.13589v3"
+    },
+    {
+      "index": 26,
+      "title": "On some useful “inefficient” statistics",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Springer",
+      "authors": "F. Mosteller"
+    },
+    {
+      "index": 27,
+      "title": "A regret bound for greedy partially observed stochastic contextual bandits",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Decision Awareness in Reinforcement Learning Workshop at ICML",
+      "authors": "H. Park and M. K. S. Faradonbeh"
+    },
+    {
+      "index": 28,
+      "title": "Analysis of Thompson Sampling for Partially Observable Contextual Multi-Armed Bandits",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Control Systems Letters",
+      "authors": "H. Park and M. K. S. Faradonbeh",
+      "orig_title": "Analysis of thompson sampling for partially observable contextual multi-armed bandits",
+      "paper_id": "2110.12175v2"
+    },
+    {
+      "index": 29,
+      "title": "Causal inference in statistics: An overview",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Statistics surveys",
+      "authors": "J. Pearl"
+    },
+    {
+      "index": 30,
+      "title": "The book of why",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of MultiDisciplinary Evaluation",
+      "authors": "S. Powell"
+    },
+    {
+      "index": 31,
+      "title": "A Minimax Learning Approach to Off-Policy Evaluation in Confounded Partially Observable Markov Decision Processes",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "C. Shi, M. Uehara, J. Huang, and N. Jiang",
+      "orig_title": "A minimax learning approach to off-policy evaluation in confounded partially observable markov decision processes",
+      "paper_id": "2111.06784v4"
+    },
+    {
+      "index": 32,
+      "title": "Scalable Computation of Causal Bounds",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "M. Shridharan and G. Iyengar",
+      "orig_title": "Scalable computation of causal bounds",
+      "paper_id": "2308.02709v1"
+    },
+    {
+      "index": 33,
+      "title": "Bypassing the monster: A faster and simpler optimal algorithm for contextual bandits under realizability",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Mathematics of Operations Research",
+      "authors": "D. Simchi-Levi and Y. Xu"
+    },
+    {
+      "index": 34,
+      "title": "Bandits with Partially Observable Confounded Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Uncertainty in Artificial Intelligence",
+      "authors": "G. Tennenholtz, U. Shalit, S. Mannor, and Y. Efroni",
+      "orig_title": "Bandits with partially observable confounded data",
+      "paper_id": "2006.06731v2"
+    },
+    {
+      "index": 35,
+      "title": "A general identification condition for causal effects",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Aaai/iaai",
+      "authors": "J. Tian and J. Pearl"
+    },
+    {
+      "index": 36,
+      "title": "Provably efficient reinforcement learning in partially observable dynamical systems",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ArXiv",
+      "authors": "M. Uehara, A. Sekhari, J. D. Lee, N. Kallus, and W. Sun"
+    },
+    {
+      "index": 37,
+      "title": "Provably Efficient Causal Reinforcement Learning with Confounded Observational Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "L. Wang, Z. Yang, and Z. Wang",
+      "orig_title": "Provably efficient causal reinforcement learning with confounded observational data",
+      "paper_id": "2006.12311v1"
+    },
+    {
+      "index": 38,
+      "title": "Deep Proxy Causal Learning and its Application to Confounded Bandit Policy Evaluation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "L. Xu, H. Kanagawa, and A. Gretton",
+      "orig_title": "Deep proxy causal learning and its application to confounded bandit policy evaluation",
+      "paper_id": "2106.03907v5"
+    },
+    {
+      "index": 39,
+      "title": "Transfer learning in multi-armed bandit: a causal approach",
+      "abstract": "",
+      "year": "2017",
+      "venue": "16th Conference on Autonomous Agents and MultiAgent Systems",
+      "authors": "J. Zhang and E. Bareinboim"
+    },
+    {
+      "index": 40,
+      "title": "Bounding causal effects on continuous outcome",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "J. Zhang and E. Bareinboim"
+    },
+    {
+      "index": 41,
+      "title": "Partial Counterfactual Identification from Observational and Experimental Data",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "J. Zhang, J. Tian, and E. Bareinboim",
+      "orig_title": "Partial counterfactual identification from observational and experimental data",
+      "paper_id": "2110.05690v1"
+    },
+    {
+      "index": 42,
+      "title": "A Comprehensive Survey on Transfer Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE",
+      "authors": "F. Zhuang, Z. Qi, K. Duan, D. Xi, Y. Zhu, H. Zhu, H. Xiong, and Q. He",
+      "orig_title": "A comprehensive survey on transfer learning",
+      "paper_id": "1911.02685v3"
+    }
+  ]
+}

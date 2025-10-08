@@ -1,0 +1,397 @@
+{
+  "paper_id": "2010.12871v1",
+  "title": "Large Scale Legal Text Classification Using Transformer Models",
+  "sections": {
+    "i introduction": "Text classification, i.e., the process of assigning one or multiple categories from a set of options to a document [ref]1,\nis a prominent and well-researched task in Natural Language Processing (NLP) and text mining. Text classification variants include simple binary classification (for example, decide if a document is spam or not spam), multi-class classification (selection of one from a number of classes), and multi-label classification. In the latter, multiple labels can be assigned to a single document.\nIn Large Multi-Label Text Classification (LMTC), the label space is typically comprised of thousands of labels, which obviously raises task complexity. The work presented here tackles an LMTC problem in the legal domain. LMTC tasks often occur when large taxonomies or formal ontologies are used as document labels,\nfor example in the medical domain  [ref]3,\nor when using large open domain taxonomies for labelling, such as annotating Wikipedia with labels .\nA common feature of many LMTC tasks is that some labels are used frequently, while others are used very rarely (few-shot learning) or are never used (zero-shot learning). This situation is also referred to by power-law or long-tail frequency distribution of labels, which also characterizes our datasets and which is a setting that is largely unexplored for text classification [ref]3.\nAnother difficulty often faced in LMTC datasets [ref]3 are long documents, where finding the relevant areas\nto correctly classify documents is a needle in a haystack situation. In this work, we focus on LMTC in the legal domain, based on two datasets, the well-known JRC-Acquis dataset  and\nthe new EURLEX57K dataset . Both datasets contain legal documents from Eur-Lex\n, the legal database of the European Union (EU).\nThe usage of language in the given documents is highly domain specific, and includes many legal text artifacts such as case numbers.\nModern neural NLP algorithms often tackle domain specific text by fine-tuning pretrained language models on the type of text at hand .\nBoth datasets are labelled with terms from the the European Union’s multilingual and multidisciplinary thesaurus EuroVoc\n. The goal of this work is to advance the state-of-the-art in LMTC based on these two datasets which exhibit many of the characteristics\noften found in LMTC datasets: power-law label distribution, highly domain specific language and a large and hierarchically organized set of labels.\nWe apply current NLP transformer models, namely BERT [ref]10, RoBERTa ,\nDistilBERT , XLNet  and M-BERT [ref]10,\nand combine them with a number of training strategies such as gradual unfreezing, slanted\ntriangular learning rates and language model fine-tuning.\nIn the process, we create new standard dataset splits for JRC-Acquis and EURLEX57\nusing an iterative stratification approach . Providing a high-quality standardized dataset split is very important, as previous work was typically done on different random splits, which makes results hard to compare .\nFurther, we make use of the semantic relations inside the EuroVoc taxonomy to infer reduced label sets for the datasets.\nSome of our main evaluation results are the Micro-F1 score of 0.6610.6610.661 for JRC-Acquis and 0.7540.7540.754 for EURLEX57K, which sets new states-of-the-art to the best of our knowledge. The main findings and contributions of this work are: (i) the experiments with BERT, RoBERTa, DistilBERT, XLNet, M-BERT (trained on three languages), and AWD-LSTM in combination with the training\ntricks to evaluate and compare the performance of the models, (ii) providing new standardized datasets for further investigation,\n(iii) ablation studies to measure the impact and benefits of various training strategies,\nand (iv) leveraging the EuroVoc term hierarchy to generate variants of the datasets for which higher classification\nperformance can be achieved. The remainder of the paper is organized as follows: After a discussion of related work in Section II,\nwe introduce the EuroVoc vocabulary and the two datasets (Section III), and then present the main methods (AWD-LSTM,\nBERT, RoBERTa, DistilBERT, XLNet) in Section IV.\nSection V contains extensive evaluations of the methods on both datasets as well as ablation studies,\nand after a discussion of results (Section VI) we conclude the paper in Section VII."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Machine learning in automated text categorization",
+      "abstract": "",
+      "year": "2002",
+      "venue": "ACM computing surveys (CSUR)",
+      "authors": "F. Sebastiani"
+    },
+    {
+      "index": 1,
+      "title": "Explainable Prediction of Medical Codes from Clinical Text",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.05695",
+      "authors": "J. Mullenbach, S. Wiegreffe, J. Duke, J. Sun, and J. Eisenstein",
+      "orig_title": "Explainable prediction of medical codes from clinical text",
+      "paper_id": "1802.05695v2"
+    },
+    {
+      "index": 2,
+      "title": "Few-shot and zero-shot multi-label learning for structured label spaces",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conference on Empirical Methods in Natural Language Processing",
+      "authors": "A. Rios and R. Kavuluru"
+    },
+    {
+      "index": 3,
+      "title": "LSHTC: A Benchmark for Large-Scale Text Classification",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1503.08581",
+      "authors": "P. Ioannis et al.",
+      "orig_title": "Lshtc: A benchmark for large-scale text classification",
+      "paper_id": "1503.08581v1"
+    },
+    {
+      "index": 4,
+      "title": "Efficient Multilabel Classification Algorithms for Large-Scale Problems in the Legal Domain",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Springer",
+      "authors": "E. Loza Mencía and J. Fürnkranz"
+    },
+    {
+      "index": 5,
+      "title": "Large-Scale Multi-Label Text Classification on EU Legislation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "57th Annual Meeting of the ACL",
+      "authors": "I. Chalkidis, E. Fergadiotis, P. Malakasiotis, and I. Androutsopoulos",
+      "orig_title": "Large-scale multi-label text classification on EU legislation",
+      "paper_id": "1906.02192v1"
+    },
+    {
+      "index": 6,
+      "title": "Eurepean Union Law Website",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 7,
+      "title": "Transfer learning in natural language processing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 NAACL: Tutorials",
+      "authors": "S. Ruder, M. E. Peters, S. Swayamdipta, and T. Wolf"
+    },
+    {
+      "index": 8,
+      "title": "The European Union’s multilingual and multidisciplinary thesaurus",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 9,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 NAACL: Human Language Technologies, Volume 1 (Long and Short Papers)",
+      "authors": "J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova",
+      "orig_title": "BERT: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 10,
+      "title": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.11692",
+      "authors": "Y. Liu, M. Ott, N. Goyal, J. Du, M. Joshi, D. Chen, O. Levy, M. Lewis, L. Zettlemoyer, and V. Stoyanov",
+      "orig_title": "Roberta: A robustly optimized bert pretraining approach",
+      "paper_id": "1907.11692v1"
+    },
+    {
+      "index": 11,
+      "title": "DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.01108",
+      "authors": "V. Sanh, L. Debut, J. Chaumond, and T. Wolf",
+      "orig_title": "Distilbert, a distilled version of bert: smaller, faster, cheaper and lighter",
+      "paper_id": "1910.01108v4"
+    },
+    {
+      "index": 12,
+      "title": "XLNet: Generalized Autoregressive Pretraining for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Z. Yang, Z. Dai, Y. Yang, J. Carbonell, R. R. Salakhutdinov, and Q. V. Le",
+      "orig_title": "Xlnet: Generalized autoregressive pretraining for language understanding",
+      "paper_id": "1906.08237v2"
+    },
+    {
+      "index": 13,
+      "title": "On the stratification of multi-label data",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Joint European Conference on Machine Learning and Knowledge Discovery in Databases",
+      "authors": "K. Sechidis, G. Tsoumakas, and I. Vlahavas"
+    },
+    {
+      "index": 14,
+      "title": "X-bert: extreme multi-label text classification using bidirectional encoder representations from transformers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1905.02331",
+      "authors": "W.-C. Chang, H.-F. Yu, K. Zhong, Y. Yang, and I. Dhillon"
+    },
+    {
+      "index": 15,
+      "title": "Jrc eurovoc indexer jex-a freely available multi-label categorisation tool",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1309.5223",
+      "authors": "R. Steinberger, M. Ebrahim, and M. Turchi"
+    },
+    {
+      "index": 16,
+      "title": "Linking legal open data: breaking the accessibility and language barrier in european legislation and case law",
+      "abstract": "",
+      "year": "2015",
+      "venue": "15th International Conference on Artificial Intelligence and Law",
+      "authors": "G. Boella et al."
+    },
+    {
+      "index": 17,
+      "title": "Deep learning for extreme multi-label text classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "40th International ACM SIGIR Conference on Research and Development in Information Retrieval",
+      "authors": "J. Liu, W.-C. Chang, Y. Wu, and Y. Yang"
+    },
+    {
+      "index": 18,
+      "title": "Sparse local embeddings for extreme multi-label classification",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "K. Bhatia, H. Jain, P. Kar, M. Varma, and P. Jain"
+    },
+    {
+      "index": 19,
+      "title": "Glove: Global vectors for word representation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Empirical Methods in Natural Language Processing (EMNLP)",
+      "authors": "J. Pennington, R. Socher, and C. D. Manning"
+    },
+    {
+      "index": 20,
+      "title": "Deep contextualized word representations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 NAACL: Human Language Technologies, Volume 1 (Long Papers)",
+      "authors": "M. Peters, M. Neumann, M. Iyyer, M. Gardner, C. Clark, K. Lee, and L. Zettlemoyer",
+      "orig_title": "Deep contextualized word representations",
+      "paper_id": "1802.05365v2"
+    },
+    {
+      "index": 21,
+      "title": "Attentionxml: Extreme multi-label text classification with multi-label attention based recurrent neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1811.01727",
+      "authors": "R. You, S. Dai, Z. Zhang, H. Mamitsuka, and S. Zhu"
+    },
+    {
+      "index": 22,
+      "title": "SKOS Simple Knowledge Organization System",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 23,
+      "title": "Resource Description Framework",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 24,
+      "title": "RDF 1.1 Turtle",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 25,
+      "title": "Exploiting eurovoc’s hierarchical structure for classifying legal documents",
+      "abstract": "",
+      "year": "2019",
+      "venue": "OTM Confederated International Conferences” On the Move to Meaningful Internet Systems",
+      "authors": "E. Filtz, S. Kirrane, A. Polleres, and G. Wohlgenannt"
+    },
+    {
+      "index": 26,
+      "title": "JRC-Acquis",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 27,
+      "title": "EURLEX57K dataset",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 28,
+      "title": "Universal Language Model Fine-tuning for Text Classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1801.06146",
+      "authors": "J. Howard and S. Ruder",
+      "orig_title": "Universal language model fine-tuning for text classification",
+      "paper_id": "1801.06146v5"
+    },
+    {
+      "index": 29,
+      "title": "Fastai documentation",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 30,
+      "title": "Huggingface transformers",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 31,
+      "title": "Legal Documents, Large Multi-Label Text Classification",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 32,
+      "title": "Regularizing and Optimizing LSTM Language Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1708.02182",
+      "authors": "S. Merity, N. S. Keskar, and R. Socher",
+      "orig_title": "Regularizing and optimizing lstm language models",
+      "paper_id": "1708.02182v1"
+    },
+    {
+      "index": 33,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 34,
+      "title": "Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1901.02860",
+      "authors": "Z. Dai, Z. Yang, Y. Yang, J. Carbonell, Q. V. Le, and R. Salakhutdinov",
+      "orig_title": "Transformer-xl: Attentive language models beyond a fixed-length context",
+      "paper_id": "1901.02860v3"
+    },
+    {
+      "index": 35,
+      "title": "How many labels? determining the number of labels in multi-label text classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference of the Cross-Language Evaluation Forum for European Languages",
+      "authors": "H. Azarbonyad and M. Marx"
+    },
+    {
+      "index": 36,
+      "title": "Multi-label data stratification",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 37,
+      "title": "BERT, Multi-Lingual Model",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 38,
+      "title": "Huggingface BERT base uncased model",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 39,
+      "title": "Huggingface RoBERTa base model",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 40,
+      "title": "Huggingface DistilBERT cased model",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 41,
+      "title": "Huggingface XLNET cased model",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 42,
+      "title": "Extreme multi-label loss functions for recommendation, tagging, ranking & other missing label applications",
+      "abstract": "",
+      "year": "2016",
+      "venue": "22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+      "authors": "H. Jain, Y. Prabhu, and M. Varma"
+    },
+    {
+      "index": 43,
+      "title": "Funnelling: A New Ensemble Method for Heterogeneous Transfer Learning and its Application to Cross-Lingual Text Classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Transactions on Information Systems (TOIS)",
+      "authors": "A. Esuli, A. Moreo, and F. Sebastiani",
+      "orig_title": "Funnelling: A new ensemble method for heterogeneous transfer learning and its application to cross-lingual text classification",
+      "paper_id": "1901.11459v2"
+    },
+    {
+      "index": 44,
+      "title": "MAGNET: Multi-Label Text Classification using Attention-based Graph Neural Network",
+      "abstract": "",
+      "year": "2020",
+      "venue": "12th Int. Conf. on Agents and Artificial Intelligence - Volume 2: ICAART, INSTICC",
+      "authors": "A. Pal, M. Selvakumar, and M. Sankarasubbu",
+      "orig_title": "Magnet: Multi-label text classification using attention-based graph neural network",
+      "paper_id": "2003.11644v1"
+    }
+  ]
+}

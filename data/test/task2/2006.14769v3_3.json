@@ -1,0 +1,523 @@
+{
+  "paper_id": "2006.14769v3",
+  "title": "Supermasks in Superposition",
+  "sections": {
+    "scenario 𝖦𝖦𝖦𝖦\\mathsf{gg}: task identity information given during train and inference": "Datasets, Models & Training  In this experiment we validate the performance of SupSup on SplitCIFAR100 and SplitImageNet. Following Wen et al. [ref]51, SplitCIFAR100 randomly partitions CIFAR100  into 20 different 5-way classification problems.\nSimilarly, SplitImageNet randomly splits the ImageNet [ref]5 dataset into 100 different 10-way classification tasks.\nFollowing [ref]51 we use a ResNet-18 with fewer channels for SplitCIFAR100 and a standard ResNet-50  for SplitImageNet. The Edge-Popup algorithm from [ref]39 is used to obtain supermasks for various sparsities with a layer-wise budget from . We either initialize each new mask randomly (as in [ref]39) or use a running mean of all previous learned masks. This simple method of “Transfer” works very well, as illustrated by Figure 2. Additional training details and hyperparameters are provided in Section D. Computation  In Scenario 𝖦𝖦𝖦𝖦\\mathsf{GG}, the primary advantage of SupSup from Mallya et al.  or Wen et al. [ref]51 is that SupSup does not require the base model W𝑊W to be stored. Since W𝑊W is random it suffices to store only the random seed. For a fair comparison we also train BatchE [ref]51 with random weights. The sparse supermasks are stored in the standard scipy.sparse.csc222https://docs.scipy.org/doc/scipy/reference/sparse.html format with 16 bit integers. Moreover, SupSup requires minimal overhead in terms of forwards pass compute. Elementwise product by a binary mask can be implemented via memory access, i.e. selecting indices. Modern GPUs have very high memory bandwidth so the time cost of this operation is small with respect to the time of a forward pass. In particular, on a 1080 Ti this operation requires ∼1%similar-toabsentpercent1\\sim 1\\% of the forward pass time for a ResNet-50, less than the overhead of BatchE (computation in Section D). Baselines  In Figure 2, for “Separate Heads” we train different heads for each task using a trunk (all layers except the final layer) trained on the first task. In contrast “Separate Heads - Rand W” uses a random trunk. BatchE results are given with the trunk trained on the first task (as in [ref]51) and random weights W𝑊W. For “Upper Bound”, individual models are trained for each task. Furthermore, the trunk for task i𝑖i is trained on tasks 1,…,i1…𝑖1,...,i. For “Lower Bound” a shared trunk of the network is trained continuously and a separate head is trained for each task. Since catastrophic forgetting occurs we omit “Lower Bound” from Figure 2 (the SplitCIFAR100 accuracy is 24.5%)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Convex neural networks",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Yoshua Bengio, Nicolas L Roux, Pascal Vincent, Olivier Delalleau, and Patrice Marcotte"
+    },
+    {
+      "index": 1,
+      "title": "Gender shades: Intersectional accuracy disparities in commercial gender classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conference on fairness, accountability and transparency",
+      "authors": "Joy Buolamwini and Timnit Gebru"
+    },
+    {
+      "index": 2,
+      "title": "Efficient lifelong learning with a-gem",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1812.00420",
+      "authors": "Arslan Chaudhry, Marc’Aurelio Ranzato, Marcus Rohrbach, and Mohamed Elhoseiny"
+    },
+    {
+      "index": 3,
+      "title": "Superposition of many models into one",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Brian Cheung, Alexander Terekhov, Yubei Chen, Pulkit Agrawal, and Bruno Olshausen",
+      "orig_title": "Superposition of many models into one",
+      "paper_id": "1902.05522v2"
+    },
+    {
+      "index": 4,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR 2009",
+      "authors": "Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei"
+    },
+    {
+      "index": 5,
+      "title": "Sparse Networks from Scratch: Faster Training without Losing Performance",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.04840",
+      "authors": "Tim Dettmers and Luke Zettlemoyer",
+      "orig_title": "Sparse networks from scratch: Faster training without losing performance",
+      "paper_id": "1907.04840v2"
+    },
+    {
+      "index": 6,
+      "title": "An algorithm for quadratic programming",
+      "abstract": "",
+      "year": "1956",
+      "venue": "Naval research logistics quarterly",
+      "authors": "Marguerite Frank and Philip Wolfe"
+    },
+    {
+      "index": 7,
+      "title": "The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1803.03635",
+      "authors": "Jonathan Frankle and Michael Carbin",
+      "orig_title": "The lottery ticket hypothesis: Finding sparse, trainable neural networks",
+      "paper_id": "1803.03635v5"
+    },
+    {
+      "index": 8,
+      "title": "Training BatchNorm and Only BatchNorm: On the Expressive Power of Random Features in CNNs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.00152",
+      "authors": "Jonathan Frankle, David J Schwab, and Ari S Morcos",
+      "orig_title": "Training batchnorm and only batchnorm: On the expressive power of random features in cnns",
+      "paper_id": "2003.00152v3"
+    },
+    {
+      "index": 9,
+      "title": "Catastrophic forgetting in connectionist networks",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Trends in cognitive sciences",
+      "authors": "Robert M French"
+    },
+    {
+      "index": 10,
+      "title": "Continual learning via neural pruning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1903.04476",
+      "authors": "Siavash Golkar, Michael Kagan, and Kyunghyun Cho"
+    },
+    {
+      "index": 11,
+      "title": "An empirical investigation of catastrophic forgetting in gradient-based neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.6211",
+      "authors": "Ian J Goodfellow, Mehdi Mirza, Da Xiao, Aaron Courville, and Yoshua Bengio"
+    },
+    {
+      "index": 12,
+      "title": "Your classifier is secretly an energy based model and you should treat it like one",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1912.03263",
+      "authors": "Will Grathwohl, Kuan-Chieh Wang, Jörn-Henrik Jacobsen, David Duvenaud, Mohammad Norouzi, and Kevin Swersky",
+      "orig_title": "Your classifier is secretly an energy based model and you should treat it like one",
+      "paper_id": "1912.03263v3"
+    },
+    {
+      "index": 13,
+      "title": "On Calibration of Modern Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "34th International Conference on Machine Learning-Volume 70",
+      "authors": "Chuan Guo, Geoff Pleiss, Yu Sun, and Kilian Q Weinberger",
+      "orig_title": "On calibration of modern neural networks",
+      "paper_id": "1706.04599v2"
+    },
+    {
+      "index": 14,
+      "title": "Hypernetworks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1609.09106",
+      "authors": "David Ha, Andrew Dai, and Quoc V Le"
+    },
+    {
+      "index": 15,
+      "title": "Momentum Contrast for Unsupervised Visual Representation Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.05722",
+      "authors": "Kaiming He, Haoqi Fan, Yuxin Wu, Saining Xie, and Ross Girshick",
+      "orig_title": "Momentum contrast for unsupervised visual representation learning",
+      "paper_id": "1911.05722v3"
+    },
+    {
+      "index": 16,
+      "title": "Delving deep into rectifiers: Surpassing human-level performance on imagenet classification",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun"
+    },
+    {
+      "index": 17,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 18,
+      "title": "A Baseline for Detecting Misclassified and Out-of-Distribution Examples in Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1610.02136",
+      "authors": "Dan Hendrycks and Kevin Gimpel",
+      "orig_title": "A baseline for detecting misclassified and out-of-distribution examples in neural networks",
+      "paper_id": "1610.02136v3"
+    },
+    {
+      "index": 19,
+      "title": "Neural networks and physical systems with emergent collective computational abilities",
+      "abstract": "",
+      "year": "1982",
+      "venue": "national academy of sciences",
+      "authors": "John J Hopfield"
+    },
+    {
+      "index": 20,
+      "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1502.03167",
+      "authors": "Sergey Ioffe and Christian Szegedy"
+    },
+    {
+      "index": 21,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "Diederik P Kingma and Jimmy Ba"
+    },
+    {
+      "index": 22,
+      "title": "Overcoming catastrophic forgetting in neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "national academy of sciences",
+      "authors": "James Kirkpatrick, Razvan Pascanu, Neil Rabinowitz, Joel Veness, Guillaume Desjardins, Andrei A Rusu, Kieran Milan, John Quan, Tiago Ramalho, Agnieszka Grabska-Barwinska, et al.",
+      "orig_title": "Overcoming catastrophic forgetting in neural networks",
+      "paper_id": "1612.00796v2"
+    },
+    {
+      "index": 23,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "University of Toronto",
+      "authors": "Alex Krizhevsky"
+    },
+    {
+      "index": 24,
+      "title": "Backpropagation applied to handwritten zip code recognition",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Neural computation",
+      "authors": "Yann LeCun, Bernhard Boser, John S Denker, Donnie Henderson, Richard E Howard, Wayne Hubbard, and Lawrence D Jackel"
+    },
+    {
+      "index": 25,
+      "title": "Mnist handwritten digit database",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "Yann LeCun, Corinna Cortes, and CJ Burges"
+    },
+    {
+      "index": 26,
+      "title": "Gradient Episodic Memory for Continual Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "David Lopez-Paz and Marc’Aurelio Ranzato",
+      "orig_title": "Gradient episodic memory for continual learning",
+      "paper_id": "1706.08840v6"
+    },
+    {
+      "index": 27,
+      "title": "SGDR: Stochastic Gradient Descent with Warm Restarts",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Ilya Loshchilov and Frank Hutter",
+      "orig_title": "Sgdr: Stochastic gradient descent with warm restarts",
+      "paper_id": "1608.03983v5"
+    },
+    {
+      "index": 28,
+      "title": "Proving the Lottery Ticket Hypothesis: Pruning is All You Need",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.00585",
+      "authors": "Eran Malach, Gilad Yehudai, Shai Shalev-Shwartz, and Ohad Shamir",
+      "orig_title": "Proving the lottery ticket hypothesis: Pruning is all you need",
+      "paper_id": "2002.00585v1"
+    },
+    {
+      "index": 29,
+      "title": "Piggyback: Adapting a Single Network to Multiple Tasks by Learning to Mask Weights",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Arun Mallya, Dillon Davis, and Svetlana Lazebnik",
+      "orig_title": "Piggyback: Adapting a single network to multiple tasks by learning to mask weights",
+      "paper_id": "1801.06519v2"
+    },
+    {
+      "index": 30,
+      "title": "PackNet: Adding Multiple Tasks to a Single Network by Iterative Pruning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Arun Mallya and Svetlana Lazebnik",
+      "orig_title": "Packnet: Adding multiple tasks to a single network by iterative pruning",
+      "paper_id": "1711.05769v2"
+    },
+    {
+      "index": 31,
+      "title": "Alleviating catastrophic forgetting using context-dependent gating and synaptic stabilization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "National Academy of Sciences",
+      "authors": "Nicolas Y Masse, Gregory D Grant, and David J Freedman",
+      "orig_title": "Alleviating catastrophic forgetting using context-dependent gating and synaptic stabilization",
+      "paper_id": "1802.01569v2"
+    },
+    {
+      "index": 32,
+      "title": "Catastrophic interference in connectionist networks: The sequential learning problem",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Psychology of learning and motivation",
+      "authors": "Michael McCloskey and Neal J Cohen"
+    },
+    {
+      "index": 33,
+      "title": "Model Cards for Model Reporting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "conference on fairness, accountability, and transparency",
+      "authors": "Margaret Mitchell, Simone Wu, Andrew Zaldivar, Parker Barnes, Lucy Vasserman, Ben Hutchinson, Elena Spitzer, Inioluwa Deborah Raji, and Timnit Gebru",
+      "orig_title": "Model cards for model reporting",
+      "paper_id": "1810.03993v2"
+    },
+    {
+      "index": 34,
+      "title": "Scalable training of artificial neural networks with adaptive sparse connectivity inspired by network science",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Nature communications",
+      "authors": "Decebal Constantin Mocanu, Elena Mocanu, Peter Stone, Phuong H Nguyen, Madeleine Gibescu, and Antonio Liotta"
+    },
+    {
+      "index": 35,
+      "title": "Revisiting natural gradient for deep networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1301.3584",
+      "authors": "Razvan Pascanu and Yoshua Bengio"
+    },
+    {
+      "index": 36,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, et al.",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 37,
+      "title": "Searching for Activation Functions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1710.05941",
+      "authors": "Prajit Ramachandran, Barret Zoph, and Quoc V Le",
+      "orig_title": "Searching for activation functions",
+      "paper_id": "1710.05941v2"
+    },
+    {
+      "index": 38,
+      "title": "What’s Hidden in a Randomly Weighted Neural Network?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.13299",
+      "authors": "Vivek Ramanujan, Mitchell Wortsman, Aniruddha Kembhavi, Ali Farhadi, and Mohammad Rastegari",
+      "orig_title": "What’s hidden in a randomly weighted neural network?",
+      "paper_id": "1911.13299v2"
+    },
+    {
+      "index": 39,
+      "title": "iCaRL: Incremental Classifier and Representation Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on Computer Vision and Pattern Recognition",
+      "authors": "Sylvestre-Alvise Rebuffi, Alexander Kolesnikov, Georg Sperl, and Christoph H Lampert",
+      "orig_title": "icarl: Incremental classifier and representation learning",
+      "paper_id": "1611.07725v2"
+    },
+    {
+      "index": 40,
+      "title": "Experience Replay for Continual Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "David Rolnick, Arun Ahuja, Jonathan Schwarz, Timothy Lillicrap, and Gregory Wayne",
+      "orig_title": "Experience replay for continual learning",
+      "paper_id": "1811.11682v2"
+    },
+    {
+      "index": 41,
+      "title": "Progressive Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.04671",
+      "authors": "Andrei A Rusu, Neil C Rabinowitz, Guillaume Desjardins, Hubert Soyer, James Kirkpatrick, Koray Kavukcuoglu, Razvan Pascanu, and Raia Hadsell",
+      "orig_title": "Progressive neural networks",
+      "paper_id": "1606.04671v4"
+    },
+    {
+      "index": 42,
+      "title": "An overview of reservoir computing: theory, applications and implementations",
+      "abstract": "",
+      "year": "2007",
+      "venue": "15th european symposium on artificial neural networks",
+      "authors": "Benjamin Schrauwen, David Verstraeten, and Jan Van Campenhout"
+    },
+    {
+      "index": 43,
+      "title": "Green ai. corr abs/1907.10597 (2019)",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.10597",
+      "authors": "Roy Schwartz, Jesse Dodge, Noah A Smith, and Oren Etzioni"
+    },
+    {
+      "index": 44,
+      "title": "Continual Learning with Deep Generative Replay",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Hanul Shin, Jung Kwon Lee, Jaehong Kim, and Jiwon Kim",
+      "orig_title": "Continual learning with deep generative replay",
+      "paper_id": "1705.08690v3"
+    },
+    {
+      "index": 45,
+      "title": "Increasing the capacity of a hopfield network without sacrificing functionality",
+      "abstract": "",
+      "year": "1997",
+      "venue": "International Conference on Artificial Neural Networks",
+      "authors": "Amos Storkey"
+    },
+    {
+      "index": 46,
+      "title": "Lifelong learning algorithms",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Learning to learn",
+      "authors": "Sebastian Thrun"
+    },
+    {
+      "index": 47,
+      "title": "Lecture 6.5-rmsprop: Divide the gradient by a running average of its recent magnitude",
+      "abstract": "",
+      "year": "2012",
+      "venue": "COURSERA: Neural networks for machine learning",
+      "authors": "Tijmen Tieleman and Geoffrey Hinton"
+    },
+    {
+      "index": 48,
+      "title": "Three scenarios for continual learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.07734",
+      "authors": "Gido M van de Ven and Andreas S Tolias"
+    },
+    {
+      "index": 49,
+      "title": "Continual learning with hypernetworks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Johannes von Oswald, Christian Henning, João Sacramento, and Benjamin F. Grewe"
+    },
+    {
+      "index": 50,
+      "title": "BatchEnsemble: An alternative approach to Efficient Ensemble and Lifelong Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.06715",
+      "authors": "Yeming Wen, Dustin Tran, and Jimmy Ba",
+      "orig_title": "Batchensemble: an alternative approach to efficient ensemble and lifelong learning",
+      "paper_id": "2002.06715v2"
+    },
+    {
+      "index": 51,
+      "title": "Reinforced Continual Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Ju Xu and Zhanxing Zhu",
+      "orig_title": "Reinforced continual learning",
+      "paper_id": "1805.12369v1"
+    },
+    {
+      "index": 52,
+      "title": "Lifelong Learning with Dynamically Expandable Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1708.01547",
+      "authors": "Jaehong Yoon, Eunho Yang, Jeongtae Lee, and Sung Ju Hwang",
+      "orig_title": "Lifelong learning with dynamically expandable networks",
+      "paper_id": "1708.01547v11"
+    },
+    {
+      "index": 53,
+      "title": "Continual learning through synaptic intelligence",
+      "abstract": "",
+      "year": "2017",
+      "venue": "34th International Conference on Machine Learning-Volume 70",
+      "authors": "Friedemann Zenke, Ben Poole, and Surya Ganguli"
+    },
+    {
+      "index": 54,
+      "title": "Task Agnostic Continual Learning Using Online Variational Bayes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1803.10123",
+      "authors": "Chen Zeno, Itay Golan, Elad Hoffer, and Daniel Soudry",
+      "orig_title": "Task agnostic continual learning using online variational bayes",
+      "paper_id": "1803.10123v3"
+    },
+    {
+      "index": 55,
+      "title": "Incremental self-improvement for life-time multi-agent reinforcement learning",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Fourth International Conference on Simulation of Adaptive Behavior, Cambridge, MA",
+      "authors": "Jieyu Zhao and Jurgen Schmidhuber"
+    },
+    {
+      "index": 56,
+      "title": "Deconstructing Lottery Tickets: Zeros, Signs, and the Supermask",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Hattie Zhou, Janice Lan, Rosanne Liu, and Jason Yosinski",
+      "orig_title": "Deconstructing lottery tickets: Zeros, signs, and the supermask",
+      "paper_id": "1905.01067v4"
+    }
+  ]
+}

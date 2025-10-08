@@ -1,0 +1,499 @@
+{
+  "paper_id": "2205.10683v4",
+  "title": "Scalable & Efficient Training of Large Convolutional Neural Networks with Differential Privacy",
+  "sections": {
+    "previous arts": "The straightforward yet highly inefficient way of per-sample gradient clipping is to use batch size 1 and compute gradients with respect to each individual loss. Recently, more advanced methods have significantly boosted the efficiency by avoiding such a naive approach. The most widely applied method is implemented in the Opacus library , which is fast but memory costly as per-sample gradients 𝒈i=∂ℒi∂𝐖subscript𝒈𝑖subscriptℒ𝑖𝐖\\bm{g}_{i}=\\frac{\\partial\\mathcal{L}_{i}}{\\partial\\mathbf{W}} are instantiated to compute the weighted gradient ∑iCi⋅𝒈isubscript𝑖⋅subscript𝐶𝑖subscript𝒈𝑖\\sum_{i}C_{i}\\cdot\\bm{g}_{i} in (2.1). A more efficient method, FastGradClip [ref]32, is to use a second back-propagation with weighted loss ∑iCi⋅ℒisubscript𝑖⋅subscript𝐶𝑖subscriptℒ𝑖\\sum_{i}C_{i}\\cdot\\mathcal{L}_{i} to indirectly derive the weighted gradient. In all above-mentioned methods and The method in [ref]39 also extends the outer product trick (similar to Opacus, see (2.4)) in  to convolution layer, but does not use the ghost clipping trick., the per-sample gradients are instantiated, whereas this can be much inefficient and not necessary according to the ‘ghost clipping’ technique, as to be detailed in Section 3. In other words, ghost clipping proves that the claim ‘DP optimizers require access to the per-sample gradients’ is wrong. Note that ghost clipping is firstly proposed by  for linear layers, and then extended by  to sequential data and embedding layers for language models. However, the ghost clipping has not been extended to convolutional layers, due to the complication of the convolution operation and the high dimension of data (text data is mostly 2D, yet image data are 3D and videos are 4D). We give more details about the difference between this work and  in Appendix F. In fact, we will show that even the ghost clipping alone is not satisfactory for CNNs: e.g. it cannot fit even a single datapoint into the memory on VGGs and ImageNet dataset. Therefore, we propose the mixed ghost clipping, that narrows the efficiency gap between DP training and the regular training."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Deep Learning with Differential Privacy",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM SIGSAC conference on computer and communications security",
+      "authors": "M. Abadi, A. Chu, I. Goodfellow, H. B. McMahan, I. Mironov, K. Talwar, and L. Zhang",
+      "orig_title": "Deep learning with differential privacy",
+      "paper_id": "1607.00133v2"
+    },
+    {
+      "index": 1,
+      "title": "Xcit: Cross-covariance image transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Ali, H. Touvron, M. Caron, P. Bojanowski, M. Douze, A. Joulin, I. Laptev, N. Neverova, G. Synnaeve, J. Verbeek, et al."
+    },
+    {
+      "index": 2,
+      "title": "BEiT: BERT Pre-Training of Image Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "H. Bao, L. Dong, S. Piao, and F. Wei",
+      "orig_title": "Beit: Bert pre-training of image transformers",
+      "paper_id": "2106.08254v2"
+    },
+    {
+      "index": 3,
+      "title": "JAX: composable transformations of Python+NumPy programs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "J. Bradbury, R. Frostig, P. Hawkins, M. J. Johnson, C. Leary, D. Maclaurin, G. Necula, A. Paszke, J. VanderPlas, S. Wanderman-Milne, and Q. Zhang"
+    },
+    {
+      "index": 4,
+      "title": "Fast and memory efficient differentially private-sgd via jl projections",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Z. Bu, S. Gopi, J. Kulkarni, Y. T. Lee, H. Shen, and U. Tantipongpipat"
+    },
+    {
+      "index": 5,
+      "title": "On the Convergence and Calibration of Deep Learning with Differential Privacy",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.07830",
+      "authors": "Z. Bu, H. Wang, Q. Long, and W. J. Su",
+      "orig_title": "On the convergence and calibration of deep learning with differential privacy",
+      "paper_id": "2106.07830v6"
+    },
+    {
+      "index": 6,
+      "title": "Automatic Clipping: Differentially Private Deep Learning Made Easier and Stronger",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2206.07136",
+      "authors": "Z. Bu, Y.-X. Wang, S. Zha, and G. Karypis",
+      "orig_title": "Automatic clipping: Differentially private deep learning made easier and stronger",
+      "paper_id": "2206.07136v3"
+    },
+    {
+      "index": 7,
+      "title": "CrossViT: Cross-Attention Multi-Scale Vision Transformer for Image Classification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "C.-F. R. Chen, Q. Fan, and R. Panda",
+      "orig_title": "Crossvit: Cross-attention multi-scale vision transformer for image classification",
+      "paper_id": "2103.14899v2"
+    },
+    {
+      "index": 8,
+      "title": "Visformer: The Vision-friendly Transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Z. Chen, L. Xie, J. Niu, X. Liu, L. Wei, and Q. Tian",
+      "orig_title": "Visformer: The vision-friendly transformer",
+      "paper_id": "2104.12533v5"
+    },
+    {
+      "index": 9,
+      "title": "Unlocking High-Accuracy Differentially Private Image Classification through Scale",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2204.13650",
+      "authors": "S. De, L. Berrada, J. Hayes, S. L. Smith, and B. Balle",
+      "orig_title": "Unlocking high-accuracy differentially private image classification through scale",
+      "paper_id": "2204.13650v2"
+    },
+    {
+      "index": 10,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei"
+    },
+    {
+      "index": 11,
+      "title": "Scaling Up Your Kernels to 31x31: Revisiting Large Kernel Design in CNNs",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "X. Ding, X. Zhang, J. Han, and G. Ding",
+      "orig_title": "Scaling up your kernels to 31x31: Revisiting large kernel design in cnns",
+      "paper_id": "2203.06717v4"
+    },
+    {
+      "index": 12,
+      "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai, T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly, et al.",
+      "orig_title": "An image is worth 16x16 words: Transformers for image recognition at scale",
+      "paper_id": "2010.11929v2"
+    },
+    {
+      "index": 13,
+      "title": "Calibrating noise to sensitivity in private data analysis",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Theory of cryptography conference",
+      "authors": "C. Dwork, F. McSherry, K. Nissim, and A. Smith"
+    },
+    {
+      "index": 14,
+      "title": "The algorithmic foundations of differential privacy",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Found. Trends Theor. Comput. Sci.",
+      "authors": "C. Dwork, A. Roth, et al."
+    },
+    {
+      "index": 15,
+      "title": "ConViT: Improving Vision Transformers with Soft Convolutional Inductive Biases",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "S. d’Ascoli, H. Touvron, M. L. Leavitt, A. S. Morcos, G. Biroli, and L. Sagun",
+      "orig_title": "Convit: Improving vision transformers with soft convolutional inductive biases",
+      "paper_id": "2103.10697v2"
+    },
+    {
+      "index": 16,
+      "title": "Neocognitron: A self-organizing neural network model for a mechanism of visual pattern recognition",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Competition and cooperation in neural nets",
+      "authors": "K. Fukushima and S. Miyake"
+    },
+    {
+      "index": 17,
+      "title": "Convolutional sequence to sequence learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "J. Gehring, M. Auli, D. Grangier, D. Yarats, and Y. N. Dauphin"
+    },
+    {
+      "index": 18,
+      "title": "Efficient per-example gradient computations",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1510.01799",
+      "authors": "I. Goodfellow"
+    },
+    {
+      "index": 19,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in neural information processing systems",
+      "authors": "I. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. Courville, and Y. Bengio"
+    },
+    {
+      "index": 20,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 21,
+      "title": "Rethinking Spatial Dimensions of Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "B. Heo, S. Yun, D. Han, S. Chun, J. Choe, and S. J. Oh",
+      "orig_title": "Rethinking spatial dimensions of vision transformers",
+      "paper_id": "2103.16302v2"
+    },
+    {
+      "index": 22,
+      "title": "Cnn architectures for large-scale audio classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE international conference on acoustics, speech and signal processing (icassp)",
+      "authors": "S. Hershey, S. Chaudhuri, D. P. Ellis, J. F. Gemmeke, A. Jansen, R. C. Moore, M. Plakal, D. Platt, R. A. Saurous, B. Seybold, et al."
+    },
+    {
+      "index": 23,
+      "title": "Mobilenets: Efficient convolutional neural networks for mobile vision applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1704.04861",
+      "authors": "A. G. Howard, M. Zhu, B. Chen, D. Kalenichenko, W. Wang, T. Weyand, M. Andreetto, and H. Adam"
+    },
+    {
+      "index": 24,
+      "title": "Densely connected convolutional networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "G. Huang, Z. Liu, L. Van Der Maaten, and K. Q. Weinberger"
+    },
+    {
+      "index": 25,
+      "title": "Differentially private training of residual networks with scale normalisation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2203.00324",
+      "authors": "H. Klause, A. Ziller, D. Rueckert, K. Hammernik, and G. Kaissis",
+      "orig_title": "Differentially private training of residual networks with scale normalisation",
+      "paper_id": "2203.00324v2"
+    },
+    {
+      "index": 26,
+      "title": "One weird trick for parallelizing convolutional neural networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1404.5997",
+      "authors": "A. Krizhevsky",
+      "orig_title": "One weird trick for parallelizing convolutional neural networks",
+      "paper_id": "1404.5997v2"
+    },
+    {
+      "index": 27,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "A. Krizhevsky, G. Hinton, et al."
+    },
+    {
+      "index": 28,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Krizhevsky, I. Sutskever, and G. E. Hinton"
+    },
+    {
+      "index": 29,
+      "title": "Toward training at imagenet scale with differential privacy",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2201.12328",
+      "authors": "A. Kurakin, S. Chien, S. Song, R. Geambasu, A. Terzis, and A. Thakurta"
+    },
+    {
+      "index": 30,
+      "title": "Gradient-based learning applied to document recognition",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Proceedings of the IEEE",
+      "authors": "Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner"
+    },
+    {
+      "index": 31,
+      "title": "Scaling up Differentially Private Deep Learning with Fast Per-Example Gradient Clipping",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2009.03106",
+      "authors": "J. Lee and D. Kifer",
+      "orig_title": "Scaling up differentially private deep learning with fast per-example gradient clipping",
+      "paper_id": "2009.03106v1"
+    },
+    {
+      "index": 32,
+      "title": "Large Language Models Can Be Strong Differentially Private Learners",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "X. Li, F. Tramer, P. Liang, and T. Hashimoto",
+      "orig_title": "Large language models can be strong differentially private learners",
+      "paper_id": "2110.05679v6"
+    },
+    {
+      "index": 33,
+      "title": "Large scale transfer learning for differentially private image classification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2205.02973",
+      "authors": "H. Mehta, A. Thakurta, A. Kurakin, and A. Cutkosky"
+    },
+    {
+      "index": 34,
+      "title": "Playing atari with deep reinforcement learning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.5602",
+      "authors": "V. Mnih, K. Kavukcuoglu, D. Silver, A. Graves, I. Antonoglou, D. Wierstra, and M. Riedmiller"
+    },
+    {
+      "index": 35,
+      "title": "Tempered Sigmoid Activations for Deep Learning with Differential Privacy",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "N. Papernot, A. Thakurta, S. Song, S. Chien, and Ú. Erlingsson",
+      "orig_title": "Tempered sigmoid activations for deep learning with differential privacy",
+      "paper_id": "2007.14191v1"
+    },
+    {
+      "index": 36,
+      "title": "Large Kernel Matters —— Improve Semantic Segmentation by Global Convolutional Network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "C. Peng, X. Zhang, G. Yu, G. Luo, and J. Sun",
+      "orig_title": "Large kernel matters–improve semantic segmentation by global convolutional network",
+      "paper_id": "1703.02719v1"
+    },
+    {
+      "index": 37,
+      "title": "You Only Look Once: Unified, Real-Time Object Detection",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "J. Redmon, S. Divvala, R. Girshick, and A. Farhadi",
+      "orig_title": "You only look once: Unified, real-time object detection",
+      "paper_id": "1506.02640v5"
+    },
+    {
+      "index": 38,
+      "title": "Efficient Per-Example Gradient Computations in Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1912.06015",
+      "authors": "G. Rochette, A. Manoel, and E. W. Tramel",
+      "orig_title": "Efficient per-example gradient computations in convolutional neural networks",
+      "paper_id": "1912.06015v1"
+    },
+    {
+      "index": 39,
+      "title": "Two-Stream Convolutional Networks for Action Recognition in Videos",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in neural information processing systems",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Two-stream convolutional networks for action recognition in videos",
+      "paper_id": "1406.2199v2"
+    },
+    {
+      "index": 40,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 41,
+      "title": "Enabling fast differentially private sgd via just-in-time compilation and vectorization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "P. Subramani, N. Vadivelu, and G. Kamath"
+    },
+    {
+      "index": 42,
+      "title": "Pytorch vision description",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Torchvision"
+    },
+    {
+      "index": 43,
+      "title": "Training data-efficient image transformers & distillation through attention",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "H. Touvron, M. Cord, M. Douze, F. Massa, A. Sablayrolles, and H. Jégou",
+      "orig_title": "Training data-efficient image transformers & distillation through attention",
+      "paper_id": "2012.12877v2"
+    },
+    {
+      "index": 44,
+      "title": "Going deeper with image transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "H. Touvron, M. Cord, A. Sablayrolles, G. Synnaeve, and H. Jégou"
+    },
+    {
+      "index": 45,
+      "title": "Differentially Private Learning Needs Better Features (or Much More Data)",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "F. Tramer and D. Boneh",
+      "orig_title": "Differentially private learning needs better features (or much more data)",
+      "paper_id": "2011.11660v3"
+    },
+    {
+      "index": 46,
+      "title": "Pytorch image models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "R. Wightman"
+    },
+    {
+      "index": 47,
+      "title": "Aggregated Residual Transformations for Deep Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "S. Xie, R. Girshick, P. Dollár, Z. Tu, and K. He",
+      "orig_title": "Aggregated residual transformations for deep neural networks",
+      "paper_id": "1611.05431v2"
+    },
+    {
+      "index": 48,
+      "title": "ScalableViT: Rethinking the Context-oriented Generalization of Vision Transformer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2203.10790",
+      "authors": "R. Yang, H. Ma, J. Wu, Y. Tang, X. Xiao, M. Zheng, and X. Li",
+      "orig_title": "Scalablevit: Rethinking the context-oriented generalization of vision transformer",
+      "paper_id": "2203.10790v2"
+    },
+    {
+      "index": 49,
+      "title": "Opacus: User-Friendly Differential Privacy Library in PyTorch",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS 2021 Workshop Privacy in Machine Learning",
+      "authors": "A. Yousefpour, I. Shilov, A. Sablayrolles, D. Testuggine, K. Prasad, M. Malek, J. Nguyen, S. Ghosh, A. Bharadwaj, J. Zhao, et al.",
+      "orig_title": "Opacus: User-friendly differential privacy library in pytorch",
+      "paper_id": "2109.12298v4"
+    },
+    {
+      "index": 50,
+      "title": "Do not let privacy overbill utility: Gradient embedding perturbation for private learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "D. Yu, H. Zhang, W. Chen, and T.-Y. Liu"
+    },
+    {
+      "index": 51,
+      "title": "Wide Residual Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "British Machine Vision Conference",
+      "authors": "S. Zagoruyko and N. Komodakis",
+      "orig_title": "Wide residual networks",
+      "paper_id": "1605.07146v4"
+    },
+    {
+      "index": 52,
+      "title": "Character-level convolutional networks for text classification",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "X. Zhang, J. Zhao, and Y. LeCun"
+    },
+    {
+      "index": 53,
+      "title": "Nested Hierarchical Transformer: Towards Accurate, Data-Efficient and Interpretable Visual Understanding",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Z. Zhang, H. Zhang, L. Zhao, T. Chen, S. Arik, and T. Pfister",
+      "orig_title": "Nested hierarchical transformer: Towards accurate, data-efficient and interpretable visual understanding",
+      "paper_id": "2105.12723v4"
+    }
+  ]
+}

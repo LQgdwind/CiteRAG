@@ -1,0 +1,491 @@
+{
+  "paper_id": "2006.06608v3",
+  "title": "GNNAdvisor: An Adaptive and Efficient Runtime System for GNN Acceleration on GPUs",
+  "sections": {
+    "deep learning frameworks": "Various NN frameworks have been proposed, such as Tensorflow , and Pytorch [ref]46.\nThese frameworks provide the end-to-end training and inference support for traditional deep-learning models with various NN operators, such as linear and convolutional operators.\nThese operators are highly optimized for Euclidean data (e.g., image) but lack support for non-Euclidean data (e.g., graph) in GNNs.\nExtending NN frameworks to support GNN that takes the highly-irregular graphs as the input is facing several challenges. First, NN-extended GNN computing platforms 1 [ref]53 focus on programmability and generality for different GNN models but lack efficient backend support to achieve high performance.\nFor example, Pytorch-Geometric (PyG) 1 uses the torch-scatter 2 library implemented with CUDA as its major building block of graph aggregation operations. The torch-scatter implementation scales poorly when encountering large sparse graphs with high-dimensional node embedding because its kernel design essentially borrows the design principles of graph-processing systems by using excessive high-overhead atomic operations to support node embedding propagation.\nA similar scalability problem is also observed in Deep Graph Library (DGL) [ref]53, which incorporates an off-the-shelf Sparse-Matrix Multiplication (SpMM) (e.g., csrmm2 in cuSparse ) for simple sum-reduced aggregation  7 and leverages its own CUDA kernel for more complex aggregation scheme with edge attributes  . Second, major computation kernels 1 [ref]53 are hard-coded without design flexibility, which is essential to handle diverse application settings with different input graph sizes and node embedding dimensionality.\nFrom the high-level interface, users are only allowed to define the way of composing these kernels externally.\nUsers are not allowed to customize kernels internally based on the known characteristics of GNN model architectures, GPU hardware, and graph properties."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "TensorFlow: A system for large-scale machine learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX symposium on operating systems design and implementation (OSDI)",
+      "authors": "Martín Abadi, Paul Barham, Jianmin Chen, Zhifeng Chen, Andy Davis, Jeffrey Dean, Matthieu Devin, Sanjay Ghemawat, Geoffrey Irving, Michael Isard, et al.",
+      "orig_title": "Tensorflow: A system for large-scale machine learning",
+      "paper_id": "1605.08695v2"
+    },
+    {
+      "index": 1,
+      "title": "Rabbit order: Just-in-time parallel reordering for fast graph analysis",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE International Parallel and Distributed Processing Symposium (IPDPS)",
+      "authors": "J. Arai, H. Shiokawa, T. Yamamuro, M. Onizuka, and S. Iwamura"
+    },
+    {
+      "index": 2,
+      "title": "When is graph reordering an optimization? studying the effect of lightweight graph reordering across applications and input graphs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE International Symposium on Workload Characterization (IISWC)",
+      "authors": "Vignesh Balaji and Brandon Lucia"
+    },
+    {
+      "index": 3,
+      "title": "Layered label propagation: A multiresolution coordinate-free ordering for compressing social networks",
+      "abstract": "",
+      "year": "2011",
+      "venue": "20th international conference on World wide web (WWW)",
+      "authors": "Paolo Boldi, Marco Rosa, Massimo Santini, and Sebastiano Vigna"
+    },
+    {
+      "index": 4,
+      "title": "Translating embeddings for modeling multi-relational data",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Antoine Bordes, Nicolas Usunier, Alberto Garcia-Duran, Jason Weston, and Oksana Yakhnenko"
+    },
+    {
+      "index": 5,
+      "title": "Link prediction approach to collaborative filtering",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ACM/IEEE-CS Joint Conference on Digital Libraries (JCDL)",
+      "authors": "Hsinchun Chen, Xin Li, and Zan Huang"
+    },
+    {
+      "index": 6,
+      "title": "Deep Feature Learning via Structured Graph Laplacian Embedding for Person Re-Identification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Pattern Recognition",
+      "authors": "De Cheng, Yihong Gong, Xiaojun Chang, Weiwei Shi, Alexander Hauptmann, and Nanning Zheng",
+      "orig_title": "Deep feature learning via structured graph laplacian embedding for person re-identification",
+      "paper_id": "1707.07791v1"
+    },
+    {
+      "index": 7,
+      "title": "Reducing the bandwidth of sparse symmetric matrices",
+      "abstract": "",
+      "year": "1969",
+      "venue": "1969 24th National Conference",
+      "authors": "E. Cuthill and J. McKee"
+    },
+    {
+      "index": 8,
+      "title": "Learning Graph Representations with Embedding Propagation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems (NeurIPS)",
+      "authors": "Alberto Garcia Duran and Mathias Niepert",
+      "orig_title": "Learning graph representations with embedding propagation",
+      "paper_id": "1710.03059v1"
+    },
+    {
+      "index": 9,
+      "title": "Convolutional networks on graphs for learning molecular fingerprints",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint",
+      "authors": "David Duvenaud, Dougal Maclaurin, Jorge Aguilera-Iparraguirre, Rafael Gómez-Bombarelli, Timothy Hirzel, Alán Aspuru-Guzik, and Ryan P Adams"
+    },
+    {
+      "index": 10,
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR Workshop on Representation Learning on Graphs and Manifolds (ICLR)",
+      "authors": "Matthias Fey and Jan E. Lenssen",
+      "orig_title": "Fast graph representation learning with PyTorch Geometric",
+      "paper_id": "1903.02428v3"
+    },
+    {
+      "index": 11,
+      "title": "Pytorch extension library of optimized scatter operations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Matthias Fey and Jan E. Lenssen"
+    },
+    {
+      "index": 12,
+      "title": "Community detection in graphs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Physics reports",
+      "authors": "Santo Fortunato"
+    },
+    {
+      "index": 13,
+      "title": "Graph embedding in vector spaces by node attribute statistics",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Pattern Recognition",
+      "authors": "Jaume Gibert, Ernest Valveny, and Horst Bunke"
+    },
+    {
+      "index": 14,
+      "title": "Powergraph: Distributed graph-parallel computation on natural graphs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "USENIX Symposium on Operating Systems Design and Implementation (OSDI)",
+      "authors": "Joseph E Gonzalez, Yucheng Low, Haijie Gu, Danny Bickson, and Carlos Guestrin"
+    },
+    {
+      "index": 15,
+      "title": "node2vec: Scalable Feature Learning for Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "22nd ACM international conference on Knowledge discovery and data mining (SIGKDD)",
+      "authors": "Aditya Grover and Jure Leskovec",
+      "orig_title": "node2vec: Scalable feature learning for networks",
+      "paper_id": "1607.00653v1"
+    },
+    {
+      "index": 16,
+      "title": "Inductive Representation Learning on Large Graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems (NeurIPS)",
+      "authors": "Will Hamilton, Zhitao Ying, and Jure Leskovec",
+      "orig_title": "Inductive representation learning on large graphs",
+      "paper_id": "1706.02216v4"
+    },
+    {
+      "index": 17,
+      "title": "An experimental comparison of pregel-like graph processing systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "VLDB Endowment",
+      "authors": "Minyang Han, Khuzaima Daudjee, Khaled Ammar, M Tamer Özsu, Xingfang Wang, and Tianqi Jin"
+    },
+    {
+      "index": 18,
+      "title": "Graph partitioning models for parallel computing",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Parallel computing",
+      "authors": "Bruce Hendrickson and Tamara G Kolda"
+    },
+    {
+      "index": 19,
+      "title": "Xeon sliver 4110",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Intel"
+    },
+    {
+      "index": 20,
+      "title": "Parallelization of reordering algorithms for bandwidth and wavefront reduction",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conference for High Performance Computing, Networking, Storage and Analysis (SC)",
+      "authors": "Konstantinos I Karantasis, Andrew Lenharth, Donald Nguyen, Mara J Garzaran, and Keshav Pingali"
+    },
+    {
+      "index": 21,
+      "title": "MeTis: Unstructured Graph Partitioning and Sparse Matrix Ordering System, Version 4.0",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "George Karypis and Vipin Kumar"
+    },
+    {
+      "index": 22,
+      "title": "Graph classification and clustering based on vector space embedding",
+      "abstract": "",
+      "year": "2010",
+      "venue": "World Scientific",
+      "authors": "Riesen Kaspar and Bunke Horst"
+    },
+    {
+      "index": 23,
+      "title": "Benchmark data sets for graph kernels",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Kristian Kersting, Nils M. Kriege, Christopher Morris, Petra Mutzel, and Marion Neumann"
+    },
+    {
+      "index": 24,
+      "title": "Mizan: A system for dynamic load balancing in large-scale graph processing",
+      "abstract": "",
+      "year": "2013",
+      "venue": "8th ACM European Conference on Computer Systems (EuroSys)",
+      "authors": "Zuhair Khayyat, Karim Awara, Amani Alonazi, Hani Jamjoom, Dan Williams, and Panos Kalnis"
+    },
+    {
+      "index": 25,
+      "title": "Cusha: vertex-centric graph processing on gpus",
+      "abstract": "",
+      "year": "2014",
+      "venue": "23rd international symposium on High-performance parallel and distributed computing (HPDC)",
+      "authors": "Farzad Khorasani, Keval Vora, Rajiv Gupta, and Laxmi N Bhuyan"
+    },
+    {
+      "index": 26,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Thomas N Kipf and Max Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 27,
+      "title": "Learning spectral graph transformations for link prediction",
+      "abstract": "",
+      "year": "2009",
+      "venue": "26th Annual International Conference on Machine Learning (ICML)",
+      "authors": "Jérôme Kunegis and Andreas Lommatzsch"
+    },
+    {
+      "index": 28,
+      "title": "Graphchi: Large-scale graph computation on just a pc",
+      "abstract": "",
+      "year": "2012",
+      "venue": "USENIX Symposium on Operating Systems Design and Implementation (OSDI)",
+      "authors": "Aapo Kyrola, Guy Blelloch, and Carlos Guestrin"
+    },
+    {
+      "index": 29,
+      "title": "Benchmark graphs for testing community detection algorithms",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Physical review E",
+      "authors": "Andrea Lancichinetti, Santo Fortunato, and Filippo Radicchi"
+    },
+    {
+      "index": 30,
+      "title": "SNAP Datasets: Stanford large network dataset collection",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Jure Leskovec and Andrej Krevl"
+    },
+    {
+      "index": 31,
+      "title": "Enterprise: breadth-first graph traversal on gpus",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference for High Performance Computing, Networking, Storage and Analysis (SC)",
+      "authors": "Hang Liu and H Howie Huang"
+    },
+    {
+      "index": 32,
+      "title": "Simd-x: Programming and processing of graph algorithms on gpus",
+      "abstract": "",
+      "year": "2019",
+      "venue": "USENIX Annual Technical Conference (ATC)",
+      "authors": "Hang Liu and H Howie Huang"
+    },
+    {
+      "index": 33,
+      "title": "Non-negative laplacian embedding",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Ninth IEEE International Conference on Data Mining (ICDM)",
+      "authors": "Dijun Luo, Chris Ding, Heng Huang, and Tao Li"
+    },
+    {
+      "index": 34,
+      "title": "Cauchy graph embedding",
+      "abstract": "",
+      "year": "2011",
+      "venue": "28th International Conference on Machine Learning (ICML)",
+      "authors": "Dijun Luo, Feiping Nie, Heng Huang, and Chris H Ding"
+    },
+    {
+      "index": 35,
+      "title": "Neugraph: parallel deep neural network computation on large graphs",
+      "abstract": "",
+      "year": "",
+      "venue": "USENIX Annual Technical Conference (ATC’19)",
+      "authors": "Lingxiao Ma, Zhi Yang, Youshan Miao, Jilong Xue, Ming Wu, Lidong Zhou, and Yafei Dai"
+    },
+    {
+      "index": 36,
+      "title": "Spectral methods for community detection and graph partitioning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Physical Review E",
+      "authors": "Mark EJ Newman"
+    },
+    {
+      "index": 37,
+      "title": "Tigr: Transforming irregular graphs for gpu-friendly graph processing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Twenty-Third International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS)",
+      "authors": "Amir Hossein Nodehi Sabet, Junqiao Qiu, and Zhijia Zhao"
+    },
+    {
+      "index": 38,
+      "title": "Cuda sparse matrix library (cusparse)",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Nvidia"
+    },
+    {
+      "index": 39,
+      "title": "Dgx-1",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Nvidia"
+    },
+    {
+      "index": 40,
+      "title": "Profiling tools",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Nvidia"
+    },
+    {
+      "index": 41,
+      "title": "Quardo p6000 gpu",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Nvidia"
+    },
+    {
+      "index": 42,
+      "title": "Tesla p100",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Nvidia"
+    },
+    {
+      "index": 43,
+      "title": "Tesla v100",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Nvidia"
+    },
+    {
+      "index": 44,
+      "title": "The pagerank citation ranking: Bringing order to the web",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Technical report",
+      "authors": "Lawrence Page, Sergey Brin, Rajeev Motwani, and Terry Winograd"
+    },
+    {
+      "index": 45,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 46,
+      "title": "DeepWalk: Online Learning of Social Representations",
+      "abstract": "",
+      "year": "2014",
+      "venue": "20th ACM International Conference on Knowledge Discovery and Data Mining (SIGKDD)",
+      "authors": "Bryan Perozzi, Rami Al-Rfou, and Steven Skiena",
+      "orig_title": "Deepwalk: Online learning of social representations",
+      "paper_id": "1403.6652v2"
+    },
+    {
+      "index": 47,
+      "title": "Near linear time algorithm to detect community structures in large-scale networks",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Physical review E",
+      "authors": "Usha Nandini Raghavan, Réka Albert, and Soundar Kumara"
+    },
+    {
+      "index": 48,
+      "title": "X-stream: Edge-centric graph processing using streaming partitions",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Twenty-Fourth ACM Symposium on Operating Systems Principles (SOSP)",
+      "authors": "Amitabha Roy, Ivo Mihailovic, and Willy Zwaenepoel"
+    },
+    {
+      "index": 49,
+      "title": "Brief announcement: Revisiting the power-law degree distribution for social graph analysis",
+      "abstract": "",
+      "year": "2010",
+      "venue": "29th ACM SIGACT-SIGOPS Symposium on Principles of Distributed Computing (PODC)",
+      "authors": "Alessandra Sala, Haitao Zheng, Ben Y. Zhao, Sabrina Gaito, and Gian Paolo Rossi"
+    },
+    {
+      "index": 50,
+      "title": "Towards time-aware link prediction in evolving social networks",
+      "abstract": "",
+      "year": "2009",
+      "venue": "3rd workshop on social network mining and analysis",
+      "authors": "Tomasz Tylenda, Ralitsa Angelova, and Srikanta Bedathur"
+    },
+    {
+      "index": 51,
+      "title": "Graph Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Petar Veličković, Guillem Cucurull, Arantxa Casanova, Adriana Romero, Pietro Liò, and Yoshua Bengio",
+      "orig_title": "Graph attention networks",
+      "paper_id": "1710.10903v3"
+    },
+    {
+      "index": 52,
+      "title": "Deep graph library: Towards efficient and scalable deep learning on graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR Workshop on Representation Learning on Graphs and Manifolds",
+      "authors": "Minjie Wang, Lingfan Yu, Da Zheng, Quan Gan, Yu Gai, Zihao Ye, Mufei Li, Jinjing Zhou, Qi Huang, Chao Ma, Ziyue Huang, Qipeng Guo, Hao Zhang, Haibin Lin, Junbo Zhao, Jinyang Li, Alexander J Smola, and Zheng Zhang"
+    },
+    {
+      "index": 53,
+      "title": "Gunrock: A High-Performance Graph Processing Library on the GPU",
+      "abstract": "",
+      "year": "2016",
+      "venue": "21st ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming (PPoPP)",
+      "authors": "Yangzihao Wang, Andrew Davidson, Yuechao Pan, Yuduo Wu, Andy Riffel, and John D Owens",
+      "orig_title": "Gunrock: A high-performance graph processing library on the gpu",
+      "paper_id": "1501.05387v6"
+    },
+    {
+      "index": 54,
+      "title": "How Powerful are Graph Neural Networks?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Keyulu Xu, Weihua Hu, Jure Leskovec, and Stefanie Jegelka",
+      "orig_title": "How powerful are graph neural networks?",
+      "paper_id": "1810.00826v3"
+    },
+    {
+      "index": 55,
+      "title": "Design principles for sparse matrix multiplication on the gpu",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Parallel Processing",
+      "authors": "Carl Yang, Aydın Buluç, and John D Owens"
+    },
+    {
+      "index": 56,
+      "title": "Hierarchical Graph Representation Learning with Differentiable Pooling",
+      "abstract": "",
+      "year": "2018",
+      "venue": "32nd International Conference on Neural Information Processing Systems (NeurIPS)",
+      "authors": "Rex Ying, Jiaxuan You, Christopher Morris, Xiang Ren, William L. Hamilton, and Jure Leskovec",
+      "orig_title": "Hierarchical graph representation learning with differentiable pooling",
+      "paper_id": "1806.08804v4"
+    }
+  ]
+}
