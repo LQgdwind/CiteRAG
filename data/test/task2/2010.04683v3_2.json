@@ -1,0 +1,513 @@
+{
+  "paper_id": "2010.04683v3",
+  "title": "Smooth Variational Graph Embeddings for Efficient Neural Architecture Search The authors acknowledge support by the German Federal Ministry of Education and Research Foundation via the project DeToL.",
+  "sections": {
+    "i introduction": "Recent progress in computer vision is to a large extent coupled to the advancement of novel neural architectures  . In this context, the automated search of neural architectures  [ref]4 [ref]5\nis increasingly important, as it removes the fatiguing and time-consuming process of manual trial-and-error network design. Neural Architecture Search (NAS) is intrinsically a discrete optimization problem and can be solved effectively using black-box methods such as reinforcement learning  [ref]4, evolution  [ref]5, Bayesian optimization (BO)   0 or local search 1. However, finding a good solution typically requires thousands of function evaluations, which is infeasible without company-scale compute infrastructure. Recent research in NAS focus as well on efficient methods via continuous relaxations of the discrete search space and weight-sharing 2 3 4 5. However, such methods\nyield efficient yet oftentimes sub-optimal results 6. Therefore, we argue in favor of NAS on learned graph embeddings using encoder-decoder graph neural networks (GNN) 7 8 9. Zhang et al. 0 recently showed good performance with such a model, D-VAE, on the ENAS search space 3 in neural architecture performance prediction and BO - proving its ability to learn smooth continuous graph representations. D-VAE aggregates information in the architecture GNN alternatingly in the forward pass and in the backward pass to encode the neural network information flow. However, the D-VAE model imposes strong constraints on the graph structure, which limit its applicability to search spaces beyond ENAS. In addition, it has very long training times. In this paper, we propose a two-sided variational encoder-decoder GNN to learn smooth embeddings in various NAS search spaces, which we call Smooth Variational Graph embedding (SVGe). In contrast to D-VAE, SVGe aggregates node representations in the forward and backward pass separately and consequently decodes their joint representation into forward and backward pass separately (see Fig. 1). This yields a very high reconstruction ability without imposing any constraints on the search space and allows for a more efficient training. Inheriting from variational autoencoders 1, it places structurally similar graphs close to one another in the embedding space and thus facilitates efficient black-box optimization to find high-performing architectures. The proposed model is not only three times faster than D-VAE but also shows improved BO results on the ENAS search space. In contrast to D-VAE, it can be directly applied to other search spaces such as NAS-Bench-101 2 and NAS-Bench-201 3. Moreover, it allows to learn architecture performance prediction in a supervised way and extrapolate from the space of observed architectures at test time. This way, high performing architectures even outside of the original search space can be proposed at very low costs. In summary, we make the following contributions:\n(i) We introduce a novel graph variational autoencoder, SVGe, that builds a structurally smooth variational graph embedding by learning accurate representations of neural architectures (Sec. III-A and III-B).\n(ii) We discuss theoretical properties of our approach (Sec. III-D).\n(iii) We conduct extensive evaluations on the ENAS 3, NAS-Bench-101 2 and NAS-Bench-2013 search spaces and show that our approach allows for competitive BO results in all three search spaces. Our experiments show that SVGe is able to extrapolate to larger unseen architectures. It finds an architecture with a best accuracy of 95.18%percent95.1895.18\\% when learning from the NAS-Bench-101 search space. This improves over the best architecture within this space. In addition, our top 111 found architecture improves over comparable architectures in terms of validation and test accuracy, when transferring to ImageNet16-120 4 (Sec. IV)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "“Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "NeurIPS",
+      "authors": "A. Krizhevsky, I. Sutskever, and G. E. Hinton"
+    },
+    {
+      "index": 2,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NeurIPS",
+      "authors": "I. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. Courville, and Y. Bengio"
+    },
+    {
+      "index": 3,
+      "title": "Large-Scale Evolution of Image Classifiers",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "E. Real, S. Moore, A. Selle, S. Saxena, Y. L. Suematsu, J. Tan, Q. V. Le, and A. Kurakin",
+      "orig_title": "Large-scale evolution of image classifiers",
+      "paper_id": "1703.01041v2"
+    },
+    {
+      "index": 4,
+      "title": "Learning Transferable Architectures for Scalable Image Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "B. Zoph, V. Vasudevan, J. Shlens, and Q. V. Le",
+      "orig_title": "Learning transferable architectures for scalable image recognition",
+      "paper_id": "1707.07012v4"
+    },
+    {
+      "index": 5,
+      "title": "Regularized Evolution for Image Classifier Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "E. Real, A. Aggarwal, Y. Huang, and Q. V. Le",
+      "orig_title": "Regularized evolution for image classifier architecture search",
+      "paper_id": "1802.01548v7"
+    },
+    {
+      "index": 6,
+      "title": "Neural Architecture Search with Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "B. Zoph and Q. V. Le",
+      "orig_title": "Neural architecture search with reinforcement learning",
+      "paper_id": "1611.01578v2"
+    },
+    {
+      "index": 7,
+      "title": "Neural Architecture Search: A Survey",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1808.05377",
+      "authors": "T. Elsken, J. H. Metzen, and F. Hutter",
+      "orig_title": "Neural architecture search: A survey",
+      "paper_id": "1808.05377v3"
+    },
+    {
+      "index": 8,
+      "title": "Neural architecture search with bayesian optimisation and optimal transport",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "K. Kandasamy, W. Neiswanger, J. Schneider, B. Póczos, and E. P. Xing"
+    },
+    {
+      "index": 9,
+      "title": "BANANAS: Bayesian Optimization with Neural Architectures for Neural Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.11858",
+      "authors": "C. White, W. Neiswanger, and Y. Savani",
+      "orig_title": "Bananas: Bayesian optimization with neural architectures for neural architecture search",
+      "paper_id": "1910.11858v3"
+    },
+    {
+      "index": 10,
+      "title": "Neural architecture search using bayesian optimisation with weisfeiler-lehman kernel",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ArXiv",
+      "authors": "B. Ru, X. Wan, X. Dong, and M. Osborne"
+    },
+    {
+      "index": 11,
+      "title": "Local search is state of the art for NAS benchmarks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "C. White, S. Nolen, and Y. Savani"
+    },
+    {
+      "index": 12,
+      "title": "Understanding and simplifying one-shot architecture search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "G. Bender, P.-J. Kindermans, B. Zoph, V. Vasudevan, and Q. Le"
+    },
+    {
+      "index": 13,
+      "title": "Efficient Neural Architecture Search via Parameter Sharing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "H. Pham, M. Y. Guan, B. Zoph, Q. V. Le, and J. Dean",
+      "orig_title": "Efficient neural architecture search via parameter sharing",
+      "paper_id": "1802.03268v2"
+    },
+    {
+      "index": 14,
+      "title": "DARTS: Differentiable architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "H. Liu, K. Simonyan, and Y. Yang"
+    },
+    {
+      "index": 15,
+      "title": "Proxylessnas: Direct neural architecture search on target task and hardware",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "H. Cai, L. Zhu, and S. Han"
+    },
+    {
+      "index": 16,
+      "title": "Understanding and Robustifying Differentiable Architecture Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "A. Zela, T. Elsken, T. Saikia, Y. Marrakchi, T. Brox, and F. Hutter",
+      "orig_title": "Understanding and robustifying differentiable architecture search",
+      "paper_id": "1909.09656v2"
+    },
+    {
+      "index": 17,
+      "title": "A new model for learning in graph domains",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IJCNN",
+      "authors": "M. Gori, G. Monfardini, and F. Scarselli"
+    },
+    {
+      "index": 18,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1609.02907",
+      "authors": "T. N. Kipf and M. Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 19,
+      "title": "A Comprehensive Survey on Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE TNNLS",
+      "authors": "Z. Wu, S. Pan, F. Chen, G. Long, C. Zhang, and P. S. Yu",
+      "orig_title": "A comprehensive survey on graph neural networks",
+      "paper_id": "1901.00596v4"
+    },
+    {
+      "index": 20,
+      "title": "D-VAE: A Variational Autoencoder for Directed Acyclic Graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "M. Zhang, S. Jiang, Z. Cui, R. Garnett, and Y. Chen",
+      "orig_title": "D-vae: A variational autoencoder for directed acyclic graphs",
+      "paper_id": "1904.11088v4"
+    },
+    {
+      "index": 21,
+      "title": "Auto-encoding variational bayes",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.6114",
+      "authors": "D. P. Kingma and M. Welling"
+    },
+    {
+      "index": 22,
+      "title": "Nas-bench-101: Towards reproducible neural architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "C. Ying, A. Klein, E. Christiansen, E. Real, K. Murphy, and F. Hutter"
+    },
+    {
+      "index": 23,
+      "title": "NAS-Bench-201: Extending the Scope of Reproducible Neural Architecture Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "X. Dong and Y. Yang",
+      "orig_title": "Nas-bench-201: Extending the scope of reproducible neural architecture search",
+      "paper_id": "2001.00326v2"
+    },
+    {
+      "index": 24,
+      "title": "A Downsampled Variant of ImageNet as an Alternative to the CIFAR datasets",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "P. Chrabaszcz, I. Loshchilov, and F. Hutter",
+      "orig_title": "A downsampled variant of imagenet as an alternative to the CIFAR datasets",
+      "paper_id": "1707.08819v3"
+    },
+    {
+      "index": 25,
+      "title": "Gated Graph Sequence Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICLR",
+      "authors": "Y. Li, D. Tarlow, M. Brockschmidt, and R. S. Zemel",
+      "orig_title": "Gated graph sequence neural networks",
+      "paper_id": "1511.05493v4"
+    },
+    {
+      "index": 26,
+      "title": "Learning Convolutional Neural Networks for Graphs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML",
+      "authors": "M. Niepert, M. Ahmed, and K. Kutzkov",
+      "orig_title": "Learning convolutional neural networks for graphs",
+      "paper_id": "1605.05273v4"
+    },
+    {
+      "index": 27,
+      "title": "Inductive Representation Learning on Large Graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "W. Hamilton, Z. Ying, and J. Leskovec",
+      "orig_title": "Inductive representation learning on large graphs",
+      "paper_id": "1706.02216v4"
+    },
+    {
+      "index": 28,
+      "title": "Neural Message Passing for Quantum Chemistry",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "J. Gilmer, S. S. Schoenholz, P. F. Riley, O. Vinyals, and G. E. Dahl",
+      "orig_title": "Neural message passing for quantum chemistry",
+      "paper_id": "1704.01212v2"
+    },
+    {
+      "index": 29,
+      "title": "Hierarchical Graph Representation Learning with Differentiable Pooling",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "Z. Ying, J. You, C. Morris, X. Ren, W. L. Hamilton, and J. Leskovec",
+      "orig_title": "Hierarchical graph representation learning with differentiable pooling",
+      "paper_id": "1806.08804v4"
+    },
+    {
+      "index": 30,
+      "title": "The graph neural network model",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Trans. Neural Networks",
+      "authors": "F. Scarselli, M. Gori, A. C. Tsoi, M. Hagenbuchner, and G. Monfardini"
+    },
+    {
+      "index": 31,
+      "title": "Graph Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "P. Velickovic, G. Cucurull, A. Casanova, A. Romero, P. Liò, and Y. Bengio",
+      "orig_title": "Graph attention networks",
+      "paper_id": "1710.10903v3"
+    },
+    {
+      "index": 32,
+      "title": "Representation learning on graphs with jumping knowledge networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "K. Xu, C. Li, Y. Tian, T. Sonobe, K. Kawarabayashi, and S. Jegelka"
+    },
+    {
+      "index": 33,
+      "title": "How Powerful are Graph Neural Networks?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "K. Xu, W. Hu, J. Leskovec, and S. Jegelka",
+      "orig_title": "How powerful are graph neural networks?",
+      "paper_id": "1810.00826v3"
+    },
+    {
+      "index": 34,
+      "title": "Variational graph auto-encoders",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv:1611.07308",
+      "authors": "T. Kipf and M. Welling"
+    },
+    {
+      "index": 35,
+      "title": "GraphVAE: Towards Generation of Small Graphs Using Variational Autoencoders",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICANN",
+      "authors": "M. Simonovsky and N. Komodakis",
+      "orig_title": "Graphvae: Towards generation of small graphs using variational autoencoders",
+      "paper_id": "1802.03480v1"
+    },
+    {
+      "index": 36,
+      "title": "Neural Architecture Optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "R. Luo, F. Tian, T. Qin, E. Chen, and T.-Y. Liu",
+      "orig_title": "Neural architecture optimization",
+      "paper_id": "1808.07233v5"
+    },
+    {
+      "index": 37,
+      "title": "GraphRNN: Generating Realistic Graphs with Deep Auto-regressive Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.08773",
+      "authors": "J. You, R. Ying, X. Ren, W. L. Hamilton, and J. Leskovec",
+      "orig_title": "Graphrnn: Generating realistic graphs with deep auto-regressive models",
+      "paper_id": "1802.08773v3"
+    },
+    {
+      "index": 38,
+      "title": "Learning Deep Generative Models of Graphs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Y. Li, O. Vinyals, C. Dyer, R. Pascanu, and P. W. Battaglia",
+      "orig_title": "Learning deep generative models of graphs",
+      "paper_id": "1803.03324v1"
+    },
+    {
+      "index": 39,
+      "title": "Speeding up automatic hyperparameter optimization of deep neural networks by extrapolation of learning curves",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IJCAI",
+      "authors": "T. Domhan, J. T. Springenberg, and F. Hutter"
+    },
+    {
+      "index": 40,
+      "title": "Learning curve prediction with Bayesian neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "A. Klein, S. Falkner, J. T. Springenberg, and F. Hutter"
+    },
+    {
+      "index": 41,
+      "title": "Designing Neural Network Architectures using Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "B. Baker, O. Gupta, N. Naik, and R. Raskar",
+      "orig_title": "Designing neural network architectures using reinforcement learning",
+      "paper_id": "1611.02167v3"
+    },
+    {
+      "index": 42,
+      "title": "Performance prediction based on neural architecture features",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CCHI",
+      "authors": "D. Long, S. Zhang, and Y. Zhang"
+    },
+    {
+      "index": 43,
+      "title": "A Generic Graph-based Neural Architecture Encoding Scheme for Predictor-based NAS",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "X. Ning, Y. Zheng, T. Zhao, Y. Wang, and H. Yang",
+      "orig_title": "A generic graph-based neural architecture encoding scheme for predictor-based NAS",
+      "paper_id": "2004.01899v3"
+    },
+    {
+      "index": 44,
+      "title": "A Semi-Supervised Assessor of Neural Architectures",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Y. Tang, Y. Wang, Y. Xu, H. Chen, B. Shi, C. Xu, C. Xu, Q. Tian, and C. Xu",
+      "orig_title": "A semi-supervised assessor of neural architectures",
+      "paper_id": "2005.06821v1"
+    },
+    {
+      "index": 45,
+      "title": "Neural Architecture Performance Prediction Using Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "GCPR",
+      "authors": "J. Lukasik, D. Friede, H. Stuckenschmidt, and M. Keuper",
+      "orig_title": "Neural architecture performance prediction using graph neural networks",
+      "paper_id": "2010.10024v1"
+    },
+    {
+      "index": 46,
+      "title": "Multi-objective neural architecture search via predictive network performance optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.09336",
+      "authors": "H. Shi, R. Pi, H. Xu, Z. Li, J. T. Kwok, and T. Zhang"
+    },
+    {
+      "index": 47,
+      "title": "Does Unsupervised Architecture Representation Learning Help Neural Architecture Search?",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "S. Yan, Y. Zheng, W. Ao, X. Zeng, and M. Zhang",
+      "orig_title": "Does unsupervised architecture representation learning help neural architecture search?",
+      "paper_id": "2006.06936v2"
+    },
+    {
+      "index": 48,
+      "title": "Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NIPS 2014 Workshop on Deep Learning",
+      "authors": "J. Chung, C. Gulcehre, K. Cho, and Y. Bengio",
+      "orig_title": "Empirical evaluation of gated recurrent neural networks on sequence modeling",
+      "paper_id": "1412.3555v1"
+    },
+    {
+      "index": 49,
+      "title": "Junction Tree Variational Autoencoder for Molecular Graph Generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "W. Jin, R. Barzilay, and T. S. Jaakkola",
+      "orig_title": "Junction tree variational autoencoder for molecular graph generation",
+      "paper_id": "1802.04364v4"
+    },
+    {
+      "index": 50,
+      "title": "Automatic differentiation in PyTorch",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS Autodiff Workshop",
+      "authors": "A. Paszke, S. Gross, S. Chintala, G. Chanan, E. Yang, Z. DeVito, Z. Lin, A. Desmaison, L. Antiga, and A. Lerer"
+    },
+    {
+      "index": 51,
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1903.02428",
+      "authors": "M. Fey and J. E. Lenssen",
+      "orig_title": "Fast graph representation learning with pytorch geometric",
+      "paper_id": "1903.02428v3"
+    },
+    {
+      "index": 52,
+      "title": "Sparse gaussian processes using pseudo-inputs",
+      "abstract": "",
+      "year": "2005",
+      "venue": "NeurIPS",
+      "authors": "E. Snelson and Z. Ghahramani"
+    },
+    {
+      "index": 53,
+      "title": "On bayesian methods for seeking the extremum",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Optimization Techniques, LNCS",
+      "authors": "J. Mockus"
+    },
+    {
+      "index": 54,
+      "title": "Scalable bayesian optimization using deep neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICML",
+      "authors": "J. Snoek, O. Rippel, K. Swersky, R. Kiros, N. Satish, N. Sundaram, M. M. A. Patwary, Prabhat, and R. P. Adams"
+    }
+  ]
+}

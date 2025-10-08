@@ -1,0 +1,479 @@
+{
+  "paper_id": "2003.12168v2",
+  "title": "Adversarial System Variant Approximation to Quantify Process Model Generalization",
+  "sections": {
+    "i introduction": "Process mining is a comparatively young research discipline that delights itself on ever-increasing popularity with applications in multiple domains such as Healthcare [ref]1, Manufacturing , Robotic Process Automation [ref]3, Human-Computer Interaction , and Simulation . Commonly, process mining techniques are leveraged to analyze a system. The system is observed during runtime and process steps are recorded sequentially. Recordings are then used to discover process models that are supposed to provide insights into the underlying system, i.e. to describe its behavior. An illustrative example is a complex manufacturing plant of a given product. Such a system usually requires machines to be filled with raw materials, components to be moved and assembled, and final products to be placed on pallets. Examples of corresponding observable process steps are conveyor start, start filling pallet, stop assembling, or stop machine. In this case, the sequences of steps are recorded and used to develop a process model that describes the behavior of the manufacturing plant. In process mining, four metrics are used to assess the quality of discovered process models: fitness, precision, simplicity, and generalization . The first three metrics have received a lot of attention in the literature over the last decade. However, generalization is a comparatively new and fairly untouched metric. Dongen et al.  describe generalization as “how well the model explains unobserved system behavior”. Similarly, Syring et al.  describe generalization as a metric that is “concerned with quantifying how well a process model generalizes to behavior that is possible in the (…) process but was never observed”. It is obvious that assessing the generalization metric is difficult since unobserved behavior is naturally unknown. Process models are used to draw conclusions about the underlying system and future behavior . Generalization, as an assessment metric, cannot be ignored in evaluating process models, because a process model that is solely evaluated on fitness, precision, and simplicity metrics might represent the observed recordings only , and hence overfits. Such a process model is inappropriate to derive conclusions about the system behavior. Recent research studies   have shown that state-of-the-art methods fail in assessing the extent to which a process model generalizes unobserved behavior. Hence, the measurement of generalization remains unsolved. This paper addresses the problem of quantifying generalization by utilizing Generative Adversarial Networks (GANs) [ref]11. GANs approximate data distributions from a given sample dataset. GANs have been extensively applied in the field of computer vision , and are capable of learning true underlying distributions of data [ref]11 . This paper is one of the first in applying GANs in the context of process mining by proposing and statistically testing a novel methodology to overcome the difficulty of assessing the quality metric of generalization. In particular, a Sequence Generative Adversarial Network (SGAN) is proposed to obtain a neural network that approximates the underlying system behavior. This neural network is trained on observed behavior only and is used to reveal the system's unobserved behavior. The generalization quality can then be assessed by comparing the unobserved behavior modeled by the process model with the unobserved behavior modeled by the neural network. The approach is called Adversarial System Variant Approximation (AVATAR). The effectiveness of the proposed methodology is evaluated and statistically tested in a controlled experiment utilizing 151515 systems. The paper is structured as follows. The related work is discussed in Section II. The fundamental preliminaries are provided in Section III followed by the proposed AVATAR methodology in Section IV. An experimental evaluation using 151515 ground truth systems and comprehensive result interpretations are reported in Section V. Finally, Section VI concludes the paper and provides future research directions. A notations overview and further detailed results can be found in the Appendix."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Process Mining in Healthcare",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer",
+      "authors": "R. S. Mans, W. M. P. van der Aalst, and R. J. B. Vanwersch"
+    },
+    {
+      "index": 1,
+      "title": "Process Mining of Programmable Logic Controllers: Input/Output Event Logs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE 15th International Conference on Automation Science and Engineering (CASE)",
+      "authors": "J. Theis, I. Mokhtarian, and H. Darabi",
+      "orig_title": "Process mining of programmable logic controllers: Input/output event logs",
+      "paper_id": "1903.09513v1"
+    },
+    {
+      "index": 2,
+      "title": "Process mining and robotic process automation: A perfect match.",
+      "abstract": "",
+      "year": "2018",
+      "venue": "BPM (Dissertation/Demos/Industry)",
+      "authors": "J. Geyer-Klingeberg, J. Nakladal, F. Baldauf, and F. Veit"
+    },
+    {
+      "index": 3,
+      "title": "Behavioral Petri Net Mining and Automated Analysis for Human-Computer Interaction Recommendations in Multi-Application Environments",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Hum.-Comput. Interact.",
+      "authors": "J. Theis and H. Darabi",
+      "orig_title": "Behavioral Petri net mining and automated analysis for human-computer interaction recommendations in multi-application environments",
+      "paper_id": "1902.08740v2"
+    },
+    {
+      "index": 4,
+      "title": "Automated Discovery of Business Process Simulation Models from Event Logs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "M. Camargo, M. Dumas, and O. González-Rojas",
+      "orig_title": "Automated Discovery of Business Process Simulation Models from Event Logs",
+      "paper_id": "1910.05404v3"
+    },
+    {
+      "index": 5,
+      "title": "Conformance Checking",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Springer Berlin Heidelberg",
+      "authors": "W. van der Aalst"
+    },
+    {
+      "index": 6,
+      "title": "A unified approach for measuring precision and generalization based on anti-alignments",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Business Process Management",
+      "authors": "B. F. van Dongen, J. Carmona, and T. Chatain"
+    },
+    {
+      "index": 7,
+      "title": "Evaluating Conformance Measures in Process Mining using Conformance Propositions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Transactions on Petri Nets and Other Models of Concurrency XIV",
+      "authors": "A. F. Syring, N. Tax, and W. M. van der Aalst",
+      "orig_title": "Evaluating conformance measures in process mining using conformance propositions",
+      "paper_id": "1909.02393v1"
+    },
+    {
+      "index": 8,
+      "title": "Process mining and the black swan: an empirical analysis of the influence of unobserved behavior on the quality of mined process models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Business Process Management",
+      "authors": "J.-R. Rehse, P. Fettke, and P. Loos"
+    },
+    {
+      "index": 9,
+      "title": "Towards confirmatory process discovery: Making assertions about the underlying system",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Business & Information Systems Engineering",
+      "authors": "G. Janssenswillen and B. Depaire"
+    },
+    {
+      "index": 10,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in neural information processing systems",
+      "authors": "I. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. Courville, and Y. Bengio"
+    },
+    {
+      "index": 11,
+      "title": "A Style-Based Generator Architecture for Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "T. Karras, S. Laine, and T. Aila",
+      "orig_title": "A style-based generator architecture for generative adversarial networks",
+      "paper_id": "1812.04948v3"
+    },
+    {
+      "index": 12,
+      "title": "Generalization and Equilibrium in Generative Adversarial Nets (GANs)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "34th International Conference on Machine Learning-Volume 70",
+      "authors": "S. Arora, R. Ge, Y. Liang, T. Ma, and Y. Zhang",
+      "orig_title": "Generalization and equilibrium in generative adversarial nets (gans)",
+      "paper_id": "1703.00573v5"
+    },
+    {
+      "index": 13,
+      "title": "Quality dimensions in process discovery: The importance of fitness, precision, generalization and simplicity",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Journal of Cooperative Information Systems",
+      "authors": "J. C. Buijs, B. F. Van Dongen, and W. M. Van Der Aalst"
+    },
+    {
+      "index": 14,
+      "title": "Replaying history on process models for conformance checking and performance analysis",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery",
+      "authors": "W. Van der Aalst, A. Adriansyah, and B. Van Dongen"
+    },
+    {
+      "index": 15,
+      "title": "Determining process model precision and generalization with weighted artificial negative events",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "S. K. L. M. vanden Broucke, J. De Weerdt, J. Vanthienen, and B. Baesens"
+    },
+    {
+      "index": 16,
+      "title": "Flexible evolutionary algorithms for mining structured process models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "J. C. A. M. Buijs"
+    },
+    {
+      "index": 17,
+      "title": "Measuring the quality of models with respect to the underlying system: An empirical study",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Business Process Management",
+      "authors": "G. Janssenswillen, T. Jouck, M. Creemers, and B. Depaire"
+    },
+    {
+      "index": 18,
+      "title": "Getting the Data",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Springer Berlin Heidelberg",
+      "authors": "W. van der Aalst"
+    },
+    {
+      "index": 19,
+      "title": "Decay replay mining to predict next process events",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "J. Theis and H. Darabi"
+    },
+    {
+      "index": 20,
+      "title": "Process Modeling and Analysis",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Springer Berlin Heidelberg",
+      "authors": "W. van der Aalst"
+    },
+    {
+      "index": 21,
+      "title": "Petri nets: Properties, analysis and applications",
+      "abstract": "",
+      "year": "1989",
+      "venue": "IEEE",
+      "authors": "T. Murata"
+    },
+    {
+      "index": 22,
+      "title": "Automated Discovery of Process Models from Event Logs: Review and Benchmark",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "A. Augusto, R. Conforti, M. Dumas, M. La Rosa, F. M. Maggi, A. Marrella, M. Mecella, and A. Soo",
+      "orig_title": "Automated Discovery of Process Models from Event Logs: Review and Benchmark",
+      "paper_id": "1705.02288v3"
+    },
+    {
+      "index": 23,
+      "title": "Split miner: automated discovery of accurate and simple business process models from event logs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Knowledge and Information Systems",
+      "authors": "A. Augusto, R. Conforti, M. Dumas, M. La Rosa, and A. Polyvyanyy"
+    },
+    {
+      "index": 24,
+      "title": "Soundness of workflow nets: Classification, decidability, and analysis",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Formal Aspects of Computing",
+      "authors": "W. M. Van Der Aalst, K. M. Van Hee, A. H. Ter Hofstede, N. Sidorova, H. M. Verbeek, M. Voorhoeve, and M. T. Wynn"
+    },
+    {
+      "index": 25,
+      "title": "Fodina: A robust and flexible heuristic process discovery technique",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Decision Support Systems",
+      "authors": "S. K. vanden Broucke and J. De Weerdt"
+    },
+    {
+      "index": 26,
+      "title": "Process mining with the heuristics miner-algorithm",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Technische Universiteit Eindhoven, BETA Working Paper Series",
+      "authors": "A. J. M. M. Weijters, W. M. P. van der Aalst, and A. K. Alves de Medeiros"
+    },
+    {
+      "index": 27,
+      "title": "Relgan: Relational generative adversarial networks for text generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "7th International Conference on Learning Representations (ICLR)",
+      "authors": "W. Nie, N. Narodytska, and A. B. Patel"
+    },
+    {
+      "index": 28,
+      "title": "Texygen: A benchmarking platform for text generation models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "41st International ACM SIGIR Conference on Research & Development in Information Retrieval, SIGIR",
+      "authors": "Y. Zhu, S. Lu, L. Zheng, J. Guo, W. Zhang, J. Wang, and Y. Yu"
+    },
+    {
+      "index": 29,
+      "title": "MaskGAN: Better Text Generation via Filling in the",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "W. Fedus, I. Goodfellow, and A. M. Dai",
+      "orig_title": "Maskgan: Better text generation via filling in the _",
+      "paper_id": "1801.07736v3"
+    },
+    {
+      "index": 30,
+      "title": "Neural Text Generation: Past, Present and Beyond",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "S. Lu, Y. Zhu, W. Zhang, J. Wang, and Y. Yu"
+    },
+    {
+      "index": 31,
+      "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+      "abstract": "",
+      "year": "2015",
+      "venue": "3rd International Conference on Learning Representations (ICLR)",
+      "authors": "D. Bahdanau, K. Cho, and Y. Bengio",
+      "orig_title": "Neural machine translation by jointly learning to align and translate",
+      "paper_id": "1409.0473v7"
+    },
+    {
+      "index": 32,
+      "title": "Relational recurrent neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Santoro, R. Faulkner, D. Raposo, J. Rae, M. Chrzanowski, T. Weber, D. Wierstra, O. Vinyals, R. Pascanu, and T. Lillicrap",
+      "orig_title": "Relational recurrent neural networks",
+      "paper_id": "1806.01822v2"
+    },
+    {
+      "index": 33,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Neural Information Processing Systems",
+      "authors": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, L. u. Kaiser, and I. Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 34,
+      "title": "The relativistic discriminator: a key element missing from standard GAN",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "A. Jolicoeur-Martineau",
+      "orig_title": "The relativistic discriminator: a key element missing from standard GAN",
+      "paper_id": "1807.00734v3"
+    },
+    {
+      "index": 35,
+      "title": "Equation of state calculations by fast computing machines",
+      "abstract": "",
+      "year": "1953",
+      "venue": "journal of chemical physics",
+      "authors": "N. Metropolis, A. W. Rosenbluth, M. N. Rosenbluth, A. H. Teller, and E. Teller"
+    },
+    {
+      "index": 36,
+      "title": "Monte Carlo sampling methods using Markov chains and their applications",
+      "abstract": "",
+      "year": "1970",
+      "venue": "Biometrika",
+      "authors": "W. K. Hastings"
+    },
+    {
+      "index": 37,
+      "title": "Understanding the metropolis-hastings algorithm",
+      "abstract": "",
+      "year": "1995",
+      "venue": "american statistician",
+      "authors": "S. Chib and E. Greenberg"
+    },
+    {
+      "index": 38,
+      "title": "Markov Chains",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Academic press",
+      "authors": "S. M. Ross"
+    },
+    {
+      "index": 39,
+      "title": "Metropolis-Hastings Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "R. Turner, J. Hung, E. Frank, Y. Saatchi, and J. Yosinski",
+      "orig_title": "Metropolis-hastings generative adversarial networks",
+      "paper_id": "1811.11357v2"
+    },
+    {
+      "index": 40,
+      "title": "Generative multi-adversarial networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "5th International Conference on Learning Representations, ICLR",
+      "authors": "I. Durugkar, I. Gemp, and S. Mahadevan"
+    },
+    {
+      "index": 41,
+      "title": "A comparative study of existing quality measures for process discovery",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Information Systems",
+      "authors": "G. Janssenswillen, N. Donders, T. Jouck, and B. Depaire"
+    },
+    {
+      "index": 42,
+      "title": "Generating artificial data for empirical analysis of control-flow discovery algorithms",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Business & Information Systems Engineering",
+      "authors": "T. Jouck and B. Depaire"
+    },
+    {
+      "index": 43,
+      "title": "A multi-dimensional quality assessment of state-of-the-art process discovery algorithms using real-life event logs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Information Systems",
+      "authors": "J. De Weerdt, M. De Backer, J. Vanthienen, and B. Baesens"
+    },
+    {
+      "index": 44,
+      "title": "Conformance checking of processes based on monitoring real behavior",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Information Systems",
+      "authors": "A. Rozinat and W. M. van der Aalst"
+    },
+    {
+      "index": 45,
+      "title": "A fresh look at precision in process conformance",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Business Process Management",
+      "authors": "J. Muñoz-Gama and J. Carmona"
+    },
+    {
+      "index": 46,
+      "title": "Alignment-based metrics in conformance checking (Summary)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "7th International Workshop on Enterprise Modeling and Information Systems Architectures, EMISA",
+      "authors": "B. F. Van Dongen, J. Carmona, and T. Chatain"
+    },
+    {
+      "index": 47,
+      "title": "Aligning observed and modeled behavior",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "A. Adriansyah"
+    },
+    {
+      "index": 48,
+      "title": "Process Mining for Python (PM4Py): Bridging the Gap Between Process- and Data Science",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICPM Demo Track (CEUR 2374)",
+      "authors": "A. Berti, S. J. van Zelst, and W. van der Aalst",
+      "orig_title": "Process Mining for Python (PM4Py): Bridging the Gap Between Process- and Data Science",
+      "paper_id": "1905.06169v1"
+    },
+    {
+      "index": 49,
+      "title": "Regularization for deep learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MIT Press",
+      "authors": "I. Goodfellow, Y. Bengio, and A. Courville"
+    },
+    {
+      "index": 50,
+      "title": "TensorFlow: A system for large-scale machine learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX Symposium on Operating Systems Design and Implementation (OSDI)",
+      "authors": "M. Abadi, P. Barham, J. Chen, Z. Chen, A. Davis, J. Dean, M. Devin, S. Ghemawat, G. Irving, M. Isard et al.",
+      "orig_title": "Tensorflow: A system for large-scale machine learning",
+      "paper_id": "1605.08695v2"
+    },
+    {
+      "index": 51,
+      "title": "An analysis of variance test for normality (complete samples)",
+      "abstract": "",
+      "year": "1965",
+      "venue": "Biometrika",
+      "authors": "S. S. Shapiro and M. B. Wilk"
+    },
+    {
+      "index": 52,
+      "title": "Handbook of biological statistics",
+      "abstract": "",
+      "year": "2009",
+      "venue": "sparky house publishing Baltimore, MD",
+      "authors": "J. H. McDonald"
+    },
+    {
+      "index": 53,
+      "title": "Individual comparisons by ranking methods",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Breakthroughs in statistics",
+      "authors": "F. Wilcoxon"
+    },
+    {
+      "index": 54,
+      "title": "A tool for generating event logs from multi-perspective declare models.",
+      "abstract": "",
+      "year": "2018",
+      "venue": "BPM (Dissertation/Demos/Industry)",
+      "authors": "V. Skydanienko, C. Di Francescomarino, C. Ghidini, and F. M. Maggi"
+    }
+  ]
+}

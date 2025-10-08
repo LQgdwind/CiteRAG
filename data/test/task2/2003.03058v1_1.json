@@ -1,0 +1,279 @@
+{
+  "paper_id": "2003.03058v1",
+  "title": "Exponentially Faster Shortest Paths in the Congested Clique",
+  "sections": {
+    "introduction": "Shortest paths computation is one of the most fundamental graph problems, and as such it has been studied extensively in various computational models. In this work we consider the problem of approximating shortest path distances in the Congested Clique model of distributed computing . This model attracts an increasing amount of attention over the last decade, due to its relation to practical parallel models such as MapReduce  and k𝑘k-machines .\nThe fast evolution of shortest path algorithms in the Congested Clique model\n   [ref]2       [ref]3 is characterized by two main mile-stones. In their influential work , Censor-Hillel et al. presented the first efficient algorithm for fast matrix multiplication in the Congested Clique model, and demonstrated its applicability for exact distance computation.\nSpecifically, they gave an O​(n0.158)𝑂superscript𝑛0.158O(n^{0.158})-round algorithm for computing all-pairs shortest paths (APSP) in unweighted undirected APSP. For weighted and directed graphs, they showed an O​(n0.158)𝑂superscript𝑛0.158O(n^{0.158})-round algorithm for (1+o​(1))1𝑜1(1+o(1))-approximate APSP, and an O~​(n1/3)~𝑂superscript𝑛13\\widetilde{O}(n^{1/3})-round algorithm for exact APSP. In a follow-up work, Le Gall \nextended this algebraic framework, and improved the complexity of exact APSP to O​(n0.2096)𝑂superscript𝑛0.2096O(n^{0.2096}) rounds for weighted directed graphs with constant weights. Izumi and Le Gall showed that using quantum computing, the complexity of APSP can be improved to O~​(n1/4)~𝑂superscript𝑛14\\tilde{O}(n^{1/4}) for weighted directed graphs .\nCensor-Hillel, Leitersdorf and Turner  showed improved algorithms for sparse matrix multiplication. In particular, their algorithm multiplies two n×n𝑛𝑛n\\times n matrices, each with O​(n3/2)𝑂superscript𝑛32O(n^{3/2}) non-zero entries, within constant number of rounds. This led to an exact APSP computation in O​(D⋅(m/n)1/3)𝑂⋅𝐷superscript𝑚𝑛13O(D\\cdot(m/n)^{1/3}) rounds where D𝐷D is the (unweighted) diameter of the n𝑛n-vertex graph and m𝑚m is the number of edges. The above mentioned algorithms are all based on matrix multiplication.\nAn alternative natural approach for approximating APSP is obtained by the notion of multiplicative spanners, namely, sparse subgraphs that preserve all distances up to a small multiplicative stretch.\nSpecifically, by computing a sparse k𝑘k-spanner in the graph, and collecting its edges at each vertex, one immediately gets\na k𝑘k-approximation for the APSP problem. Note, however, that due to the size vs. stretch tradeoff of multiplicative spanners, in poly-logarithmic time, the approximation value k𝑘k is at least logarithmic.\nThe problem of obtaining O​(1)𝑂1O(1) distance approximation in poly-logarithmic time was left widely open until the recent works of [ref]2 and . By using the ingenious method of continuous optimization , Becker et al. [ref]2 presented the first poly-logarithmic algorithm for the (1+ϵ)1italic-ϵ(1+\\epsilon)-approximate single-source shortest paths (SSSP) problem in weighted undirected graphs. The starting point of their algorithms is based on the O​(log⁡n)𝑂𝑛O(\\log n)-approximation provided by spanners. This approximation is then iteratively improved by applying a tailored gradient descent procedure. Their algorithms also have the additional benefit of being implemented in the more stringent Broadcast Congested Clique model111In this model, each vertex is limited to send the same message to all other vertices in a given round.. In a very recent work, Censor-Hillel et al. [ref]3 presented poly-logarithmic time solutions for the more general problems of approximate multi-source shortest paths (MSSP) and APSP. In particular, among other results, they showed an O​(log2⁡n/ϵ)𝑂superscript2𝑛italic-ϵO(\\log^{2}n/\\epsilon)-round algorithm for the (2+ϵ)2italic-ϵ(2+\\epsilon)-approximate APSP problem in unweighted undirected graphs, an O​(log2⁡n/ϵ)𝑂superscript2𝑛italic-ϵO(\\log^{2}n/\\epsilon)-round algorithm for (3+ϵ)3italic-ϵ(3+\\epsilon)-approximate APSP in weighted undirected graphs; as well as O​(log2⁡n/ϵ)𝑂superscript2𝑛italic-ϵO(\\log^{2}n/\\epsilon)-round algorithm for the MSSP problem in weighted undirected graphs with respect to O​(n)𝑂𝑛O(\\sqrt{n}) sources. The approach of [ref]3 is based on a clever reduction to sparse matrix multiplication algorithms from  [ref]3. This reduction is not immediate, for the following reason. The basic approach of using matrix multiplications to compute distances is based on starting with the input matrix of the graph A𝐴A and then iteratively square it O​(log⁡n)𝑂𝑛O(\\log{n}) times.\nEven if the original graph is sparse (e.g., with O​(n3/2)𝑂superscript𝑛32O(n^{3/2}) edges), a single multiplication step might already result in a dense matrix. Since one needs to apply O​(log⁡n)𝑂𝑛O(\\log n) multiplication steps, it is required to sparsify the intermediate matrices as well. To overcome this barrier, [ref]3 developed a rich tool-kit for distance computation, that includes hopset constructions, fast computation of the k𝑘k-nearest neighbours and more. The poly-logarithmic time complexity appears to be a natural barrier in the matrix multiplications based algorithms, from the following reason. Basically these algorithms work in iterations, where in iteration i𝑖i, vertices learn about paths that have at most 2isuperscript2𝑖2^{i} edges, hence Ω​(log⁡n)Ω𝑛\\Omega(\\log n) iterations seem to be required in order to capture shortest paths with polynomial number of hops.\nIn this paper we ask if this barrier is indeed fundamental.\n Is it possible to provide (1+ϵ)1italic-ϵ(1+\\epsilon)-approximation for SSSP and (2+ϵ)2italic-ϵ(2+\\epsilon)-approximation for APSP in o​(log⁡n)𝑜𝑛o(\\log n) rounds? Another plausible explanation for viewing the logarithmic time complexity as a natural barrier comes from the following observation.\nThe current state-of-the-art bound of many graph problems in the Congested Clique model is bounded from below by the\nlogarithm of their respective Local time complexities222In the Local model, only vertices that are neighbors in the input graph can communicate in a given round. The messages are allowed to be of unbounded size.. In the more restrictive, yet quite related model of MPC, this limitation was conditionally proven by Ghaffari, Kuhn and Uitto . Since the locality of the shortest path problem is linear, we reach again to the barrier of O​(log⁡n)𝑂𝑛O(\\log n) rounds. Another interesting question left by [ref]3 is whether is it possible to design efficient algorithms for additive or near-additive approximation for APSP. Here, the goal is to get an estimate δ​(u,v)𝛿𝑢𝑣\\delta(u,v) for the distance between u𝑢u and v𝑣v such that δ​(u,v)≤(1+ϵ)​d​(u,v)+β𝛿𝑢𝑣1italic-ϵ𝑑𝑢𝑣𝛽\\delta(u,v)\\leq(1+\\epsilon)d(u,v)+\\beta for some small β𝛽\\beta. Note that such guarantee is closer to (1+ϵ)1italic-ϵ(1+\\epsilon)-approximation for long enough paths, which is much better than a multiplicative (2+ϵ)2italic-ϵ(2+\\epsilon)-approximation, which raises the following question. Can we get near-additive approximation for APSP in sub-polynomial time? We answer both questions in the affirmative by devising a unified tool for computing nearly-additive approximate distances in missingp​o​l​y​(log⁡log⁡n)missing𝑝𝑜𝑙𝑦𝑛\\mathop{\\mathrm{missing}}{poly}(\\log\\log n) rounds. This immediately solves Question 2. To address Question 1,\nour approach is based on a mixture of the two current approaches for distance computation, namely, graph sparsification and matrix multiplications.\nWe start by describing our results, and then elaborate on our approach."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A hierarchy of lower bounds for sublinear additive spanners",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Amir Abboud, Greg Bodwin, and Seth Pettie"
+    },
+    {
+      "index": 1,
+      "title": "Near-optimal approximate shortest paths and transshipment in distributed and streaming models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "31 International Symposium on Distributed Computing",
+      "authors": "Ruben Becker, Andreas Karrenbauer, Sebastian Krinninger, and Christoph Lenzen"
+    },
+    {
+      "index": 2,
+      "title": "Fast Approximate Shortest Paths in the Congested Clique",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Symposium on Principles of Distributed Computing, PODC 2019",
+      "authors": "Keren Censor-Hillel, Michal Dory, Janne H. Korhonen, and Dean Leitersdorf",
+      "orig_title": "Fast approximate shortest paths in the congested clique",
+      "paper_id": "1903.05956v2"
+    },
+    {
+      "index": 3,
+      "title": "Algebraic Methods in the Congested Clique",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Distributed Computing",
+      "authors": "Keren Censor-Hillel, Petteri Kaski, Janne H Korhonen, Christoph Lenzen, Ami Paz, and Jukka Suomela",
+      "orig_title": "Algebraic methods in the congested clique",
+      "paper_id": "1503.04963v1"
+    },
+    {
+      "index": 4,
+      "title": "Sparse matrix multiplication and triangle listing in the congested clique model",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Theoretical Computer Science",
+      "authors": "Keren Censor-Hillel, Dean Leitersdorf, and Elia Turner"
+    },
+    {
+      "index": 5,
+      "title": "Derandomizing local distributed algorithms under bandwidth restrictions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "31st International Symposium on Distributed Computing, DISC 2017",
+      "authors": "Keren Censor-Hillel, Merav Parter, and Gregory Schwartzman"
+    },
+    {
+      "index": 6,
+      "title": "Reachability and shortest paths in the broadcast CONGEST model",
+      "abstract": "",
+      "year": "2019",
+      "venue": "33rd International Symposium on Distributed Computing, DISC 2019",
+      "authors": "Shiri Chechik and Doron Mukhtar"
+    },
+    {
+      "index": 7,
+      "title": "Brief announcement: Massively parallel approximate distance sketches",
+      "abstract": "",
+      "year": "2019",
+      "venue": "33rd International Symposium on Distributed Computing, DISC 2019",
+      "authors": "Michael Dinitz and Yasamin Nazari"
+    },
+    {
+      "index": 8,
+      "title": "All-pairs almost shortest paths",
+      "abstract": "",
+      "year": "2000",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Dorit Dor, Shay Halperin, and Uri Zwick"
+    },
+    {
+      "index": 9,
+      "title": "Near-Additive Spanners In Low Polynomial Deterministic CONGEST Time",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Symposium on Principles of Distributed Computing, PODC",
+      "authors": "Michael Elkin and Shaked Matar",
+      "orig_title": "Near-additive spanners in low polynomial deterministic congest time",
+      "paper_id": "1903.00872v1"
+    },
+    {
+      "index": 10,
+      "title": "Linear-size hopsets with small hopbound, and distributed routing with low memory, 2017",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv:1704.08468 [cs.DS]",
+      "authors": "Michael Elkin and Ofer Neiman"
+    },
+    {
+      "index": 11,
+      "title": "Efficient algorithms for constructing very sparse spanners and emulators",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Transactions on Algorithms (TALG)",
+      "authors": "Michael Elkin and Ofer Neiman"
+    },
+    {
+      "index": 12,
+      "title": "Hopsets with Constant Hopbound, and Applications to Approximate Shortest Paths",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Michael Elkin and Ofer Neiman",
+      "orig_title": "Hopsets with constant hopbound, and applications to approximate shortest paths",
+      "paper_id": "1605.04538v1"
+    },
+    {
+      "index": 13,
+      "title": "Linear-size hopsets with small hopbound, and constant-hopbound hopsets in rnc",
+      "abstract": "",
+      "year": "2019",
+      "venue": "31st ACM Symposium on Parallelism in Algorithms and Architectures",
+      "authors": "Michael Elkin and Ofer Neiman"
+    },
+    {
+      "index": 14,
+      "title": "Near-additive spanners and near-exact hopsets, a unified view",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv:2001.07477 [cs.DS]",
+      "authors": "Michael Elkin and Ofer Neiman"
+    },
+    {
+      "index": 15,
+      "title": "(1+ϵitalic-ϵ\\epsilon,β𝛽\\beta)-spanner constructions for general graphs",
+      "abstract": "",
+      "year": "2004",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Michael Elkin and David Peleg"
+    },
+    {
+      "index": 16,
+      "title": "Derandomizing distributed algorithms with small messages: Spanners and dominating set",
+      "abstract": "",
+      "year": "2018",
+      "venue": "32nd International Symposium on Distributed Computing, DISC 2018",
+      "authors": "Mohsen Ghaffari and Fabian Kuhn"
+    },
+    {
+      "index": 17,
+      "title": "Conditional hardness results for massively parallel computation from distributed lower bounds",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE 60th Annual Symposium on Foundations of Computer Science, FOCS",
+      "authors": "Mohsen Ghaffari, Fabian Kuhn, and Jara Uitto"
+    },
+    {
+      "index": 18,
+      "title": "Better pseudorandom generators from milder pseudorandom restrictions",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE 53rd Annual Symposium on Foundations of Computer Science",
+      "authors": "Parikshit Gopalan, Raghu Meka, Omer Reingold, Luca Trevisan, and Salil Vadhan"
+    },
+    {
+      "index": 19,
+      "title": "Lessons from the congested clique applied to mapreduce",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Theoretical Computer Science",
+      "authors": "James W Hegeman and Sriram V Pemmaraju"
+    },
+    {
+      "index": 20,
+      "title": "Approximation of distances and shortest paths in the broadcast congest clique",
+      "abstract": "",
+      "year": "2016",
+      "venue": "19th International Conference on Principles of Distributed Systems, OPODIS 2015",
+      "authors": "Stephan Holzer and Nathan Pinsker"
+    },
+    {
+      "index": 21,
+      "title": "Thorup–zwick emulators are universally optimal hopsets",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Information Processing Letters",
+      "authors": "Shang-En Huang and Seth Pettie"
+    },
+    {
+      "index": 22,
+      "title": "Quantum Distributed Algorithm for the All-Pairs Shortest Path Problem in the CONGEST-CLIQUE Model",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Symposium on Principles of Distributed Computing, PODC",
+      "authors": "Taisuke Izumi and François Le Gall",
+      "orig_title": "Quantum distributed algorithm for the all-pairs shortest path problem in the congest-clique model",
+      "paper_id": "1906.02456v1"
+    },
+    {
+      "index": 23,
+      "title": "Distributed computation of large-scale graph problems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM-SIAM Symposium on Discrete Algorithms",
+      "authors": "Hartmut Klauck, Danupon Nanongkai, Gopal Pandurangan, and Peter Robinson"
+    },
+    {
+      "index": 24,
+      "title": "Towards a complexity theory for the congested clique",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Symposium on Parallelism in Algorithms and Architectures",
+      "authors": "Janne H Korhonen and Jukka Suomela"
+    },
+    {
+      "index": 25,
+      "title": "Further Algebraic Algorithms in the Congested Clique Model and Applications to Graph-Theoretic Problems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Symposium on Distributed Computing",
+      "authors": "François Le Gall",
+      "orig_title": "Further algebraic algorithms in the congested clique model and applications to graph-theoretic problems",
+      "paper_id": "1608.02674v1"
+    },
+    {
+      "index": 26,
+      "title": "Optimal deterministic routing and sorting on the congested clique",
+      "abstract": "",
+      "year": "2013",
+      "venue": "PODC",
+      "authors": "Christoph Lenzen"
+    },
+    {
+      "index": 27,
+      "title": "Minimum-weight spanning tree construction in o (log log n) communication rounds",
+      "abstract": "",
+      "year": "2005",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Zvi Lotker, Boaz Patt-Shamir, Elan Pavlov, and David Peleg"
+    },
+    {
+      "index": 28,
+      "title": "Hardness vs randomness",
+      "abstract": "",
+      "year": "1994",
+      "venue": "J. Comput. Syst. Sci.",
+      "authors": "Noam Nisan and Avi Wigderson"
+    },
+    {
+      "index": 29,
+      "title": "Congested Clique Algorithms for Graph Spanners",
+      "abstract": "",
+      "year": "2018",
+      "venue": "32nd International Symposium on Distributed Computing, DISC 2018",
+      "authors": "Merav Parter and Eylon Yogev",
+      "orig_title": "Congested clique algorithms for graph spanners",
+      "paper_id": "1805.05404v1"
+    },
+    {
+      "index": 30,
+      "title": "Nearly maximum flows in nearly linear time",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE 54th Annual Symposium on Foundations of Computer Science",
+      "authors": "Jonah Sherman"
+    },
+    {
+      "index": 31,
+      "title": "Spanners and emulators with sublinear distance errors",
+      "abstract": "",
+      "year": "2006",
+      "venue": "SODA",
+      "authors": "Mikkel Thorup and Uri Zwick"
+    }
+  ]
+}

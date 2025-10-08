@@ -1,0 +1,421 @@
+{
+  "paper_id": "2106.10562v2",
+  "title": "Score-Based Explanations in Data Management and Machine Learning: An Answer-Set Programming Approach to Counterfactual Analysis",
+  "sections": {
+    "repair-programs for causality in databases": "Answer-set programs (ASPs) can be used to specify, compute and query S- and C-repairs. These ASPs are called “repair programs”. We will show the main ideas behind them by means of an example. For a more complete treatment see [ref]17 [ref]4. (example 2 cont.)  Let us consider the DC associated to the query 𝒬𝒬\\mathcal{Q} in (2):  κ​(𝒬):¬∃x​∃y​(S​(x)∧R​(x,y)∧S​(y)):𝜅𝒬𝑥𝑦𝑆𝑥𝑅𝑥𝑦𝑆𝑦\\kappa(\\mathcal{Q}):\\ \\neg\\exists x\\exists y(S(x)\\wedge R(x,y)\\wedge S(y)). The given database is inconsistent w.r.t. κ​(𝒬)𝜅𝒬\\kappa(\\mathcal{Q}), and we may consider its repairs.\n Its repair program contains the D𝐷D  as set of facts, now (only for convenience) with global tuple identifiers (tids) in the first attribute:  R​(1,a,b),𝑅1𝑎𝑏R(1,a,b), R​(2,c,d),R​(3,b,b),𝑅2𝑐𝑑𝑅3𝑏𝑏R(2,c,d),R(3,b,b), S​(4,a),𝑆4𝑎S(4,a), S​(5,c),S​(6,b)𝑆5𝑐𝑆6𝑏S(5,c),S(6,b). The main rule is the properly repair rule: Here, d is an annotation constant for “tuple deleted”.  This rule detects in its body (its right-hand side) a violation of the DC. If this happens, its head (its left-hand-side)\ninstructs the deletion of one of the tuples participating in the violation. The semantics of the program forces the choice of only one atom in the head (unless forced otherwise by other rules in the program, which does not occur in repair programs). Different choices will lead to different models of the program, and then, to different repairs. In order to “build” the repairs, we need the collection rules: Here,   s is an annotation for “tuple stays in repair”; and the rule collects the tuples in the original instance that have not been deleted. There is a one-to-one correspondence between the answer-sets of the repair program and the database repairs. Actually, a model M𝑀M of the program determines an S-repair D′superscript𝐷′D^{\\prime} of D𝐷D, as\nD′:={R​(c¯)|R′​(t,c¯,𝗌)∈M}assignsuperscript𝐷′conditional-set𝑅¯𝑐superscript𝑅′𝑡¯𝑐𝗌𝑀D^{\\prime}\\ :=\\ \\{R(\\bar{c})\\ |\\ R^{\\prime}(t,\\bar{c},{\\sf s})\\ \\in\\ M\\}.  Conversely, every S-repair can obtained in this way. In this example, the S-repair,  D1={R​(a,b),R​(c,d),R​(b,b),S​(a),S​(c)}subscript𝐷1𝑅𝑎𝑏𝑅𝑐𝑑𝑅𝑏𝑏𝑆𝑎𝑆𝑐D_{1}=\\{R(a,b),R(c,d),R(b,b),S(a),S(c)\\},  can be obtained from the model  M1={R′(1,a,b,𝗌),R′(2,c,d,𝗌),R′(3,b,b,𝗌),M_{1}=\\{R^{\\prime}(1,a,b,{\\sf s}),R^{\\prime}(2,c,d,{\\sf s}),R^{\\prime}(3,b,b,{\\sf s}), S′(4,a,𝗌),S′(5,c,𝗌),S′(6,b,𝖽),…}S^{\\prime}(4,a,{\\sf s}),S^{\\prime}(5,c,{\\sf s}),S^{\\prime}(6,b,{\\sf d}),\\ldots\\}. Actually, D1subscript𝐷1D_{1} is a C-repair. There is another S-repair, D2={R​(c,d),S​(a),S​(c),S​(b)}subscript𝐷2𝑅𝑐𝑑𝑆𝑎𝑆𝑐𝑆𝑏D_{2}=\\{R(c,d),S(a),S(c),S(b)\\}, that is associated to the model M2={R′(1,a,b,𝖽),R′(2,c,d,𝗌),R′(3,b,b,𝖽),M_{2}=\\{R^{\\prime}(1,a,b,{\\sf d}),R^{\\prime}(2,c,d,{\\sf s}),R^{\\prime}(3,b,b,{\\sf d}), S′​(4,a,𝗌),superscript𝑆′4𝑎𝗌S^{\\prime}(4,a,{\\sf s}), S′(5,c,𝗌),S′(6,b,𝗌),…}S^{\\prime}(5,c,{\\sf s}),S^{\\prime}(6,b,{\\sf s}),\\ldots\\}. This is not a C-repair.\n  □□\\Box For sets of DCs, repair programs can be made normal, i.e. non-disjunctive [ref]17.\nCQA becomes query answering under the cautious or skeptical semantics of ASPs (i.e. true in all repairs), which, for normal programs, is N​P𝑁𝑃{\\it N\\!P}-complete (in data).\nThis matches the data complexity of consistent QA under DCs (c.f. [ref]4 for references to complexity of CQA). Now, if we want to obtain from the program only those models that correspond to C-repairs, we can add  weak program constraints   (WCs), as shown in the example. (example 9 cont.)  Let us add to the program the WCs A (hard) program constraint in a program , usually denoted as leads to discarding all the models where the join in the RHS of the constraint holds.\nWeak program constraints, now preceded by a “:∼:absentsimilar-to:\\sim”, may be violated by a model, buy only the models where the number of violations of them is minimized are kept.  In our example, the WCs have the effect of\nminimizing the number of deleted tuples. In this way, we obtain as models only C-repairs. In our example, we obtain C-repair D1subscript𝐷1D_{1}, corresponding to model M1subscript𝑀1M_{1}, but not S-repair D2subscript𝐷2D_{2}, because it is associated to model M2subscript𝑀2M_{2} that is discarded due to the WCs.\n  □□\\Box As we already mentioned, C-repairs are those that can be used to obtain most-responsible actual causes. Accordingly, the latter task can be accomplished through the use of repair programs with weak constraints. We illustrate this by means of our example (c.f. [ref]8 for a detailed treatment). Actually, cause and responsibility computation become query answering on extended repair programs.\nIn them, causes will be represented by means of the tids we introduced for repair programs. (example 10 cont.)  The causes can be obtained through a new predicate, defined by the rules because they correspond to deleted tuples in a repair. If we want to obtain them, it is good enough to pose a query under the brave semantics, which returns what is true in some model:  Π⊧𝑏𝑟𝑎𝑣𝑒𝐶𝑎𝑢𝑠𝑒​(t)subscriptmodels𝑏𝑟𝑎𝑣𝑒Π𝐶𝑎𝑢𝑠𝑒𝑡\\Pi\\ \\models_{\\it brave}{\\it Cause}(t)? However, we would like to obtain contingency sets (for causes) and responsibilities. We will concentrate on maximum-responsibility causes and their (maximum) responsibilities, for which we assume the repair program has weak constraints, as above (c.f. [ref]8 for non-maximum responsibility causes). We first introduce a new binary predicate, to collect a cause and an associated contingency tuple (which is deleted together with the tuple-cause in a same repair). This predicate is of the form  𝐶𝑎𝑢𝐶𝑜𝑛​(t,t′)𝐶𝑎𝑢𝐶𝑜𝑛𝑡superscript𝑡′{\\it CauCon}(t,t^{\\prime}), indicating that t𝑡t  is actual cause, and t′superscript𝑡′t^{\\prime}  is a member of the former’s contingency set. For this, for each pair of predicates Pi,Pjsubscript𝑃𝑖subscript𝑃𝑗P_{i},P_{j}, not necessarily different, in the DC  κ​(𝒬)𝜅𝒬\\kappa(\\mathcal{Q}), we introduce the rule: This will make t′superscript𝑡′t^{\\prime} a member of t𝑡t’s contingency set.\n In our example,  we have the rule: where the inequality is not needed (for having different predicates), but also, among others, In model M1subscript𝑀1M_{1}, corresponding to C-repair D1subscript𝐷1D_{1}, where there is no pair of simultaneously deleted tuples, we have no 𝐶𝑎𝑢𝐶𝑜𝑛𝐶𝑎𝑢𝐶𝑜𝑛{\\it CauCon} atoms. Had model M2subscript𝑀2M_{2} not been discarded due to the WCs, we would find in it (actually in its extension) the atoms:   𝐶𝑎𝑢𝐶𝑜𝑛​(1,3)𝐶𝑎𝑢𝐶𝑜𝑛13{\\it CauCon}(1,3)  and  𝐶𝑎𝑢𝐶𝑜𝑛​(3,1)𝐶𝑎𝑢𝐶𝑜𝑛31{\\it CauCon}(3,1).\n  □□\\Box Contingency sets, which is what we want next, are sets, which in general are not returned as objects from an ASP. However, there are extensions of ASP and their implementations, such as DLV , that, trough aggregations, support set construction. This is the case of DLV-Complex  , that we have used in for running repair programs and their extensions. We do this as follows (in the program below , t,t′𝑡superscript𝑡′t,t^{\\prime} are variables). The auxiliary predicate in rule (2) is used to avoid a non-safe negation. That predicate is defined by rule (8). We are capturing here causes that do not have contingency companions, and then, they have an empty contingency set. Rule (9 is indeed redundant, but shows the main idea: a contingency companion of a cause is taken as element into the latter’s pre-contingency set.\nIn rule (11) we have an auxiliary predicate for the same reason as in the first rule. The main idea is to stepwise keep adding by means of set union (c.f. rule (4.3), a contingent element to a possibly partial contingency set, until there is nothing left to add.  These maximal contingency sets are obtained with rule (11). In each model of the program with WCs, these contingency sets will have the same minimum size, and will lead to maximum responsibility causes.\nResponsibility computation can be done, with numerical aggregation supported by DLV-Complex, as follows: The first rule gives us the (minimum) size, n𝑛n, of contingency sets, which leads to a responsibility of 11+n11𝑛\\frac{1}{1+n}.\n The responsibility of a (maximum responsibility) cause t𝑡t can be obtained through a query to the extended program:   Πe⊧𝑏𝑟𝑎𝑣𝑒𝑟ℎ𝑜​(t,X)​?subscriptmodels𝑏𝑟𝑎𝑣𝑒superscriptΠ𝑒𝑟ℎ𝑜𝑡𝑋?\\Pi^{e}\\ \\models_{{\\it brave}}{\\it rho}(t,X)?. ASP with WCs computation has exactly the required expressive power or computational complexity\nneeded for maximum-responsibility computation [ref]8."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Computational Complexity",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Cambridge University Press",
+      "authors": "Arora, S. and Barak, B."
+    },
+    {
+      "index": 1,
+      "title": "Consistent Query Answers in Inconsistent Databases",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ACM PODS",
+      "authors": "Arenas, M., Bertossi, L. and Chomicki, J."
+    },
+    {
+      "index": 2,
+      "title": "The Tractability of SHAP-Scores over Deterministic and Decomposable Boolean Circuits",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI",
+      "authors": "Arenas, M., Pablo Barceló, P., Bertossi, L. and Monet, M."
+    },
+    {
+      "index": 3,
+      "title": "Database Repairing and Consistent Query Answering",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Synthesis Lectures in Data Management. Morgan & Claypool",
+      "authors": "Bertossi. L."
+    },
+    {
+      "index": 4,
+      "title": "From Causes for Database Queries to Repairs and Model-Based Diagnosis and Back",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Theory of Computing Systems",
+      "authors": "Bertossi, L. and Salimi, B.",
+      "orig_title": "From Causes for Database Queries to Repairs and Model-Based Diagnosis and Back",
+      "paper_id": "1507.00257v3"
+    },
+    {
+      "index": 5,
+      "title": "Causes for Query Answers from Databases: Datalog Abduction, View-Updates, and Integrity Constraints",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Int. J. Approximate Reasoning",
+      "authors": "Bertossi, L. and Salimi, B.",
+      "orig_title": "Causes for Query Answers from Databases: Datalog Abduction, View-Updates, and Integrity Constraints",
+      "paper_id": "1611.01711v3"
+    },
+    {
+      "index": 6,
+      "title": "Repair-Based Degrees of Database Inconsistency",
+      "abstract": "",
+      "year": "2019",
+      "venue": "LPNMR",
+      "authors": "Bertossi, L."
+    },
+    {
+      "index": 7,
+      "title": "Specifying and Computing Causes for Query Answers in Databases via Database Repairs and Repair-Programs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Knowledge and Information Systems",
+      "authors": "Bertossi, L.",
+      "orig_title": "Specifying and Computing Causes for Query Answers in Databases via Database Repairs and Repair Programs",
+      "paper_id": "1712.01001v7"
+    },
+    {
+      "index": 8,
+      "title": "Causality-based Explanation of Classification Outcomes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Fourth Workshop on Data Management for End-To-End Machine Learning, DEEM@SIGMOD",
+      "authors": "Bertossi, L., Li, J., Schleich, M., Suciu, D. and Vagena, Z.",
+      "orig_title": "Causality-Based Explanation of Classification Outcomes",
+      "paper_id": "2003.06868v2"
+    },
+    {
+      "index": 9,
+      "title": "An ASP-Based Approach to Counterfactual Explanations for Classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "RuleML-RR",
+      "authors": "Bertossi, L.",
+      "orig_title": "An ASP-Based Approach to Counterfactual Explanations for Classification",
+      "paper_id": "2004.13237v2"
+    },
+    {
+      "index": 10,
+      "title": "Declarative Approaches to Counterfactual Explanations for Classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv Paper 2011.07423",
+      "authors": "Bertossi, L."
+    },
+    {
+      "index": 11,
+      "title": "Classification and Regression Trees",
+      "abstract": "",
+      "year": "1984",
+      "venue": "CRC press",
+      "authors": "Breiman, L., Friedman, J., Stone, C. J. and Olshen, R. A."
+    },
+    {
+      "index": 12,
+      "title": "Answer Set Programming at a Glance",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Commun. ACM",
+      "authors": "Brewka, G., Eiter, T. and Truszczynski, M."
+    },
+    {
+      "index": 13,
+      "title": "Why and Where: A Characterization of Data Provenance",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ICDT",
+      "authors": "Buneman, P., Khanna, S. and Tan, W. C."
+    },
+    {
+      "index": 14,
+      "title": "Computable Functions in ASP: Theory and Implementation",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ICLP",
+      "authors": "Calimeri, F., Cozza, S., Ianni, G. and Leone, N."
+    },
+    {
+      "index": 15,
+      "title": "An ASP System with Functions, Lists,and Sets",
+      "abstract": "",
+      "year": "2009",
+      "venue": "LPNMR",
+      "authors": "Calimeri, F., Cozza, S., Ianni, G. and Leone, N."
+    },
+    {
+      "index": 16,
+      "title": "The Consistency Extractor System: Answer Set Programs for Consistent Query Answering in Databases",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Data & Knowledge Engineering",
+      "authors": "Caniupan, M. and Bertossi, L."
+    },
+    {
+      "index": 17,
+      "title": "An Interpretable Model with Globally Consistent Explanations for Credit Risk",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Chen, C., Lin, K., Rudin, C., Shaposhnik, Y., Wang, S. and Wang, T.",
+      "orig_title": "An Interpretable Model with Globally Consistent Explanations for Credit Risk",
+      "paper_id": "1811.12615v1"
+    },
+    {
+      "index": 18,
+      "title": "Responsibility and Blame: A Structural-Model Approach",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. Artif. Intell. Res.",
+      "authors": "Chockler, H. and Halpern, J."
+    },
+    {
+      "index": 19,
+      "title": "Complexity and Expressive Power of Logic Programming",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ACM Computing Surveys",
+      "authors": "Dantsin, E., Eiter, T., Gottlob, G. and Voronkov, A."
+    },
+    {
+      "index": 20,
+      "title": "On the Complexity of Cooperative Solution Concepts",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Math. Oper. Res.",
+      "authors": "Deng, X. and Papadimitriou, C."
+    },
+    {
+      "index": 21,
+      "title": "The Shapley Value for Cooperative Games under Precedence Constraints",
+      "abstract": "",
+      "year": "1992",
+      "venue": "International Journal of Game Theory",
+      "authors": "Faigle, U. and Kern, W."
+    },
+    {
+      "index": 22,
+      "title": "Classical Negation in Logic Programs and Disjunctive Databases",
+      "abstract": "",
+      "year": "1991",
+      "venue": "New Generation Computing",
+      "authors": "Gelfond, M. and Lifschitz, V."
+    },
+    {
+      "index": 23,
+      "title": "Knowledge Representation and Reasoning, and the Design of Intelligent Agents",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Cambridge Univ. Press",
+      "authors": "Gelfond, M. and Kahl, Y."
+    },
+    {
+      "index": 24,
+      "title": "Programming with Non-Determinism in Deductive Databases",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Annals of Mathematics in Artificial Intelligence",
+      "authors": "Giannotti, F., Greco, S., Sacca, D. and Zaniolo, C."
+    },
+    {
+      "index": 25,
+      "title": "Causes and Explanations: A Structural-Model Approach. Part I: Causes",
+      "abstract": "",
+      "year": "2005",
+      "venue": "The British journal for the philosophy of science",
+      "authors": "Halpern, J. and Pearl, J."
+    },
+    {
+      "index": 26,
+      "title": "A Modification of the Halpern-Pearl Definition of Causality",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IJCAI",
+      "authors": "Halpern, J. Y.",
+      "orig_title": "A Modification of the Halpern-Pearl Definition of Causality",
+      "paper_id": "1505.00162v1"
+    },
+    {
+      "index": 27,
+      "title": "On the Measure of Conflicts: Shapley Inconsistency Values",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Artif. Intell.",
+      "authors": "Hunter, A. and Konieczny, S."
+    },
+    {
+      "index": 28,
+      "title": "The DLV System for Knowledge Representation and Reasoning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ACM Transactions on Computational Logic",
+      "authors": "Leone, N., Pfeifer, G., Faber, W., Eiter, T., Gottlob, G., Perri, S. and Scarcello, F."
+    },
+    {
+      "index": 29,
+      "title": "The Shapley Value of Tuples in Query Answering",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICDT",
+      "authors": "Livshits, E., Bertossi, L., Kimelfeld, B. and Sebag, M.",
+      "orig_title": "The Shapley Value of Tuples in Query Answering",
+      "paper_id": "1904.08679v5"
+    },
+    {
+      "index": 30,
+      "title": "The Shapley Value of Inconsistency Measures for Functional Dependencies",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICDT",
+      "authors": "Livshits, E. and Kimelfeld, B.",
+      "orig_title": "The Shapley Value of Inconsistency Measures for Functional Dependencies",
+      "paper_id": "2009.13819v4"
+    },
+    {
+      "index": 31,
+      "title": "Complexity of Consistent Query Answering in Databases under Cardinality-Based and Incremental Repair Semantics",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ICDT",
+      "authors": "Lopatenko, A. and Bertossi, L."
+    },
+    {
+      "index": 32,
+      "title": "Explaining Predictions from Tree-based Boosting Ensembles",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Lucic, A., Haned, H. and de Rijke, M.",
+      "orig_title": "Explaining Predictions from Tree-Based Boosting Ensembles",
+      "paper_id": "1907.02582v1"
+    },
+    {
+      "index": 33,
+      "title": "From Local Explanations to Global Understanding with Explainable AI for Trees",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Nature Machine Intelligence",
+      "authors": "Lundberg, S., Erion, G., Chen, H., DeGrave, A., Prutkin, J., Nair, B., Katz, R., Himmelfarb, J., Bansal, N. and Lee, S.-I."
+    },
+    {
+      "index": 34,
+      "title": "A Unified Approach to Interpreting Model Predictions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Lundberg, S. and Lee, S.",
+      "orig_title": "A Unified Approach to Interpreting Model Predictions",
+      "paper_id": "1705.07874v2"
+    },
+    {
+      "index": 35,
+      "title": "The Complexity of Causality and Responsibility for Query Answers and Non-Answers",
+      "abstract": "",
+      "year": "2010",
+      "venue": "VLDB",
+      "authors": "Meliou, A., Gatterbauer, W., Moore, K. F. and Suciu, D."
+    },
+    {
+      "index": 36,
+      "title": "Causality in Databases",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Data Engineering Bulletin",
+      "authors": "Meliou, A., Gatterbauer, W., Halpern, J.Y., Koch, C., Moore, K. F. and Suciu, D."
+    },
+    {
+      "index": 37,
+      "title": "Machine Learning",
+      "abstract": "",
+      "year": "1997",
+      "venue": "McGraw-Hill",
+      "authors": "Mitchell, T. M."
+    },
+    {
+      "index": 38,
+      "title": "Interpretable Machine Learning: A Guide for Making Black Box Models Explainable",
+      "abstract": "",
+      "year": "2020",
+      "venue": "https://christophm.github.io/interpretable-ml-book",
+      "authors": "Molnar, C."
+    },
+    {
+      "index": 39,
+      "title": "Algorithmic Game Theory",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Cambridge University Press",
+      "authors": "Nisan, N., Roughgarden, T., Tardos, E. and Vazirani, V. V. (eds.)"
+    },
+    {
+      "index": 40,
+      "title": "The Impact of Negation on the Complexity of the Shapley Value in Conjunctive Queries",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PODS",
+      "authors": "Reshef, A., Kimelfeld, B. and Livshits, E.",
+      "orig_title": "The Impact of Negation on the Complexity of the Shapley Value in Conjunctive Queries",
+      "paper_id": "1912.12610v1"
+    },
+    {
+      "index": 41,
+      "title": "Stop Explaining Black Box Machine Learning Models for High Stakes Decisions and Use Interpretable Models Instead",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Nature Machine Intelligence",
+      "authors": "Rudin, C."
+    },
+    {
+      "index": 42,
+      "title": "The Shapley Value: Essays in Honor of Lloyd S. Shapley",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Cambridge University Press",
+      "authors": "Roth, A. E. (ed.)"
+    },
+    {
+      "index": 43,
+      "title": "Quantifying Causal Effects on Query Answering in Databases",
+      "abstract": "",
+      "year": "2016",
+      "venue": "8th USENIX Workshop on the Theory and Practice of Provenance (TaPP)",
+      "authors": "Salimi, B., Bertossi, L., Suciu, D. and Van den Broeck, G.",
+      "orig_title": "Quantifying Causal Effects on Query Answering in Databases",
+      "paper_id": "1603.02705v2"
+    },
+    {
+      "index": 44,
+      "title": "A Value for n-Person Games",
+      "abstract": "",
+      "year": "1953",
+      "venue": "Contributions to the Theory of Games",
+      "authors": "Shapley, L. S."
+    },
+    {
+      "index": 45,
+      "title": "Model-Based Problem Solving",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Handbook of Knowledge Representation, Elsevier",
+      "authors": "Struss, P."
+    },
+    {
+      "index": 46,
+      "title": "Probabilistic Databases",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Synthesis Lectures on Data Management, Morgan & Claypool",
+      "authors": "Suciu, D., Olteanu, D., Re, C. and Koch, C."
+    },
+    {
+      "index": 47,
+      "title": "On the Tractability of SHAP Explanations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI",
+      "authors": "Van den Broeck, G., Lykov, A., Schleich, M. and Suciu, D.",
+      "orig_title": "On the Tractability of SHAP Explanations",
+      "paper_id": "2009.08634v2"
+    }
+  ]
+}

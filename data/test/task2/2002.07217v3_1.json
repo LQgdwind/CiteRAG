@@ -1,0 +1,507 @@
+{
+  "paper_id": "2002.07217v3",
+  "title": "Decision-Making with Auto-Encoding Variational Bayes",
+  "sections": {
+    "introduction": "The auto-encoding variational Bayes (AEVB) algorithm performs model selection by maximizing a lower bound on the model evidence  . In the specific case of variational autoencoders (VAEs), a low-dimensional representation of data is transformed through a learned nonlinear function (another neural network) into the parameters of a conditional likelihood. VAEs achieve impressive performance on pattern-matching tasks like representation/manifold learning and synthetic image generation . Many machine learning applications, however, require decisions, not just compact representations of the data.\nResearchers have accordingly attempted to use VAEs for decision-making applications, including novelty detection in control applications , mutation-effect prediction for genomic sequences , artifact detection , and Bayesian hypothesis testing for single-cell RNA sequencing data  .\nTo make decisions based on VAEs, these researchers implicitly appeal to Bayesian decision theory, which counsels taking the action that minimizes expected loss under the posterior distribution [ref]9. However, for VAEs, the relevant functionals of the posterior cannot be computed exactly.\nInstead, after fitting a VAE based on the ELBO, practitioners take one of three approaches to decision-making: i) the variational distribution may be used as a surrogate for the posterior , ii) the variational distribution may be used as a proposal distribution for importance sampling 0, or iii) the variational distribution can be ignored once the model is fit, and decisions may be based on an iterative sampling method such as MCMC or annealed importance sampling 1. But will any of these combined procedures (ELBO for model training and one of these methods for approximating posterior expectations) produce good decisions? They may not, for two reasons.\nFirst, estimates of the relevant expectations of the posterior may be biased and/or may have high variance. The former situation is typical when the variational distribution is substituted for the posterior; the latter is common for importance sampling estimators. By using the variational distribution as a proposal distribution, practitioners aim to get unbiased low-variance estimates of posterior expectations. But this approach often fails. The variational distribution recovered by the VAE, which minimizes the reverse Kullback-Leibler (KL) divergence between the variational distribution and the model posterior, is known to systematically underestimate variance 2 3, making it a poor choice for an importance sampling proposal distribution. Alternative inference procedures have been proposed to address this problem. For example, expectation propagation (EP) 4 and CHIVI 5 minimize the forward KL divergence and the χ2superscript𝜒2{\\mathchoice{\\raisebox{0.0pt}{$\\displaystyle\\chi$}}{\\raisebox{0.0pt}{$\\textstyle\\chi$}}{\\raisebox{0.0pt}{$\\scriptstyle\\chi$}}{\\raisebox{0.0pt}{$\\scriptscriptstyle\\chi$}}}^{2} divergence, respectively. Both objectives have favorable properties for fitting a proposal distribution 6 7. IWVI 0 seeks to maximize a tight lower bound of the evidence that is based on importance sampling estimates (IWELBO). Empirically, IWVI outperforms VI for estimating posterior expectations. It is unclear, however, which method to choose for a particular application. Second, even if we can faithfully compute expectations of the model posterior, the model learned by the VAE may not resemble the real data-generating process 3. Most VAE frameworks rely on the IWELBO, where the variational distribution is used as a proposal 8 9 0. For example, model and inference parameters are jointly learned in the IWAE 8 using the IWELBO. Similarly, the wake-wake (WW) procedure 1 2 uses the IWELBO for learning the model parameters but seeks to find a variational distribution that minimizes the forward KL divergence. In the remainder of this manuscript, we will use the same name to refer to either the inference procedure or the associated VAE framework (e.g., WW will be used to refer to EP). To address both of these issues, we propose a simple three-step procedure for making decisions with VAEs. First, we fit a model based on one of several objective functions (e.g., VAE, IWAE, WW, or χ𝜒\\textstyle\\chi-VAE) and select the best model based on some metric (e.g., IWELBO calculated on held-out data with a large numbers of particles). The χ𝜒\\textstyle\\chi-VAE is a novel variant of the WW algorithm that, for fixed pθsubscript𝑝𝜃p_{\\theta}, minimizes the χ2superscript𝜒2{\\mathchoice{\\raisebox{0.0pt}{$\\displaystyle\\chi$}}{\\raisebox{0.0pt}{$\\textstyle\\chi$}}{\\raisebox{0.0pt}{$\\scriptstyle\\chi$}}{\\raisebox{0.0pt}{$\\scriptscriptstyle\\chi$}}}^{2} divergence (for further details, see Appendix B).\nSecond, with the model fixed, we fit several approximate posteriors, based on the same objective functions, as well as annealed importance sampling 1. Third, we combine the approximate posteriors as proposal distributions for multiple importance sampling 3 to make decisions that minimize the expected loss under the posterior.\nIn multiple importance sampling, we expect the mixture to be a better proposal than either of its components alone, especially in settings where the posterior is complex because each component can capture different parts of the posterior. After introducing the necessary background (Section 2),\nwe provide a complete analysis of our framework for the probabilistic PCA model 4 (Section 3).\nIn this tractable setting, we recover the known fact that an underdispersed proposal causes severe error to importance sampling estimators 5. The analysis also shows that overdispersion may harm the process of model learning by exacerbating existing biases in variational Bayes. We also confirm these results empirically. Next, we perform an extensive empirical evaluation of two real-world decision-making problems.\nFirst, we consider a practical instance of classification-based decision\ntheory.\nIn this setting, we show that the vanilla VAE becomes overconfident in its posterior predictive density, which harms performance. We also show that our three-step procedure outperforms IWAE and WW (Section 4).\nWe then present a scientific case study, focusing on an instance of multiple hypothesis testing in single-cell RNA sequencing data. Our approach yields a better calibrated estimate of the expected posterior false discovery rate (FDR) than that computed by the current state-of-the-art method (Section 5)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Auto-encoding variational Bayes",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Diederik P. Kingma and Max Welling"
+    },
+    {
+      "index": 1,
+      "title": "Stochastic backpropagation and approximate inference in deep generative models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Danilo Jimenez Rezende, Shakir Mohamed, and Daan Wierstra"
+    },
+    {
+      "index": 2,
+      "title": "PixelVAE: a latent variable model for natural images",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Ishaan Gulrajani, Kundan Kumar, Faruk Ahmed, Adrien Ali Taiga, Francesco Visin, David Vazquez, and Aaron Courville"
+    },
+    {
+      "index": 3,
+      "title": "Variational autoencoder for end-to-end control of autonomous driving with novelty detection and training de-biasing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Intelligent Robots and Systems",
+      "authors": "Alexander Amini, Brandon Araki, Daniela Rus, Wilko Schwarting, Guy Rosman, Sertac Karaman, and Daniela L. Rus"
+    },
+    {
+      "index": 4,
+      "title": "Deep generative models of genetic variation capture the effects of mutations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Nature Methods",
+      "authors": "Adam J. Riesselman, John B. Ingraham, and Debora S. Marks"
+    },
+    {
+      "index": 5,
+      "title": "Interpretable dimensionality reduction of single cell transcriptome data with deep generative models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Nature communications",
+      "authors": "Jiarui Ding, Anne Condon, and Sohrab P. Shah"
+    },
+    {
+      "index": 6,
+      "title": "Deep generative modeling for single-cell transcriptomics",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Nature Methods",
+      "authors": "Romain Lopez, Jeffrey Regier, Michael B. Cole, Michael I. Jordan, and Nir Yosef"
+    },
+    {
+      "index": 7,
+      "title": "Probabilistic harmonization and annotation of single-cell transcriptomics data with deep generative models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "bioRxiv",
+      "authors": "Chenling Xu, Romain Lopez, Edouard Mehlman, Jeffrey Regier, Michael I. Jordan, and Nir Yosef"
+    },
+    {
+      "index": 8,
+      "title": "Statistical Decision Theory and Bayesian Analysis",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Springer Science",
+      "authors": "James Berger"
+    },
+    {
+      "index": 9,
+      "title": "Importance Weighting and Variational Inference",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Justin Domke and Daniel R. Sheldon",
+      "orig_title": "Importance weighting and variational inference",
+      "paper_id": "1808.09034v3"
+    },
+    {
+      "index": 10,
+      "title": "On the quantitative analysis of decoder-based generative models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Yuhuai Wu, Yuri Burda, Ruslan Salakhutdinov, and Roger Grosse"
+    },
+    {
+      "index": 11,
+      "title": "Graphical models, exponential families, and variational inference",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Foundations and Trends in Machine Learning",
+      "authors": "Martin J. Wainwright and Michael I. Jordan"
+    },
+    {
+      "index": 12,
+      "title": "Two problems with variational expectation maximisation for time-series models",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Technical report, Gatsby Computational Neuroscience Unit",
+      "authors": "Richard Eric Turner and Maneesh Sahani"
+    },
+    {
+      "index": 13,
+      "title": "Expectation propagation for approximate bayesian inference",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Uncertainty in Artificial Intelligence",
+      "authors": "Thomas P. Minka"
+    },
+    {
+      "index": 14,
+      "title": "Variational inference via chi-square upper bound minimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Adji Bousso Dieng, Dustin Tran, Rajesh Ranganath, John Paisley, and David Blei"
+    },
+    {
+      "index": 15,
+      "title": "The sample size required in importance sampling",
+      "abstract": "",
+      "year": "2018",
+      "venue": "The Annals of Applied Probability",
+      "authors": "Sourav Chatterjee and Persi Diaconis"
+    },
+    {
+      "index": 16,
+      "title": "Importance sampling: Intrinsic dimension and computational cost",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Statistical Science",
+      "authors": "Sergios Agapiou, Omiros Papaspiliopoulos, Daniel Sanz-Alonso, and Andrew Stuart"
+    },
+    {
+      "index": 17,
+      "title": "Importance Weighted Autoencoders",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Yuri Burda, Roger B. Grosse, and Ruslan Salakhutdinov",
+      "orig_title": "Importance weighted autoencoders",
+      "paper_id": "1509.00519v4"
+    },
+    {
+      "index": 18,
+      "title": "Tighter Variational Bounds are Not Necessarily Better",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Tom Rainforth, Adam Kosiorek, Tuan Anh Le, Chris Maddison, Maximilian Igl, Frank Wood, and Yee Whye Teh",
+      "orig_title": "Tighter variational bounds are not necessarily better",
+      "paper_id": "1802.04537v3"
+    },
+    {
+      "index": 19,
+      "title": "Variational inference and model selection with generalized evidence bounds",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Liqun Chen, Chenyang Tao, Ruiyi Zhang, Ricardo Henao, and Lawrence Carin Duke"
+    },
+    {
+      "index": 20,
+      "title": "Reweighted Wake-Sleep",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Jörg Bornschein and Yoshua Bengio",
+      "orig_title": "Reweighted wake-sleep",
+      "paper_id": "1406.2751v4"
+    },
+    {
+      "index": 21,
+      "title": "Revisiting Reweighted Wake-Sleep for Models with Stochastic Control Flow",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Uncertainty in Artificial Intelligence",
+      "authors": "Tuan Anh Le, A. Kosiorek, N. Siddharth, Yee Whye Teh, and Frank Wood",
+      "orig_title": "Revisiting reweighted wake-sleep for models with stochastic control flow",
+      "paper_id": "1805.10469v2"
+    },
+    {
+      "index": 22,
+      "title": "Optimally combining sampling techniques for Monte Carlo rendering",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Computer Graphics and Interactive Techniques",
+      "authors": "Eric Veach and Leonidas J. Guibas"
+    },
+    {
+      "index": 23,
+      "title": "Pattern Recognition and Machine Learning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Springer-Verlag",
+      "authors": "Christopher M. Bishop"
+    },
+    {
+      "index": 24,
+      "title": "Yes, but did it work?: Evaluating variational inference",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Yuling Yao, Aki Vehtari, Daniel Simpson, and Andrew Gelman"
+    },
+    {
+      "index": 25,
+      "title": "Data Analysis Using Regression and Multilevel/Hierarchical Models",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Cambridge University Press",
+      "authors": "Andrew Gelman and Jennifer Hill"
+    },
+    {
+      "index": 26,
+      "title": "Annealed importance sampling",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Statistics and computing",
+      "authors": "Radford M. Neal"
+    },
+    {
+      "index": 27,
+      "title": "Learning bounds for importance weighting",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Corinna Cortes, Yishay Mansour, and Mehryar Mohri"
+    },
+    {
+      "index": 28,
+      "title": "Probabilistic principal component analysis",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Journal of the Royal Statistical Society: Series B (Statistical Methodology)",
+      "authors": "Michael E. Tipping and Christopher M. Bishop"
+    },
+    {
+      "index": 29,
+      "title": "Memoir on the probability of the causes of events",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Statistical Science",
+      "authors": "Pierre Simon Laplace"
+    },
+    {
+      "index": 30,
+      "title": "High-Dimensional Statistics: A Non-Asymptotic Viewpoint",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Cambridge University Press",
+      "authors": "Martin J. Wainwright"
+    },
+    {
+      "index": 31,
+      "title": "Monte Carlo Theory, Methods and Examples",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Art B. Owen"
+    },
+    {
+      "index": 32,
+      "title": "Weighted average importance sampling and defensive mixture distributions",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Technometrics",
+      "authors": "Tim Hesterberg"
+    },
+    {
+      "index": 33,
+      "title": "Semi-supervised Learning with Deep Generative Models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Diederik P. Kingma, Shakir Mohamed, Danilo Jimenez Rezende, and Max Welling",
+      "orig_title": "Semi-supervised learning with deep generative models",
+      "paper_id": "1406.5298v2"
+    },
+    {
+      "index": 34,
+      "title": "Categorical reparametrization with Gumble-Softmax",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Eric Jang, Shixiang Gu, and Ben Poole"
+    },
+    {
+      "index": 35,
+      "title": "Revealing the vectors of cellular identity with single-cell genomics",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Nature Biotechnology",
+      "authors": "Allon Wagner, Aviv Regev, and Nir Yosef"
+    },
+    {
+      "index": 36,
+      "title": "Scaling single-cell genomics from phenomenology to mechanism",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Nature",
+      "authors": "Amos Tanay and Aviv Regev"
+    },
+    {
+      "index": 37,
+      "title": "Validation of noise models for single-cell transcriptomics",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Nature Methods",
+      "authors": "Dominic Grun, Lennart Kester, and Alexander van Oudenaarden"
+    },
+    {
+      "index": 38,
+      "title": "Performance assessment and selection of normalization procedures for single-cell RNA-seq",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Cell Systems",
+      "authors": "Michael B. Cole, Davide Risso, Allon Wagner, David DeTomaso, John Ngai, Elizabeth Purdom, Sandrine Dudoit, and Nir Yosef"
+    },
+    {
+      "index": 39,
+      "title": "Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Genome Biology",
+      "authors": "Michael I. Love, Wolfgang Huber, and Simon Anders"
+    },
+    {
+      "index": 40,
+      "title": "Deep generative models for detecting differential expression in single cells",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Machine Learning in Computational Biology",
+      "authors": "Pierre Boyeau, Romain Lopez, Jeffrey Regier, Adam Gayoso, Michael I. Jordan, and Nir Yosef"
+    },
+    {
+      "index": 41,
+      "title": "hmmSeq: A hidden Markov model for detecting differentially expressed genes from RNA-seq data",
+      "abstract": "",
+      "year": "2015",
+      "venue": "The Annals of Applied Statistics",
+      "authors": "Shiqi Cui, Subharup Guha, Marco A. R. Ferreira, and Allison N. Tegge"
+    },
+    {
+      "index": 42,
+      "title": "Feature selection and dimension reduction for single-cell RNA-Seq based on a multinomial model",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Genome Biology",
+      "authors": "F. William Townes, Stephanie C. Hicks, Martin J. Aryee, and Rafael A. Irizarry"
+    },
+    {
+      "index": 43,
+      "title": "On the discovery of subpopulation-specific state transitions from multi-sample multi-condition single-cell RNA sequencing data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "bioRxiv",
+      "authors": "Helena L. Crowell, Charlotte Soneson, Pierre-Luc Germain, Daniela Calini, Ludovic Collin, Catarina Raposo, Dheeraj Malhotra, and Mark D. Robinson"
+    },
+    {
+      "index": 44,
+      "title": "Don’t Blame the ELBO! A Linear VAE Perspective on Posterior Collapse",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "James Lucas, George Tucker, Roger B. Grosse, and Mohammad Norouzi",
+      "orig_title": "Don’t blame the ELBO! a linear VAE perspective on posterior collapse",
+      "paper_id": "1911.02469v1"
+    },
+    {
+      "index": 45,
+      "title": "Cyclical annealing schedule: a simple approach to mitigating KL vanishing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+      "authors": "Hao Fu, Chunyuan Li, Xiaodong Liu, Jianfeng Gao, Asli Celikyilmaz, and Lawrence Carin"
+    },
+    {
+      "index": 46,
+      "title": "Lagging Inference Networks and Posterior Collapse in Variational Autoencoders",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Junxian He, Daniel Spokoyny, Graham Neubig, and Taylor Berg-Kirkpatrick",
+      "orig_title": "Lagging inference networks and posterior collapse in variational autoencoders",
+      "paper_id": "1901.05534v2"
+    },
+    {
+      "index": 47,
+      "title": "Approximate inference for the loss-calibrated Bayesian",
+      "abstract": "",
+      "year": "2011",
+      "venue": "International Conference on Artificial Intelligence and Statistics",
+      "authors": "Simon Lacoste-Julien, Ferenc Huszár, and Zoubin Ghahramani"
+    },
+    {
+      "index": 48,
+      "title": "Variational Bayesian Decision-making for Continuous Utilities",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Tomasz Kuśmierczyk, Joseph Sakaya, and Arto Klami",
+      "orig_title": "Variational Bayesian decision-making for continuous utilities",
+      "paper_id": "1902.00792v3"
+    },
+    {
+      "index": 49,
+      "title": "Amortized Monte Carlo Integration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Adam Golinski, Frank Wood, and Tom Rainforth",
+      "orig_title": "Amortized Monte Carlo integration",
+      "paper_id": "1907.08082v1"
+    },
+    {
+      "index": 50,
+      "title": "Adaptive estimation of a quadratic functional by model selection",
+      "abstract": "",
+      "year": "2000",
+      "venue": "The Annals of Statistics",
+      "authors": "Beatrice Laurent and Pascal Massart"
+    },
+    {
+      "index": 51,
+      "title": "Variational inference based on robust divergences",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Artificial Intelligence and Statistics",
+      "authors": "Futoshi Futami, Issei Sato, and Masashi Sugiyama"
+    },
+    {
+      "index": 52,
+      "title": "Implicit Reparameterization Gradients",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Mikhail Figurnov, Shakir Mohamed, and Andriy Mnih",
+      "orig_title": "Implicit reparameterization gradients",
+      "paper_id": "1805.08498v4"
+    },
+    {
+      "index": 53,
+      "title": "Rényi Divergence Variational Inference",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Yingzhen Li and Richard E. Turner",
+      "orig_title": "Rényi divergence variational inference",
+      "paper_id": "1602.02311v3"
+    },
+    {
+      "index": 54,
+      "title": "The convexity with respect to Gaussian distributions of divergences of order α𝛼\\alpha",
+      "abstract": "",
+      "year": "1984",
+      "venue": "Utilitas Mathematica",
+      "authors": "Jacob Burbea"
+    },
+    {
+      "index": 55,
+      "title": "Variational autoencoder for deep learning of images, labels and captions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Yunchen Pu, Zhe Gan, Ricardo Henao, Xin Yuan, Chunyuan Li, Andrew Stevens, and Lawrence Carin"
+    },
+    {
+      "index": 56,
+      "title": "Gradient-based learning applied to document recognition",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE",
+      "authors": "Yann LeCun, Léon Bottou, Yoshua Bengio, and Patrick Haffner"
+    },
+    {
+      "index": 57,
+      "title": "Self-normalizing neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Günter Klambauer, Thomas Unterthiner, Andreas Mayr, and Sepp Hochreiter"
+    },
+    {
+      "index": 58,
+      "title": "On Calibration of Modern Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Chuan Guo, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger",
+      "orig_title": "On calibration of modern neural networks",
+      "paper_id": "1706.04599v2"
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+{
+  "paper_id": "2004.14973v2",
+  "title": "Improving Vision-and-Language Navigation with Image-Text Pairs from the Web",
+  "sections": {
+    "results": "Does pretraining on web image-text pairs improve VLN performance?\nTo answer this question we dissect our proposed training curriculum as indicated in Table 1, and find that in general each stage of training does contribute to performance. First, we find that our model has limited performance learning from scratch, achieving only 30.5% SR (compared with the 54.7% SR achieved by the speaker model from [ref]28). However, language-only pretraining, which corresponds to initializing our model with BERT [ref]7 weights, improves performance substantially to 45.2% SR (an improvement of 14.7 absolute percentage points) – indicating that language understanding plays an important role in VLN. Next, we find that both pretraining on image-text pairs from the Conceptual Captions  (visual grounding) and pretraining on path-instruction pairs from VLN  (action grounding) similarly improve success rate (by 4.5 and 4.9 absolute percentage points, respectively) when used independently. However, when the two pretraining stages are combined in series the improvement jumps to 14.1 absolute percentage points in success rate or 9.2 absolute percentage points over the next best setting. The substantial level of improvement that results from our full training curriculum suggests that not only does pretraining on webly-supervised image-text pairs from  improve path selection performance, but it also constructively supports the action grounding stage (Stage 3) of pretraining. How does VLN-BERT compare with strong baseline methods?\nThe results in Table 2 compare path selection performance of VLN-BERT with the state-of-the-art speaker and follower models from [ref]28. We evaluate path selection using the set of up to 30 candidate paths generated with beam search using the follower from [ref]28. For the follower model results this amounts to taking the top beam from the candidate set. In the single model setting we see that VLN-BERT, trained with our full curriculum, achieves 59.3% SR, which is 4.6 absolute percentage points better than either of the other two methods. In the pre-explored setting, the speaker and follower models are typically combined in an ensemble to further improve path selection performance [ref]8 [ref]28. The two models are typically combined as a linear combination using a hyperparameter α𝛼\\alpha that is selected through grid search on the val unseen split of R2R [ref]8. In the ensemble models section of Table 2, the speaker + follower line (row 4) represents our execution of the state-of-the-art ensemble model from [ref]28. In rows 5-7, we consider three model ensembles composed of a speaker, follower, and one additional model combined using two hyperparameters α𝛼\\alpha and β𝛽\\beta (again selected through grid search on val unseen). We find that adding another (randomly seeded) speaker or follower model yields modest improvements of 1.2 and 2.7 absolute percentage points in SR (rows 5 and 6). In contrast, adding VLN-BERT results in a 5.7 absolute percentage point boost in SR (row 7), which is 3.0 absolute percentage points higher on success rate than the next best ensemble. In Table 3 we report results on the VLN test set via the VLN leaderboard. In the leaderboard setting we use a three-model ensemble that includes a speaker, follower, and VLN-BERT. The ensemble achieves a success rate of 73%, which is 4 absolute percentage points greater than previously published work [ref]28, and 2 absolute percentage points greater than concurrent, unpublished work . Does VLN-BERT consider relevant image regions to produce alignment scores?\n\nOne motivation behind our proposed approach is to improve the grounding of object references in VLN instruction. To test whether this actually happens and to gain insight into the improved performance of VLN-BERT, we visualize which parts of the visual input affect the compatibility score. We perform this analysis using a simple gradient-based visualization technique . We take the gradient of our learned score f​(x,τ)𝑓𝑥𝜏f(x,\\tau) with respect to the feature representation for each region from each panorama, and sum this 2048-dimensional gradient vector over the feature dimension to produce a scalar measure of region importance. To gain deeper insight we analyze how the region importance changes when the instruction is perturbed by removing parts of the description. Three examples of this analysis are illustrated in Figure 5. The left panel provides the original and modified versions of the instruction with high-importance regions highlighted in green and purple, respectively. In each row, the original instruction is modified by removing a phrase that references a high-importance region (e.g. in the first row ‘then stop next to the fridge’ is removed). In the middle and right panels, the region importance histograms and top 5 regions illustrate which parts of the visual input most influence the compatibility score. For example, in the first row regions containing a ‘fridge’ are important for the original instruction, whereas for the modified instruction the importance shifts to the ‘stairs’. Independently, the center and right panels demonstrate that VLN-BERT produces compatibility scores based on relevant image regions. Furthermore, by comparing the top 5 regions before and after the instruction is modified, we see that the grounding of object references appropriately shifts under linguistic interventions. This analysis provides qualitative evidence that VLN-BERT properly learns to associate instruction phrases with image regions."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "On evaluation of embodied navigation agents",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1807.06757",
+      "authors": "Anderson, P., Chang, A., Chaplot, D.S., Dosovitskiy, A., Gupta, S., Koltun, V., Kosecka, J., Malik, J., Mottaghi, R., Savva, M., et al."
+    },
+    {
+      "index": 1,
+      "title": "Bottom-Up and Top-Down Attention for Image Captioning and Visual Question Answering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Anderson, P., He, X., Buehler, C., Teney, D., Johnson, M., Gould, S., Zhang, L.",
+      "orig_title": "Bottom-up and top-down attention for image captioning and visual question answering",
+      "paper_id": "1707.07998v3"
+    },
+    {
+      "index": 2,
+      "title": "Chasing ghosts: Instruction following as bayesian state tracking",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Anderson, P., Shrivastava, A., Parikh, D., Batra, D., Lee, S."
+    },
+    {
+      "index": 3,
+      "title": "Vision-and-Language Navigation: Interpreting visually-grounded navigation instructions in real environments",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Anderson, P., Wu, Q., Teney, D., Bruce, J., Johnson, M., Sünderhauf, N., Reid, I., Gould, S., van den Hengel, A.",
+      "orig_title": "Vision-and-language navigation: Interpreting visually-grounded navigation instructions in real environments",
+      "paper_id": "1711.07280v3"
+    },
+    {
+      "index": 4,
+      "title": "Matterport3D: Learning from RGB-D Data in Indoor Environments",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on 3D Vision (3DV)",
+      "authors": "Chang, A., Dai, A., Funkhouser, T., Halber, M., Niessner, M., Savva, M., Song, S., Zeng, A., Zhang, Y.",
+      "orig_title": "Matterport3d: Learning from rgb-d data in indoor environments",
+      "paper_id": "1709.06158v1"
+    },
+    {
+      "index": 5,
+      "title": "Microsoft coco captions: Data collection and evaluation server",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1504.00325",
+      "authors": "Chen, X., Fang, H., Lin, T.Y., Vedantam, R., Gupta, S., Dollár, P., Zitnick, C.L."
+    },
+    {
+      "index": 6,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.04805",
+      "authors": "Devlin, J., Chang, M.W., Lee, K., Toutanova, K.",
+      "orig_title": "Bert: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 7,
+      "title": "Speaker-Follower Models for Vision-and-Language Navigation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Fried, D., Hu, R., Cirik, V., Rohrbach, A., Andreas, J., Morency, L.P., Berg-Kirkpatrick, T., Saenko, K., Klein, D., Darrell, T.",
+      "orig_title": "Speaker-follower models for vision-and-language navigation",
+      "paper_id": "1806.02724v2"
+    },
+    {
+      "index": 8,
+      "title": "Making the V in VQA Matter: Elevating the Role of Image Understanding in Visual Question Answering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Goyal, Y., Khot, T., Summers-Stay, D., Batra, D., Parikh, D.",
+      "orig_title": "Making the V in VQA matter: Elevating the role of image understanding in Visual Question Answering",
+      "paper_id": "1612.00837v3"
+    },
+    {
+      "index": 9,
+      "title": "Towards learning a generic agent for vision-and-language navigation via pre-training",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.10638",
+      "authors": "Hao, W., Li, C., Li, X., Carin, L., Gao, J."
+    },
+    {
+      "index": 10,
+      "title": "Multi-modal Discriminative Model for Vision-and-Language Navigation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1905.13358",
+      "authors": "Huang, H., Jain, V., Mehta, H., Baldridge, J., Ie, E.",
+      "orig_title": "Multi-modal discriminative model for vision-and-language navigation",
+      "paper_id": "1905.13358v1"
+    },
+    {
+      "index": 11,
+      "title": "Referit game: Referring to objects in photographs of natural scenes",
+      "abstract": "",
+      "year": "2014",
+      "venue": "EMNLP",
+      "authors": "Kazemzadeh, S., Ordonez, V., Matten, M., Berg, T.L."
+    },
+    {
+      "index": 12,
+      "title": "Tactical Rewind: Self-Correction via Backtracking in Vision-and-Language Navigation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Ke, L., Li, X., Bisk, Y., Holtzman, A., Gan, Z., Liu, J., Gao, J., Choi, Y., Srinivasa, S.",
+      "orig_title": "Tactical rewind: Self-correction via backtracking in vision-and-language navigation",
+      "paper_id": "1903.02547v2"
+    },
+    {
+      "index": 13,
+      "title": "Visual genome: Connecting language and vision using crowdsourced dense image annotations",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1602.07332",
+      "authors": "Krishna, R., Zhu, Y., Groth, O., Johnson, J., Hata, K., Kravitz, J., Chen, S., Kalantidis, Y., Li, L.J., Shamma, D.A., Bernstein, M., Fei-Fei, L."
+    },
+    {
+      "index": 14,
+      "title": "Unicoder-VL: A Universal Encoder for Vision and Language by Cross-modal Pre-training",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.06066",
+      "authors": "Li, G., Duan, N., Fang, Y., Jiang, D., Zhou, M.",
+      "orig_title": "Unicoder-vl: A universal encoder for vision and language by cross-modal pre-training",
+      "paper_id": "1908.06066v3"
+    },
+    {
+      "index": 15,
+      "title": "VisualBERT: A Simple and Performant Baseline for Vision and Language",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.03557",
+      "authors": "Li, L.H., Yatskar, M., Yin, D., Hsieh, C.J., Chang, K.W.",
+      "orig_title": "Visualbert: A simple and performant baseline for vision and language",
+      "paper_id": "1908.03557v1"
+    },
+    {
+      "index": 16,
+      "title": "Robust navigation with language pretraining and stochastic sampling",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1909.02244",
+      "authors": "Li, X., Li, C., Xia, Q., Bisk, Y., Celikyilmaz, A., Gao, J., Smith, N., Choi, Y."
+    },
+    {
+      "index": 17,
+      "title": "Vilbert: Pretraining task-agnostic visiolinguistic representations for vision-and-language tasks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Lu, J., Batra, D., Parikh, D., Lee, S."
+    },
+    {
+      "index": 18,
+      "title": "Hierarchical Question-Image Co-Attention for Visual Question Answering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Lu, J., Yang, J., Batra, D., Parikh, D.",
+      "orig_title": "Hierarchical question-image co-attention for visual question answering",
+      "paper_id": "1606.00061v5"
+    },
+    {
+      "index": 19,
+      "title": "Self-monitoring navigation agent via auxiliary progress estimation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1901.03035",
+      "authors": "Ma, C.Y., Lu, J., Wu, Z., AlRegib, G., Kira, Z., Socher, R., Xiong, C."
+    },
+    {
+      "index": 20,
+      "title": "The regretful agent: Heuristic-aided navigation through progress estimation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Ma, C.Y., Wu, Z., AlRegib, G., Xiong, C., Kira, Z."
+    },
+    {
+      "index": 21,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems (NIPS)",
+      "authors": "Ren, S., He, K., Girshick, R., Sun, J.",
+      "orig_title": "Faster R-CNN: Towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 22,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International journal of computer vision",
+      "authors": "Russakovsky, O., Deng, J., Su, H., Krause, J., Satheesh, S., Ma, S., Huang, Z., Karpathy, A., Khosla, A., Bernstein, M., et al.",
+      "orig_title": "Imagenet large scale visual recognition challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 23,
+      "title": "Conceptual captions: A cleaned, hypernymed, image alt-text dataset for automatic image captioning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "authors": "Sharma, P., Ding, N., Goodman, S., Soricut, R."
+    },
+    {
+      "index": 24,
+      "title": "Deep inside convolutional networks: Visualising image classification models and saliency maps",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.6034",
+      "authors": "Simonyan, K., Vedaldi, A., Zisserman, A."
+    },
+    {
+      "index": 25,
+      "title": "Vl-bert: Pre-training of generic visual-linguistic representations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.08530",
+      "authors": "Su, W., Zhu, X., Cao, Y., Li, B., Lu, L., Wei, F., Dai, J."
+    },
+    {
+      "index": 26,
+      "title": "LXMERT: Learning Cross-Modality Encoder Representations from Transformers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "EMNLP",
+      "authors": "Tan, H., Bansal, M.",
+      "orig_title": "Lxmert: Learning cross-modality encoder representations from transformers",
+      "paper_id": "1908.07490v3"
+    },
+    {
+      "index": 27,
+      "title": "Learning to navigate unseen environments: Back translation with environmental dropout",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.04195",
+      "authors": "Tan, H., Yu, L., Bansal, M."
+    },
+    {
+      "index": 28,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, Ł., Polosukhin, I.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 29,
+      "title": "Reinforced cross-modal matching and self-supervised imitation learning for vision-language navigation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Wang, X., Huang, Q., Celikyilmaz, A., Gao, J., Shen, D., Wang, Y.F., Wang, W.Y., Zhang, L."
+    },
+    {
+      "index": 30,
+      "title": "Look Before You Leap: Bridging Model-Free and Model-Based Reinforcement Learning for Planned-Ahead Vision-and-Language Navigation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Wang, X., Xiong, W., Wang, H., Yang Wang, W.",
+      "orig_title": "Look before you leap: Bridging model-free and model-based reinforcement learning for planned-ahead vision-and-language navigation",
+      "paper_id": "1803.07729v2"
+    },
+    {
+      "index": 31,
+      "title": "Unified Vision-Language Pre-Training for Image Captioning and VQA",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1909.11059",
+      "authors": "Zhou, L., Palangi, H., Zhang, L., Hu, H., Corso, J.J., Gao, J.",
+      "orig_title": "Unified vision-language pre-training for image captioning and vqa",
+      "paper_id": "1909.11059v3"
+    },
+    {
+      "index": 32,
+      "title": "Vision-language navigation with self-supervised auxiliary reasoning tasks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.07883",
+      "authors": "Zhu, F., Zhu, Y., Chang, X., Liang, X."
+    },
+    {
+      "index": 33,
+      "title": "Aligning books and movies: Towards story-like visual explanations by watching movies and reading books",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Zhu, Y., Kiros, R., Zemel, R., Salakhutdinov, R., Urtasun, R., Torralba, A., Fidler, S."
+    }
+  ]
+}

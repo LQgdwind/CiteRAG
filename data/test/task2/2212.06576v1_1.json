@@ -1,0 +1,513 @@
+{
+  "paper_id": "2212.06576v1",
+  "title": "AI Model Utilization Measurements For Finding Class Encoding Patterns",
+  "sections": {
+    "related work": "The problem of explainable AI is very broad and the term explainable is still debated in philosophical texts  (“What is an Explanation?”). A comprehensive survey of explainable AI has been published by Arrieta et al.  and extensive teaching materials have been made available by Lakkaraju et al. .\nOur approach can be related to “Explanation of Deep Network Representation” (roles of layers, individual units, and representation vectors) according to the Deep Learning-specific taxonomy presented by Arrieta et al. in , Fig. 11.\nOur utilization-based approach is inspired by exploring relationships between biological neural circuits and AI model computation graphs as discussed by Olah et al. in . Next, the related work is presented with respect to the three formulated problems. Our work on defining utilization is related to the past work on measuring neural network efficiency , [ref]17, which is rooted in neuroscience and information theory. In the work of Schaub and Hotaling , neural efficiency and artificial intelligence quotient (aIQ) are used to balance neural network performance and neural network efficiency while inspired by the neuroscience studies relating efficiency of solving Tetris task and brain metabolism during the task execution . In the work of Bajcsy et al. [ref]17, an online simulation framework is used to simulate efficiencies of small-size neural networks with a variety of features derived from two-dimensional (2D) dot pattern data. In contrast to the previous work , [ref]17, our theoretical framework defines and reasons about class encodings, AI model fingerprints, and metrics for finding class encoding patterns for much more complex AI models and training datasets. Following the categorization in the survey on interpreting inner structures of AI models 0, the utilization measurements can be related to concept vectors whose goal is to associate directions in latent space with meaningful concepts. In the work of Fong and Vedaldi 1(Network 2 Vector) and Bau et al. 2 (Network Dissection), the distribution of activation maps at each convolutional unit as inputs pass through is used to determine a threshold. Threshold-based segmented activation maps are compared across concepts. In contrast to the previous work 1,2, our utilization measurements are computed at all computation units in an AI model, the activation maps are binarized at zero, and statistics are computed over a distribution of tensor-states (including the binarized activation maps from convolutional units). Our approach does not use any inserted modules like in concept whitening 3 to align the latent space with concepts. Furthermore, our approach does not project class activation maps to create saliency maps 4, 5 in the input spatial domain, but, rather, it analyzes class activations in the tensor-state space. Finally, following the categorization of approaches to understanding community (group or cluster) structure in AI models presented by Watanabe et al. 6, our overarching approach to finding class encoding patterns falls into the category\n“Analysis of trained layered neural networks”\nand combines two subcategories: analysis of unit outputs and their mutual relationships and analysis of the influence on neural network inference by data. Overall, our approach can be related to modular partitioning 7, 8, and unsupervised disentanglement of a learned representation 9, 0.\nIn 7, 8, the authors search for local specializations of AI model subgraphs by using spectral clustering of AI model computation graphs and introducing two metrics, such as accuracy changes during neuron pruning ablation (neuron importance) and class-specific accuracy drop in a subcluster of neurons (input-feature coherence).\nIn contrast to 7, 8, our clustering of computation units does not use \"strong\" and \"weak\" structural undirected connectivity of neurons as in spectral clustering, but, rather, repetitive co-occurrence patterns of utilization values in connected computation units.\nFrom the perspective of representation disentanglement, two studies by Locatello et al. 9, 0 perform extensive experiments on 14 0001400014\\,000 models trained on eight datasets to conclude that well-disentangled models cannot be identified without supervision and the evaluation metrics do not always agree on what should be considered as “disentangled”. While we tacitly assume that high-dimensional data can be explained by lower dimensional semantically meaningful latent variables as by Locatello et al. 9, 0, we do not attempt to fully automate finding subgraphs (i.e., a human is always in the loop) to follow the conclusions by Locatello et al. 9, 0. In addition, we do not aim at fully partitioning all AI model computation graphs into poly-semantic and mono-semantic subgraphs based on the poly-semantic and mono-semantic classification of neurons in subgraphs according to Olah et al.  and Räuker et al. 0."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Detecting AI Trojans Using Meta Neural Analysis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv",
+      "authors": "Xiaojun Xu, Qi Wang, Huichen Li, Nikita Borisov, Carl A. Gunter, and Bo Li",
+      "orig_title": "Detecting AI Trojans Using Meta Neural Analysis",
+      "paper_id": "1910.03137v4"
+    },
+    {
+      "index": 1,
+      "title": "Explainable Artificial Intelligence (XAI): Concepts, Taxonomies, Opportunities and Challenges toward Responsible AI",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Information Fusion",
+      "authors": "Alejandro Barredo Arrieta, Natalia Díaz-Rodríguez, Javier Del Ser, Adrien Bennetot, Siham Tabik, Alberto Barbado, Salvador Garcia, Sergio Gil-Lopez, Daniel Molina, Richard Benjamins, Raja Chatila, and Francisco Herrera",
+      "orig_title": "Explainable artificial intelligence (XAI): Concepts, taxonomies, opportunities and challenges toward responsible AI",
+      "paper_id": "1910.10045v2"
+    },
+    {
+      "index": 2,
+      "title": "Explaining Machine Learning Predictions: State-of-the-Art, Challenges, and Opportunities",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS 202 Tutorial",
+      "authors": "Hima Lakkaraju, Julius Adebayo, and Sameer Singh"
+    },
+    {
+      "index": 3,
+      "title": "NAS-bench-101: Towards reproducible neural architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Chris Ying, Aaron Klein, Eric Christiansen, Esteban Real, Kevin Murphy, and Frank Hutter"
+    },
+    {
+      "index": 4,
+      "title": "OpenAI Microscope",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "OpenAI"
+    },
+    {
+      "index": 5,
+      "title": "Predicting the Computational Cost of Deep Learning Models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv",
+      "authors": "Daniel Justus, John Brennan, Stephen Bonner, and Andrew Stephen McGough",
+      "orig_title": "Predicting the Computational Cost of Deep Learning Models",
+      "paper_id": "1811.11880v1"
+    },
+    {
+      "index": 6,
+      "title": "The Expressive Power of Neural Networks: A View from the Width",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NDSS",
+      "authors": "Zhou Lu, Hongming Pu, Feicheng Wang, Zhiqiang Hu, and Liwei Wang",
+      "orig_title": "The expressive power of neural networks: A view from the width",
+      "paper_id": "1709.02540v3"
+    },
+    {
+      "index": 7,
+      "title": "Assessing Intelligence in Artificial Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv",
+      "authors": "Nicholas J. Schaub and Nathan Hotaling",
+      "orig_title": "Assessing intelligence in artificial neural networks",
+      "paper_id": "2006.02909v1"
+    },
+    {
+      "index": 8,
+      "title": "Toward a unified framework for debugging concept-based models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv",
+      "authors": "Andrea Bontempelli, Fausto Giunchiglia, Andrea Passerini, and Stefano Teso"
+    },
+    {
+      "index": 9,
+      "title": "A Survey of the Recent Architectures of Deep Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv",
+      "authors": "Asifullah Khan, Anabia Sohail, Umme Zahoora, and Aqsa Saeed Qureshi"
+    },
+    {
+      "index": 10,
+      "title": "Modeling Order in Neural Word Embeddings at Scale",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Andrew Trask, David Gilmore, and Matthew Russell",
+      "orig_title": "Modeling order in neural word embeddings at scale",
+      "paper_id": "1506.02338v3"
+    },
+    {
+      "index": 11,
+      "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "William Fedus, Barret Zoph, and Noam Shazeer",
+      "orig_title": "Switch transformers: Scaling to trillion parameter models with simple and efficient sparsity",
+      "paper_id": "2101.03961v3"
+    },
+    {
+      "index": 12,
+      "title": "Trojans in Artificial Intelligence (TrojAI)",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Intelligence Advanced Research Projects Agency IARPA"
+    },
+    {
+      "index": 13,
+      "title": "Fine-Pruning: Defending Against Backdooring Attacks on Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Lecture Notes in Computer Science",
+      "authors": "Kang Liu, Brendan Dolan-Gavitt, and Siddharth Garg",
+      "orig_title": "Fine-pruning: Defending against backdooring attacks on deep neural networks",
+      "paper_id": "1805.12185v1"
+    },
+    {
+      "index": 14,
+      "title": "Zoom in: An introduction to circuits",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Distill",
+      "authors": "Chris Olah, Nick Cammarata, Ludwig Schubert, Gabriel Goh, Michael Petrov, and Shan Carter"
+    },
+    {
+      "index": 15,
+      "title": "Feature visualization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Distill",
+      "authors": "Chris Olah, Alexander Mordvintsev, and Ludwig Schubert"
+    },
+    {
+      "index": 16,
+      "title": "Designing trojan detectors in neural networks using interactive simulations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Applied Sciences",
+      "authors": "Peter Bajcsy, Nicholas J. Schaub, and Michael Majurski"
+    },
+    {
+      "index": 17,
+      "title": "Explaining Explanations: An Overview of Interpretability of Machine Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv",
+      "authors": "Leilani H. Gilpin, David Bau, Ben Z. Yuan, Ayesha Bajwa, Michael Specter, and Lalana Kagal",
+      "orig_title": "Explaining explanations: An overview of interpretability of machine learning",
+      "paper_id": "1806.00069v3"
+    },
+    {
+      "index": 18,
+      "title": "Intelligence and changes in regional cerebral glucose metabolic rate following learning",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Intelligence",
+      "authors": "Richard J. Haier, Benjamin V. Siegel, C. Tang, Lennart Abel, and Monte S. Buchsbaum"
+    },
+    {
+      "index": 19,
+      "title": "Toward Transparent AI: A Survey on Interpreting the Inner Structures of Deep Neural Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv",
+      "authors": "Tilman Räuker, Anson Ho, Stephen Casper, and Dylan Hadfield-Menell",
+      "orig_title": "Toward transparent ai: A survey on interpreting the inner structures of deep neural networks",
+      "paper_id": "2207.13243v6"
+    },
+    {
+      "index": 20,
+      "title": "Net2Vec: Quantifying and Explaining how Concepts are Encoded by Filters in Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv",
+      "authors": "Ruth Fong and Andrea Vedaldi",
+      "orig_title": "Net2vec: Quantifying and explaining how concepts are encoded by filters in deep neural networks",
+      "paper_id": "1801.03454v2"
+    },
+    {
+      "index": 21,
+      "title": "Network Dissection: Quantifying Interpretability of Deep Visual Representations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conf. Comput. Vision and Pattern Recognition",
+      "authors": "David Bau, Zhou Bolei, Khosla Aditya, Oliva Aude, and Antonio Torralba",
+      "orig_title": "Network dissection: Quantifying interpretability of deep visual representations",
+      "paper_id": "1704.05796v1"
+    },
+    {
+      "index": 22,
+      "title": "Concept Whitening for Interpretable Image Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Nature Machine Intelligence",
+      "authors": "Zhi Chen, Yijie Bei, and Cynthia Rudin",
+      "orig_title": "Concept whitening for interpretable image recognition",
+      "paper_id": "2002.01650v5"
+    },
+    {
+      "index": 23,
+      "title": "Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Journal of Computer Vision",
+      "authors": "Ramprasaath R. Selvaraju, Michael Cogswell, Abhishek Das, Ramakrishna Vedantam, Devi Parikh, and Dhruv Batra",
+      "orig_title": "Grad-CAM: Visual explanations from deep networks via gradient-based localization",
+      "paper_id": "1610.02391v4"
+    },
+    {
+      "index": 24,
+      "title": "Sanity checks for saliency maps",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Julius Adebayo, Justin Gilmer, Michael Muelly, Ian Goodfellow, Moritz Hardt, and Been Kim"
+    },
+    {
+      "index": 25,
+      "title": "Understanding Community Structure in Layered Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv",
+      "authors": "Chihiro Watanabe, Kaoru Hiramatsu, and Kunio Kashino",
+      "orig_title": "Understanding community structure in layered neural networks",
+      "paper_id": "1804.04778v1"
+    },
+    {
+      "index": 26,
+      "title": "Quantifying Local Specialization in Deep Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv",
+      "authors": "Shlomi Hod, Daniel Filan, Stephen Casper, Andrew Critch, and Stuart Russell",
+      "orig_title": "Quantifying local specialization in deep neural networks",
+      "paper_id": "2110.08058v2"
+    },
+    {
+      "index": 27,
+      "title": "Clusterability in neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv",
+      "authors": "Daniel Filan, Stephen Casper, Shlomi Hod, Cody Wild, Andrew Critch, and Stuart Russell"
+    },
+    {
+      "index": 28,
+      "title": "Challenging Common Assumptions in the Unsupervised Learning of Disentangled Representations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv",
+      "authors": "Francesco Locatello, Stefan Bauer, Mario Lucic, Gunnar Rätsch, Sylvain Gelly, Bernhard Schölkopf, and Olivier Bachem",
+      "orig_title": "Challenging common assumptions in the unsupervised learning of disentangled representations",
+      "paper_id": "1811.12359v4"
+    },
+    {
+      "index": 29,
+      "title": "A sober look at the unsupervised learning of disentangled representations and their evaluation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Francesco Locatello, Stefan Bauer, Mario Lucic, Gunnar Rätsch, Sylvain Gelly, Bernhard Schölkopf, and Olivier Bachem"
+    },
+    {
+      "index": 30,
+      "title": "The Cityscapes Dataset for Semantic Urban Scene Understanding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Marius Cordts, Mohamed Omran, Sebastian Ramos, Timo Rehfeld, Markus Enzweiler, Rodrigo Benenson, Uwe Franke, Stefan Roth, and Bernt Schiele",
+      "orig_title": "The cityscapes dataset for semantic urban scene understanding",
+      "paper_id": "1604.01685v2"
+    },
+    {
+      "index": 31,
+      "title": "Object scene flow for autonomous vehicles",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Conference on Computer Vision and Pattern Recognition",
+      "authors": "Moritz Menze and Andreas Geiger"
+    },
+    {
+      "index": 32,
+      "title": "Pexels: Photo and Video Sharing",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Joseph Bruno, Joseph Ingo, and Frese Daniel"
+    },
+    {
+      "index": 33,
+      "title": "Complexity of finding maximum regular induced subgraphs with prescribed degree",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Theoretical Computer Science",
+      "authors": "Yuichi Asahiro, Hiroshi Eto, Takehiro Ito, and Eiji Miyano"
+    },
+    {
+      "index": 34,
+      "title": "Torchvision the machine-vision package of torch",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ACM international conference on Multimedia",
+      "authors": "Sébastien Marcel and Yann Rodriguez"
+    },
+    {
+      "index": 35,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 36,
+      "title": "Digraph: An efficient path-based iterative directed graph processing system on multiple gpus",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Architectural Support for Programming Languages and Operating Systems",
+      "authors": "Yu Zhang, Xiaofei Liao, Hai Jin, Bingsheng He, Haikun Liu, and Lin Gu"
+    },
+    {
+      "index": 37,
+      "title": "TrojAI code used to construct each round of the TrojAI challenge",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Michael Majurski, Timothe Blattner, and Derek Juba"
+    },
+    {
+      "index": 38,
+      "title": "Second Order Derivatives for Network Pruning: Optimal Brain Surgeon",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Babak Hassibi and David G. Stork"
+    },
+    {
+      "index": 39,
+      "title": "Pruning Filters for Efficient ConvNets",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Hao Li, Asim Kadav, Igor Durdanovic, Hanan Samet, and Hans Peter Graf",
+      "orig_title": "Pruning Filters for Efficient ConvNets",
+      "paper_id": "1608.08710v3"
+    },
+    {
+      "index": 40,
+      "title": "Baseline Pruning-Based Approach to Trojan Detection in Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv",
+      "authors": "Peter Bajcsy and Michael Majurski",
+      "orig_title": "Baseline pruning-based approach to trojan detection in neural networks",
+      "paper_id": "2101.12016v2"
+    },
+    {
+      "index": 41,
+      "title": "Is explainable AI a race against model complexity?",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv",
+      "authors": "Advait Sarkar",
+      "orig_title": "Is explainable AI a race against model complexity?",
+      "paper_id": "2205.10119v1"
+    },
+    {
+      "index": 42,
+      "title": "PAC guarantees and effective algorithms for detecting novel categories",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Si Liu, Risheek Garrepalli, Dan Hendrycks, Alan Fern, Debashis Mondal, and Thomas G. Dietterich"
+    },
+    {
+      "index": 43,
+      "title": "Poisoned classifiers are not only backdoored, they are fundamentally broken",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv",
+      "authors": "Mingjie Sun, Siddhant Agarwal, and J. Zico Kolter",
+      "orig_title": "Poisoned classifiers are not only backdoored, they are fundamentally broken",
+      "paper_id": "2010.09080v2"
+    },
+    {
+      "index": 44,
+      "title": "Planting undetectable backdoors in machine learning models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv",
+      "authors": "Shafi Goldwasser, Michael P. Kim, Vinod Vaikuntanathan, and Or Zamir"
+    },
+    {
+      "index": 45,
+      "title": "Documentation of TrojAI Challenge",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "NIST"
+    },
+    {
+      "index": 46,
+      "title": "Neural networks and physical systems with emergent collective computational abilities",
+      "abstract": "",
+      "year": "1982",
+      "venue": "National Academy of Sciences, USA",
+      "authors": "Hopfield J.J."
+    },
+    {
+      "index": 47,
+      "title": "Information capacity of the hopfield model",
+      "abstract": "",
+      "year": "1985",
+      "venue": "IEEE Transactions on Information Theory",
+      "authors": "Y. Abu-Mostafa and J. St. Jacques"
+    },
+    {
+      "index": 48,
+      "title": "Dense Associative Memory for Pattern Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv",
+      "authors": "Dmitry Krotov and John J Hopfield",
+      "orig_title": "Dense associative memory for pattern recognition",
+      "paper_id": "1606.01164v2"
+    },
+    {
+      "index": 49,
+      "title": "Hopfield networks is all you need",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Hubert Ramsauer, Bernhard Schäfl, Johannes Lehner, Philipp Seidl, Michael Widrich, Lukas Gruber, Markus Holzleitner, Thomas Adler, David Kreil, Michael K Kopp, Günter Klambauer, Johannes Brandstetter, and Sepp Hochreiter"
+    },
+    {
+      "index": 50,
+      "title": "Approximation capabilities of multilayer feedforward networks",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Neural Networks",
+      "authors": "Kurt Hornik"
+    },
+    {
+      "index": 51,
+      "title": "A Mathematical Theory of Communication",
+      "abstract": "",
+      "year": "1948",
+      "venue": "Bell System Technical Journal",
+      "authors": "C. E. Shannon"
+    },
+    {
+      "index": 52,
+      "title": "Learnability and the Vapnik-Chervonenkis dimension",
+      "abstract": "",
+      "year": "1989",
+      "venue": "J. ACM",
+      "authors": "Anselm Blumer, A. Ehrenfeucht, David Haussler, and Manfred K. Warmuth"
+    },
+    {
+      "index": 53,
+      "title": "Nearly-tight VC-dimension and pseudodimension bounds for piecewise linear neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv",
+      "authors": "Peter L. Bartlett, Nick Harvey, Chris Liaw, and Abbas Mehrabian"
+    },
+    {
+      "index": 54,
+      "title": "Neural Network Learning: Theoretical Foundations",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Cambridge University Press, USA",
+      "authors": "Martin Anthony and Peter L. Bartlett"
+    },
+    {
+      "index": 55,
+      "title": "On Information and Sufficiency",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Annals of Mathematical Statistics.",
+      "authors": "S. Kullback and R. A. Leibler"
+    },
+    {
+      "index": 56,
+      "title": "Tensorstate toolbox",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Nicholas J. Schaub"
+    }
+  ]
+}

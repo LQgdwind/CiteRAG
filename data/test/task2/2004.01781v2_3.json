@@ -1,0 +1,487 @@
+{
+  "paper_id": "2004.01781v2",
+  "title": "Efficient Conformance Checking using Approximate Alignment Computation with Tandem Repeats",
+  "sections": {
+    "string compression techniques": "The technique presented in this article relies on a particular type of sequential pattern mining, namely tandem repeats, and specifically on string compression techniques to detect and collapse repeated sequences of events, so as to reduce the length of the traces in a log. In the rest of this section we review different types of string compression techniques, and the types of repetitive patterns that can be compressed. Last, we review the usage of string compression techniques in process mining. String or text compression techniques can be broken down into two families of approaches: dictionary based-approaches and statistical approaches . Dictionary-based approaches aim at achieving a lossless representation of the input data by recording all reduced versions of repetitive patterns in the data source in a dictionary to be able to later reconstruct an exact representation of the original data. Statistical approaches on the other hand rely on statistical models such as alphabet or probability distributions to compress the input data. This type of approaches can achieve a better degree of compression, but can only reconstruct an approximate representation of the original data, i.e. the compression is prone to the loss of information. As such, this latter approach is more applicable when a small loss of information is tolerable and the amount of information is very large, e.g. in the field of image compression. In the context of trace alignment, this is not suitable because any loss of information may result in further (spurious) differences between the log and the model. Hence, our focus is on lossless compression techniques. Dictionary based approaches can be further sub-divided into approaches that implicitly represent compressed sequences as tuples, i.e. approaches based on “Lempel Ziv 77” , or explicitly record compressions in a dictionary, i.e. approaches based on “Lempel Ziv 78” . The former approaches aims at identifying the longest match of repetitive patterns in a sliding window and compresses the repeated pattern with a tuple consisting of an offset to the previous repetition, the length of the pattern and the first symbol after the pattern. Several approaches improved on this idea by reducing the information of the tuple or by improving the identification of repetitions . Approaches based on Lempel Ziv 78 build up a dictionary for compressed repetitive sequences, where each compressed pattern is linked to an index of its extended form in the dictionary. When the input source is large, the dictionary grows extensively and leads to a lower compression rate. Several approaches tackle this issue by using different dictionary types, for example with static length  or over a rolling window . These two latter approaches are faster in decoding repetitive patterns than in compressing them. This is because they need to constantly identify repetitive patterns during the compression. However, they can decode the patterns faster since all necessary information is stored either in the tuples or in the dictionary. In this article, we will define a reduction of an event log based on the ideas of  representing repetitive patterns as tuples. We will use the additional information of the tuples about the reduced pattern, i.e. reduced number of repetitions, to guide the computation of compressed alignments that can then be decoded into proper alignments for the process model. A repetitive pattern  is a sequence of symbols that is repeated in a given period or context, i.e. in this work the context is a given trace of an event log. The repeating sequence (a.k.a. the repeat type) can either be full, i.e. all symbols of the repeat type are repeated, or partial, i.e. only some symbols of the repeat type are repeated. A repeat type can either be repeated consecutively, i.e. all repetitions follow one another, or gapped, i.e. the repetitions of the repeat type occur at different positions within a given trace. In addition, a repetitive pattern can also be approximate with a Levenshtein distance of k𝑘k symbols, i.e. the pattern allows up to k𝑘k symbols disrupting the repeating sequence. In the context of conformance checking, we aim at relating a repetitive pattern to the process model to find if it can be repeated in a loop structure of the process model. For that purpose, we will rely on a restrictive class of repeat patterns, i.e. full repeat types with consecutive repetitions (a.k.a. tandem repeats). If the pattern were partial, approximate or gapped, the execution context of the process model would be lost and hence no cyclic behavior of the process model could be extended when decoding the repetitive patterns later on. In the context of process mining, repetitive patterns have been used to define trace abstractions in [ref]8. These trace abstractions haven then been used to discover hierarchical process models. In this context, tandem repeats have been considered for discovering loop structures and full repeat types with gapped repetitions have been used for discovering subprocesses. The properties of tandem repeats have been further explored in [ref]8. Specifically, a tandem repeat is called maximal, if the repeat type cannot be extended by another consecutive repetition before its starting position or after the last repetition of the tandem repeat. Conversely, a tandem repeat is called primitive, if the repeat type in itself is not another tandem repeat. These categorizations were made to discourage redundant discoveries of similar repeat types. In this article, we will hence use maximal and primitive tandem repeats to reduce the event log for the purpose of speeding up the computation of trace alignments."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Fundamentals of Business Process Management",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Springer",
+      "authors": "M. Dumas, M. La Rosa, J. Mendling, H. Reijers"
+    },
+    {
+      "index": 1,
+      "title": "Process Mining - Data Science in Action, Second Edition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Springer",
+      "authors": "W. van der Aalst"
+    },
+    {
+      "index": 2,
+      "title": "Conformance checking using cost-based fitness analysis",
+      "abstract": "",
+      "year": "2011",
+      "venue": "EDOC, IEEE",
+      "authors": "A. Adriansyah, B. van Dongen, W. van der Aalst"
+    },
+    {
+      "index": 3,
+      "title": "Efficiently computing alignments: using the extended marking equation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Business Process Management - 16th International Conference, BPM 2018, Lecture Notes in Computer Science, Springer",
+      "authors": "B. van Dongen"
+    },
+    {
+      "index": 4,
+      "title": "Bpi challenge 2018",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "B. van Dongen, F. Borchert"
+    },
+    {
+      "index": 5,
+      "title": "Automated Discovery of Process Models from Event Logs: Review and Benchmark",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "A. Augusto, R. Conforti, M. Dumas, M. La Rosa, F. Maggi, A. Marrella, M. Mecella, A. Soo",
+      "orig_title": "Automated discovery of process models from event logs: Review and benchmark",
+      "paper_id": "1705.02288v3"
+    },
+    {
+      "index": 6,
+      "title": "Linear time algorithms for finding and representing all the tandem repeats in a string",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Journal of Computer and System Sciences",
+      "authors": "D. Gusfield, J. Stoye"
+    },
+    {
+      "index": 7,
+      "title": "Abstractions in process mining: A taxonomy of patterns",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Business Process Management",
+      "authors": "R. Bose, W. van der Aalst"
+    },
+    {
+      "index": 8,
+      "title": "Scalable Alignment of Process Models and Event Logs: An Approach Based on Automata and S-Components",
+      "abstract": "",
+      "year": "",
+      "venue": "Information Systems",
+      "authors": "D. eißner, A. Armas-Cervantes, R. Conforti, M. Dumas, D. Fahland, M. La Rosa",
+      "orig_title": "Scalable alignment of process models and event logs: An approach based on automata and s-components",
+      "paper_id": "1910.09767v2"
+    },
+    {
+      "index": 9,
+      "title": "Conformance checking of processes based on monitoring real behavior",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Information Systems",
+      "authors": "A. Rozinat, W. Van der Aalst"
+    },
+    {
+      "index": 10,
+      "title": "Genetic process mining",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "A. Alves De Medeiros"
+    },
+    {
+      "index": 11,
+      "title": "Scalable process discovery and conformance checking",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Software & Systems Modeling",
+      "authors": "S. Leemans, D. Fahland, W. van der Aalst"
+    },
+    {
+      "index": 12,
+      "title": "Complete and interpretable conformance checking of business processes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Software Engineering",
+      "authors": "L. García-Bañuelos, N. van Beest, M. Dumas, M. La Rosa, W. Mertens"
+    },
+    {
+      "index": 13,
+      "title": "Aligning observed and modeled behavior",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "A. Adriansyah"
+    },
+    {
+      "index": 14,
+      "title": "Scalable conformance checking of business processes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "On the Move to Meaningful Internet Systems. OTM 2017 Conferences, Springer International Publishing",
+      "authors": "D. Reißner, R. Conforti, M. Dumas, M. La Rosa, A. Armas-Cervantes"
+    },
+    {
+      "index": 15,
+      "title": "Aligning real process executions and prescriptive process models through automated planning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Expert Systems with Applications",
+      "authors": "M. de Leoni, A. Marrella"
+    },
+    {
+      "index": 16,
+      "title": "Petri nets, event structures and domains, part I",
+      "abstract": "",
+      "year": "",
+      "venue": "Theoretical Computer Science",
+      "authors": "M. Nielsen, G. Plotkin, G. Winskel"
+    },
+    {
+      "index": 17,
+      "title": "Aligning modeled and observed behavior: a compromise between complexity and quality",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CAiSE, Springer",
+      "authors": "B. van Dongen, J. Carmona, T. Chatain, F. Taymouri"
+    },
+    {
+      "index": 18,
+      "title": "Computing alignments of well-formed process models using local search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Transactions on Software Engineering and Methodology",
+      "authors": "F. Taymouri, J. Carmona"
+    },
+    {
+      "index": 19,
+      "title": "An evolutionary technique to approximate multiple optimal alignments",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Business Process Management, Springer International Publishing",
+      "authors": "F. Taymouri, J. Carmona"
+    },
+    {
+      "index": 20,
+      "title": "Estimating process conformance by trace sampling and result approximation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Business Process Management, Springer International Publishing",
+      "authors": "M. Bauer, H. van der Aa, M. Weidlich"
+    },
+    {
+      "index": 21,
+      "title": "Online conformance checking using behavioural patterns",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Business Process Management, Springer International Publishing",
+      "authors": "A. Burattin, S. van Zelst, A. Armas-Cervantes, B. van Dongen, J. Carmona"
+    },
+    {
+      "index": 22,
+      "title": "Decomposing petri nets for process mining: A generic approach",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Distributed and Parallel Databases",
+      "authors": "W. van der Aalst"
+    },
+    {
+      "index": 23,
+      "title": "Single-entry single-exit decomposed conformance checking",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Inf. Syst.",
+      "authors": "J. Muñoz-Gama, J. Carmona, W. van der Aalst"
+    },
+    {
+      "index": 24,
+      "title": "Aligning observed and modelled behaviour based on workflow decomposition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Enterprise Information Systems",
+      "authors": "L. Wang, Y. Du, W. Liu"
+    },
+    {
+      "index": 25,
+      "title": "Merging alignments for decomposed replay",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Application and Theory of Petri Nets and Concurrency, Springer",
+      "authors": "H. Verbeek, W. van der Aalst"
+    },
+    {
+      "index": 26,
+      "title": "Recomposing conformance: Closing the circle on decomposed alignment-based conformance checking in process mining",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Information Sciences",
+      "authors": "W. Lee, H. Verbeek, J. Munoz-Gama, W. van der Aalst, M. Sepúlveda"
+    },
+    {
+      "index": 27,
+      "title": "Efficient alignment between event logs and process models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Services Computing",
+      "authors": "W. Song, X. Xia, H. Jacobsen, P. Zhang, H. Hu"
+    },
+    {
+      "index": 28,
+      "title": "A comparative study of text compression algorithms",
+      "abstract": "",
+      "year": "2011",
+      "venue": "International Journal of Wisdom Based Computing",
+      "authors": "S. Shanmugasundaram, R. Lourdusamy"
+    },
+    {
+      "index": 29,
+      "title": "A universal algorithm for sequential data compression",
+      "abstract": "",
+      "year": "1977",
+      "venue": "IEEE Transactions on information theory",
+      "authors": "J. Ziv, A. Lempel"
+    },
+    {
+      "index": 30,
+      "title": "Compression of individual sequences via variable-rate coding",
+      "abstract": "",
+      "year": "1978",
+      "venue": "IEEE transactions on Information Theory",
+      "authors": "J. Ziv, A. Lempel"
+    },
+    {
+      "index": 31,
+      "title": "Data compression via textual substitution",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Journal of the ACM (JACM)",
+      "authors": "J. A. Storer, T. G. Szymanski"
+    },
+    {
+      "index": 32,
+      "title": "A technique for high-performance data compression",
+      "abstract": "",
+      "year": "1984",
+      "venue": "Computer",
+      "authors": "T. Welch"
+    },
+    {
+      "index": 33,
+      "title": "Data compression with finite windows",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Communications of the ACM",
+      "authors": "E. Fiala, D. Greene"
+    },
+    {
+      "index": 34,
+      "title": "Periodic pattern mining–algorithms and applications",
+      "abstract": "",
+      "year": "",
+      "venue": "Global Journal of Computer Science and Technology",
+      "authors": "G. Sirisha, M. Shashi, G. Raju"
+    },
+    {
+      "index": 35,
+      "title": "The application of petri nets to workflow management",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Journal of Circuits, Systems and Computers",
+      "authors": "W. van der Aalst"
+    },
+    {
+      "index": 36,
+      "title": "Free choice Petri nets",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Cambridge university press",
+      "authors": "J. Desel, J. Esparza"
+    },
+    {
+      "index": 37,
+      "title": "Soundness and separability of workflow nets in the stepwise refinement approach",
+      "abstract": "",
+      "year": "2003",
+      "venue": "International Conference on Application and Theory of Petri Nets, Springer",
+      "authors": "K. Van Hee, N. Sidorova, M. Voorhoeve"
+    },
+    {
+      "index": 38,
+      "title": "An algorithm for the general petri net reachability problem",
+      "abstract": "",
+      "year": "1984",
+      "venue": "SIAM journal on computing",
+      "authors": "E. Mayr"
+    },
+    {
+      "index": 39,
+      "title": "Incremental construction of minimal acyclic finite-state automata",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Computational linguistics",
+      "authors": "J. Daciuk, S. Mihov, B. Watson, R. Watson"
+    },
+    {
+      "index": 40,
+      "title": "Conformance checking using cost-based fitness analysis",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE 15th International Enterprise Distributed Object Computing Conference",
+      "authors": "A. Adriansyah, B. van Dongen, W. van der Aalst"
+    },
+    {
+      "index": 41,
+      "title": "Replacing suffix trees with enhanced suffix arrays",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Journal of Discrete Algorithms",
+      "authors": "M. Abouelhoda, S. Kurtz, E. Ohlebusch"
+    },
+    {
+      "index": 42,
+      "title": "Diagnosing behavioral differences between business process models: An approach based on event structures",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Information systems",
+      "authors": "A. Armas-Cervantes, P. Baldan, M. Dumas, L. Garcia-Bañuelos"
+    },
+    {
+      "index": 43,
+      "title": "APROMORE: an advanced process model repository",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Expert Syst. Appl.",
+      "authors": "M. La Rosa, H. Reijers, W. van der Aalst, R. Dijkman, J. Mendling, M. Dumas, L. García-Bañuelos"
+    },
+    {
+      "index": 44,
+      "title": "Bpi challenge 2012",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": "B. van Dongen"
+    },
+    {
+      "index": 45,
+      "title": "Bpi challenge 2013, closed problems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "W. Steeman"
+    },
+    {
+      "index": 46,
+      "title": "Bpi challenge 2013, incidents",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "W. Steeman"
+    },
+    {
+      "index": 47,
+      "title": "Bpi challenge 2014",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "B. van Dongen"
+    },
+    {
+      "index": 48,
+      "title": "Bpi challenge 2015",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "B. van Dongen"
+    },
+    {
+      "index": 49,
+      "title": "Bpi challenge 2017",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "B. van Dongen"
+    },
+    {
+      "index": 50,
+      "title": "Road traffic fine management process",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "M. de Leoni, F. Mannhardt"
+    },
+    {
+      "index": 51,
+      "title": "Sepsis cases - event log",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "F. Mannhardt"
+    },
+    {
+      "index": 52,
+      "title": "Filtering out infrequent behavior from business process event logs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "R. Conforti, M. La Rosa, A. Ter Hofstede"
+    },
+    {
+      "index": 53,
+      "title": "Discovering block-structured process models from event logs-a constructive approach",
+      "abstract": "",
+      "year": "2013",
+      "venue": "International conference on applications and theory of Petri nets and concurrency, Springer",
+      "authors": "S. Leemans, D. Fahland, W. van der Aalst"
+    },
+    {
+      "index": 54,
+      "title": "Split miner: Discovering accurate and simple business process models from event logs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Data Mining (ICDM), IEEE",
+      "authors": "A. Augusto, R. Conforti, M. Dumas, M. La Rosa"
+    },
+    {
+      "index": 55,
+      "title": "Automated discovery of structured process models from event logs: The discover-and-structure approach",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Data Knowl. Eng.",
+      "authors": "A. Augusto, R. Conforti, M. Dumas, M. L. Rosa, G. Bruno"
+    },
+    {
+      "index": 56,
+      "title": "Fodina: A robust and flexible heuristic process discovery technique",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Decision Support Systems",
+      "authors": "S. vanden Broucke, J. De Weerdt"
+    },
+    {
+      "index": 57,
+      "title": "Conformance checking in the large (dataset)",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "J. Muñoz-Gama"
+    },
+    {
+      "index": 58,
+      "title": "The Imprecisions of Precision Measures in Process Mining",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Inf. Process. Lett.",
+      "authors": "N. Tax, X. Lu, N. Sidorova, D. Fahland, W. M. P. van der Aalst",
+      "orig_title": "The imprecisions of precision measures in process mining",
+      "paper_id": "1705.03303v2"
+    }
+  ]
+}

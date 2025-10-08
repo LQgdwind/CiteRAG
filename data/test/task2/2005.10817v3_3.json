@@ -1,0 +1,539 @@
+{
+  "paper_id": "2005.10817v3",
+  "title": "Computationally efficient sparse clustering",
+  "sections": {
+    "a computationally feasible algorithm": "Below the BBP threshold , i.e., when p/n>(1+Ω​(1))​‖θ‖4𝑝𝑛1Ω1superscriptnorm𝜃4p/n>(1+\\Omega(1))\\|\\theta\\|^{4}, consistent clustering is, in general, information theoretically impossible  . To circumvent this issue it is necessary to take the additional information that θ𝜃\\theta is sparse into account. We modify the low-dimensional clustering algorithm proposed by Vempala and Wang . Their approach consists of computing the SVD of the data matrix, projecting the data onto the low-dimensional space spanned by the first left singular vector and then running a clustering algorithm such as k𝑘k-means. We propose to modify the first step of this algorithm by running a sparse PCA algorithm. In particular, we use a variant of a semidefinite program which was initially proposed by d’Aspremont et al.  and further developed and analyzed in   7. Other theoretically investigated approaches to solve the sparse PCA problem include diagonal thresholding , iterative thresholding 9, covariance thresholding 2  and axis aligned random projections 0. In spirit, Algorithm 1 is similar to the two-stage selection methods proposed in  0 , and we discuss differences below. In the following theorem we show that Algorithm 1 achieves an exponentially-small misclustering error when the squared sparsity is of smaller order than the sample size. We emphasize that Algorithm 1 does not require an impractical sample splitting111Sample splitting would split the data into two copies with independent noise (as in the proof of Theorem 2.4) and use one for each of the steps 1 and 3 of Algorithm 1. This would make the analysis easier but yields an algorithm that would be less natural to use in practice. step. This makes the proof of Theorem 2.1 more difficult as u^^𝑢\\hat{u} and each Xisubscript𝑋𝑖X_{i} are not independent. We overcome this difficulty by using the leave-one-out method combined with a careful analysis of the KKT conditions of the SDP estimator P^^𝑃\\hat{P}. Assume that log⁡(p)≤n𝑝𝑛\\log(p)\\leq n and ‖θ‖∞≤κ≤log⁡(p)subscriptnorm𝜃𝜅𝑝\\|\\theta\\|_{\\infty}\\leq\\kappa\\leq\\sqrt{\\log(p)} for some κ>0𝜅0\\kappa>0. Moreover, suppose that for some large enough constant C>0𝐶0C>0, λ=C​(1+κ)​log⁡(p)/n𝜆𝐶1𝜅𝑝𝑛\\lambda=C(1+\\kappa)\\sqrt{\\log(p)/n} and that for some small enough constant c>0𝑐0c>0 Then the output of Algorithm 1 satisfies with probability at least 1−8​p−1−2​e−‖θ‖/218superscript𝑝12superscript𝑒norm𝜃21-8p^{-1}-2e^{-\\|\\theta\\|/2} that for another constant c′>0superscript𝑐′0c^{\\prime}>0, Lu and Zhou 8 prove a minimax lower bound in the analogous setting without sparsity. Their result implies the following minimax lower bound in our setting (even if θ𝜃\\theta is known to the algorithm): Hence, when ‖θ‖=ω​(1)norm𝜃𝜔1\\|\\theta\\|=\\omega(1) and s2/n=o​(‖θ‖4/(log⁡(p)​(1+κ2)))superscript𝑠2𝑛𝑜superscriptnorm𝜃4𝑝1superscript𝜅2s^{2}/n=o(\\|\\theta\\|^{4}/(\\log(p)(1+\\kappa^{2}))), the convergence rate in (5) is minimax optimal. It was previously shown by 8  that this rate is achievable when p/n=o​(‖θ‖2)𝑝𝑛𝑜superscriptnorm𝜃2p/n=o(\\|\\theta\\|^{2}) (which is above the BBP transition , where the sparsity assumption is not needed). Algorithm 1 is the first clustering procedure to provably achieve this minimax optimal misclustering error in the regime where sparsity must be exploited. When p/n=o(∥θ∥4p/n=o(\\|\\theta\\|^{4}) and p/n=ω​(‖θ‖2)𝑝𝑛𝜔superscriptnorm𝜃2p/n=\\omega(\\|\\theta\\|^{2}) only a slower convergence rate is achievable in the setting without sparsity   . This corresponds to a regime where it is impossible to consistently estimate the direction of θ𝜃\\theta, but where consistent clustering is possible. By contrast, such a regime does not exist in the sparse high-dimensional setting when p/n=ω​(‖θ‖4)𝑝𝑛𝜔superscriptnorm𝜃4p/n=\\omega(\\|\\theta\\|^{4}). This is due to the fact that is necessary to exploit the sparsity of θ𝜃\\theta and estimate its direction in the clustering process . We now discuss existing theoretical results in high-dimensional sparse clustering. The articles   8 focus on estimating classification rules from unlabeled data and study the risk of misclassifying a new observation. This risk measure is easier to analyze because the classification rule is independent of the new observation. Moreover, their setting is slightly different. For instance, Cai et al. 8 assume that ‖θ‖=O​(1)norm𝜃𝑂1\\|\\theta\\|=O(1) and consider the more general case with arbitrary covariance matrix ΣΣ\\Sigma and sparsity of Σ−1​θsuperscriptΣ1𝜃\\Sigma^{-1}\\theta. They propose a sparse high-dimensional EM-algorithm and prove sharp bounds on the excess prediction risk, provided that they have a sufficiently good initializer. They (and Azizyan et al. , too) obtain this initializer by using the Hardt-Price algorithm 4 and penalized estimation. Ultimately this requires that s12/n=o​(1)superscript𝑠12𝑛𝑜1s^{12}/n=o(1). Similarly to the present article,  0  propose two-stage algorithms, selecting first the relevant coordinates and then performing clustering. In 0 and , suboptimal polynomial rates of convergence are shown for the misclustering error. In particular, Jin et al.  assume that θj​∼i.i.d.​(1−ϵ)​δ0+ϵ​δκ/2+ϵ​δ−κ/2\\theta_{j}\\overset{i.i.d.}{\\thicksim}(1-\\epsilon)\\delta_{0}+\\epsilon\\delta_{\\kappa}/2+\\epsilon\\delta_{-\\kappa}/2 where κ=o​(1),ϵ=o​(1)formulae-sequence𝜅𝑜1italic-ϵ𝑜1\\kappa=o(1),\\epsilon=o(1) and give precise bounds for which regimes of (p,n,κ,ϵ)𝑝𝑛𝜅italic-ϵ(p,n,\\kappa,\\epsilon) consistent clustering is possible and for which it is not. Most relevant to the present work, they prove, ignoring log-factors, that ‖θ‖2=ω​(1+s/n)superscriptnorm𝜃2𝜔1𝑠𝑛\\|\\theta\\|^{2}=\\omega(1+s/n) is a necessary and sufficient condition for consistent clustering. However, the algorithm that achieves this performance bound is based on exhaustive search which is not computationally efficient. By contrast, ignoring log-factors, we require in addition that ‖θ‖2=ω​(1+s/n)superscriptnorm𝜃2𝜔1𝑠𝑛\\|\\theta\\|^{2}=\\omega(1+s/\\sqrt{n}) for consistent recovery when θ𝜃\\theta is sampled from their prior, matching the requirements of a polynomial-time algorithm they propose. Observing this discrepancy between the performance of their polynomial-time algorithm and the exhaustive search algorithm, they conjecture computational gaps, for which we give evidence in Section 2.2. In contrast to the above work, our results apply for arbitrary θ𝜃\\theta and z𝑧z from a given parameter parameter space (instead of a specific prior), we do not assume κ=o​(1)𝜅𝑜1\\kappa=o(1), and we achieve optimal exponential convergence rates. The assumption κ=O​(log⁡p)𝜅𝑂𝑝\\kappa=O(\\sqrt{\\log p}) is less restrictive than typical assumptions on θ𝜃\\theta used in the literature. For instance,  5 both assume that θ∈{−κ,κ,0}p𝜃superscript𝜅𝜅0𝑝\\theta\\in\\{-\\kappa,\\kappa,0\\}^{p} and 0  assume that κ=o​(1)𝜅𝑜1\\kappa=o(1). We show next that in fact no assumption on ‖θ‖∞subscriptnorm𝜃\\|\\theta\\|_{\\infty} is needed at all: if ‖θ‖∞≥κsubscriptnorm𝜃𝜅\\|\\theta\\|_{\\infty}\\geq\\kappa for some large enough constant κ>0𝜅0\\kappa>0, then clustering becomes much easier. In particular,\nit is possible to achieve exponential convergence rates in ‖θ‖2superscriptnorm𝜃2\\|\\theta\\|^{2} as soon as s/n=o​(‖θ‖2/log⁡(e​p/s))𝑠𝑛𝑜superscriptnorm𝜃2𝑒𝑝𝑠s/n=o(\\|\\theta\\|^{2}/\\log(ep/s)). Hence, in this regime no computational gap exists. Suppose that log⁡(p)≤n𝑝𝑛\\log(p)\\leq n and that ‖θ‖∞≥κsubscriptnorm𝜃𝜅\\|\\theta\\|_{\\infty}\\geq\\kappa for some κ>0𝜅0\\kappa>0 such that for some small enough constant c>0𝑐0c>0, Then there exists a polynomial time algorithm with output z^^𝑧\\hat{z} and a constant c′>0superscript𝑐′0c^{\\prime}>0 such that with probability at least 1−(3​s)/p−2​e−‖θ‖/413𝑠𝑝2superscript𝑒norm𝜃41-(3s)/p-2e^{-\\|\\theta\\|/4},"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "An ℓpsubscriptℓ𝑝 theory of PCA and spectral clustering",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint",
+      "authors": "E. Abbe, J. Fan, and K. Wang"
+    },
+    {
+      "index": 1,
+      "title": "Efficient sparse clustering of high-dimensional non-spherical gaussian mixtures",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Artificial Intelligence and Statistics",
+      "authors": "M. Azizyan, A. Singh, and L. L. Wasserman"
+    },
+    {
+      "index": 2,
+      "title": "Minimax theory for high-dimensional gaussian mixtures with sparse mean separation",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in Neural Information Processing Systems (NIPS)",
+      "authors": "M. Azizyan, A. Singh, and L. Wasserman"
+    },
+    {
+      "index": 3,
+      "title": "High-dimensional analysis of semidefinite relaxations for sparse principal components",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Ann. Statist.",
+      "authors": "A.A. Amini and M.J. Wainwright"
+    },
+    {
+      "index": 4,
+      "title": "Average-Case Lower Bounds for Learning Sparse Mixtures, Robust Estimation and Semirandom Adversaries",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "M. Brennan and G. Bresler"
+    },
+    {
+      "index": 5,
+      "title": "Optimal Average-Case Reductions to Sparse PCA: From Weak Assumptions to Strong Hardness",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Conference on Learning Theory (COLT)",
+      "authors": "M. Brennan and G. Bresler"
+    },
+    {
+      "index": 6,
+      "title": "Reducibility and statistical-computational gaps from secret leakage",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Conference on Learning Theory (COLT",
+      "authors": "M. Brennan and G. Bresler"
+    },
+    {
+      "index": 7,
+      "title": "Reducibility and Computational Lower Bounds for Problems with Planted Sparse Structure",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint",
+      "authors": "M. Brennan, G. Bresler, and W. Huleihel",
+      "orig_title": "Reducibility and computational lower bounds for problems with planted sparse structure",
+      "paper_id": "1806.07508v2"
+    },
+    {
+      "index": 8,
+      "title": "Phase transition of the largest eigenvalue for non-null complex sample covariance matrices",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Ann. Probab.",
+      "authors": "J. Baik, G. Ben Arous, and S. Péché"
+    },
+    {
+      "index": 9,
+      "title": "Model-based clustering of high-dimensional data: A review",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Comput. Statist. Data Anal.",
+      "authors": "C. Bouveyron and C. Brunet-Saumard"
+    },
+    {
+      "index": 10,
+      "title": "A nearly tight sum-of-squares lower bound for the planted clique problem",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SIAM J. Comput.",
+      "authors": "B. Barak, S. Hopkins, J. Kelner, P.K. Kothari, A. Moitra, and A. Potechin"
+    },
+    {
+      "index": 11,
+      "title": "Statistical and computational tradeoffs in biclustering",
+      "abstract": "",
+      "year": "2011",
+      "venue": "NIPS 2011 Workshop on Computational Trade-offs in Statistical Learning",
+      "authors": "S. Balakrishnan, M. Kolar, A. Rinaldo, A. Singh, and L. Wasserman"
+    },
+    {
+      "index": 12,
+      "title": "Slope meets Lasso: Improved oracle bounds and optimality",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Ann. Statist.",
+      "authors": "P.C. Bellec, G. Lecué, and A.B. Tsybakov"
+    },
+    {
+      "index": 13,
+      "title": "Complexity theoretic lower bounds for sparse principal component detection",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Conference on Learning Theory",
+      "authors": "Q. Berthet and P. Rigollet"
+    },
+    {
+      "index": 14,
+      "title": "Optimal detection of sparse principal components in high dimension",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Ann. Statist.",
+      "authors": "Q. Berthet and P. Rigollet"
+    },
+    {
+      "index": 15,
+      "title": "Statistical guarantees for the EM algorithm: From population to sample-based analysis",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Ann. Statist.",
+      "authors": "S. Balakrishnan, M.J. Wainwright, and B. Yu"
+    },
+    {
+      "index": 16,
+      "title": "Computational and statistical boundaries for submatrix localization in a large noisy matrix",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Ann. Statist.",
+      "authors": "T.T. Cai, T. Liang, and A. Rakhlin"
+    },
+    {
+      "index": 17,
+      "title": "CHIME: Clustering of high-dimensional gaussian mixtures with EM algorithm and its optimality",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Ann. Statist.",
+      "authors": "T.T. Cai, J. Ma, and L. Zhang"
+    },
+    {
+      "index": 18,
+      "title": "A direct formulation of sparse PCA using semidefinite programming",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIAM Review",
+      "authors": "A. d’Aspremont, L. El Ghaoui, M.I. Jordan, and G.R.G. Lanckriet"
+    },
+    {
+      "index": 19,
+      "title": "Statistical query lower bounds for robust estimation of high-dimensional gaussians and gaussian mixtures",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE 58th Annual Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "I. Diakonikolas, D.M. Kane, and A. Stewart"
+    },
+    {
+      "index": 20,
+      "title": "Subexponential-Time Algorithms for Sparse PCA",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "Y. Ding, D. Kunisky, A.S. Wein, and A.S. Bandeira",
+      "orig_title": "Subexponential-Time Algorithms for Sparse PCA",
+      "paper_id": "1907.11635v3"
+    },
+    {
+      "index": 21,
+      "title": "Maximum likelihood from incomplete data via the EM algorithm (with discussion)",
+      "abstract": "",
+      "year": "1977",
+      "venue": "J. R. Statist. Soc. B",
+      "authors": "A. Dempster, N. Laird, and D. Rubin"
+    },
+    {
+      "index": 22,
+      "title": "Sparse PCA via covariance thresholding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "J Mach Learn Res",
+      "authors": "Y. Deshpande and A. Montanari"
+    },
+    {
+      "index": 23,
+      "title": "Statistical algorithms and a lower bound for detecting planted cliques",
+      "abstract": "",
+      "year": "2017",
+      "venue": "J. ACM",
+      "authors": "V. Feldman, E. Grigorescu, L. Reyzin, S. Vempala, and Y. Xiao"
+    },
+    {
+      "index": 24,
+      "title": "Curse of Heterogeneity: Computational Barriers in Sparse Mixture Models and Phase Retrieval",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint",
+      "authors": "J. Fan, H. Liu, Z. Wang, and Z. Yang",
+      "orig_title": "Curse of heterogeneity: Computational barriers in sparse mixture models and phase retrieval",
+      "paper_id": "1808.06996v1"
+    },
+    {
+      "index": 25,
+      "title": "Clustering objects on subsets of attributes",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. Roy. Statist. Soc. Ser. B",
+      "authors": "J. Friedman and J. Meulman"
+    },
+    {
+      "index": 26,
+      "title": "Sparse CCA: Adaptive Estimation and Computational Barriers",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Ann. Statist.",
+      "authors": "C. Gao, Z. Ma, and H.H. Zhou"
+    },
+    {
+      "index": 27,
+      "title": "Mathematical Foundations of Infinite-Dimensional Statistical Methods",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Cambridge University Press",
+      "authors": "E. Giné and R. Nickl"
+    },
+    {
+      "index": 28,
+      "title": "Partial recovery bounds for clustering with the relaxed 𝐾-means",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Mathematical Statistics and Learning",
+      "authors": "C. Giraud and N. Verzelen",
+      "orig_title": "Partial recovery bounds for clustering with the relaxed k-means",
+      "paper_id": "1807.07547v3"
+    },
+    {
+      "index": 29,
+      "title": "Sparse principal component analysis via axis-aligned random projections",
+      "abstract": "",
+      "year": "2020",
+      "venue": "J. R. Stat. Soc. B",
+      "authors": "M. Gataric, T. Wang, and R.J. Samworth"
+    },
+    {
+      "index": 30,
+      "title": "The power of sum-of-squares for detecting hidden structures",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE 58th Annual Symposium on Foundations of Computer Science",
+      "authors": "S.B. Hopkins, P.K Kothari, A. Potechin, P. Raghavendra, T. Schramm, and D. Steurer",
+      "orig_title": "The power of sum-of-squares for detecting hidden structures",
+      "paper_id": "1710.05017v1"
+    },
+    {
+      "index": 31,
+      "title": "Probability Inequalities for Sums of Bounded Random Variables",
+      "abstract": "",
+      "year": "1963",
+      "venue": "J. Amer. Statist. Assoc.",
+      "authors": "W. Hoeffding"
+    },
+    {
+      "index": 32,
+      "title": "Statistical Inference and the Sum of Squares Method",
+      "abstract": "",
+      "year": "2018",
+      "venue": "PhD thesis, Cornell University",
+      "authors": "S.B. Hopkins"
+    },
+    {
+      "index": 33,
+      "title": "Tight Bounds for Learning a Mixture of Two Gaussians",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM Symposium on Theory of Computing",
+      "authors": "M. Hardt and E. Price",
+      "orig_title": "Tight bounds for learning a mixture of two Gaussians",
+      "paper_id": "1404.4997v3"
+    },
+    {
+      "index": 34,
+      "title": "Efficient bayesian estimation from few samples: community detection and related problems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Symposium on Foundations of Computer Science",
+      "authors": "S.B. Hopkins and D. Steurer"
+    },
+    {
+      "index": 35,
+      "title": "A greedy anytime algorithm for sparse PCA",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Thirty Third Conference on Learning Theory, PMLR",
+      "authors": "G. Holtzman, A. Soffer, and D. Vilenchik"
+    },
+    {
+      "index": 36,
+      "title": "Counterexamples to the Low-Degree Conjecture",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint",
+      "authors": "J. Holmgren and A.S. Wein",
+      "orig_title": "Counterexamples to the low-degree conjecture",
+      "paper_id": "2004.08454v1"
+    },
+    {
+      "index": 37,
+      "title": "Phase transitions for high dimensional clustering and related problems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Ann. Statist.",
+      "authors": "J. Jin, Z.T. Ke, and W. Wang"
+    },
+    {
+      "index": 38,
+      "title": "On Consistency and Sparsity for Principal Components Analysis in High Dimensions",
+      "abstract": "",
+      "year": "2007",
+      "venue": "J Am Stat Assoc",
+      "authors": "I.M. Johnstone and A.Y. Lu"
+    },
+    {
+      "index": 39,
+      "title": "Influential features PCA for high-dimensional clustering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Ann. Statist.",
+      "authors": "J. Jin and W. Wang"
+    },
+    {
+      "index": 40,
+      "title": "Efficient noise-tolerant learning from statistical queries",
+      "abstract": "",
+      "year": "1998",
+      "venue": "J. ACM",
+      "authors": "M. Kearns"
+    },
+    {
+      "index": 41,
+      "title": "Do semidefinite relaxations solve sparse PCA up to the information limit?",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Ann. Statist.",
+      "authors": "R. Krauthgamer, B. Nadler, and D. Vilenchik"
+    },
+    {
+      "index": 42,
+      "title": "Notes on Computational Hardness of Hypothesis Testing: Predictions using the Low-Degree Likelihood Ratio",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "D. Kunisky, A.S. Wein, and A.S. Bandeira"
+    },
+    {
+      "index": 43,
+      "title": "Phase transitions and optimal algorithms in high-dimensional Gaussian mixture clustering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Annual Allerton Conference on Communication, Control, and Computing (Allerton)",
+      "authors": "T. Lesieur, C. De Bacco, J. Banks, F. Krzakala, C. Moore, and L. Zdeborová",
+      "orig_title": "Phase transitions and optimal algorithms in high-dimensional Gaussian mixture clustering",
+      "paper_id": "1610.02918v1"
+    },
+    {
+      "index": 44,
+      "title": "Least squares quantization in PCM",
+      "abstract": "",
+      "year": "1982",
+      "venue": "IEEE Trans. Inf. Theor.",
+      "authors": "S. Lloyd"
+    },
+    {
+      "index": 45,
+      "title": "Minimax sparse principal subspace estimation in high dimensions",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Ann. Statist.",
+      "authors": "J. Lei and V.Q. Vu"
+    },
+    {
+      "index": 46,
+      "title": "Sparsistency and agnostic inference in sparse PCA",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Ann. Statist.",
+      "authors": "J. Lei and V.Q. Vu"
+    },
+    {
+      "index": 47,
+      "title": "Statistical and Computational Guarantees of Lloyd’s Algorithm and its Variants",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint",
+      "authors": "Y. Lu and H.H. Zhou"
+    },
+    {
+      "index": 48,
+      "title": "Sparse principal component analysis and iterative thresholding",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Ann. Statist.",
+      "authors": "Z. Ma"
+    },
+    {
+      "index": 49,
+      "title": "Sum-of-Squares Lower Bounds for Sparse PCA",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems (NIPS)",
+      "authors": "T. Ma and A. Wigderson",
+      "orig_title": "Sum-of-squares lower bounds for sparse PCA",
+      "paper_id": "1507.06370v2"
+    },
+    {
+      "index": 50,
+      "title": "Computational barriers in minimax submatrix detection",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Ann. Statist.",
+      "authors": "Z. Ma and Y. Wu"
+    },
+    {
+      "index": 51,
+      "title": "Sharp optimal recovery in the two component gaussian mixture model",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "M. Ndaoud"
+    },
+    {
+      "index": 52,
+      "title": "Estimation of wasserstein distances in the spiked transport model",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "J. Niles-Weed and P. Rigollet"
+    },
+    {
+      "index": 53,
+      "title": "Penalized model-based clustering with application to variable selection",
+      "abstract": "",
+      "year": "2007",
+      "venue": "J. Mach. Learn. Res.",
+      "authors": "W. Pan and X. Shen"
+    },
+    {
+      "index": 54,
+      "title": "Approximating k-means-type clustering via semidefinite programming",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIAM J. on Optimization",
+      "authors": "J. Peng and Y. Wei"
+    },
+    {
+      "index": 55,
+      "title": "Lecture notes on high-dimensional statistics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "P. Rigollet and J. Hütter"
+    },
+    {
+      "index": 56,
+      "title": "Detection and feature selection in sparse mixture models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Ann. Statist.",
+      "authors": "N. Verzelen and E. Arias-Castro"
+    },
+    {
+      "index": 57,
+      "title": "Fantope Projection and Selection: A near-optimal convex relaxation of Sparse PCA",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in Neural Information Processing Systems (NIPS)",
+      "authors": "V.Q. Vu, J. Cho, J. Lei, and K. Rohe"
+    },
+    {
+      "index": 58,
+      "title": "A tutorial on spectral clustering",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Stat. Comput.",
+      "authors": "U. Von Luxburg"
+    },
+    {
+      "index": 59,
+      "title": "A spectral algorithm for learning mixture models",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. Comput. Syst. Sci.",
+      "authors": "S. Vempala and G. Wang"
+    },
+    {
+      "index": 60,
+      "title": "Statistical and computational trade-offs in estimation of sparse principal components",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Ann. Statist.",
+      "authors": "T. Wang, Q. Berthet, and R.J. Samworth"
+    },
+    {
+      "index": 61,
+      "title": "A framework for feature selection in clustering",
+      "abstract": "",
+      "year": "2010",
+      "venue": "J. Am. Stat. Assoc.",
+      "authors": "D.M. Witten and R. Tibshirani"
+    },
+    {
+      "index": 62,
+      "title": "Variable selection for model-based high-dimensional clustering and its application to microarray data",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Biometrics",
+      "authors": "S. Wang and J. Zhu"
+    },
+    {
+      "index": 63,
+      "title": "Randomly initialized EM algorithm for two-component Gaussian mixture achieves near optimality in O​(n)𝑂𝑛O(\\sqrt{n}) iterations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "Y. Wu and H.H. Zhou"
+    }
+  ]
+}

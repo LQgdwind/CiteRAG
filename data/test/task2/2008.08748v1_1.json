@@ -1,0 +1,567 @@
+{
+  "paper_id": "2008.08748v1",
+  "title": "DPMC: Weighted Model Counting by Dynamic Programming on Project-Join TreesWork supported in part by NSF grants IIS-1527668, CCF-1704883, IIS-1830549, and DMS-1547433.",
+  "sections": {
+    "introduction": "Model counting is a fundamental problem in artificial intelligence, with applications in machine learning, probabilistic reasoning, and verification   .\nGiven an input set of constraints, with the focus in this paper on Boolean constraints, the model-counting problem is to count the number of satisfying assignments.\nAlthough this problem is #P-Complete , a variety of tools exist that can handle industrial sets of constraints, e.g.,    . Dynamic programming is a powerful technique that has been applied across computer science , including to model counting   .\nThe key idea is to solve a large problem by solving a sequence of smaller subproblems and then incrementally combining these solutions into the final result.\nDynamic programming provides a natural framework to solve a variety of problems defined on sets of constraints: subproblems can be formed by partitioning the constraints.\nThis framework has been instantiated into algorithms for database-query optimization 8, satisfiability solving   , and QBF evaluation . Dynamic programming has also been the basis of several tools for model counting 6 5 7 .\nAlthough each tool uses a different data structure–algebraic decision diagrams (ADDs) 6, tensors 5 7, or database tables –the overall algorithms have similar structure.\nThe goal of this work is to unify these approaches into a single conceptual framework: project-join trees.\nProject-join trees are not an entirely new idea.\nSimilar concepts have been used in constraint programming (as join trees 2), probabilistic inference (as cluster trees ), and database-query optimization (as join-expression trees 8).\nOur original contributions include the unification of these concepts into project-join trees and the application of this unifying framework to model counting. We argue that project-join trees provide the natural formalism to describe execution plans for dynamic-programming algorithms for model counting.\nIn particular, considering project-join trees as execution plans enables us to decompose dynamic-programming algorithms such as the one in 6 into two phases, following the breakdown in 7: a planning phase and an execution phase.\nThis enables us to study and compare different planning algorithms, different execution environments, and the interplay between planning and execution.\nSuch a study is the main focus of this work.\nWhile the focus here is on model counting, our framework is of broader interest.\nFor example, in , Tabajara and Vardi described a dynamic-programming, binary-decision-diagram-based framework for functional Boolean synthesis.\nRefactoring the algorithm into a planning phase followed by an execution phase is also of interest in that context. The primary contribution of the work here is a dynamic-programming framework for weighted model counting based on project-join trees.\nIn particular: We show that several recent algorithms for weighted model counting 6 5  can be unified into a single framework using project-join trees. We compare the one-shot111A one-shot algorithm outputs exactly one solution and then terminates immediately.\nconstraint-satisfaction heuristics used in 6 with the anytime222An anytime algorithm outputs better and better solutions the longer it runs. tree-decomposition tools used in 5 and observe that\ntree-decomposition tools outperform\nconstraint-satisfaction heuristics. We compare (sparse) ADDs  with (dense) tensors  and find that ADDs outperform tensors on single CPU cores. We find that project-join-tree-based algorithms contribute to a portfolio of model counters containing Cachet , c2d , d4 , and miniC2D . These conclusions have significance beyond model counting.\nThe superiority of anytime tree-decomposition tools over classical one-shot constraint-satisfaction heuristics can have broad applicability.\nSimilarly, the advantage of compact data structures for dynamic programming may apply to other optimization problems."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "htd–a free, open-source framework for (customized) tree decompositions and beyond",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CPAIOR",
+      "authors": "Abseher, M., Musliu, N., Woltran, S."
+    },
+    {
+      "index": 1,
+      "title": "Random 3-SAT and BDDs: the plot thickens further",
+      "abstract": "",
+      "year": "2001",
+      "venue": "CP",
+      "authors": "Aguirre, A.S.M., Vardi, M."
+    },
+    {
+      "index": 2,
+      "title": "Quantum computation and the evaluation of tensor networks",
+      "abstract": "",
+      "year": "2010",
+      "venue": "SICOMP",
+      "authors": "Arad, I., Landau, Z."
+    },
+    {
+      "index": 3,
+      "title": "Solving #SAT and Bayesian inference with backtracking search",
+      "abstract": "",
+      "year": "2009",
+      "venue": "JAIR",
+      "authors": "Bacchus, F., Dalmao, S., Pitassi, T."
+    },
+    {
+      "index": 4,
+      "title": "Algebraic decision diagrams and their applications",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Form Method Syst Des",
+      "authors": "Bahar, R.I., Frohm, E.A., Gaona, C.M., Hachtel, G.D., Macii, E., Pardo, A., Somenzi, F."
+    },
+    {
+      "index": 5,
+      "title": "Synthesis of high-performance parallel programs for a class of ab initio quantum chemistry models",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE",
+      "authors": "Baumgartner, G., Auer, A., Bernholdt, D.E., Bibireata, A., Choppella, V., Cociorva, D., Gao, X., Harrison, R.J., Hirata, S., Krishnamoorthy, S., et al."
+    },
+    {
+      "index": 6,
+      "title": "Dynamic programming",
+      "abstract": "",
+      "year": "1966",
+      "venue": "Science",
+      "authors": "Bellman, R."
+    },
+    {
+      "index": 7,
+      "title": "Gestion de la dynamicité et énumération d’impliquants premiers: une approche fondée sur les Diagrammes de Décision Binaire",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": "Bouquet, F."
+    },
+    {
+      "index": 8,
+      "title": "Symbolic model checking with partitioned transition relations",
+      "abstract": "",
+      "year": "1991",
+      "venue": "VLSI",
+      "authors": "Burch, J.R., Clarke, E.M., Long, D.E."
+    },
+    {
+      "index": 9,
+      "title": "Laissez-faire caching for parallel #SAT solving",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SAT",
+      "authors": "Burchard, J., Schubert, T., Becker, B."
+    },
+    {
+      "index": 10,
+      "title": "BDD-based dynamic programming on tree decompositions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Charwat, G., Woltran, S."
+    },
+    {
+      "index": 11,
+      "title": "Compiling Bayesian networks using variable elimination",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IJCAI",
+      "authors": "Chavira, M., Darwiche, A."
+    },
+    {
+      "index": 12,
+      "title": "Era of Big Data Processing: A New Approach via Tensor Networks and Tensor Decompositions",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1403.2048",
+      "authors": "Cichocki, A.",
+      "orig_title": "Era of big data processing: a new approach via tensor networks and tensor decompositions",
+      "paper_id": "1403.2048v4"
+    },
+    {
+      "index": 13,
+      "title": "Tensor decompositions for signal processing applications: from two-way to multiway component analysis",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE SPM",
+      "authors": "Cichocki, A., Mandic, D., De Lathauwer, L., Zhou, G., Zhao, Q., Caiafa, C., Phan, H.A."
+    },
+    {
+      "index": 14,
+      "title": "Bounded model checking using satisfiability solving",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Form Method Syst Des",
+      "authors": "Clarke, E., Biere, A., Raimi, R., Zhu, Y."
+    },
+    {
+      "index": 15,
+      "title": "Parallel probabilistic inference by weighted model counting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "PGM",
+      "authors": "Dal, G.H., Laarman, A.W., Lucas, P.J."
+    },
+    {
+      "index": 16,
+      "title": "Constraint satisfaction, bounded treewidth, and finite-variable logics",
+      "abstract": "",
+      "year": "2002",
+      "venue": "CP",
+      "authors": "Dalmau, V., Kolaitis, P.G., Vardi, M.Y."
+    },
+    {
+      "index": 17,
+      "title": "Dynamic jointrees",
+      "abstract": "",
+      "year": "1998",
+      "venue": "UAI",
+      "authors": "Darwiche, A."
+    },
+    {
+      "index": 18,
+      "title": "New advances in compiling CNF to decomposable negation normal form",
+      "abstract": "",
+      "year": "2004",
+      "venue": "ECAI",
+      "authors": "Darwiche, A."
+    },
+    {
+      "index": 19,
+      "title": "Bucket elimination: a unifying framework for reasoning",
+      "abstract": "",
+      "year": "1999",
+      "venue": "AIJ",
+      "authors": "Dechter, R."
+    },
+    {
+      "index": 20,
+      "title": "Constraint processing",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Morgan Kaufmann",
+      "authors": "Dechter, R."
+    },
+    {
+      "index": 21,
+      "title": "Tree clustering for constraint networks",
+      "abstract": "",
+      "year": "1989",
+      "venue": "AIJ",
+      "authors": "Dechter, R., Pearl, J."
+    },
+    {
+      "index": 22,
+      "title": "Sylvan: multi-core decision diagrams",
+      "abstract": "",
+      "year": "2015",
+      "venue": "TACAS",
+      "authors": "van Dijk, T., van de Pol, J."
+    },
+    {
+      "index": 23,
+      "title": "Probabilistic planning via heuristic forward search and weighted model counting",
+      "abstract": "",
+      "year": "2007",
+      "venue": "JAIR",
+      "authors": "Domshlak, C., Hoffmann, J."
+    },
+    {
+      "index": 24,
+      "title": "Efficient contraction of large tensor networks for weighted model counting through graph decompositions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.04381",
+      "authors": "Dudek, J.M., Dueñas-Osorio, L., Vardi, M.Y."
+    },
+    {
+      "index": 25,
+      "title": "ADDMC: Weighted Model Counting with Algebraic Decision Diagrams",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "Dudek, J.M., Phan, V.H.N., Vardi, M.Y.",
+      "orig_title": "ADDMC: weighted model counting with algebraic decision diagrams",
+      "paper_id": "1907.05000v2"
+    },
+    {
+      "index": 26,
+      "title": "Parallel Weighted Model Counting with Tensor Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "MCW",
+      "authors": "Dudek, J.M., Vardi, M.Y.",
+      "orig_title": "Parallel weighted model counting with tensor networks",
+      "paper_id": "2006.15512v2"
+    },
+    {
+      "index": 27,
+      "title": "Improving the efficiency of variational tensor network algorithms",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Physical Review B",
+      "authors": "Evenbly, G., Pfeifer, R.N."
+    },
+    {
+      "index": 28,
+      "title": "A knowledge compilation map for ordered real-valued decision diagrams",
+      "abstract": "",
+      "year": "2014",
+      "venue": "AAAI",
+      "authors": "Fargier, H., Marquis, P., Niveau, A., Schmidt, N."
+    },
+    {
+      "index": 29,
+      "title": "Understanding the efficiency of GPU algorithms for matrix-matrix multiplication",
+      "abstract": "",
+      "year": "2004",
+      "venue": "SIGGRAPH/EUROGRAPHICS",
+      "authors": "Fatahalian, K., Sugerman, J., Hanrahan, P."
+    },
+    {
+      "index": 30,
+      "title": "Exploiting database management systems and treewidth for counting",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PADL",
+      "authors": "Fichte, J.K., Hecher, M., Thier, P., Woltran, S."
+    },
+    {
+      "index": 31,
+      "title": "An improved GPU-based SAT model counter",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CP",
+      "authors": "Fichte, J.K., Hecher, M., Zisser, M."
+    },
+    {
+      "index": 32,
+      "title": "Approximation by Quantization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "UAI",
+      "authors": "Gogate, V., Domingos, P."
+    },
+    {
+      "index": 33,
+      "title": "Model counting",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Handbook of Satisfiability",
+      "authors": "Gomes, C.P., Sabharwal, A., Selman, B."
+    },
+    {
+      "index": 34,
+      "title": "SPUDD: stochastic planning using decision diagrams",
+      "abstract": "",
+      "year": "1999",
+      "venue": "UAI",
+      "authors": "Hoey, J., St-Aubin, R., Hu, A., Boutilier, C."
+    },
+    {
+      "index": 35,
+      "title": "Improving exact solution counting for decomposition methods",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICTAI",
+      "authors": "Jégou, P., Kanso, H., Terrioux, C."
+    },
+    {
+      "index": 36,
+      "title": "Unifying tree decompositions for reasoning in graphical models",
+      "abstract": "",
+      "year": "2005",
+      "venue": "AIJ",
+      "authors": "Kask, K., Dechter, R., Larrosa, J., Dechter, A."
+    },
+    {
+      "index": 37,
+      "title": "The tensor algebra compiler",
+      "abstract": "",
+      "year": "2017",
+      "venue": "PACMPL",
+      "authors": "Kjolstad, F., Kamil, S., Chou, S., Lugato, D., Amarasinghe, S."
+    },
+    {
+      "index": 38,
+      "title": "SAT-based analysis and quantification of information flow in programs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "QEST",
+      "authors": "Klebanov, V., Manthey, N., Muise, C."
+    },
+    {
+      "index": 39,
+      "title": "Conjunctive-query containment and constraint satisfaction",
+      "abstract": "",
+      "year": "2000",
+      "venue": "JCSS",
+      "authors": "Kolaitis, P.G., Vardi, M.Y."
+    },
+    {
+      "index": 40,
+      "title": "Knowledge compilation for model counting: affine decision trees",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IJCAI",
+      "authors": "Koriche, F., Lagniez, J.M., Marquis, P., Thomas, S."
+    },
+    {
+      "index": 41,
+      "title": "Treewidth: computational experiments",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Electron Notes Discrete Math",
+      "authors": "Koster, A.M., Bodlaender, H.L., Van Hoesel, S.P."
+    },
+    {
+      "index": 42,
+      "title": "Fast counting with tensor networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SciPost Phys",
+      "authors": "Kourtis, S., Chamon, C., Mucciolo, E., Ruckenstein, A."
+    },
+    {
+      "index": 43,
+      "title": "Stochastic model checking",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SFM",
+      "authors": "Kwiatkowska, M., Norman, G., Parker, D."
+    },
+    {
+      "index": 44,
+      "title": "Preprocessing for propositional model counting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "AAAI",
+      "authors": "Lagniez, J.M., Marquis, P."
+    },
+    {
+      "index": 45,
+      "title": "An improved decision-DNNF compiler",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCAI",
+      "authors": "Lagniez, J.M., Marquis, P."
+    },
+    {
+      "index": 46,
+      "title": "Basic linear algebra subprograms for Fortran usage",
+      "abstract": "",
+      "year": "1979",
+      "venue": "TOMS",
+      "authors": "Lawson, C.L., Hanson, R.J., Kincaid, D.R., Krogh, F.T."
+    },
+    {
+      "index": 47,
+      "title": "Projection pushing revisited",
+      "abstract": "",
+      "year": "2004",
+      "venue": "EDBT",
+      "authors": "McMahan, B.J., Pan, G., Porter, P., Vardi, M.Y."
+    },
+    {
+      "index": 48,
+      "title": "From LTL to symbolically represented deterministic automata",
+      "abstract": "",
+      "year": "2008",
+      "venue": "VMCAI",
+      "authors": "Morgenstern, A., Schneider, K."
+    },
+    {
+      "index": 49,
+      "title": "Constraint-based random stimuli generation for hardware verification",
+      "abstract": "",
+      "year": "2007",
+      "venue": "AI Magazine",
+      "authors": "Naveh, Y., Rimon, M., Jaeger, I., Katz, Y., Vinov, M., s Marcu, E., Shurek, G."
+    },
+    {
+      "index": 50,
+      "title": "A guide to NumPy, vol. 1",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Trelgol Publishing USA",
+      "authors": "Oliphant, T.E."
+    },
+    {
+      "index": 51,
+      "title": "A top-down compiler for sentential decision diagrams",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IJCAI",
+      "authors": "Oztok, U., Darwiche, A."
+    },
+    {
+      "index": 52,
+      "title": "Compiling uncertainty away in conformant planning problems with bounded width",
+      "abstract": "",
+      "year": "2009",
+      "venue": "JAIR",
+      "authors": "Palacios, H., Geffner, H."
+    },
+    {
+      "index": 53,
+      "title": "Symbolic techniques in satisfiability solving",
+      "abstract": "",
+      "year": "2005",
+      "venue": "J Autom Reasoning",
+      "authors": "Pan, G., Vardi, M.Y."
+    },
+    {
+      "index": 54,
+      "title": "Graph minors. X. Obstructions to tree-decomposition",
+      "abstract": "",
+      "year": "1991",
+      "venue": "J Combinatorial Theory B",
+      "authors": "Robertson, N., Seymour, P.D."
+    },
+    {
+      "index": 55,
+      "title": "Algorithms for propositional model counting",
+      "abstract": "",
+      "year": "2010",
+      "venue": "J Discrete Algorithms",
+      "authors": "Samer, M., Szeider, S."
+    },
+    {
+      "index": 56,
+      "title": "Constraint satisfaction with bounded treewidth revisited",
+      "abstract": "",
+      "year": "2010",
+      "venue": "JCSS",
+      "authors": "Samer, M., Szeider, S."
+    },
+    {
+      "index": 57,
+      "title": "Combining component caching and clause learning for effective model counting",
+      "abstract": "",
+      "year": "2004",
+      "venue": "SAT",
+      "authors": "Sang, T., Bacchus, F., Beame, P., Kautz, H.A., Pitassi, T."
+    },
+    {
+      "index": 58,
+      "title": "Performing Bayesian inference by weighted model counting",
+      "abstract": "",
+      "year": "2005",
+      "venue": "AAAI",
+      "authors": "Sang, T., Beame, P., Kautz, H.A."
+    },
+    {
+      "index": 59,
+      "title": "Global conditioning for probabilistic inference in belief networks",
+      "abstract": "",
+      "year": "1994",
+      "venue": "UAI",
+      "authors": "Shachter, R.D., Andersen, S.K., Szolovits, P."
+    },
+    {
+      "index": 60,
+      "title": "Formal methods for the validation of automotive product configuration data",
+      "abstract": "",
+      "year": "2003",
+      "venue": "AI EDAM",
+      "authors": "Sinz, C., Kaiser, A., Küchlin, W."
+    },
+    {
+      "index": 61,
+      "title": "Multi-way analysis: applications in the chemical sciences",
+      "abstract": "",
+      "year": "2005",
+      "venue": "John Wiley & Sons",
+      "authors": "Smilde, A., Bro, R., Geladi, P."
+    },
+    {
+      "index": 62,
+      "title": "CUDD: CU decision diagram package–release 3.0.0",
+      "abstract": "",
+      "year": "2015",
+      "venue": "University of Colorado at Boulder",
+      "authors": "Somenzi, F."
+    },
+    {
+      "index": 63,
+      "title": "Computing tree decompositions with FlowCutter: PACE 2017 submission",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1709.08949",
+      "authors": "Strasser, B."
+    },
+    {
+      "index": 64,
+      "title": "Factored Boolean functional synthesis",
+      "abstract": "",
+      "year": "2017",
+      "venue": "FMCAD",
+      "authors": "Tabajara, L.M., Vardi, M.Y."
+    },
+    {
+      "index": 65,
+      "title": "Positive-instance-driven dynamic programming for treewidth",
+      "abstract": "",
+      "year": "2019",
+      "venue": "J Comb Optim",
+      "authors": "Tamaki, H."
+    },
+    {
+      "index": 66,
+      "title": "Simple linear-time algorithms to test chordality of graphs, test acyclicity of hypergraphs, and selectively reduce acyclic hypergraphs",
+      "abstract": "",
+      "year": "1984",
+      "venue": "SICOMP",
+      "authors": "Tarjan, R.E., Yannakakis, M."
+    },
+    {
+      "index": 67,
+      "title": "Ordered binary decision diagrams and the Davis-Putnam procedure",
+      "abstract": "",
+      "year": "1994",
+      "venue": "CCL",
+      "authors": "Uribe, T.E., Stickel, M.E."
+    },
+    {
+      "index": 68,
+      "title": "The complexity of enumeration and reliability problems",
+      "abstract": "",
+      "year": "1979",
+      "venue": "SICOMP",
+      "authors": "Valiant, L.G."
+    }
+  ]
+}

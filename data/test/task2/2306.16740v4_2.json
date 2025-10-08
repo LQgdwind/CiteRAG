@@ -1,0 +1,1437 @@
+{
+  "paper_id": "2306.16740v4",
+  "title": "Principles and Guidelines for Evaluating Social Robot Navigation Algorithms",
+  "sections": {
+    "iii-b principles of social navigation": "It is often difficult for an agent to know exactly what other agents, especially humans, need to achieve, or what they feel and like, and social norms that could guide us are often not verbalized. To operationalize these concerns, we identified principles of social navigation that can be used to evaluate the quality of social behavior, including (1) safety, (2) comfort, (3) legibility, (4) politeness, (5) social competency, (6) understanding other agents, (7) proactivity, and (8) responding appropriately to context, as illustrated in Figure 2. Seen from the lens of optimization, the first seven principles of social navigation can be formalized as additional objectives that the robot needs to optimize for while still achieving its main objective, and the eighth principle, context, can be seen as weighting which principles are most important at any given time, as shown in Figure 3. These principles are not completely orthogonal: improving legibility might improve safety and even comfort, whereas nonverbal politeness depends on understanding other agents’ trajectories. In addition, what is considered appropriate or polite behavior depends on both the cultural context  and the robot’s main objective: for example, a delivery robot arguably should maintain a greater distance from humans than one functioning as a guide. The principles mentioned above guide the development of metrics to evaluate social robots, discussed in more depth in Section VI. Properly studying these principles of social navigation directly impacts which metrics to measure , what datasets to collect, how to build simulators, and how to structure benchmarks.\nIn the following sections, we unpack these principles as often used in social robotics research: Principle P1: Safety - Protect humans, other robots and their environments.\nA minimal requirement for robots and human sociality is not harming others in the course of business  , as the robot fails to do in the first scenario in Figure 2 when it collides with a human’s toe. Avoiding collisions with humans is important but is not the only safety concern  [ref]38 ; robots can damage each other or their environments. While it might be acceptable for a factory robot to bump a guardrail defining the edge of its workspace, social robots should generally avoid damaging human environments, which often contain important objects that can be damaged or wall coverings whose visual appearance is important. Robots should also avoid damaging each other, or behaving in a way that induces humans or other robots to injure themselves. Principle P2: Comfort - Do not create annoyance or stress.\nHumans should also feel comfortable around robots, defined in  as the absence of annoyance and stress for humans in interaction with robots. Many features contribute to comfort, including maintaining human-robot distance, not cutting humans off, and naturalness of motion. Unacceptable robot speed, navigation jitter and unexpected head movements are factors that degrade humans’ perception of comfort. Additionally, social robots should arguably not behave in a way that triggers the safety layers of other robots.  further argue that annoyance can be triggered by a failure to respect proxemics, the virtual personal space around a human that other humans instinctively respect . Figure 2 illustrates proxemics with the “intimate” distance of 0.45​m0.45𝑚0.45m shown in red and the “personal” distance of 1.2​m1.2𝑚1.2m; after initially violating a human’s personal distance, the robot is shown attempting to stay in “personal” or more distant “social” spaces, except as required by the geometric context. Proxemics is a rich and controversial field; for an in-depth survey see . Principle P3: Legibility - Behave so goals can be understood.\nLegibility refers to the property of an agent’s behavior that makes it possible for other agents to infer their goals . This includes not only the robot’s goal but also incidental interactions when performing other tasks, e.g., moving to the right or left when passing in a hallway. Dragan and colleagues  suggests that legibility involves relaxing constraints such as predictability of trajectories (in the sense of an agent’s own predictable style) in favor of more clearly understood behaviors (in the sense of moving to make goals explicit). Legibility arguably can help other robots understand another social robot’s goals. While  focused on changes to robot paths to make them legible, a robot capable of communicating could explicitly announce its intentions, the way restaurant staff are trained to call “corner” when entering a blind corner, as the robot does in the middle of Figure 2. Principle P4: Politeness - Be respectful and considerate.\nPoliteness refers to behavior that is respectful and considerate of people. There are at least two dimensions: physical politeness (how robots navigate around people, such as not cutting people off) and communicative politeness (gestures or verbal signals, such as saying “excuse me”, or “on your left”, as the robot does in Figure 2 when a narrow hallway forces it to transgress on a human’s personal space).\nPoliteness can have a strong effect on people’s perception of robots  [ref]43. Social robots should also be considerate of each other, so they do not prevent other robots from accomplishing their tasks. Principle P5: Social Competency - Comply with social norms.\nRobots should comply with social, political, and legal norms for sharing space. Many social competencies are matters of following conventions rather than optimizing performance  [ref]43 . For example, in the absence of norms there is no optimization preference for driving on the left or right, but identifying and following the local norms helps prevent conflicts [ref]8 in the the third hallway interaction in Figure 2. Some social competencies, like turn-taking, can emerge naturally , whereas others must be specifically engineered (or simulated with wizard-of-oz studies  if existing policies are not up to the task). Social norms may apply to more than just humans; conventions of behaviors may make it easier for robots to interact. Principle P6: Understanding Other Agents - Predict and accommodate the behavior of other agents. A significant portion of the discussion during the symposium revolved around the need to understand other agents in order to be able to correctly fulfill the principles listed above and be considered a capable social agent. Understanding, accommodating, and even facilitating other agents’ goals, activities, and motions was agreed to be a key element of social behavior. Accommodating the goals and comfort of other agents requires understanding of what they are perceiving, doing, and trying to accomplish. For example, to pass between two agents politely, it is important to understand whether they are in conversation .\nUnderstanding when the interaction potential - the likelihood of robots entering human personal space - should be minimized   or maximized  depends on the task. Further, understanding how agents move can reduce the potential for conflicts (short-term encounters in which humans and robots would collide without intervention [ref]8 ), as in the right side of Figure 2, where a robot recognizes the human’s path will cross theirs and stops to prevent a conflict. Principle P7: Proactivity - Taking the Initiative to Prevent and Resolve Issues Simply understanding other agents is not enough, however: in some circumstances, being social involves taking the initiative. Perhaps the canonical example is several cars meeting at a four-way intersection: if all drivers act conservatively, there can be considerable delay . To resolve the conflict in a timely fashion, one driver must either take the initiative and go first, or proactively propose a solution by waving other drivers through the intersection . Studies of self-driving vehicles suggest that non-conservative (or “aggressive”) behavior may even be desirable if that is expected by a population of drivers  . While it is less likely that socially navigating robots will be mistaken for humans as frequently as autonomous vehicles are mistaken for human-driven ones, appropriately resolving potential issues, similar situations to the four-way intersection deadlock can arise, such as when two pedestrians dodge to the same side or contend for the same doorway. In these cases, a socially navigating robot that can take the initiative to avoid a human or proactively suggest a solution will arguably be more social than one that is not, as in the right side of Figure 2, where the robot proactively proposes that the human enter the elevator first to prevent this kind of deadlock. Section VII discusses measuring proactivity with scenarios designed to explicitly elicit this phenomenon. Principle P8: Contextual Appropriateness - Behave properly in the current context.\nSocial navigation should be evaluated within the context that it is to be deployed. Context helps us understand the relative importance of the previous objectives, and is a complex construct in its own right, as shown in Figure 3. An example shared in the symposium was a Crash Cart robot in a hospital bringing an emergency drug to a doctor: politeness is less important than task success. Also, when navigating a narrow corridor, we may be “less polite” and get closer to other agents. We identified several forms of context, including cultural context, environmental context, diversity, task context, and interpersonal context, all of which can change which response is right in a given situation: Cultural Context: Different cultures have different social norms, as notably documented in ; more recently [ref]38  and  examined cultural norms in social robotics but concluded more work needs to be done. Diversity Context: Different individuals with different abilities or different background histories may need different accommodations . Environmental Context: The environment may affect the social navigation problem , and includes both geometric factors - the shape of the space - and operational factors - how that shape is to be used. Geometric Context: The geometry of the environment may affect the social navigation problem . For example, the more crowded the space is, the smaller the acceptable distance is between the robot and other people. Operational Context: The operational domain the robot is intended to work in in affects what behaviors are considered good: for example, a robot may drive slower in a daycare than an office, even if the two settings had identical geometric layouts. Task Context: In turn, the task the robot operates in affects what behaviors are appropriate: for example, even in a single environment like a hospital, whether a robot is performing mail delivery or is a crash cart changes its weighting of politeness against speed. Interpersonal Context: While there are many different areas of context that are appropriate, interpersonal context (e.g. whether humans are independent pedestrians, are traveling in a group, or stopped and conversing is critical to know how to navigate among them) As an illustration of context, the robot in Figure 2 is first shown violating a person’s intimate space distance in red, then attempting to avoid proxemics violations going forward. However, the corridor around the bend is too narrow to prevent the robot from passing though a person’s personal space distance in yellow, prompting the robot to politely call out its presence. Then, in the relatively small elevator, the standard interpersonal distances are no longer easy to achieve, and both the robot and human adjust their perceived proxemics radii based on the current context, shown as a contraction of the proxemics circles from their original size. Social navigation should be evaluated within the context that it is intended to be deployed. While defining context in a sufficiently precise way for a robot to identify or respond to it is a challenging problem, at the least the intended context should be defined well enough in terms of cultural, diversity, environmental, operational, task and interpersonal context for other researchers to gauge the applicability of the ideas and findings conveyed by research."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Human-aware robot navigation: A survey",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Robotics and Autonomous Systems",
+      "authors": "T. Kruse, A. K. Pandey, R. Alami, and A. Kirsch"
+    },
+    {
+      "index": 1,
+      "title": "From proxemics theory to socially-aware navigation: A survey",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Intl. Journal of Social Robotics",
+      "authors": "J. Rios-Martinez, A. Spalanzani, and C. Laugier"
+    },
+    {
+      "index": 2,
+      "title": "A review of social-aware navigation frameworks for service robot in dynamic human environments",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Journal of Telecommunication, Electronic and Computer Engineering (JTEC)",
+      "authors": "S. Chik, C. Yeong, E. Su, T. Lim, Y. Subramaniam, and P. Chin"
+    },
+    {
+      "index": 3,
+      "title": "Recent trends in social aware robot navigation: A survey",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Robotics and Autonomous Systems",
+      "authors": "K. Charalampous, I. Kostavelis, and A. Gasteratos"
+    },
+    {
+      "index": 4,
+      "title": "Autonomous navigation by mobile robots in human environments: A survey",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Intl. Conf. on robotics and biomimetics (ROBIO)",
+      "authors": "J. Cheng, H. Cheng, M. Q.-H. Meng, and H. Zhang"
+    },
+    {
+      "index": 5,
+      "title": "Evaluation of socially-aware robot navigation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Frontiers in Robotics and AI",
+      "authors": "Y. Gao and C.-M. Huang"
+    },
+    {
+      "index": 6,
+      "title": "Core Challenges of Social Robot Navigation: A Survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2103.05668",
+      "authors": "C. Mavrogiannis, F. Baldini, A. Wang, D. Zhao, P. Trautman, A. Steinfeld, and J. Oh",
+      "orig_title": "Core challenges of social robot navigation: A survey",
+      "paper_id": "2103.05668v2"
+    },
+    {
+      "index": 7,
+      "title": "Prevention and resolution of conflicts in social navigation–a survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.12113",
+      "authors": "R. Mirsky, X. Xiao, J. Hart, and P. Stone"
+    },
+    {
+      "index": 8,
+      "title": "A Survey on Human-aware Robot Navigation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Robotics and Autonomous Systems",
+      "authors": "R. Möller, A. Furnari, S. Battiato, A. Härmä, and G. M. Farinella",
+      "orig_title": "A survey on human-aware robot navigation",
+      "paper_id": "2106.11650v1"
+    },
+    {
+      "index": 9,
+      "title": "Metrics for evaluating social conformity of crowd navigation algorithms",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Intl. Conf. on Advanced Robotics and Its Social Impacts (ARSO)",
+      "authors": "J. Wang, W. P. Chan, P. Carreno-Medrano, A. Cosgun, and E. Croft"
+    },
+    {
+      "index": 10,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Intl. journal of computer vision",
+      "authors": "O. Russakovsky, J. Deng, H. Su, J. Krause, S. Satheesh, S. Ma, Z. Huang, A. Karpathy, A. Khosla, M. Bernstein et al.",
+      "orig_title": "Imagenet large scale visual recognition challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 11,
+      "title": "A large annotated corpus for learning natural language inference",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Conf. on Empirical Methods in Natural Language Processing",
+      "authors": "S. R. Bowman, G. Angeli, C. Potts, and C. D. Manning",
+      "orig_title": "A large annotated corpus for learning natural language inference",
+      "paper_id": "1508.05326v1"
+    },
+    {
+      "index": 12,
+      "title": "Squad: 100,000+ questions for machine comprehension of text",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.05250",
+      "authors": "P. Rajpurkar, J. Zhang, K. Lopyrev, and P. Liang"
+    },
+    {
+      "index": 13,
+      "title": "SuperGLUE: A Stickier Benchmark for General-Purpose Language Understanding Systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Wang, Y. Pruksachatkun, N. Nangia, A. Singh, J. Michael, F. Hill, O. Levy, and S. Bowman",
+      "orig_title": "Superglue: A stickier benchmark for general-purpose language understanding systems",
+      "paper_id": "1905.00537v3"
+    },
+    {
+      "index": 14,
+      "title": "On evaluation of embodied navigation agents",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1807.06757",
+      "authors": "P. Anderson, A. Chang, D. S. Chaplot, A. Dosovitskiy, S. Gupta, V. Koltun, J. Kosecka, J. Malik, R. Mottaghi, M. Savva et al."
+    },
+    {
+      "index": 15,
+      "title": "Habitat: A Platform for Embodied AI Research",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Intl. Conf. on computer vision",
+      "authors": "M. Savva, A. Kadian, O. Maksymets, Y. Zhao, E. Wijmans, B. Jain, J. Straub, J. Liu, V. Koltun, J. Malik et al.",
+      "orig_title": "Habitat: A platform for embodied ai research",
+      "paper_id": "1904.01201v2"
+    },
+    {
+      "index": 16,
+      "title": "Interactive gibson: Benchmark for interactive navigation in cluttered environments",
+      "abstract": "",
+      "year": "2020",
+      "venue": "RA-L",
+      "authors": "F. Xia, C. E. Li, W. Shen, P. Kasimbeg, R. Martin-Martin, A. Toshev, and S. Savarese"
+    },
+    {
+      "index": 17,
+      "title": "Robothor: An open simulation-to-real embodied ai platform",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conf. on computer vision and pattern recognition",
+      "authors": "M. Deitke, W. Han, A. Herrasti, A. Kembhavi, E. Kolve, R. Mottaghi, J. Salvador, D. Schwenk, E. VanderBilt, M. Wallingford et al."
+    },
+    {
+      "index": 18,
+      "title": "Motion Planning and Control for Mobile Robot Navigation Using Machine Learning: a Survey",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Autonomous Robots",
+      "authors": "X. Xiao, B. Liu, G. Warnell, and P. Stone",
+      "orig_title": "Motion planning and control for mobile robot navigation using machine learning: a survey",
+      "paper_id": "2011.13112v2"
+    },
+    {
+      "index": 19,
+      "title": "Retrospectives on the Embodied AI Workshop",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2210.06849",
+      "authors": "M. Deitke, D. Batra, Y. Bisk, T. Campari, A. X. Chang, D. S. Chaplot, C. Chen, C. P. D’Arpino, K. Ehsani, A. Farhadi et al.",
+      "orig_title": "Retrospectives on the embodied ai workshop",
+      "paper_id": "2210.06849v3"
+    },
+    {
+      "index": 20,
+      "title": "Arena-Bench: A Benchmarking Suite for Obstacle Avoidance Approaches in Highly Dynamic Environments",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE RAL",
+      "authors": "L. Kästner, T. Bhuiyan, T. A. Le, E. Treis, J. Cox, B. Meinardus, J. Kmiecik, R. Carstens, D. Pichel, B. Fatloun et al.",
+      "orig_title": "Arena-bench: A benchmarking suite for obstacle avoidance approaches in highly dynamic environments",
+      "paper_id": "2206.05728v2"
+    },
+    {
+      "index": 21,
+      "title": "Safe robot navigation in dense crowds",
+      "abstract": "",
+      "year": "2020",
+      "venue": "INRIA France",
+      "authors": "I. France"
+    },
+    {
+      "index": 22,
+      "title": "Dynabarn: Benchmarking metric ground navigation in dynamic environments",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Intl. Symposium on Safety, Security, and Rescue Robotics (SSRR)",
+      "authors": "A. Nair, F. Jiang, K. Hou, Z. Xu, S. Li, X. Xiao, and P. Stone"
+    },
+    {
+      "index": 23,
+      "title": "Motion Planning Among Dynamic, Decision-Making Agents with Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems (IROS)",
+      "authors": "M. Everett, Y. F. Chen, and J. P. How",
+      "orig_title": "Motion planning among dynamic, decision-making agents with deep reinforcement learning",
+      "paper_id": "1805.01956v1"
+    },
+    {
+      "index": 24,
+      "title": "HuNavSim: A ROS 2 Human Navigation Simulator for Benchmarking Human-Aware Robot Navigation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2305.01303",
+      "authors": "N. Pérez-Higueras, R. Otero, F. Caballero, and L. Merino",
+      "orig_title": "Hunavsim: A ros 2 human navigation simulator for benchmarking human-aware robot navigation",
+      "paper_id": "2305.01303v3"
+    },
+    {
+      "index": 25,
+      "title": "iGibson 2.0: Object-Centric Simulation for Robot Learning of Everyday Household Tasks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2108.03272",
+      "authors": "C. Li, F. Xia, R. Martín-Martín, M. Lingelbach, S. Srivastava, B. Shen, K. Vainio, C. Gokmen, G. Dharan, T. Jain et al.",
+      "orig_title": "igibson 2.0: Object-centric simulation for robot learning of everyday household tasks",
+      "paper_id": "2108.03272v4"
+    },
+    {
+      "index": 26,
+      "title": "iGibson 1.0: A Simulation Environment for Interactive Tasks in Large Realistic Scenes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems (IROS)",
+      "authors": "B. Shen, F. Xia, C. Li, R. Martín-Martín, L. Fan, G. Wang, C. Pérez-D’Arpino, S. Buch, S. Srivastava, L. Tchapmi et al.",
+      "orig_title": "igibson 1.0: A simulation environment for interactive tasks in large realistic scenes",
+      "paper_id": "2012.02924v6"
+    },
+    {
+      "index": 27,
+      "title": "SocNavBench: A Grounded Simulation Testing Framework for Evaluating Social Navigation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Trans. on Human-Robot Interaction (THRI)",
+      "authors": "A. Biswas, A. Wang, G. Silvera, A. Steinfeld, and H. Admoni",
+      "orig_title": "Socnavbench: A grounded simulation testing framework for evaluating social navigation",
+      "paper_id": "2103.00047v2"
+    },
+    {
+      "index": 28,
+      "title": "SEANavBench @ ICRA 2023 workshop website",
+      "abstract": "",
+      "year": "2022",
+      "venue": "https://seannavbench2022.netlify.app/benchmark/overview",
+      "authors": "A. Biswas, N. Tsoi, A. Wang, P. Yu, X. He, L. Fu, G. Silvera, M. Vazquez, and A. Steinfeld"
+    },
+    {
+      "index": 29,
+      "title": "A Protocol for Validating Social Navigation Policies",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2204.05443",
+      "authors": "S. Pirk, E. Lee, X. Xiao, L. Takayama, A. Francis, and A. Toshev",
+      "orig_title": "A protocol for validating social navigation policies",
+      "paper_id": "2204.05443v2"
+    },
+    {
+      "index": 30,
+      "title": "Learning Model Predictive Controllers with Real-Time Attention for Real-World Navigation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Conf. on Robot Learning",
+      "authors": "X. Xiao, T. Zhang, K. M. Choromanski, T.-W. E. Lee, A. Francis, J. Varley, S. Tu, S. Singh, P. Xu, F. Xia, S. M. Persson, L. Takayama, R. Frostig, J. Tan, C. Parada, and V. Sindhwani",
+      "orig_title": "Learning model predictive controllers with real-time attention for real-world navigation",
+      "paper_id": "2209.10780v2"
+    },
+    {
+      "index": 31,
+      "title": "Gesture2Path: Imitation Learning for Gesture-aware Navigation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2209.09375",
+      "authors": "C. Cuan, E. Lee, E. Fisher, A. Francis, L. Takayama, T. Zhang, A. Toshev, and S. Pirk",
+      "orig_title": "Gesture2path: Imitation learning for gesture-aware navigation",
+      "paper_id": "2209.09375v1"
+    },
+    {
+      "index": 32,
+      "title": "The emotion machine: Commonsense thinking, artificial intelligence, and the future of the human mind",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Simon and Schuster",
+      "authors": "M. Minsky"
+    },
+    {
+      "index": 33,
+      "title": "Human-robot interaction in social robotics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CRC Press",
+      "authors": "T. Kanda and H. Ishiguro"
+    },
+    {
+      "index": 34,
+      "title": "Diversity-aware social robots meet people: beyond context-aware embodied ai",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2207.05372",
+      "authors": "C. Recchiuto and A. Sgorbissa"
+    },
+    {
+      "index": 35,
+      "title": "A survey of methods for safe human-robot interaction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Foundations and Trends® in Robotics",
+      "authors": "P. A. Lasota, T. Fong, J. A. Shah et al."
+    },
+    {
+      "index": 36,
+      "title": "Epsrc principles of robotics: commentary on safety, robots as products, and responsibility",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Connection Science",
+      "authors": "P. Boddington"
+    },
+    {
+      "index": 37,
+      "title": "Sociosense: Robot navigation amongst pedestrians with social and psychological constraints",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems (IROS)",
+      "authors": "A. Bera, T. Randhavane, R. Prinja, and D. Manocha"
+    },
+    {
+      "index": 38,
+      "title": "ProxEmo: Gait-based Emotion Learning and Multi-view Proxemic Fusion for Socially-Aware Robot Navigation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems (IROS)",
+      "authors": "V. Narayanan, B. M. Manoghar, V. S. Dorbala, D. Manocha, and A. Bera",
+      "orig_title": "Proxemo: Gait-based emotion learning and multi-view proxemic fusion for socially-aware robot navigation",
+      "paper_id": "2003.01062v2"
+    },
+    {
+      "index": 39,
+      "title": "The hidden dimension",
+      "abstract": "",
+      "year": "1966",
+      "venue": "Garden City, NY: Doubleday",
+      "authors": "E. T. Hall"
+    },
+    {
+      "index": 40,
+      "title": "Legibility and predictability of robot motion",
+      "abstract": "",
+      "year": "2013",
+      "venue": "HRI",
+      "authors": "A. D. Dragan, K. C. Lee, and S. S. Srinivasa"
+    },
+    {
+      "index": 41,
+      "title": "Politeness counts: Perceptions of peacekeeping robots",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. on Human-Machine Systems",
+      "authors": "O. Inbar and J. Meyer"
+    },
+    {
+      "index": 42,
+      "title": "Pedestrian Dominance Modeling for Socially-Aware Robot Navigation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Intl. Conf. on Robotics and Automation (ICRA)",
+      "authors": "T. Randhavane, A. Bera, E. Kubin, A. Wang, K. Gray, and D. Manocha",
+      "orig_title": "Pedestrian dominance modeling for socially-aware robot navigation",
+      "paper_id": "1810.06613v2"
+    },
+    {
+      "index": 43,
+      "title": "Identifying Driver Behaviors using Trajectory Features for Vehicle Navigation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems (IROS)",
+      "authors": "E. Cheung, A. Bera, E. Kubin, K. Gray, and D. Manocha",
+      "orig_title": "Identifying driver behaviors using trajectory features for vehicle navigation",
+      "paper_id": "1803.00881v2"
+    },
+    {
+      "index": 44,
+      "title": "Socially Aware Motion Planning with Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems (IROS)",
+      "authors": "Y. F. Chen, M. Everett, M. Liu, and J. P. How",
+      "orig_title": "Socially aware motion planning with deep reinforcement learning",
+      "paper_id": "1703.08862v2"
+    },
+    {
+      "index": 45,
+      "title": "Emergent dynamics of turn-taking interaction in drumming games with a humanoid robot",
+      "abstract": "",
+      "year": "2008",
+      "venue": "RO-MAN",
+      "authors": "H. Kose-Bagci, K. Dautenhahn, and C. L. Nehaniv"
+    },
+    {
+      "index": 46,
+      "title": "Do you mind if I pass through? Studying the appropriate robot behavior when traversing two conversing people in a hallway setting",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Intl. Conf. on Robot & Human Interactive Communication (RO-MAN)",
+      "authors": "B. Petrak, G. Sopper, K. Weitz, and E. André"
+    },
+    {
+      "index": 47,
+      "title": "Unfreezing the robot: Navigation in dense, interacting crowds",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems",
+      "authors": "P. Trautman and A. Krause"
+    },
+    {
+      "index": 48,
+      "title": "The socially invisible robot navigation in the social world using robot entitativity",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE/RSJ Intl. Conf. on intelligent robots and systems (iros)",
+      "authors": "A. Bera, T. Randhavane, E. Kubin, A. Wang, K. Gray, and D. Manocha"
+    },
+    {
+      "index": 49,
+      "title": "Autonomous human–robot proxemics: socially aware navigation based on interaction potential",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Autonomous Robots",
+      "authors": "R. Mead and M. J. Matarić"
+    },
+    {
+      "index": 50,
+      "title": "Socialmapf: Optimal and efficient multi-agent path finding with strategic agents for social navigation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE RAL",
+      "authors": "R. Chandra, R. Maligi, A. Anantula, and J. Biswas"
+    },
+    {
+      "index": 51,
+      "title": "GameOpt: Optimal Real-time Multi-Agent Planning and Control for Dynamic Intersections",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Gameopt: Optimal real-time multi-agent planning and control for dynamic intersections",
+      "paper_id": "2202.11572v3"
+    },
+    {
+      "index": 52,
+      "title": "“Gameplan: Game-theoretic multi-agent planning with human drivers at intersections",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 53,
+      "title": "“Using graph-theoretic machine learning to predict human driver behavior",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 54,
+      "title": "Game-Theoretic Planning for Autonomous Driving among Risk-Aware Human Drivers",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Game-theoretic planning for autonomous driving among risk-aware human drivers",
+      "paper_id": "2205.00562v1"
+    },
+    {
+      "index": 55,
+      "title": "“Glmp-realtime pedestrian path prediction using global and local movement patterns",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 56,
+      "title": "“Social context perception for mobile robots",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 57,
+      "title": "D. Rodriguez-Criado",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 58,
+      "title": "C. W. de Puiseau",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 59,
+      "title": "“A primer for conducting experiments in human–robot interaction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 60,
+      "title": "“Psychological analysis on human-robot interaction",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 61,
+      "title": "“The effects of familiarity and robot gesture on user acceptance of information",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 62,
+      "title": "“The persistence of first impressions: The effect of repeated interactions on the perception of a social robot",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 63,
+      "title": "“Robots asking for favors: The effects of directness and familiarity on persuasive hri",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 64,
+      "title": "000-km challenge: Insights and quantitative and qualitative results",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 65,
+      "title": "“On the social psychology of the psychological experiment: With particular reference to demand characteristics and their implications",
+      "abstract": "",
+      "year": "1962",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 66,
+      "title": "“What is ecological validity? a dimensional analysis",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 67,
+      "title": "“Ecological validity and “ecological validity”",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 68,
+      "title": "Research methods in psychology: Evaluating a world of information. WW Norton & Company",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 69,
+      "title": "How to measure survey reliability and validity. Sage",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 70,
+      "title": "” https://github.com/StanfordVL/iGibsonChallenge2021",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 71,
+      "title": "“New measurement of psychological safety for humanoid",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 72,
+      "title": "“Robot local navigation with learned social cost functions",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 73,
+      "title": "“Socnav1: A dataset to benchmark and learn social navigation conventions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 74,
+      "title": "D. Rodriguez-Criado",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 75,
+      "title": "Learning Navigation Behaviors End-to-End with AutoRL",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Learning Navigation Behaviors End-to-end with AutoRL",
+      "paper_id": "1809.10124v2"
+    },
+    {
+      "index": 76,
+      "title": "“Observer-aware legibility for social navigation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 77,
+      "title": "“The office marathon: Robust navigation in an indoor office environment",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 78,
+      "title": "“The forgotten in hri: Incidental encounters with robots in public spaces",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 79,
+      "title": "“Passive demonstrations of light-based robot signals for improved human interpretability",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 80,
+      "title": "“Designing robots for long-term social interaction",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 81,
+      "title": "“Longitudinal social impacts of hri over long-term deployments",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 82,
+      "title": "“Social robots for long-term interaction: a survey",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 83,
+      "title": "“Subject selection bias in psychological research.” Canadian Psychologist/Psychologie canadienne",
+      "abstract": "",
+      "year": "1966",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 84,
+      "title": "“The human subject in psychological research.” Psychological bulletin",
+      "abstract": "",
+      "year": "1969",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 85,
+      "title": "” Journal of NeuroEngineering and Rehabilitation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 86,
+      "title": "“Using human-inspired signals to disambiguate navigational intentions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 87,
+      "title": "“Exploiting socially-aware tasks for embodied social navigation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 88,
+      "title": "“Sean 2.0: Formalizing and generating social situations for robot navigation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 89,
+      "title": "Long-Range Indoor Navigation with PRM-RL",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Long-range indoor navigation with prm-rl",
+      "paper_id": "1902.09458v2"
+    },
+    {
+      "index": 90,
+      "title": "“Robotics @ Google website",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 91,
+      "title": "” Intl. Journal of Social Robotics",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 92,
+      "title": "“Estimating survey fatigue in time use study",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 93,
+      "title": "“Effects of questionnaire length on participation and indicators of response quality in a web survey",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 94,
+      "title": "“Multiple surveys of students and survey fatigue",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 95,
+      "title": "“A technique for the measurement of attitudes.” Archives of psychology",
+      "abstract": "",
+      "year": "1932",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 96,
+      "title": "Empirical methods for artificial intelligence. MIT press Cambridge",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 97,
+      "title": "“Statistical significance in psychological research.” Psychological bulletin",
+      "abstract": "",
+      "year": "1968",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 98,
+      "title": "Experimental designs using ANOVA. Thomson/Brooks/Cole Belmont",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 99,
+      "title": "“Making sense of cronbach’s alpha",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 100,
+      "title": "“Toward socially aware robot navigation in dynamic and crowded environments: A proactive social motion model",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 101,
+      "title": "““to approach humans?”: A unified framework for approaching pose prediction and socially aware robot navigation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 102,
+      "title": "“Combining proactive planning and situation analysis for human-aware robot navigation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 103,
+      "title": "“Towards benchmarking human-aware robot navigation: A new perspective and metrics",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 104,
+      "title": "“Viewing robot navigation in human environment as a cooperative activity",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 105,
+      "title": "“Scenarios engineering: Enabling trustworthy and effective ai for autonomous vehicles",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 106,
+      "title": "“From features engineering to scenarios engineering for trustworthy ai: I&i",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 107,
+      "title": "“A novel scenarios engineering methodology for foundation models in metaverse",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 108,
+      "title": "Decentralized Non-communicating Multiagent Collision Avoidance with Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Decentralized non-communicating multiagent collision avoidance with deep reinforcement learning",
+      "paper_id": "1609.07845v2"
+    },
+    {
+      "index": 109,
+      "title": "Model Cards for Model Reporting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Model cards for model reporting",
+      "paper_id": "1810.03993v2"
+    },
+    {
+      "index": 110,
+      "title": "“Learning socially normative robot navigation behaviors with bayesian inverse reinforcement learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 111,
+      "title": "“An overview of regression testing",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 112,
+      "title": "“Design and use paradigms for gazebo",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 113,
+      "title": "“Pedsim: Pedestrian crowd simulation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 114,
+      "title": "“Social force model for pedestrian dynamics",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 115,
+      "title": "“Ros: an open-source robot operating system",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 116,
+      "title": "“Time-optimal nonlinear model predictive control with minimal control interventions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 117,
+      "title": "“The dynamic window approach to collision avoidance",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 118,
+      "title": "“Trajectory modification considering dynamic constraints of autonomous robots",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 119,
+      "title": "“Navrep: Unsupervised representations for reinforcement learning of robot navigation in dynamic human environments",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 120,
+      "title": "“Learning local planners for human-aware navigation in indoor environments",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 121,
+      "title": "Benchmarking Metric Ground Navigation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Benchmarking metric ground navigation",
+      "paper_id": "2008.13315v3"
+    },
+    {
+      "index": 122,
+      "title": "“Alvinn: An autonomous land vehicle in a neural network",
+      "abstract": "",
+      "year": "1989",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 123,
+      "title": "Addressing Function Approximation Error in Actor-Critic Methods",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Addressing function approximation error in actor-critic methods",
+      "paper_id": "1802.09477v3"
+    },
+    {
+      "index": 124,
+      "title": "Collision Avoidance in Pedestrian-Rich Environments with Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Collision avoidance in pedestrian-rich environments with deep reinforcement learning",
+      "paper_id": "1910.11689v4"
+    },
+    {
+      "index": 125,
+      "title": "“Reciprocal n-body collision avoidance",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 126,
+      "title": "Towards Optimally Decentralized Multi-Robot Collision Avoidance via Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Towards optimally decentralized multi-robot collision avoidance via deep reinforcement learning",
+      "paper_id": "1709.10082v3"
+    },
+    {
+      "index": 127,
+      "title": "Behavior trees in robotics and AI: An introduction. CRC Press",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 128,
+      "title": "“Crowds by example",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 129,
+      "title": "“You’ll never walk alone: Modeling social behavior for multi-target tracking",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 130,
+      "title": "“Rvo2 library: Reciprocal collision avoidance for real-time multi-agent simulation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 131,
+      "title": "R. Martín-Martín",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 132,
+      "title": "DD-PPO: Learning Near-Perfect PointGoal Navigators from 2.5 Billion Frames",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Dd-ppo: Learning near-perfect pointgoal navigators from 2.5 billion frames",
+      "paper_id": "1911.00357v2"
+    },
+    {
+      "index": 133,
+      "title": "“Proximal policy optimization algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 134,
+      "title": "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor",
+      "paper_id": "1801.01290v2"
+    },
+    {
+      "index": 135,
+      "title": "“An approach to deploy interactive robotic simulators on the web for hri experiments: Results in social robot navigation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 136,
+      "title": "“Bench-mr: A motion planning benchmark for wheeled mobile robots",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 137,
+      "title": "“Jrdb: A dataset and benchmark for visual perception for navigation in human environments",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 138,
+      "title": "THÖR: Human-Robot Navigation Data Collection and Accurate Motion Trajectories Dataset",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Thör: Human-robot navigation data collection and accurate motion trajectories dataset",
+      "paper_id": "1909.04403v2"
+    },
+    {
+      "index": 139,
+      "title": "“Human trajectory forecasting: A deep learning perspective",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 140,
+      "title": "“Statistical models of pedestrian behaviour in the forum",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 141,
+      "title": "“Learning social etiquette: Human trajectory understanding in crowded scenes",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 142,
+      "title": "“Egocentric future localization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 143,
+      "title": "“Wildtrack: A multi-camera hd dataset for dense unscripted pedestrian detection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 144,
+      "title": "“Socially Compliant Navigation Dataset (SCAND)",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 145,
+      "title": "Socially CompliAnt Navigation Dataset (SCAND): A Large-Scale Dataset Of Demonstrations For Social Navigation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Socially compliant navigation dataset (scand): A large-scale dataset of demonstrations for social navigation",
+      "paper_id": "2203.15041v2"
+    },
+    {
+      "index": 146,
+      "title": "“Toward human-like social robot navigation: A large-scale",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 147,
+      "title": "“3d point cloud and rgbd of pedestrians in robot crowd navigation: Detection and tracking",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 148,
+      "title": "“Sacson: Scalable autonomous data collection for social navigation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 149,
+      "title": "SG-LSTM: Social Group LSTM for Robot Navigation Through Dense Crowds",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Sg-lstm: Social group lstm for robot navigation through dense crowds",
+      "paper_id": "2303.04320v2"
+    },
+    {
+      "index": 150,
+      "title": "“Activitynet: A large-scale video benchmark for human activity understanding",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 151,
+      "title": "“Online learning for human classification in 3d lidar-based tracking",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 152,
+      "title": "“Socially-aware large-scale crowd forecasting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 153,
+      "title": "Personal Mobility with Synchronous Trunk-Knee Passive Exoskeleton: Optimizing Human-Robot Energy Transfer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Personal mobility with synchronous trunk–knee passive exoskeleton: Optimizing human–robot energy transfer",
+      "paper_id": "2201.03374v1"
+    },
+    {
+      "index": 154,
+      "title": "“Unpowered lower-body exoskeleton with torso lifting mechanism for supporting sit-to-stand transitions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 155,
+      "title": "” arXiv preprint arXiv:1606.01540",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 156,
+      "title": "Crowd-Robot Interaction: Crowd-aware Robot Navigation with Attention-based Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Crowd-robot interaction: Crowd-aware robot navigation with attention-based deep reinforcement learning",
+      "paper_id": "1809.08835v2"
+    },
+    {
+      "index": 157,
+      "title": "C. Perez-D’Arpino",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 158,
+      "title": "“An intelligent human avatar to debug and challenge human-aware robot navigation systems",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 159,
+      "title": "“Interactive social agents simulation tool for designing choreographies for human-robot-interaction research",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 160,
+      "title": "MengeROS: a Crowd Simulation Tool for Autonomous Robot Navigation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Mengeros: A crowd simulation tool for autonomous robot navigation",
+      "paper_id": "1801.08823v1"
+    },
+    {
+      "index": 161,
+      "title": "SEAN: Social Environment for Autonomous Navigation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Sean: Social environment for autonomous navigation",
+      "paper_id": "2009.04300v1"
+    },
+    {
+      "index": 162,
+      "title": "SocialGym: A Framework for Benchmarking Social Robot Navigation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“ SOCIALGYM: A Framework for Benchmarking Social Robot Navigation",
+      "paper_id": "2109.11011v2"
+    },
+    {
+      "index": 163,
+      "title": "SocialGym 2.0: Simulator for Multi-Agent Social Robot Navigation in Shared Human Spaces",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Socialgym 2.0: Simulator for multi-agent social robot navigation in shared human spaces",
+      "paper_id": "2303.05584v1"
+    },
+    {
+      "index": 164,
+      "title": "R. Perez-Vicente et al",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 165,
+      "title": "P. Alves-Oliveira",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 166,
+      "title": "“An approach to deploy interactive robotic simulators on the web for hri experiments: Results in social robot navigation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 167,
+      "title": "C. Pérez-D’Arpino",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    }
+  ]
+}

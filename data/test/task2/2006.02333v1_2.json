@@ -1,0 +1,305 @@
+{
+  "paper_id": "2006.02333v1",
+  "title": "Scene relighting with illumination estimation in the latent space on an encoder-decoder scheme",
+  "sections": {
+    "generated environment map: a ground-truth for light latent variable": "One of the key ideas presented in  is their interpretation of the light latent representation and consequently the way in which it is used as one of the loss components. Their aim is to model the “environment map” of the image, which is a small 16×32163216\\times 32 pixel image, through the latent representation. To create the “ground-truth” environment maps that will be learnt by the network in the latent representation, the environment maps, used for creation of their dataset, are “mapped back to the latitude-longitude format” of given small image size by modelling LED lights (used to illuminate people in portrait photographs) as Gaussian distributions with the means indicating their positions . Another important processing step presented in the mentioned paper is how to go from a multi-channel tensor in the latent space to a three-channel, 16×32163216\\times 32 RGB image that will be compared with the ground-truth environment map. To achieve that goal, they use a weighted pooling layer, a concept introduced in [ref]10, cited by the authors of , about estimating color constancy of the image. Given a latent variable tensor Φ∈ℝ2028×16×16Φsuperscriptℝ20281616\\Phi\\in\\mathbb{R}^{2028\\times 16\\times 16} (first dimension is the number of channels, two last ones are spatial dimension) it is split into four tensors ℝ512×16×16superscriptℝ5121616\\mathbb{R}^{512\\times 16\\times 16}: ΦcsubscriptΦ𝑐\\Phi_{c}, ΦRsubscriptΦ𝑅\\Phi_{R}, ΦGsubscriptΦ𝐺\\Phi_{G}, ΦBsubscriptΦ𝐵\\Phi_{B}. The first of them represents pooling weights that will be applied to each of the other tensors representing respectively the contents of the red, green and blue channels of the estimated color map. Lastly, the weighting pooling is applied by an element-wise multiplication of ΦcsubscriptΦ𝑐\\Phi_{c} with each of the tensors representing color channels and summing across spatial dimensions so that three ℝ512×1×1superscriptℝ51211\\mathbb{R}^{512\\times 1\\times 1} tensors are obtained: Φ^Rsubscript^Φ𝑅\\hat{\\Phi}_{R}, Φ^Gsubscript^Φ𝐺\\hat{\\Phi}_{G}, Φ^Bsubscript^Φ𝐵\\hat{\\Phi}_{B}. The estimated environment map channels content can be rearranged, so that each of them forms a 16×32163216\\times 32 pixel image channel of the estimated environment map Φ^ILsubscriptsuperscript^Φ𝐿𝐼\\hat{\\Phi}^{L}_{I} of the image I𝐼I. Weighted pooling can be interpreted as follows: to obtain the value of each pixel in the estimated environment map, all pixels within one channel vote, with learned weights, for the final value. Since those pixels are representing some spatial “patches” [ref]10 in the original image due to the nature of convolutional neural networks, the weights should represent the learned importance of certain image patches in estimating light condition information  [ref]10. We have used those concepts in our architecture as well, although in a simplified manner. We have created two models: one which follows exactly the latent representation interpretation and processing from the original paper  and second that assigns part of the obtained latent variable to represent environment map in the given image, while the rest of the encoding is not guided by any loss and aims to convey information about content of the image other than illumination, such as the geometry of the objects. In both cases weighted pooling is used for entire or significant part of the light latent representation. Training with these models requires not only the ground-truth for the relit image, but also a desired light latent space representation – the environment maps. Since our dataset generation is inherently different from the one presented in  we decided to generate our ground-truth environment maps based on the known light properties: its color temperature and direction. Color temperature has been translated into RGB values with the use of the Colour-Science [ref]16 Python library. We represent light direction as a Gaussian distribution over value/brightness component of the light color in HSL color space, with its mean μ𝜇\\mu localized on the horizontal axis of the generated image and standard deviation σ𝜎\\sigma equal to 10% of the environment map height (see figures 15 and 16 in the appendix for an example)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "TensorFlow: Large-scale machine learning on heterogeneous systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Abadi, M., Agarwal, A., Barham, P., Brevdo, E., Chen, Z., Citro, C., Corrado, G.S., Davis, A., Dean, J., Devin, M., Ghemawat, S., Goodfellow, I., Harp, A., Irving, G., Isard, M., Jia, Y., Jozefowicz, R., Kaiser, L., Kudlur, M., Levenberg, J., Mané, D., Monga, R., Moore, S., Murray, D., Olah, C., Schuster, M., Shlens, J., Steiner, B., Sutskever, I., Talwar, K., Tucker, P., Vanhoucke, V., Vasudevan, V., Viégas, F., Vinyals, O., Warden, P., Wattenberg, M., Wicke, M., Yu, Y., Zheng, X."
+    },
+    {
+      "index": 1,
+      "title": "High-Resolution Daytime Translation Without Domain Labels",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.08791",
+      "authors": "Anokhin, I., Solovev, P., Korzhenkov, D., Kharlamov, A., Khakhulin, T., Sterkin, G., Silvestrov, A., Nikolenko, S., Lempitsky, V.",
+      "orig_title": "High-resolution daytime translation without domain labels",
+      "paper_id": "2003.08791v2"
+    },
+    {
+      "index": 2,
+      "title": "Intrinsic images in the wild",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Bell, S., Bala, K., Snavely, N."
+    },
+    {
+      "index": 3,
+      "title": "Signature verification using a “siamese” time delay neural network",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Bromley, J., Guyon, I., LeCun, Y., Säckinger, E., Shah, R."
+    },
+    {
+      "index": 4,
+      "title": "StarGAN: Unified Generative Adversarial Networks for Multi-Domain Image-to-Image Translation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Choi, Y., Choi, M., Kim, M., Ha, J.W., Kim, S., Choo, J.",
+      "orig_title": "Stargan: Unified generative adversarial networks for multi-domain image-to-image translation",
+      "paper_id": "1711.09020v3"
+    },
+    {
+      "index": 5,
+      "title": "VIDIT: Virtual Image Dataset for Illumination Transfer",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2005.05460",
+      "authors": "El Helou, M., Zhou, R., Barthas, J., Süsstrunk, S.",
+      "orig_title": "Vidit: Virtual image dataset for illumination transfer",
+      "paper_id": "2005.05460v2"
+    },
+    {
+      "index": 6,
+      "title": "Transposed convolutions. deep learning lecture handout for ee-559 at epfl.",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Fleuret, F."
+    },
+    {
+      "index": 7,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Goodfellow, I., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D., Ozair, S., Courville, A., Bengio, Y."
+    },
+    {
+      "index": 8,
+      "title": "Image quality metrics: Psnr vs. ssim",
+      "abstract": "",
+      "year": "2010",
+      "venue": "2010 20th International Conference on Pattern Recognition. IEEE",
+      "authors": "Hore, A., Ziou, D."
+    },
+    {
+      "index": 9,
+      "title": "Fc4: Fully convolutional color constancy with confidence-weighted pooling",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Hu, Y., Wang, B., Lin, S."
+    },
+    {
+      "index": 10,
+      "title": "Image-to-Image Translation with Conditional Adversarial Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Isola, P., Zhu, J.Y., Zhou, T., Efros, A.",
+      "orig_title": "Image-to-image translation with conditional adversarial networks",
+      "paper_id": "1611.07004v3"
+    },
+    {
+      "index": 11,
+      "title": "Image-to-Image Translation with Conditional Adversarial Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Isola, P., Zhu, J.Y., Zhou, T., Efros, A.A.",
+      "orig_title": "Image-to-image translation with conditional adversarial networks",
+      "paper_id": "1611.07004v3"
+    },
+    {
+      "index": 12,
+      "title": "The relativistic discriminator: a key element missing from standard GAN",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1807.00734",
+      "authors": "Jolicoeur-Martineau, A.",
+      "orig_title": "The relativistic discriminator: a key element missing from standard gan",
+      "paper_id": "1807.00734v3"
+    },
+    {
+      "index": 13,
+      "title": "Shading Annotations in the Wild",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Kovacs, B., Bell, S., Snavely, N., Bala, K.",
+      "orig_title": "Shading annotations in the wild",
+      "paper_id": "1705.01156v1"
+    },
+    {
+      "index": 14,
+      "title": "Learning Intrinsic Image Decomposition from Watching the World",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Li, Z., Snavely, N.",
+      "orig_title": "Learning intrinsic image decomposition from watching the world",
+      "paper_id": "1804.00582v1"
+    },
+    {
+      "index": 15,
+      "title": "Colour 0.3.15",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Mansencal, T., Mauderer, M., Parsons, M., Shaw, N., Wheatley, K., Cooper, S., Vandenberg, J.D., Canavan, L., Crowson, K., Lev, O., Leinweber, K., Sharma, S., Sobotka, T.J., Moritz, D., Pppp, M., Rane, C., Eswaramoorthy, P., Mertic, J., Pearlstine, B., Leonhardt, M., Niemitalo, O., Szymanski, M., Schambach, M."
+    },
+    {
+      "index": 16,
+      "title": "Conditional Generative Adversarial Nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Mirza, M., Osindero, S.",
+      "orig_title": "Conditional generative adversarial nets",
+      "paper_id": "1411.1784v1"
+    },
+    {
+      "index": 17,
+      "title": "A dataset of multi-illumination images in the wild",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Murmann, L., Gharbi, M., Aittala, M., Durand, F."
+    },
+    {
+      "index": 18,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems 32. Curran Associates, Inc.",
+      "authors": "Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga, L., Desmaison, A., Kopf, A., Yang, E., DeVito, Z., Raison, M., Tejani, A., Chilamkurthy, S., Steiner, B., Fang, L., Bai, J., Chintala, S.",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 19,
+      "title": "Kornia: an Open Source Differentiable Computer Vision Library for PyTorch",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Riba, E., Mishkin, D., Ponsa, D., Rublee, E., Bradski, G.",
+      "orig_title": "Kornia: an open source differentiable computer vision library for pytorch",
+      "paper_id": "1910.02190v2"
+    },
+    {
+      "index": 20,
+      "title": "Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Shi, W., Caballero, J., Huszár, F., Totz, J., Aitken, A.P., Bishop, R., Rueckert, D., Wang, Z.",
+      "orig_title": "Real-time single image and video super-resolution using an efficient sub-pixel convolutional neural network",
+      "paper_id": "1609.05158v2"
+    },
+    {
+      "index": 21,
+      "title": "Single Image Portrait Relighting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Transactions on Graphics (Proceedings SIGGRAPH)",
+      "authors": "Sun, T., Barron, J.T., Tsai, Y.T., Xu, Z., Yu, X., Fyffe, G., Rhemann, C., Busch, J., Debevec, P., Ramamoorthi, R.",
+      "orig_title": "Single image portrait relighting",
+      "paper_id": "1905.00824v1"
+    },
+    {
+      "index": 22,
+      "title": "Lpips implementation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Uchida, S."
+    },
+    {
+      "index": 23,
+      "title": "Underexposed photo enhancement using deep illumination estimation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Wang, R., Zhang, Q., Fu, C.W., Shen, X., Zheng, W.S., Jia, J."
+    },
+    {
+      "index": 24,
+      "title": "Image quality assessment: from error visibility to structural similarity",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE transactions on image processing",
+      "authors": "Wang, Z., Bovik, A.C., Sheikh, H.R., Simoncelli, E.P."
+    },
+    {
+      "index": 25,
+      "title": "Deep image-based relighting from optimal sparse samples",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Xu, Z., Sunkavalli, K., Hadap, S., Ramamoorthi, R."
+    },
+    {
+      "index": 26,
+      "title": "Semantic Hierarchy Emerges in Deep Generative Representations for Scene Synthesis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.09267",
+      "authors": "Yang, C., Shen, Y., Zhou, B.",
+      "orig_title": "Semantic hierarchy emerges in deep generative representations for scene synthesis",
+      "paper_id": "1911.09267v3"
+    },
+    {
+      "index": 27,
+      "title": "Taskonomy: Disentangling Task Transfer Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Zamir, A.R., Sax, A., Shen, W., Guibas, L.J., Malik, J., Savarese, S.",
+      "orig_title": "Taskonomy: Disentangling task transfer learning",
+      "paper_id": "1804.08328v1"
+    },
+    {
+      "index": 28,
+      "title": "Generating Digital Painting Lighting Effects via RGB-space Geometry",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Transactions on Graphics (Presented at SIGGRAPH)",
+      "authors": "Zhang, L., Simo-Serra, E., Ji, Y., Liu, C."
+    },
+    {
+      "index": 29,
+      "title": "The Unreasonable Effectiveness of Deep Features as a Perceptual Metric",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Zhang, R., Isola, P., Efros, A.A., Shechtman, E., Wang, O.",
+      "orig_title": "The unreasonable effectiveness of deep features as a perceptual metric",
+      "paper_id": "1801.03924v2"
+    },
+    {
+      "index": 30,
+      "title": "Deep single-image portrait relighting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Zhou, H., Hadap, S., Sunkavalli, K., Jacobs, D.W."
+    },
+    {
+      "index": 31,
+      "title": "Unsupervised learning of depth and ego-motion from video",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Zhou, T., Brown, M., Snavely, N., Lowe, D.G."
+    },
+    {
+      "index": 32,
+      "title": "Unpaired image-to-image translation using cycle-consistent adversarial networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Zhu, J.Y., Park, T., Isola, P., Efros, A.A."
+    }
+  ]
+}

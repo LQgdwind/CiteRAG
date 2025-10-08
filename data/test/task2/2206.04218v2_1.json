@@ -1,0 +1,379 @@
+{
+  "paper_id": "2206.04218v2",
+  "title": "AritPIM: High-Throughput In-Memory Arithmetic",
+  "sections": {
+    "introduction": "Emerging processing-in-memory (PIM) systems attempt to overcome the memory-wall bottleneck by rethinking one of the core principles of computing systems: the separation of storage and logic units. This separation has been followed since the introduction of the von Neumann architecture in the 1940s, when computing systems were primarily utilized for serial program execution. Yet, the recent emergence of data-intensive applications requires parallel high-throughput execution, causing the separation to become a massive bottleneck known as the memory wall . Therefore, PIM integrates logic within the memory itself to bypass the bandwidth-limited memory interface and enable massive in-memory computational parallelism . PIM architectures supplement the traditional read/write memory interface with logic . This enables the CPU to request that the memory perform vectored logic on data stored within the memory without transferring the data through the interface, thereby significantly reducing the load on CPU-memory communication. Early proposals for PIM  involved integrating logic circuits near the memory (e.g., in the same chip), yet this still requires a fundamental need for data-transfer between an area dedicated for computation and an area dedicated for storage . Conversely, recent proposals     [ref]8  0 perform digital logic using the same physical devices that store binary information. By performing the logic exactly where the information is stored, data-transfer is effectively dwarfed . These include works that exploit content-addressable-memories (CAMs)  [ref]8 0 to selectively apply write operations according to data stored in the memory (serving as inputs), and works that design logic gates from the underlying circuits connecting the memory devices    . Several proposals for PIM architectures, such as memristive (Figure 1(a,b))   1 2 3 4 and DRAM-based (Figure 1(c,d)) 5  , have essentially converged to a single abstract computational model that presents highly unique algorithmic capabilities (Figure 1(e)). First, consider the memory as a collection of m𝑚m binary matrices, called arrays, each of dimension r×c𝑟𝑐r\\times c. A bitwise operation can be performed on columns of an array, and in parallel across all arrays, in a single cycle (O​(1)𝑂1O(1) latency). For example, the bit-wise NOR  of any two columns can be computed and stored in a third column, all in a single cycle. This is possible as the logic is performed in a distributed fashion amongst the physical elements within arrays (with shared instructions), so there is no centralized computing unit that may cause a bottleneck. This attains massive parallelism for bitwise operations that bypass the memory interface. Expanding the massive bitwise parallelism to large-scale applications requires a strong foundation for fundamental arithmetic operations (addition, subtraction, multiplication, and division), for both fixed-point and floating-point numbers. While theoretically a functionally-complete set of logic gates can perform any function, the data layout plays a crucial role in the efficient utilization of PIM. Figure 2(a) presents an overview of the approaches developed in recent years; we focus without loss of generality on a single array (as computation is in parallel across all arrays regardless). We describe the approaches through N𝑁N-bit integer vector addition, where xisuperscript𝑥𝑖x^{i} refers to the it​hsuperscript𝑖𝑡ℎi^{th} element in the vector: Bit-Serial Element-Serial: Two inputs, x1superscript𝑥1x^{1} and y1superscript𝑦1y^{1}, are stored within a single row of an array, and basic logic gates (e.g., NOR) serially construct an N𝑁N-bit adder within that row (utilizing intermediate cells for temporary results). This has low throughput as only one addition is performed per array and high latency as the gates run serially; thus, this approach is typically not used. Note that column parallelism (constant-time column operations) is not utilized. Bit-Parallel Element-Serial 6 7 8 3 9: m𝑚m rows are utilized as intermediate space to perform multiple parallel gates for the same N𝑁N-bit adder by utilizing column parallelism, thereby enabling r/m𝑟𝑚r/m adders per array. This provides low latency when the function possesses parallelism among the gates (typically best applicable to multiplication 7), yet possesses moderate throughput as several rows perform a single addition. Furthermore, the relative area overhead can be high due to the intermediate cells 7, and the data-transfer between rows requires additional support for inter-row logic. Bit-Serial Element-Parallel  0 1   1 2 3  4 3: This approach performs the operations of the bit-serial element-serial approach in parallel across all rows – with the exact same latency – by exploiting column parallelism. That provides high throughput as r𝑟r adders per array are performed simultaneously with identical latency; however, the latency remains rather high as gates are performed serially (a single gate per cycle per N𝑁N-bit adder). Bit-Parallel Element-Parallel (parallel single-row) 5 6: This recent approach gains both higher throughput and low latency by introducing partitions 1 7 (see Section 5). The partitions dynamically divide the rows to enable multiple concurrent column operations. The adder is still performed within a single row (and in parallel across all rows), yet multiple gates are performed within each row concurrently. The potential drawback is that partitions may introduce additional physical overhead; however, a recent work has proposed a low-overhead design 7. We focus on the element-parallel approaches as PIM is best suited for data-intensive applications which require high throughput. Figure 2(b) summarizes our contributions for 16 variants of arithmetic functions, establishing a state-of-the-art foundation for arithmetic in PIM. We propose the first known general-purpose digital PIM algorithm for a majority of the combinations (including cases previously considered impossible, such as floating-point addition 8), while also presenting minor and major (>5×>5\\times) improvements for others. We accomplish this via a combination of three methods: Variable Shift: We develop a novel algorithm for element-parallel variable shifting: each row i𝑖i starts with numbers xisuperscript𝑥𝑖x^{i} and tisuperscript𝑡𝑖t^{i}, and the output is xi≪timuch-less-thansuperscript𝑥𝑖superscript𝑡𝑖x^{i}\\ll t^{i}. While this was previously considered impossible (as each row can have a different shift 8), we attain this efficiently for the first time due to the combination of in-memory multiplexers and a logarithmic-shifter approach (without any custom periphery). We then tackle variable normalization: each row i𝑖i starts with number xisuperscript𝑥𝑖x^{i}, and the output is xisuperscript𝑥𝑖x^{i} left-shifted until the MSB is one. This is far more difficult as the shift-amount is unknown, and yet we attain this with latency nearly identical to variable shift due to a technique inspired by a binary search. Partition Toolbox: We exploit a unique algorithmic topology enabled by partitions 7 towards an efficient toolbox of general-purpose routines. These include both generalizations of routines proposed in MultPIM 6, and two novel routines: reduction – reducing (e.g., AND, OR) bits of multiple partitions to a single bit, and prefixing – each partition receives the reduction of bits in partitions before it. Arithmetic Theory: We provide a new perspective on historical, lesser-known, algorithms in computer arithmetic, demonstrating their effectiveness with element-parallel in-memory computing for the first time. For example, we utilize Karatsuba 9 0 for bit-serial multiplication, parallel-prefix adders 1 0 for bit-parallel addition, and carry-lookahead in division 2 3 0 for bit-parallel division. Interestingly, some of these algorithms are not effective in traditional systems 0 3, yet unique considerations of PIM lead to their effectiveness here. This paper is organized as follows. Section 2 provides background on a wide variety of PIM technologies and their compatibility with the abstract model. We start in Section 3 with bit-serial fixed-point arithmetic to establish the state-of-the-art approaches and our improvements, and continue in Section 4 with bit-serial floating-point arithmetic. Section 5 then shifts to the bit-parallel fixed-point approach, introducing bit-parallel addition/subtraction/division for the first time and improving bit-parallel multiplication. We combine bit-serial floating-point and bit-parallel fixed-point in Section 6 to establish bit-parallel floating-point algorithms. Section 7 evaluates AritPIM through a case study of memristive PIM implemented on a publicly-available cycle-accurate simulator, and Section 8 concludes this paper. Throughout, we discuss abstract logic gates (e.g., AND, XOR, full-adder) and latency complexity (e.g., O​(N2)𝑂superscript𝑁2O(N^{2}) where N𝑁N is the representation size) for generality and concise explanations, with Section 7 reducing these to the underlying gates supported (e.g., NOR) and providing full implementations that prove correct results (e.g., matching the IEEE round-to-nearest ties-to-even exactly). We refer to steps rather than cycles, where each step performs a single abstract logic gate. Without loss of generality, as we focus on the element-parallel approaches, we often discuss gates performed within a single-row, as the generalization to all rows and arrays is the trivial repetition of the gates. For fixed-point, we discuss unsigned numbers (for simplicity) yet the algorithms can extended to signed. Lastly, visuperscript𝑣𝑖v^{i} refers to the it​hsuperscript𝑖𝑡ℎi^{th} element of vector v𝑣v, xisubscript𝑥𝑖x_{i} refers to bit i𝑖i of number x𝑥x (0 is the LSB), xi:jsubscript𝑥:𝑖𝑗x_{i:j} is bits i𝑖i (inclusive) through j𝑗j (exclusive), and (x|y)conditional𝑥𝑦(x|y) concatenates x𝑥x (higher bits) and y𝑦y (lower bits)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Computing’s energy problem (and what we can do about it)",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE International Solid-State Circuits Conference Digest of Technical Papers (ISSCC)",
+      "authors": "M. Horowitz"
+    },
+    {
+      "index": 1,
+      "title": "In-memory stateful logic computing using memristors: Gate, calculation, and application",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Physica Status Solidi (RRL) – Rapid Research Letters",
+      "authors": "N. Xu, T. Park, K. J. Yoon, and C. S. Hwang"
+    },
+    {
+      "index": 2,
+      "title": "A case for intelligent RAM",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE Micro",
+      "authors": "D. Patterson, T. Anderson, N. Cardwell, R. Fromm, K. Keeton, C. Kozyrakis, R. Thomas, and K. Yelick"
+    },
+    {
+      "index": 3,
+      "title": "Logic design within memristive memories using memristor-aided logic (MAGIC)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Nanotechnology",
+      "authors": "N. Talati, S. Gupta, P. Mane, and S. Kvatinsky"
+    },
+    {
+      "index": 4,
+      "title": "RACER: Bit-pipelined processing using resistive memory",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/ACM International Symposium on Microarchitecture",
+      "authors": "M. S. Q. Truong, E. Chen, D. Su, L. Shen, A. Glass, L. R. Carley, J. A. Bain, and S. Ghose"
+    },
+    {
+      "index": 5,
+      "title": "SIMDRAM: A framework for bit-serial SIMD processing using DRAM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM International Conference on Architectural Support for Programming Languages and Operating Systems",
+      "authors": "N. Hajinazar, G. F. Oliveira, S. Gregorio, J. a. D. Ferreira, N. M. Ghiasi, M. Patel, M. Alser, S. Ghose, J. Gómez-Luna, and O. Mutlu"
+    },
+    {
+      "index": 6,
+      "title": "ComputeDRAM: In-memory compute using off-the-shelf DRAMs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/ACM International Symposium on Microarchitecture",
+      "authors": "F. Gao, G. Tziantzioulis, and D. Wentzlaff"
+    },
+    {
+      "index": 7,
+      "title": "Associative computing: a programming paradigm for massively parallel computers",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Springer Science & Business Media",
+      "authors": "J. L. Potter"
+    },
+    {
+      "index": 8,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 9,
+      "title": "A 28-nm compute SRAM with bit-serial logic/arithmetic operations for programmable in-memory vector computing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Journal of Solid-State Circuits",
+      "authors": "J. Wang, X. Wang, C. Eckert, A. Subramaniyan, R. Das, D. Blaauw, and D. Sylvester"
+    },
+    {
+      "index": 10,
+      "title": "FELIX: Fast and energy-efficient logic in memory",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE/ACM International Conference on Computer-Aided Design (ICCAD)",
+      "authors": "S. Gupta, M. Imani, and T. Rosing"
+    },
+    {
+      "index": 11,
+      "title": "'Memristive' switches enable 'stateful' logic operations via material implication",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Nature",
+      "authors": "J. Borghetti, G. S. Snider, P. J. Kuekes, J. J. Yang, D. R. Stewart, and R. S. Williams"
+    },
+    {
+      "index": 12,
+      "title": "Efficient in-memory processing using spintronics",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Computer Architecture Letters",
+      "authors": "Z. Chowdhury, J. D. Harms, S. K. Khatamifard, M. Zabihi, Y. Lv, A. P. Lyle, S. S. Sapatnekar, U. R. Karpuzcu, and J.-P. Wang"
+    },
+    {
+      "index": 13,
+      "title": "Using spin-hall MTJs to build an energy-efficient in-memory computation platform",
+      "abstract": "",
+      "year": "2019",
+      "venue": "20th International Symposium on Quality Electronic Design (ISQED)",
+      "authors": "M. Zabihi, Z. Zhao, D. Mahendra, Z. I. Chowdhury, S. Resch, T. Peterson, U. R. Karpuzcu, J.-P. Wang, and S. S. Sapatnekar"
+    },
+    {
+      "index": 14,
+      "title": "Ambit: In-memory accelerator for bulk bitwise operations using commodity DRAM technology",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE/ACM International Symposium on Microarchitecture",
+      "authors": "V. Seshadri, D. Lee, T. Mullins, H. Hassan, A. Boroumand, J. Kim, M. A. Kozuch, O. Mutlu, P. B. Gibbons, and T. C. Mowry"
+    },
+    {
+      "index": 15,
+      "title": "Ultra-efficient processing in-memory for data intensive applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM/EDAC/IEEE Design Automation Conference",
+      "authors": "M. Imani, S. Gupta, and T. Rosing"
+    },
+    {
+      "index": 16,
+      "title": "A novel in-memory wallace tree multiplier architecture using majority logic",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Circuits and Systems I: Regular Papers",
+      "authors": "V. Lakshmi, J. Reuben, and V. Pudi"
+    },
+    {
+      "index": 17,
+      "title": "Simple magic: Synthesis and in-memory mapping of logic execution for memristor-aided logic",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE/ACM International Conference on Computer-Aided Design (ICCAD)",
+      "authors": "R. Ben Hur, N. Wald, N. Talati, and S. Kvatinsky"
+    },
+    {
+      "index": 18,
+      "title": "In-memory processing on the spintronic CRAM: From hardware design to application mapping",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Computers",
+      "authors": "M. Zabihi, Z. I. Chowdhury, Z. Zhao, U. R. Karpuzcu, J.-P. Wang, and S. S. Sapatnekar"
+    },
+    {
+      "index": 19,
+      "title": "Efficient algorithms for in-memory fixed point multiplication using MAGIC",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE International Symposium on Circuits and Systems",
+      "authors": "A. Haj-Ali, R. Ben-Hur, N. Wald, and S. Kvatinsky"
+    },
+    {
+      "index": 20,
+      "title": "SIMPLER MAGIC: Synthesis and mapping of in-memory logic executed in a single row to improve throughput",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems",
+      "authors": "R. Ben-Hur, R. Ronen, A. Haj-Ali, D. Bhattacharjee, A. Eliahu, N. Peled, and S. Kvatinsky"
+    },
+    {
+      "index": 21,
+      "title": "FloatPIM: In-memory acceleration of deep neural network training with high precision",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM/IEEE International Symposium on Computer Architecture",
+      "authors": "M. Imani, S. Gupta, Y. Kim, and T. Rosing"
+    },
+    {
+      "index": 22,
+      "title": "Neural Cache: Bit-Serial In-Cache Acceleration of Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM/IEEE International Symposium on Computer Architecture",
+      "authors": "C. Eckert, X. Wang, J. Wang, A. Subramaniyan, R. Iyer, D. Sylvester, D. Blaaauw, and R. Das",
+      "orig_title": "Neural cache: Bit-serial in-cache acceleration of deep neural networks",
+      "paper_id": "1805.03718v1"
+    },
+    {
+      "index": 23,
+      "title": "General structure for computational random access memory (CRAM)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "J.-P. Wang and J. D. Harms"
+    },
+    {
+      "index": 24,
+      "title": "RIME: A scalable and energy-efficient processing-in-memory architecture for floating-point operations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Asia and South Pacific Design Automation Conference",
+      "authors": "Z. Lu, M. T. Arafin, and G. Qu"
+    },
+    {
+      "index": 25,
+      "title": "MultPIM: Fast Stateful Multiplication for Processing-in-Memory",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Circuits and Systems II: Express Briefs",
+      "authors": "O. Leitersdorf, R. Ronen, and S. Kvatinsky",
+      "orig_title": "MultPIM: Fast stateful multiplication for processing-in-memory",
+      "paper_id": "2108.13378v2"
+    },
+    {
+      "index": 26,
+      "title": "PartitionPIM: Practical Memristive Partitions for Fast Processing-in-Memory",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv",
+      "authors": "O. Leitersdorf, R. Ronen, and S. Kvatinsky",
+      "orig_title": "PartitionPIM: Practical memristive partitions for fast processing-in-memory",
+      "paper_id": "2206.04200v1"
+    },
+    {
+      "index": 27,
+      "title": "DRISA: A DRAM-based reconfigurable in-situ accelerator",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE/ACM International Symposium on Microarchitecture",
+      "authors": "S. Li, D. Niu, K. T. Malladi, H. Zheng, B. Brennan, and Y. Xie"
+    },
+    {
+      "index": 28,
+      "title": "Multiplication of many-digital numbers by automatic computers",
+      "abstract": "",
+      "year": "1962",
+      "venue": "Doklady Akademii Nauk",
+      "authors": "A. A. Karatsuba and Y. P. Ofman"
+    },
+    {
+      "index": 29,
+      "title": "Computer Arithmetic: Algorithms and Hardware Designs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Oxford University Press",
+      "authors": "B. Parhami"
+    },
+    {
+      "index": 30,
+      "title": "A regular layout for parallel adders",
+      "abstract": "",
+      "year": "1982",
+      "venue": "IEEE Transactions on Computers",
+      "authors": "R. P. Brent and H. T. Kung"
+    },
+    {
+      "index": 31,
+      "title": "An augmented iterative array for high-speed binary division",
+      "abstract": "",
+      "year": "1973",
+      "venue": "IEEE Transactions on Computers",
+      "authors": "M. Cappa and V. Hamacher"
+    },
+    {
+      "index": 32,
+      "title": "Arithmetic and logic in computer systems",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Wiley Series in Microwave and Optical Engineering",
+      "authors": "M. Lu"
+    },
+    {
+      "index": 33,
+      "title": "Logic computing with stateful neural networks of resistive switches",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advanced Materials",
+      "authors": "Z. Sun, E. Ambrosi, A. Bricalli, and D. Ielmini"
+    },
+    {
+      "index": 34,
+      "title": "Compute caches",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Symposium on High Performance Computer Architecture",
+      "authors": "S. Aga, S. Jeloka, A. Subramaniyan, S. Narayanasamy, D. Blaauw, and R. Das"
+    },
+    {
+      "index": 35,
+      "title": "Pinatubo: A processing-in-memory architecture for bulk bitwise operations in emerging non-volatile memories",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM/EDAC/IEEE Design Automation Conference",
+      "authors": "S. Li, C. Xu, Q. Zou, J. Zhao, Y. Lu, and Y. Xie"
+    },
+    {
+      "index": 36,
+      "title": "Ferroelectric FET technology and applications: From devices to systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/ACM International Conference On Computer Aided Design (ICCAD)",
+      "authors": "H. Amrouch, D. Gao, X. S. Hu, A. Kazemi, A. F. Laguna, K. Ni, M. Niemier, M. M. Sharifi, S. Thomann, X. Yin, and C. Zhuo"
+    },
+    {
+      "index": 37,
+      "title": "Computing in memory with FeFETs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Symposium on Low Power Electronics and Design",
+      "authors": "D. Reis, M. Niemier, and X. S. Hu"
+    },
+    {
+      "index": 38,
+      "title": "Accelerating force-directed graph layout with processing-in-memory architecture",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE International Conference on High Performance Computing, Data, and Analytics",
+      "authors": "R. Li, S. Song, Q. Wu, and L. K. John"
+    },
+    {
+      "index": 39,
+      "title": "Practical integer division with Karatsuba complexity",
+      "abstract": "",
+      "year": "1997",
+      "venue": "International Symposium on Symbolic and Algebraic Computation",
+      "authors": "T. Jebelean"
+    },
+    {
+      "index": 40,
+      "title": "ReHy: A ReRAM-based digital/analog hybrid PIM architecture for accelerating CNN training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Parallel and Distributed Systems",
+      "authors": "H. Jin, C. Liu, H. Liu, R. Luo, J. Xu, F. Mao, and X. Liao"
+    },
+    {
+      "index": 41,
+      "title": "1 Mb 0.41 µm² 2T-2R cell nonvolatile TCAM with two-bit encoding and clocked self-referenced sensing",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Journal of Solid-State Circuits",
+      "authors": "J. Li, R. K. Montoye, M. Ishii, and L. Chang"
+    },
+    {
+      "index": 42,
+      "title": "A fast serial-parallel binary multiplier",
+      "abstract": "",
+      "year": "1985",
+      "venue": "IEEE Transactions on Computers",
+      "authors": "R. Gnanasekaran"
+    },
+    {
+      "index": 43,
+      "title": "Analyzing the effects of interconnect parasitics in the STT CRAM in-memory computational platform",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Journal on Exploratory Solid-State Computational Devices and Circuits",
+      "authors": "M. Zabihi, A. K. Sharma, M. G. Mankalale, Z. I. Chowdhury, Z. Zhao, S. Resch, U. R. Karpuzcu, J.-P. Wang, and S. S. Sapatnekar"
+    },
+    {
+      "index": 44,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems 32",
+      "authors": "A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, T. Killeen, Z. Lin, N. Gimelshein, L. Antiga, A. Desmaison, A. Kopf, E. Yang, Z. DeVito, M. Raison, A. Tejani, S. Chilamkurthy, B. Steiner, L. Fang, J. Bai, and S. Chintala",
+      "orig_title": "PyTorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    }
+  ]
+}

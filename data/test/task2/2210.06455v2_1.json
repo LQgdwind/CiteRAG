@@ -1,0 +1,493 @@
+{
+  "paper_id": "2210.06455v2",
+  "title": "Token-Label Alignment for Vision Transformers",
+  "sections": {
+    "imagenet classification": "Implementation Details.\nWe first evaluate TL-Align on ImageNet [ref]35 for image classification.\nImageNet [ref]35 contains ∼similar-to\\sim 1.2M training images and 50K validation images from 1K categories and is a widely-used benchmark for performance evaluation.\nWe implement our method based on PyTorch  and the timm library .\nWe conduct experiments on various transformer architectures: three variants of DeiT [ref]40 (DeiT-T, DeiT-S, and DeiT-B), two variants of PVT  (PVT-T, PVT-S) and three variants of Swin Transformer  (Swin-T, Swin-S, and Swin-B).\nFor tiny and small models, we train from scratch for 300 epochs following the same training recipe using CutMix as DeiT [ref]40, PVT  and Swin .\nWe keep all the data augmentation policies and all hyperparameter settings unchanged for fair comparisons.\nThe only modification is that we replace the mixing targets in CutMiX with the labels obtained by our TL-Align.\nFor base models (i.e., Deit-B and Swin-B), we finetune the official pre-trained models for 40 epochs with a constant learning rate of 1e-5 and a weight decay of 1e-8. Performance on Different Architectures.\nAs shown in Table 1, TL-Align steadily improves the performance of different vision transformer architectures.\nSpecifically, TL-Align boosts the top-1 accuracy of DeiT-T, DeiT-S, and DeiT-B by 1.0%, 0.8%, and 0.5%, respectively, in a parameter-free manner.\nMoreover, our method is generalizable and can be directly applied to hierarchical vision transformers like Swin.\nIt is worth noting that most existing methods need either architecture modifications (adding a class token in  [ref]7) or extra computations (saliency map extraction in ) when applied to Swin.\nIn contrast, our TL-Align method can be used as a plug-and-play module and achieves consistent improvement on variants of Swin. Comparison with Other Training Strategies.\nWe also compare our method with the state-of-the-art training strategies for data mixing on DeiT-S, including CutMix , Puzzle-Mix , SaliencyMix , Attentive-CutMix , and TransMix [ref]7.\nSpecifically, we train the DeiT-S model while only disabling CutMix as the baseline method, which is denoted as Vanilla in Table 2.\nMoreover, since TransMix [ref]7 reports the EMA accuracy with different hyperparameters, we reproduce it under the same training recipe [ref]40 for a fair comparison.\nAs demonstrated in Table 2, TL-Align shows significantly better performance than the other mixup variants while maintaining the number of parameters and training speed.\nPuzzle-Mix obtains the same classification accuracy as CutMix but results in a much lower training speed as it relies on an extra model to get the optimal solution.\nSaliencyMix and Attentive-CutMix lead to performance degeneration when built upon DeiT-S backbone.\nNotably, our method also achieves higher top-1 accuracy than ViT-targeted TransMix.\nDue to the token fluctuation phenomenon, the class token attention utilization in TransMix can not reflect the actual contribution of different tokens.\nDifferently, TL-Align obtains accurate alignment of the tokens and labels, resulting in improved performance."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "ViViT: A Video Vision Transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Anurag Arnab, Mostafa Dehghani, Georg Heigold, Chen Sun, Mario Lučić, and Cordelia Schmid",
+      "orig_title": "Vivit: A video vision transformer",
+      "paper_id": "2103.15691v2"
+    },
+    {
+      "index": 1,
+      "title": "Layer normalization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv",
+      "authors": "Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E Hinton"
+    },
+    {
+      "index": 2,
+      "title": "BEiT: BERT Pre-Training of Image Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Hangbo Bao, Li Dong, and Furu Wei",
+      "orig_title": "Beit: Bert pre-training of image transformers",
+      "paper_id": "2106.08254v2"
+    },
+    {
+      "index": 3,
+      "title": "Cascade R-CNN: Delving into High Quality Object Detection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Zhaowei Cai and Nuno Vasconcelos",
+      "orig_title": "Cascade r-cnn: Delving into high quality object detection",
+      "paper_id": "1712.00726v1"
+    },
+    {
+      "index": 4,
+      "title": "End-to-end object detection with transformers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Nicolas Carion, Francisco Massa, Gabriel Synnaeve, Nicolas Usunier, Alexander Kirillov, and Sergey Zagoruyko"
+    },
+    {
+      "index": 5,
+      "title": "Pre-trained image processing transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Hanting Chen, Yunhe Wang, Tianyu Guo, Chang Xu, Yiping Deng, Zhenhua Liu, Siwei Ma, Chunjing Xu, Chao Xu, and Wen Gao"
+    },
+    {
+      "index": 6,
+      "title": "Transmix: Attend to mix for vision transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Jie-Neng Chen, Shuyang Sun, Ju He, Philip Torr, Alan Yuille, and Song Bai"
+    },
+    {
+      "index": 7,
+      "title": "The Principle of Diversity: Training Stronger Vision Transformers Calls for Reducing All Levels of Redundancy",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Tianlong Chen, Zhenyu Zhang, Yu Cheng, Ahmed Awadallah, and Zhangyang Wang",
+      "orig_title": "The principle of diversity: Training stronger vision transformers calls for reducing all levels of redundancy",
+      "paper_id": "2203.06345v1"
+    },
+    {
+      "index": 8,
+      "title": "Per-Pixel Classification is Not All You Need for Semantic Segmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Bowen Cheng, Alexander G Schwing, and Alexander Kirillov",
+      "orig_title": "Per-pixel classification is not all you need for semantic segmentation",
+      "paper_id": "2107.06278v2"
+    },
+    {
+      "index": 9,
+      "title": "Twins: Revisiting the Design of Spatial Attention in Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Xiangxiang Chu, Zhi Tian, Yuqing Wang, Bo Zhang, Haibing Ren, Xiaolin Wei, Huaxia Xia, and Chunhua Shen",
+      "orig_title": "Twins: Revisiting the design of spatial attention in vision transformers",
+      "paper_id": "2104.13840v4"
+    },
+    {
+      "index": 10,
+      "title": "Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International conference on machine learning",
+      "authors": "Francesco Croce and Matthias Hein"
+    },
+    {
+      "index": 11,
+      "title": "Dynamic detr: End-to-end object detection with dynamic attention",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Xiyang Dai, Yinpeng Chen, Jianwei Yang, Pengchuan Zhang, Lu Yuan, and Lei Zhang"
+    },
+    {
+      "index": 12,
+      "title": "Up-detr: Unsupervised pre-training for object detection with transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Zhigang Dai, Bolun Cai, Yugeng Lin, and Junying Chen"
+    },
+    {
+      "index": 13,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR",
+      "authors": "Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei"
+    },
+    {
+      "index": 14,
+      "title": "Scaling Up Your Kernels to 31x31: Revisiting Large Kernel Design in CNNs",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Xiaohan Ding, Xiangyu Zhang, Yizhuang Zhou, Jungong Han, Guiguang Ding, and Jian Sun",
+      "orig_title": "Scaling up your kernels to 31x31: Revisiting large kernel design in cnns",
+      "paper_id": "2203.06717v4"
+    },
+    {
+      "index": 15,
+      "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, et al.",
+      "orig_title": "An image is worth 16x16 words: Transformers for image recognition at scale",
+      "paper_id": "2010.11929v2"
+    },
+    {
+      "index": 16,
+      "title": "Visual Attention Network",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint",
+      "authors": "Meng-Hao Guo, Cheng-Ze Lu, Zheng-Ning Liu, Ming-Ming Cheng, and Shi-Min Hu",
+      "orig_title": "Visual attention network",
+      "paper_id": "2202.09741v5"
+    },
+    {
+      "index": 17,
+      "title": "Masked autoencoders are scalable vision learners",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, and Ross Girshick"
+    },
+    {
+      "index": 18,
+      "title": "The Many Faces of Robustness: A Critical Analysis of Out-of-Distribution Generalization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Dan Hendrycks, Steven Basart, Norman Mu, Saurav Kadavath, Frank Wang, Evan Dorundo, Rahul Desai, Tyler Zhu, Samyak Parajuli, Mike Guo, et al.",
+      "orig_title": "The many faces of robustness: A critical analysis of out-of-distribution generalization",
+      "paper_id": "2006.16241v3"
+    },
+    {
+      "index": 19,
+      "title": "Benchmarking Neural Network Robustness to Common Corruptions and Perturbations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "Dan Hendrycks and Thomas Dietterich",
+      "orig_title": "Benchmarking neural network robustness to common corruptions and perturbations",
+      "paper_id": "1903.12261v1"
+    },
+    {
+      "index": 20,
+      "title": "Natural Adversarial Examples",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Dan Hendrycks, Kevin Zhao, Steven Basart, Jacob Steinhardt, and Dawn Song",
+      "orig_title": "Natural adversarial examples",
+      "paper_id": "1907.07174v4"
+    },
+    {
+      "index": 21,
+      "title": "All tokens matter: Token labeling for training better vision transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Zi-Hang Jiang, Qibin Hou, Li Yuan, Daquan Zhou, Yujun Shi, Xiaojie Jin, Anran Wang, and Jiashi Feng"
+    },
+    {
+      "index": 22,
+      "title": "Puzzle mix: Exploiting saliency and local statistics for optimal mixup",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "Jang-Hyun Kim, Wonho Choo, and Hyun Oh Song"
+    },
+    {
+      "index": 23,
+      "title": "3d object representations for fine-grained categorization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ICCVW",
+      "authors": "Jonathan Krause, Michael Stark, Jia Deng, and Li Fei-Fei"
+    },
+    {
+      "index": 24,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Alex Krizhevsky, Geoffrey Hinton, et al."
+    },
+    {
+      "index": 25,
+      "title": "On Efficient Transformer-Based Image Pre-training for Low-Level Vision",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Wenbo Li, Xin Lu, Jiangbo Lu, Xiangyu Zhang, and Jiaya Jia",
+      "orig_title": "On efficient transformer and image pre-training for low-level vision",
+      "paper_id": "2112.10175v2"
+    },
+    {
+      "index": 26,
+      "title": "Not All Pixels Are Equal: Difficulty-Aware Semantic Segmentation via Deep Layer Cascade",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Xiaoxiao Li, Ziwei Liu, Ping Luo, Chen Change Loy, and Xiaoou Tang",
+      "orig_title": "Not all pixels are equal: Difficulty-aware semantic segmentation via deep layer cascade",
+      "paper_id": "1704.01344v1"
+    },
+    {
+      "index": 27,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva Ramanan, Piotr Dollár, and C Lawrence Zitnick",
+      "orig_title": "Microsoft coco: Common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 28,
+      "title": "Swin transformer: Hierarchical vision transformer using shifted windows",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Ze Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng Zhang, Stephen Lin, and Baining Guo"
+    },
+    {
+      "index": 29,
+      "title": "A ConvNet for the 2020s",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint",
+      "authors": "Zhuang Liu, Hanzi Mao, Chao-Yuan Wu, Christoph Feichtenhofer, Trevor Darrell, and Saining Xie",
+      "orig_title": "A convnet for the 2020s",
+      "paper_id": "2201.03545v2"
+    },
+    {
+      "index": 30,
+      "title": "Video swin transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Ze Liu, Jia Ning, Yue Cao, Yixuan Wei, Zheng Zhang, Stephen Lin, and Han Hu"
+    },
+    {
+      "index": 31,
+      "title": "Automated flower classification over a large number of classes",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Indian Conference on Computer Vision, Graphics and Image Processing",
+      "authors": "Maria-Elena Nilsback and Andrew Zisserman"
+    },
+    {
+      "index": 32,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NIPS",
+      "authors": "Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, et al.",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 33,
+      "title": "Do ImageNet Classifiers Generalize to ImageNet?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Benjamin Recht, Rebecca Roelofs, Ludwig Schmidt, and Vaishaal Shankar",
+      "orig_title": "Do imagenet classifiers generalize to imagenet?",
+      "paper_id": "1902.10811v2"
+    },
+    {
+      "index": 34,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IJCV",
+      "authors": "Olga Russakovsky, Jia Deng, Hao Su, Jonathan Krause, Sanjeev Satheesh, Sean Ma, Zhiheng Huang, Andrej Karpathy, Aditya Khosla, Michael Bernstein, et al.",
+      "orig_title": "Imagenet large scale visual recognition challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 35,
+      "title": "Segmenter: Transformer for Semantic Segmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Robin Strudel, Ricardo Garcia, Ivan Laptev, and Cordelia Schmid",
+      "orig_title": "Segmenter: Transformer for semantic segmentation",
+      "paper_id": "2105.05633v3"
+    },
+    {
+      "index": 36,
+      "title": "An image patch is a wave: Quantum inspired vision mlp",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Yehui Tang, Kai Han, Jianyuan Guo, Chang Xu, Yanxi Li, Chao Xu, and Yunhe Wang"
+    },
+    {
+      "index": 37,
+      "title": "MLP-Mixer: An all-MLP Architecture for Vision",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Ilya O Tolstikhin, Neil Houlsby, Alexander Kolesnikov, Lucas Beyer, Xiaohua Zhai, Thomas Unterthiner, Jessica Yung, Andreas Steiner, Daniel Keysers, Jakob Uszkoreit, et al.",
+      "orig_title": "Mlp-mixer: An all-mlp architecture for vision",
+      "paper_id": "2105.01601v4"
+    },
+    {
+      "index": 38,
+      "title": "ResMLP: Feedforward networks for image classification with data-efficient training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint",
+      "authors": "Hugo Touvron, Piotr Bojanowski, Mathilde Caron, Matthieu Cord, Alaaeldin El-Nouby, Edouard Grave, Gautier Izacard, Armand Joulin, Gabriel Synnaeve, Jakob Verbeek, et al.",
+      "orig_title": "Resmlp: Feedforward networks for image classification with data-efficient training",
+      "paper_id": "2105.03404v2"
+    },
+    {
+      "index": 39,
+      "title": "Training data-efficient image transformers & distillation through attention",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "Hugo Touvron, Matthieu Cord, Matthijs Douze, Francisco Massa, Alexandre Sablayrolles, and Hervé Jégou",
+      "orig_title": "Training data-efficient image transformers & distillation through attention",
+      "paper_id": "2012.12877v2"
+    },
+    {
+      "index": 40,
+      "title": "DeiT III: Revenge of the ViT",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint",
+      "authors": "Hugo Touvron, Matthieu Cord, and Hervé Jégou",
+      "orig_title": "Deit iii: Revenge of the vit",
+      "paper_id": "2204.07118v1"
+    },
+    {
+      "index": 41,
+      "title": "Saliencymix: A saliency guided data augmentation strategy for better regularization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint",
+      "authors": "AFM Uddin, Mst Monira, Wheemyung Shin, TaeChoong Chung, Sung-Ho Bae, et al."
+    },
+    {
+      "index": 42,
+      "title": "Manifold Mixup: Better Representations by Interpolating Hidden States",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "Vikas Verma, Alex Lamb, Christopher Beckham, Amir Najafi, Ioannis Mitliagkas, David Lopez-Paz, and Yoshua Bengio",
+      "orig_title": "Manifold mixup: Better representations by interpolating hidden states",
+      "paper_id": "1806.05236v7"
+    },
+    {
+      "index": 43,
+      "title": "Attentive CutMix: An Enhanced Data Augmentation Approach for Deep Learning Based Image Classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint",
+      "authors": "Devesh Walawalkar, Zhiqiang Shen, Zechun Liu, and Marios Savvides",
+      "orig_title": "Attentive cutmix: An enhanced data augmentation approach for deep learning based image classification",
+      "paper_id": "2003.13048v2"
+    },
+    {
+      "index": 44,
+      "title": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Wenhai Wang, Enze Xie, Xiang Li, Deng-Ping Fan, Kaitao Song, Ding Liang, Tong Lu, Ping Luo, and Ling Shao",
+      "orig_title": "Pyramid vision transformer: A versatile backbone for dense prediction without convolutions",
+      "paper_id": "2102.12122v2"
+    },
+    {
+      "index": 45,
+      "title": "Activemlp: An mlp-like architecture with active token mixer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint",
+      "authors": "Guoqiang Wei, Zhizheng Zhang, Cuiling Lan, Yan Lu, and Zhibo Chen"
+    },
+    {
+      "index": 46,
+      "title": "Pytorch image models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Ross Wightman"
+    },
+    {
+      "index": 47,
+      "title": "RecursiveMix: Mixed Learning with History",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint",
+      "authors": "Lingfeng Yang, Xiang Li, Borui Zhao, Renjie Song, and Jian Yang",
+      "orig_title": "Recursivemix: Mixed learning with history",
+      "paper_id": "2203.06844v1"
+    },
+    {
+      "index": 48,
+      "title": "Cutmix: Regularization strategy to train strong classifiers with localizable features",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Sangdoo Yun, Dongyoon Han, Seong Joon Oh, Sanghyuk Chun, Junsuk Choe, and Youngjoon Yoo"
+    },
+    {
+      "index": 49,
+      "title": "mixup: Beyond Empirical Risk Minimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Hongyi Zhang, Moustapha Cisse, Yann N Dauphin, and David Lopez-Paz",
+      "orig_title": "mixup: Beyond empirical risk minimization",
+      "paper_id": "1710.09412v2"
+    },
+    {
+      "index": 50,
+      "title": "Rethinking semantic segmentation from a sequence-to-sequence perspective with transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Sixiao Zheng, Jiachen Lu, Hengshuang Zhao, Xiatian Zhu, Zekun Luo, Yabiao Wang, Yanwei Fu, Jianfeng Feng, Tao Xiang, Philip HS Torr, et al."
+    },
+    {
+      "index": 51,
+      "title": "Semantic understanding of scenes through the ade20k dataset",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IJCV",
+      "authors": "Bolei Zhou, Hang Zhao, Xavier Puig, Tete Xiao, Sanja Fidler, Adela Barriuso, and Antonio Torralba"
+    },
+    {
+      "index": 52,
+      "title": "Deformable DETR: Deformable Transformers for End-to-End Object Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Xizhou Zhu, Weijie Su, Lewei Lu, Bin Li, Xiaogang Wang, and Jifeng Dai",
+      "orig_title": "Deformable detr: Deformable transformers for end-to-end object detection",
+      "paper_id": "2010.04159v4"
+    }
+  ]
+}

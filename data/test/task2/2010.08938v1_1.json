@@ -1,0 +1,435 @@
+{
+  "paper_id": "2010.08938v1",
+  "title": "A Framework to Quantify Approximate Simulation on Graph Data",
+  "sections": {
+    "case studies": "In this subsection, we used three case studies to exhibit the potential of 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} in the applications of pattern matching, node similarity measurement and RDF graph alignment. We will demonstrate the following strengths of our framework. Our 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} framework quantifies the degree of simulation, which remedies the coarse “yes-or-no” semantics of simulation, significantly improves the effectiveness, and expand the scope of applying simulation. When multiple simulation variants are suitable for a certain application, the 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} framework provides a flexible way to experiment with all suitable variants, so as to determine the one that performs the best.\n Before simply driving into the case studies, the first question to answer is: which simulation variant should be used for a given application? We discuss the answer intuitively. Subgraph pattern matching is essentially asymmetric (matching the pattern graph to the data graph but not the other way around), and thus 𝖥𝖲𝗂𝗆𝗌subscript𝖥𝖲𝗂𝗆𝗌{\\mathsf{FSim}}_{{\\mathsf{s}}} and 𝖥𝖲𝗂𝗆𝖽𝗉subscript𝖥𝖲𝗂𝗆𝖽𝗉{\\mathsf{FSim}}_{{\\mathsf{dp}}} are appropriate choices. Node similarity measurement and graph alignment require symmetry, and hence 𝖥𝖲𝗂𝗆𝖻subscript𝖥𝖲𝗂𝗆𝖻{\\mathsf{FSim}}_{{\\mathsf{b}}} and 𝖥𝖲𝗂𝗆𝖻𝗃subscript𝖥𝖲𝗂𝗆𝖻𝗃{\\mathsf{FSim}}_{{\\mathsf{bj}}} are applied. The codes of all the baselines were provided by the respective authors. ℒ​(⋅)ℒ⋅\\mathcal{L}(\\cdot) was used indicator function since the semantics of node labels in the studied data were clear and without ambiguity. Pattern Matching. In this case study, we first considered strong simulation (exact simulation by nature, ) and 𝖽𝗉𝖽𝗉{\\mathsf{dp}}-simulation  as two baselines, and compared them with 𝖥𝖲𝗂𝗆𝗌subscript𝖥𝖲𝗂𝗆𝗌{\\mathsf{FSim}}_{{\\mathsf{s}}} and 𝖥𝖲𝗂𝗆𝖽𝗉subscript𝖥𝖲𝗂𝗆𝖽𝗉{\\mathsf{FSim}}_{{\\mathsf{dp}}} to illustrate how 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} facilitates pattern matching. Figure 10 shows two example matches on the Amazon graph (see Table 4 for graph statistics). When answering query Q1subscript𝑄1Q_{1}, strong simulation (and 𝖽𝗉𝖽𝗉{\\mathsf{dp}}-simulation) returns G1subscript𝐺1G_{1}, pictured in Figure 10(b), which is also the top-1 result of 𝖥𝖲𝗂𝗆𝗌subscript𝖥𝖲𝗂𝗆𝗌{\\mathsf{FSim}}_{\\mathsf{s}} (and 𝖥𝖲𝗂𝗆𝖽𝗉subscript𝖥𝖲𝗂𝗆𝖽𝗉{\\mathsf{FSim}}_{{\\mathsf{dp}}}). Clearly, a simulation relation exists between Q1subscript𝑄1Q_{1} and G1subscript𝐺1G_{1}, and 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} captures G1subscript𝐺1G_{1} with the highest score because of simulation definiteness (Definition 4). Q2subscript𝑄2Q_{2} adds two extra nodes with new labels to Q1subscript𝑄1Q_{1} but, with this modification, both strong simulation and 𝖽𝗉𝖽𝗉{\\mathsf{dp}}-simulation fail to return a result while 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} returns G2subscript𝐺2G_{2} (strength S1), which closely matches Q2subscript𝑄2Q_{2} by missing only an edge. For a more complete study, we also compared the results of 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} with some other approximate pattern matching algorithms. The related algorithms can be summarized in two categories: (1) the edit-distance based algorithms, e.g., 𝖲𝖠𝖯𝖯𝖤𝖱𝖲𝖠𝖯𝖯𝖤𝖱\\mathsf{SAPPER}  and 𝖳𝖲𝗉𝖺𝗇𝖳𝖲𝗉𝖺𝗇\\mathsf{TSpan} , which enumerate all matches with mismatched edges up to a given threshold; and (2) the similarity-based algorithms that compute matches based on (sub)graph similarity or node similarity. To name a few, G-Ray  computes the “goodness” of a match based on node proximity. 𝖨𝗌𝗈𝖱𝖺𝗇𝗄𝖨𝗌𝗈𝖱𝖺𝗇𝗄\\mathsf{IsoRank} , 𝖭𝖾𝖬𝖺𝖭𝖾𝖬𝖺\\mathsf{NeMa}  and 𝖭𝖠𝖦𝖠𝖭𝖠𝖦𝖠\\mathsf{NAGA}  find matches based on node similarity. 𝖦𝖦\\mathsf{G}-𝖥𝗂𝗇𝖽𝖾𝗋𝖥𝗂𝗇𝖽𝖾𝗋\\mathsf{Finder}  and 𝖲𝖠𝖦𝖠𝖲𝖠𝖦𝖠\\mathsf{SAGA}  design cost functions with multiple components to allow node mismatches and graph structural differences. 𝖲𝖫𝖰𝖲𝖫𝖰\\mathsf{SLQ}  and S4superscript𝑆4S^{4}  find matches in RDF knowledge graphs by considering the semantics of queries. More specifically, S4superscript𝑆4S^{4} uses the semantic graph edit distance to integrate structure similarity and semantic similarity. Note that, in the Amazon graph, an edge from u𝑢u to v𝑣v indicates that people are highly likely to buy item v𝑣v after buying item u𝑢u , and hence there is no complex semantics among edges. As a result, we choose 𝖳𝖲𝗉𝖺𝗇𝖳𝖲𝗉𝖺𝗇\\mathsf{TSpan}, 𝖭𝖠𝖦𝖠𝖭𝖠𝖦𝖠\\mathsf{NAGA} and 𝖦𝖦\\mathsf{G}-𝖥𝗂𝗇𝖽𝖾𝗋𝖥𝗂𝗇𝖽𝖾𝗋\\mathsf{Finder}, the state-of-the-art algorithms in each category, as another three baselines. We followed the state-of-the-art algorithm 𝖭𝖠𝖦𝖠𝖭𝖠𝖦𝖠\\mathsf{NAGA}  for match generation and quality evaluation. Briefly, node pairs with high 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} scores are considered to be “seeds”, and matches are generated by expanding the regions around the “seeds” subsequently. The evaluated queries are generated randomly by extracting subgraphs from the data graph and introducing structural noises (randomly insert edges, up to 33%) or label noises (randomly modify node labels, up to 33%). We then evaluated different algorithms across four query scenarios: (1) queries with no noises (𝖤𝗑𝖺𝖼𝗍𝖤𝗑𝖺𝖼𝗍\\mathsf{Exact}); (2) queries with structural noises only (𝖭𝗈𝗂𝗌𝗒𝖭𝗈𝗂𝗌𝗒\\mathsf{Noisy}-𝖤𝖤\\mathsf{E}); (3) queries with label noises only (𝖭𝗈𝗂𝗌𝗒𝖭𝗈𝗂𝗌𝗒\\mathsf{Noisy}-𝖫𝖫\\mathsf{L}); and (4) queries with both kinds of noises (𝖢𝗈𝗆𝖻𝗂𝗇𝖾𝖽𝖢𝗈𝗆𝖻𝗂𝗇𝖾𝖽\\mathsf{Combined}). Note that the queries are extracted from the graphs, which naturally serve as the “ground truth”. Given a query Q𝑄Q and a returned match ϕitalic-ϕ\\phi (we use top-1 match in this case study), the F1subscript𝐹1F_{1} score is calculated by F1=2⋅P⋅R(P+R)subscript𝐹1⋅2𝑃𝑅𝑃𝑅F_{1}=\\frac{2\\cdot P\\cdot R}{(P+R)}, where P=|ϕt||ϕ|𝑃subscriptitalic-ϕ𝑡italic-ϕP=\\frac{|\\phi_{t}|}{|\\phi|}, R=|ϕt||Q|𝑅subscriptitalic-ϕ𝑡𝑄R=\\frac{|\\phi_{t}|}{|Q|}, ϕtsubscriptitalic-ϕ𝑡\\phi_{t} is a subset of ϕitalic-ϕ\\phi that includes the correctly discovered node matches in ϕitalic-ϕ\\phi, and |X|𝑋|X| indicates the number of nodes in the match or graph, ∀X∈{ϕt,ϕ,Q}for-all𝑋subscriptitalic-ϕ𝑡italic-ϕ𝑄\\forall X\\in\\{\\phi_{t},\\phi,Q\\}. Table 6444The results of 𝖭𝖠𝖦𝖠𝖭𝖠𝖦𝖠\\mathsf{NAGA} are provided by the authors and we acknowledge the assistance from Dr. Sourav Dutta and Dr. Shubhangi Agarwal. shows the F1 scores of different algorithms. The result is an average from 100 random queries of sizes ranging from 3 to 13. 𝖽𝗉𝖽𝗉{\\mathsf{dp}}-simulation was not compared as it is similar to strong simulation. As with the last results, strong simulation performed poorly against noise. In comparison, 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} was more robust and performed much better (strength S1). Additionally, 𝖥𝖲𝗂𝗆𝗌subscript𝖥𝖲𝗂𝗆𝗌{\\mathsf{FSim}}_{{\\mathsf{s}}} outperformed 𝖭𝖠𝖦𝖠𝖭𝖠𝖦𝖠\\mathsf{NAGA}, 𝖦𝖦\\mathsf{G}-𝖥𝗂𝗇𝖽𝖾𝗋𝖥𝗂𝗇𝖽𝖾𝗋\\mathsf{Finder} and 𝖳𝖲𝗉𝖺𝗇𝖳𝖲𝗉𝖺𝗇\\mathsf{TSpan}-1 by a big margin on all query scenarios. 𝖳𝖲𝗉𝖺𝗇𝖳𝖲𝗉𝖺𝗇\\mathsf{TSpan}-3 performed well in “𝖤𝗑𝖺𝖼𝗍𝖤𝗑𝖺𝖼𝗍\\mathsf{Exact}” and “𝖭𝗈𝗂𝗌𝗒𝖭𝗈𝗂𝗌𝗒\\mathsf{Noisy}-𝖤𝖤\\mathsf{E}” with its highest F1 score of 95.8% for “𝖭𝗈𝗂𝗌𝗒𝖭𝗈𝗂𝗌𝗒\\mathsf{Noisy}-𝖤𝖤\\mathsf{E}”. This is because 𝖳𝖲𝗉𝖺𝗇𝖳𝖲𝗉𝖺𝗇\\mathsf{TSpan}-3 finds all matches with up to 3 mismatched edges, which is not less than the number of noisy edges in most queries. However, 𝖳𝖲𝗉𝖺𝗇𝖳𝖲𝗉𝖺𝗇\\mathsf{TSpan} favors the case with missing edges rather than nodes. Thus, it has no results for “𝖭𝗈𝗂𝗌𝗒𝖭𝗈𝗂𝗌𝗒\\mathsf{Noisy}-𝖫𝖫\\mathsf{L}” and “𝖢𝗈𝗆𝖻𝗂𝗇𝖾𝖽𝖢𝗈𝗆𝖻𝗂𝗇𝖾𝖽\\mathsf{Combined}”. In summary, 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} is qualified for approximate pattern matching (strength S1). While both 𝗌𝗌{\\mathsf{s}}- and 𝖽𝗉𝖽𝗉{\\mathsf{dp}}-simulation can be configured for the application, 𝖥𝖲𝗂𝗆𝗌subscript𝖥𝖲𝗂𝗆𝗌{\\mathsf{FSim}}_{{\\mathsf{s}}} is more robust to noises and performs better than 𝖥𝖲𝗂𝗆𝖽𝗉subscript𝖥𝖲𝗂𝗆𝖽𝗉{\\mathsf{FSim}}_{{\\mathsf{dp}}} (strength S2). Node Similarity Measurement. In this case study, we compared 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} to four state-of-the-art similarity measurement algorithms: 𝖯𝖢𝖱𝖶𝖯𝖢𝖱𝖶\\mathsf{PCRW} 0, 𝖯𝖺𝗍𝗁𝖲𝗂𝗆𝖯𝖺𝗍𝗁𝖲𝗂𝗆\\mathsf{PathSim} 1, 𝖩𝗈𝗂𝗇𝖲𝗂𝗆𝖩𝗈𝗂𝗇𝖲𝗂𝗆\\mathsf{JoinSim} 2 and 𝗇𝖲𝗂𝗆𝖦𝗋𝖺𝗆𝗇𝖲𝗂𝗆𝖦𝗋𝖺𝗆\\mathsf{nSimGram} 3. Following 3 1, we used the DBIS dataset, which contains 60,694 authors, 72,902 papers and 464 venues. In DBIS, the venues and papers are labeled as “V” and “P\", respectively. The authors are labeled by their names. We first computed the top-5 most similar venues to WWW using all algorithms. The results are shown in Table 7. Note that WWW1, WWW2 and WWW3 all represent the WWW venue but with different node ids in DBIS, and thus they are naturally similar to WWW. Although all algorithms gave reasonable results, 𝖥𝖲𝗂𝗆𝖻𝗃subscript𝖥𝖲𝗂𝗆𝖻𝗃{\\mathsf{FSim}}_{\\mathsf{bj}} was the only one to return WWW1, WWW2 and WWW3 in the top-5 results. In addition, if we applied exact 𝖻𝖻{\\mathsf{b}}- and 𝖻𝗃𝖻𝗃{\\mathsf{bj}}-simulation to the task, other than “WWW” itself (“Yes”), all the other venues had the same score (“No”). This shows that 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} can be applied to the scenarios that require fine-grained evaluation, such as node similarity measurement (strength S1). Following 3 1, we further computed the top-15 most similar venues to 15 subject venues (same as 3) of each algorithm.\nFor each subject venue, we labeled each returned venue with a relevance score: 0 for non-relevant, 1 for some-relevant, and 2 for very-relevant, considering both the research area and venue ranking in 4. For example, the relevance score for ICDE and VLDB is 2 as both are top-tier conferences in the area of database. We then evaluated the ranking quality of the algorithms using nDCG (the larger the score, the better). Table 8 shows the nDCG results. Accordingly, 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} outperforms the state-of-the-art algorithms by a large margin. This indicates that 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} is qualified to measure node similarity on labeled graphs (strength S1). The result that 𝖥𝖲𝗂𝗆𝖻𝗃subscript𝖥𝖲𝗂𝗆𝖻𝗃{\\mathsf{FSim}}_{\\mathsf{bj}} outperforms 𝖥𝖲𝗂𝗆𝖻subscript𝖥𝖲𝗂𝗆𝖻{\\mathsf{FSim}}_{\\mathsf{b}} in both the “WWW” case and the general evaluation suggests 𝖥𝖲𝗂𝗆𝖻𝗃subscript𝖥𝖲𝗂𝗆𝖻𝗃{\\mathsf{FSim}}_{\\mathsf{bj}} is a better candidate for similarity measurement (strength S2). RDF Graph Alignment. We investigate the potential of 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi}\\! in RDF graph alignment and briefly discuss its performance below. We followed Olap  (a bisimulation-based alignment algorithm) to align three different versions of biological graphs from different times, G1subscript𝐺1G_{1}, G2subscript𝐺2G_{2} and G3subscript𝐺3G_{3} [ref]27. G1subscript𝐺1G_{1} has 133,195 nodes and 273,512 edges, G2subscript𝐺2G_{2} has 138,651 nodes and 285,000 edges, G3subscript𝐺3G_{3} includes 144,879 nodes and 298,564 edges, and all of them have 8 node labels and 23 edge labels. Note that the original URI values in these datasets do not change over time. Hence, we can use this information to identify the ground truth alignment. In addition to Olap, we also included another four state-of-the-art algorithms, namely k𝑘k-bisimulation 0, gsaNA 5, 𝖥𝖨𝖭𝖠𝖫𝖥𝖨𝖭𝖠𝖫\\mathsf{FINAL} 6 and 𝖤𝖶𝖲𝖤𝖶𝖲\\mathsf{EWS} 7. When aligning graphs with 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi}, a node u∈V1𝑢subscript𝑉1u\\in V_{1} will be aligned to a node set Au=argmaxv∈V2𝖥𝖲𝗂𝗆χ​(u,v)subscript𝐴𝑢subscriptargmax𝑣subscript𝑉2subscript𝖥𝖲𝗂𝗆𝜒𝑢𝑣A_{u}=\\mathop{\\mathrm{argmax}}_{v\\in V_{2}}{\\mathsf{FSim}}_{\\chi}(u,v), while with k𝑘k-bisimulation, u𝑢u will be aligned to Au={v|v∈V2∧u​ and ​v​ are bisimilar}subscript𝐴𝑢conditional-set𝑣𝑣subscript𝑉2𝑢 and 𝑣 are bisimilarA_{u}=\\{v|v\\in V_{2}\\wedge u\\text{ and }v\\text{ are bisimilar}\\}. The F1 score of 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} and k𝑘k-bisimulation is calculated by F​1=∑u∈V12⋅Pu⋅Ru|V1|​(Pu+Ru)𝐹1subscript𝑢subscript𝑉1⋅2subscript𝑃𝑢subscript𝑅𝑢subscript𝑉1subscript𝑃𝑢subscript𝑅𝑢F1=\\sum_{u\\in V_{1}}\\frac{2\\cdot P_{u}\\cdot R_{u}}{|V_{1}|(P_{u}+R_{u})}, where Pusubscript𝑃𝑢P_{u} (resp. Rusubscript𝑅𝑢R_{u}) is 1|Au|1subscript𝐴𝑢\\frac{1}{|A_{u}|} (resp. 1) if Ausubscript𝐴𝑢A_{u} contains the ground truth, and 0 otherwise. We follow the settings in the related papers for the other baselines.  Table 9 reports the F1 scores of each algorithm. Note that we also tested the bisimulation, which resulted in 0% F1 scores in both cases since there is no exact bisimulation relation between two graphs. k𝑘k-bisimulation performs better than bisimulation as it, to some extent, approximates bisimulation. From Table 9, our 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} had the highest F1 scores and thus outperformed all the other baselines. This shows that we can apply 𝖥𝖲𝗂𝗆𝖻subscript𝖥𝖲𝗂𝗆𝖻{\\mathsf{FSim}}_{\\mathsf{b}} and 𝖥𝖲𝗂𝗆𝖻𝗃subscript𝖥𝖲𝗂𝗆𝖻𝗃{\\mathsf{FSim}}_{\\mathsf{bj}} with high potential for graph alignment (strength S1). 𝖥𝖲𝗂𝗆𝖻subscript𝖥𝖲𝗂𝗆𝖻{\\mathsf{FSim}}_{{\\mathsf{b}}} outperforms 𝖥𝖲𝗂𝗆𝖻𝗃subscript𝖥𝖲𝗂𝗆𝖻𝗃{\\mathsf{FSim}}_{{\\mathsf{bj}}} and thus is a better candidate for graph alignment (strength S2). Efficiency Evaluation. Given the superior effectiveness of 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} in the above case studies, one may also be interested in its efficiency. Next, we show the running time of 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} (with 32 threads) and the most effective baseline in each case study. We will also report the running time of exact simulation (or its variant) if it is applied and effective in the case study. For pattern matching, 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} on average took 0.25s for each query. In comparison, exact simulation took around 1.2s, and 𝖳𝖲𝗉𝖺𝗇𝖳𝖲𝗉𝖺𝗇\\mathsf{TSpan}, the most effective baseline, spent more than 70s. In similarity measurement, 𝗇𝖲𝗂𝗆𝖦𝗋𝖺𝗆𝗇𝖲𝗂𝗆𝖦𝗋𝖺𝗆\\mathsf{nSimGram} took 0.03ms to compute a single node pair, while 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi} finished the computation within 6500s for 134060×\\times134060 pairs or roughly 0.0004ms per pair. In graph alignment, k𝑘k-bisimulation (k=4𝑘4k=4) spent 0.4s for the computation, and 𝖤𝖶𝖲𝖤𝖶𝖲\\mathsf{EWS} spent 1496s. Our 𝖥𝖲𝗂𝗆χsubscript𝖥𝖲𝗂𝗆𝜒{\\mathsf{FSim}}_{\\chi}\nran a bit slower than 𝖤𝖶𝖲𝖤𝖶𝖲\\mathsf{EWS} and took 3120s, which is tolerable as it is much more effective than the other algorithms. Note that it is not straightforward and potentially unfair to compare with all the baselines as they either focus on per-query computation (e.g., 𝖯𝖺𝗍𝗁𝖲𝗂𝗆𝖯𝖺𝗍𝗁𝖲𝗂𝗆\\mathsf{PathSim} and 𝖩𝗈𝗂𝗇𝖲𝗂𝗆𝖩𝗈𝗂𝗇𝖲𝗂𝗆\\mathsf{JoinSim}) or have been individually implemented in different languages (e.g., Olap in Python and 𝖥𝖨𝖭𝖠𝖫𝖥𝖨𝖭𝖠𝖫\\mathsf{FINAL} in Matlab)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Capturing topology in graph pattern matching",
+      "abstract": "",
+      "year": "2011",
+      "venue": "PVLDB",
+      "authors": "Shuai Ma, Yang Cao, Wenfei Fan, Jinpeng Huai, and Tianyu Wo"
+    },
+    {
+      "index": 1,
+      "title": "An algebraic definition of simulation between programs",
+      "abstract": "",
+      "year": "1971",
+      "venue": "IJCAI",
+      "authors": "Robin Milner"
+    },
+    {
+      "index": 2,
+      "title": "Communication and concurrency",
+      "abstract": "",
+      "year": "1989",
+      "venue": "",
+      "authors": "Robin Milner"
+    },
+    {
+      "index": 3,
+      "title": "Event pattern matching over graph streams",
+      "abstract": "",
+      "year": "2014",
+      "venue": "PVLDB",
+      "authors": "Chunyao Song, Tingjian Ge, Cindy X. Chen, and Jie Wang"
+    },
+    {
+      "index": 4,
+      "title": "Graph pattern matc-hing: From intractable to polynomial time",
+      "abstract": "",
+      "year": "2010",
+      "venue": "PVLDB",
+      "authors": "Wenfei Fan, Jianzhong Li, Shuai Ma, Nan Tang, Yinghui Wu, and Yunpeng Wu"
+    },
+    {
+      "index": 5,
+      "title": "Strong simulation: Capturing topology in graph pattern matching",
+      "abstract": "",
+      "year": "2014",
+      "venue": "TODS",
+      "authors": "Shuai Ma, Yang Cao, Wenfei Fan, Jinpeng Huai, and Tianyu Wo"
+    },
+    {
+      "index": 6,
+      "title": "RDF Graph Alignment with Bisimulation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "PVLDB",
+      "authors": "Peter Buneman and Slawek Staworko",
+      "orig_title": "RDF graph alignment with bisimulation",
+      "paper_id": "1606.08657v1"
+    },
+    {
+      "index": 7,
+      "title": "Efficient external-memory bisimulation on dags",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGMOD",
+      "authors": "Jelle Hellings, George H. L. Fletcher, and Herman J. Haverkort"
+    },
+    {
+      "index": 8,
+      "title": "Large-scale bisimulation of RDF graphs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "SWIM@SIGMOD",
+      "authors": "Alexander Schätzle, Antony Neu, Georg Lausen, and Martin Przyjaciel-Zablocki"
+    },
+    {
+      "index": 9,
+      "title": "On structure preserving sampling and approximate partitioning of graphs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Symposium on Applied Computing",
+      "authors": "Wouter van Heeswijk, George H. L. Fletcher, and Mykola Pechenizkiy"
+    },
+    {
+      "index": 10,
+      "title": "Covering indexes for XML queries: Bisimulation - simulation = negation",
+      "abstract": "",
+      "year": "2003",
+      "venue": "VLDB",
+      "authors": "Prakash Ramanan"
+    },
+    {
+      "index": 11,
+      "title": "Query preserving graph compression",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGMOD",
+      "authors": "Wenfei Fan, Jianzhong Li, Xin Wang, and Yinghui Wu"
+    },
+    {
+      "index": 12,
+      "title": "A methodology for coupling fragments of xpath with structural indexes for XML documents",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Inf. Syst.",
+      "authors": "George H. L. Fletcher, Dirk Van Gucht, Yuqing Wu, Marc Gyssens, Sofia Brenes, and Jan Paredaens"
+    },
+    {
+      "index": 13,
+      "title": "Covering indexes for branching path queries",
+      "abstract": "",
+      "year": "2002",
+      "venue": "SIGMOD",
+      "authors": "Raghav Kaushik, Philip Bohannon, Jeffrey F. Naughton, and Henry F. Korth"
+    },
+    {
+      "index": 14,
+      "title": "Structural indexing for conjunctive path queries",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "Yuya Sasaki, George Fletcher, and Makoto Onizuka"
+    },
+    {
+      "index": 15,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 16,
+      "title": "Weisfeiler-lehman graph kernels",
+      "abstract": "",
+      "year": "2011",
+      "venue": "JMLR",
+      "authors": "Nino Shervashidze, Pascal Schweitzer, Erik Jan van Leeuwen, Kurt Mehlhorn, and Karsten M. Borgwardt"
+    },
+    {
+      "index": 17,
+      "title": "Simrank: a measure of structural-context similarity",
+      "abstract": "",
+      "year": "2002",
+      "venue": "SIGKDD",
+      "authors": "Glen Jeh and Jennifer Widom"
+    },
+    {
+      "index": 18,
+      "title": "Axiomatic ranking of network role similarity",
+      "abstract": "",
+      "year": "2011",
+      "venue": "SIGKDD",
+      "authors": "Ruoming Jin, Victor E. Lee, and Hui Hong"
+    },
+    {
+      "index": 19,
+      "title": "The algorithmics of bisimilarity",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advanced Topics in Bisimulation and Coinduction",
+      "authors": "Luca Aceto, Anna Ingólfsdóttir, and Jirí Srba"
+    },
+    {
+      "index": 20,
+      "title": "Bisimulation reduction of big graphs on mapreduce",
+      "abstract": "",
+      "year": "2013",
+      "venue": "BNCOD",
+      "authors": "Yongming Luo, Yannick de Lange, George H. L. Fletcher, Paul De Bra, Jan Hidders, and Yuqing Wu"
+    },
+    {
+      "index": 21,
+      "title": "External memory k-bisimulation reduction of big graphs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CIKM",
+      "authors": "Yongming Luo, George H. L. Fletcher, Jan Hidders, Yuqing Wu, and Paul De Bra"
+    },
+    {
+      "index": 22,
+      "title": "A survey of heuristics for the weighted matching problem",
+      "abstract": "",
+      "year": "1983",
+      "venue": "Networks",
+      "authors": "David Avis"
+    },
+    {
+      "index": 23,
+      "title": "Graph isomorphism in quasipolynomial time",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Symposium on Theory of Computing",
+      "authors": "László Babai"
+    },
+    {
+      "index": 24,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 25,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 26,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 27,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 28,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 29,
+      "title": "SAPPER: subgraph indexing and approximate matching in large graphs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "PVLDB",
+      "authors": "Shijie Zhang, Jiong Yang, and Wei Jin"
+    },
+    {
+      "index": 30,
+      "title": "Treespan: efficiently computing similarity all-matching",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGMOD",
+      "authors": "Gaoping Zhu, Xuemin Lin, Ke Zhu, Wenjie Zhang, and Jeffrey Xu Yu"
+    },
+    {
+      "index": 31,
+      "title": "Fast best-effort pattern matching in large attributed graphs",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIGKDD",
+      "authors": "Hanghang Tong, Christos Faloutsos, Brian Gallagher, and Tina Eliassi-Rad"
+    },
+    {
+      "index": 32,
+      "title": "Global alignment of multiple protein interaction networks with application to functional orthology detection",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Proc. Natl. Acad. Sci.",
+      "authors": "Rohit Singh, Jinbo Xu, and Bonnie Berger"
+    },
+    {
+      "index": 33,
+      "title": "Nema: Fast graph search with label similarity",
+      "abstract": "",
+      "year": "2013",
+      "venue": "PVLDB",
+      "authors": "Arijit Khan, Yinghui Wu, Charu C. Aggarwal, and Xifeng Yan"
+    },
+    {
+      "index": 34,
+      "title": "Neighbor-aware search for approximate labeled graph matching using the chi-square statistics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "WWW",
+      "authors": "Sourav Dutta, Pratik Nayek, and Arnab Bhattacharya"
+    },
+    {
+      "index": 35,
+      "title": "G-finder: Approximate attributed subgraph matching",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Big Data",
+      "authors": "Lihui Liu, Boxin Du, Jiejun Xu, and Hanghang Tong"
+    },
+    {
+      "index": 36,
+      "title": "SAGA: a subgraph matching tool for biological graphs",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Bioinform.",
+      "authors": "Yuanyuan Tian, Richard C. McEachin, Carlos Santos, David J. States, and Jignesh M. Patel"
+    },
+    {
+      "index": 37,
+      "title": "Schemaless and structureless graph querying",
+      "abstract": "",
+      "year": "2014",
+      "venue": "PVLDB",
+      "authors": "Shengqi Yang, Yinghui Wu, Huan Sun, and Xifeng Yan"
+    },
+    {
+      "index": 38,
+      "title": "Semantic SPARQL similarity search over RDF knowledge graphs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "PVLDB",
+      "authors": "Weiguo Zheng, Lei Zou, Wei Peng, Xifeng Yan, Shaoxu Song, and Dongyan Zhao"
+    },
+    {
+      "index": 39,
+      "title": "Relational retrieval using a combination of path-constrained random walks",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Machine Learning",
+      "authors": "Ni Lao and William W. Cohen"
+    },
+    {
+      "index": 40,
+      "title": "Pathsim: Meta path-based top-k similarity search in heterogeneous information networks",
+      "abstract": "",
+      "year": "2011",
+      "venue": "PVLDB",
+      "authors": "Yizhou Sun, Jiawei Han, Xifeng Yan, Philip S. Yu, and Tianyi Wu"
+    },
+    {
+      "index": 41,
+      "title": "Top-k similarity join in heterogeneous information networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "TKDE",
+      "authors": "Yun Xiong, Yangyong Zhu, and Philip S. Yu"
+    },
+    {
+      "index": 42,
+      "title": "Node similarity with q-grams for real-world labeled networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGKDD",
+      "authors": "Alessio Conte, Gaspare Ferraro, Roberto Grossi, Andrea Marino, Kunihiko Sadakane, and Takeaki Uno"
+    },
+    {
+      "index": 43,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 44,
+      "title": "An iterative global structure-assisted labeled network aligner",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGKDD",
+      "authors": "Abdurrahman Yasar and Ümit V. Çatalyürek"
+    },
+    {
+      "index": 45,
+      "title": "FINAL: fast attributed network alignment",
+      "abstract": "",
+      "year": "2016",
+      "venue": "SIGKDD",
+      "authors": "Si Zhang and Hanghang Tong"
+    },
+    {
+      "index": 46,
+      "title": "Growing a graph matching from a handful of seeds",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PVLDB",
+      "authors": "Ehsan Kazemi, Seyed Hamed Hassani, and Matthias Grossglauser"
+    },
+    {
+      "index": 47,
+      "title": "An efficient simulation algorithm on kripke structures",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Acta Informatica",
+      "authors": "Francesco Ranzato"
+    },
+    {
+      "index": 48,
+      "title": "Meta structure: Computing relevance in large heterogeneous information networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "SIGKDD",
+      "authors": "Zhipeng Huang, Yudian Zheng, Reynold Cheng, Yizhou Sun, Nikos Mamoulis, and Xiang Li"
+    },
+    {
+      "index": 49,
+      "title": "REGAL: Representation Learning-based Graph Alignment",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM CIKM",
+      "authors": "Mark Heimann, Haoming Shen, Tara Safavi, and Danai Koutra",
+      "orig_title": "REGAL: representation learning-based graph alignment",
+      "paper_id": "1802.06257v3"
+    },
+    {
+      "index": 50,
+      "title": "FIRST: fast interactive attributed subgraph matching",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIGKDD",
+      "authors": "Boxin Du, Si Zhang, Nan Cao, and Hanghang Tong"
+    }
+  ]
+}

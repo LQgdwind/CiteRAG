@@ -1,0 +1,351 @@
+{
+  "paper_id": "2309.09431v4",
+  "title": "FactoFormer: Factorized Hyperspectral Transformers with Self-Supervised Pretraining",
+  "sections": {
+    "i introduction": "Hyperspectral Images (HSI) capture data from a wide range of the electromagnetic spectrum at each pixel. Compared to RGB and multi-spectral images, HSIs contain more fine-grained spectral information, making them widely used in applications such as precision agriculture , environment monitoring[ref]2, security , urban environment planning , geology , food quality analysis , and medical . Hyperspectral cameras capture reflectance spectra at each pixel, resulting in three-dimensional data composed of spatial and spectral information. The spatial domain consists of information such as shape, texture, and object layout, while the spectral domain is composed of reflectance spectra with materialistic or physical properties. In the early days of deep learning, Convolution Neural Networks (CNNs) were widely used for hyperspectral images  0 1 2. However, CNNs are not well-suited for capturing long-range dependencies within the spectral domain of HSI, which can span several hundred spectral bands.\nRecently, Transformers have revolutionized the field of natural language processing and computer vision by effectively learning long-range dependencies within input data, and their success has extended to HSI as well  3 4 5. However, previous methods  3 4 mainly applied pure Vision Transformer (ViT) architecture for spectral encoding, using a simple yet effective spectral group tokenization strategy, but they have not fully exploited the spatial and spectral interactions present in hyperspectral image cubes.\nFurthermore, the limitation of annotated data is a significant challenge when training ViTs, as they rely heavily on large-scale training data. However, most of the available hyperspectral datasets contain limited labeled proportions, such as the Indian Pines, University of Pavia, and Houston 2013 datasets, which possess only 48.75%, 17.43%, and 2.26% of annotated data, respectively. Recently, Masked Image Modeling (MIM) 6 7 has been introduced as a simple yet powerful self-supervised pretraining framework for Vision Transformers (ViT) without the use of labels. However, the MIM pretraining strategies often have been limited to a single modality (RGB). To tackle the aforementioned limitations, we propose FactoFormer: a factorized transformer architecture for hyperspectral images that leverages interactions along the spectral and spatial dimensions of hyperspectral cubes. FactoFormer splits hyperspectral image cubes into non-overlapping tokenized patches along both spectral and spatial dimensions and processes them with two transformers that individually focus on spatial and spectral dimensions, namely the spectral transformer, and spatial transformer. The factorization enables factorized self-attention where attention is computed in spatial and spectral dimensions simultaneously to learn and extract more salient information in both dimensions. Finally, we fuse these learned latent representations from both spectral and spatial transformers to extract the intrinsic higher-order spectral-spatial correlations present in hyperspectral data. Since the computation of multi-head self-attention in transformers is associated with quadratic computational complexity, jointly processing them would not be ideal as it increases the computational overhead. In FactoFormer, by factorization we not only learn the spectral and spatial features more effectively, but we also reduce the computational complexity from O​((m+n)2)𝑂superscript𝑚𝑛2O((m+n)^{2}) to O(m)2+O(n)2)O(m)^{2}+O(n)^{2}) where n𝑛n and m𝑚m are the number of spatial and spectral tokens respectively. The overall architecture of the proposed FactoFormer is presented in Figure 1. The proposed factorized architecture not only increases the efficiency and scalability of modeling spectral and spatial interactions but also enables factorized self-supervised pretraining. To mitigate the lack of large labeled data, we design novel masking strategies to effectively pretrain spectral and spatial transformers individually, leveraging a vast amount of unlabeled hyperspectral data. A random proportion of the input tokens are masked, and only the visible tokens are passed through spectral and spatial transformers, respectively. The latent space representations from each transformer, combined with the masked tokens, are then used to reconstruct the original information for the masked regions. Experimental results on six large-scale hyperspectral datasets show that the proposed FactoFormer achieves state-of-the-art performance while being computationally more efficient. Ablation studies were conducted to evaluate the impact of different components of our proposed method, providing insights into their contributions to the overall performance. The key contributions of the paper are summarized as follows: We propose a factorized transformer architecture, called FactoFormer, that leverages interactions along both spectral and spatial dimensions of hyperspectral cubes. The proposed factorized architecture enables factorized self-attention that allows us to learn more salient features focusing on each dimension while reducing the computational complexity. We propose novel self-supervised pretraining strategies for the factorized spatial and spectral transformers, which allows us to better utilize the large proportion of unlabeled data in the public datasets. We evaluate our proposed FactoFormer method using six publicly available benchmarks for HSI classification and our method outperforms state-of-the-art supervised and self-supervised transformer-based methods on all the datasets with significant margins. To showcase the effectiveness of the proposed FactoFormer architecture, we conduct experiments on hyperspectral image classification using remote sensing data. However, it is important to note that the FactoFormer framework is not limited to HSI classification tasks and can be applied to various other HSI applications that require representation learning from both spatial and spectral information, even with limited annotated data.\nThe remaining sections of the paper are organized as follows. Section II provides a summary of related works and their limitations. Section III outlines the background information. The proposed methodology is discussed in detail in Section IV. Section V outlines the experiments and implementation details. The results and ablation studies are presented in Section VI, and a discussion on merits and limitations of proposed method are included in Section VII. Finally, Section VIII concludes the work and discusses possible future directions."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "“Plant disease detection using hyperspectral imaging",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Plant disease detection using hyperspectral imaging",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 International Conference On Digital Image Computing-Techniques and Applications (DICTA)",
+      "authors": "P. Moghadam, D. Ward, E. Goan, S. Jayawardena, P. Sikka, and E. Hernandez"
+    },
+    {
+      "index": 2,
+      "title": "Plant Species Richness Prediction from DESIS Hyperspectral Data: A Comparison Study on Feature Extraction Procedures and Regression Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ISPRS Journal of Photogrammetry and Remote Sensing",
+      "authors": "Y. Guo, K. Mokany, C. Ong, P. Moghadam, S. Ferrier, and S. R. Levick",
+      "orig_title": "Plant species richness prediction from desis hyperspectral data: A comparison study on feature extraction procedures and regression models",
+      "paper_id": "2301.01918v2"
+    },
+    {
+      "index": 3,
+      "title": "Hypersectral imaging for military and security applications: Combining myriad processing and sensing techniques",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Geoscience and Remote Sensing Magazine",
+      "authors": "M. Shimoni, R. Haelterman, and C. Perneel"
+    },
+    {
+      "index": 4,
+      "title": "Hyperspectral imagery for environmental urban planning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IGARSS 2018-2018 IEEE International Geoscience and Remote Sensing Symposium",
+      "authors": "C. Weber, R. Aguejdad, X. Briottet, J. Avala, S. Fabre, J. Demuynck, E. Zenou, Y. Deville, M. S. Karoui, F. Z. Benhalouche, et al."
+    },
+    {
+      "index": 5,
+      "title": "Hyperspectral remote sensing in lithological mapping, mineral exploration, and environmental geology: an updated review",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Journal of Applied Remote Sensing",
+      "authors": "S. Peyghambari and Y. Zhang"
+    },
+    {
+      "index": 6,
+      "title": "Hyperspectral imaging technique for evaluating food quality and safety during various processes: A review of recent applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Trends in food science & technology",
+      "authors": "Y. Liu, H. Pu, and D.-W. Sun"
+    },
+    {
+      "index": 7,
+      "title": "Trends in deep learning for medical hyperspectral image analysis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Access",
+      "authors": "U. Khan, S. Paheding, C. P. Elkin, and V. K. Devabhaktuni"
+    },
+    {
+      "index": 8,
+      "title": "Overview of hyperspectral image classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Sensors",
+      "authors": "W. Lv and X. Wang"
+    },
+    {
+      "index": 9,
+      "title": "Hyperspectral image classification with convolutional neural network and active learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "authors": "X. Cao, J. Yao, Z. Xu, and D. Meng"
+    },
+    {
+      "index": 10,
+      "title": "Deep feature extraction and classification of hyperspectral images based on convolutional neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "authors": "Y. Chen, H. Jiang, C. Li, X. Jia, and P. Ghamisi"
+    },
+    {
+      "index": 11,
+      "title": "Hybridsn: Exploring 3-d–2-d cnn feature hierarchy for hyperspectral image classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Geoscience and Remote Sensing Letters",
+      "authors": "S. K. Roy, G. Krishna, S. R. Dubey, and B. B. Chaudhuri"
+    },
+    {
+      "index": 12,
+      "title": "Reduction of feature contamination for hyper spectral image classification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 International Conference on Digital Image Computing: Techniques and Applications (DICTA)",
+      "authors": "S. Mahendren, T. Fernando, S. Sridharan, P. Moghadam, and C. Fookes"
+    },
+    {
+      "index": 13,
+      "title": "SpectralFormer: Rethinking Hyperspectral Image Classification with Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "authors": "D. Hong, Z. Han, J. Yao, L. Gao, B. Zhang, A. Plaza, and J. Chanussot",
+      "orig_title": "Spectralformer: Rethinking hyperspectral image classification with transformers",
+      "paper_id": "2107.02988v2"
+    },
+    {
+      "index": 14,
+      "title": "Masked auto-encoding spectral-spatial transformer for hyperspectral image classification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "authors": "D. Ibañez, R. Fernandez-Beltran, F. Pla, and N. Yokoya"
+    },
+    {
+      "index": 15,
+      "title": "Spectral–spatial feature tokenization transformer for hyperspectral image classification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "authors": "L. Sun, G. Zhao, Y. Zheng, and Z. Wu"
+    },
+    {
+      "index": 16,
+      "title": "Masked autoencoders are scalable vision learners",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "K. He, X. Chen, S. Xie, Y. Li, P. Dollár, and R. Girshick"
+    },
+    {
+      "index": 17,
+      "title": "Simmim: A simple framework for masked image modeling",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Z. Xie, Z. Zhang, Y. Cao, Y. Lin, J. Bao, Z. Yao, Q. Dai, and H. Hu"
+    },
+    {
+      "index": 18,
+      "title": "Deep learning-based classification of hyperspectral data",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Journal of Selected topics in applied earth observations and remote sensing",
+      "authors": "Y. Chen, Z. Lin, X. Zhao, G. Wang, and Y. Gu"
+    },
+    {
+      "index": 19,
+      "title": "Deep recurrent neural networks for hyperspectral image classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "authors": "L. Mou, P. Ghamisi, and X. X. Zhu"
+    },
+    {
+      "index": 20,
+      "title": "Hyperspectral image classification using spectral-spatial lstms",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neurocomputing",
+      "authors": "F. Zhou, R. Hang, Q. Liu, and X. Yuan"
+    },
+    {
+      "index": 21,
+      "title": "Emerging properties in self-supervised vision transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "M. Caron, H. Touvron, I. Misra, H. Jégou, J. Mairal, P. Bojanowski, and A. Joulin"
+    },
+    {
+      "index": 22,
+      "title": "Single-source Domain Expansion Network for Cross-Scene Hyperspectral Image Classification",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "Y. Zhang, W. Li, W. Sun, R. Tao, and Q. Du",
+      "orig_title": "Single-source domain expansion network for cross-scene hyperspectral image classification",
+      "paper_id": "2209.01634v1"
+    },
+    {
+      "index": 23,
+      "title": "Topological structure and semantic information transfer network for cross-scene hyperspectral image classification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "Y. Zhang, W. Li, M. Zhang, Y. Qu, R. Tao, and H. Qi"
+    },
+    {
+      "index": 24,
+      "title": "Graph information aggregation cross-domain few-shot learning for hyperspectral image classification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "Y. Zhang, W. Li, M. Zhang, S. Wang, R. Tao, and Q. Du"
+    },
+    {
+      "index": 25,
+      "title": "Learning and transferring deep joint spectral–spatial features for hyperspectral classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "authors": "J. Yang, Y.-Q. Zhao, and J. C.-W. Chan"
+    },
+    {
+      "index": 26,
+      "title": "Residual spectral–spatial attention network for hyperspectral image classification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "authors": "M. Zhu, L. Jiao, F. Liu, S. Yang, and J. Wang"
+    },
+    {
+      "index": 27,
+      "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai, T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly, J. Uszkoreit, and N. Houlsby",
+      "orig_title": "An image is worth 16x16 words: Transformers for image recognition at scale",
+      "paper_id": "2010.11929v2"
+    },
+    {
+      "index": 28,
+      "title": "Hyperspectral image classification using group-aware hierarchical transformer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "authors": "S. Mei, C. Song, M. Ma, and F. Xu"
+    },
+    {
+      "index": 29,
+      "title": "Spatial–spectral transformer with cross-attention for hyperspectral image classification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Geoscience and Remote Sensing",
+      "authors": "Y. Peng, Y. Zhang, B. Tu, Q. Li, and W. Li"
+    },
+    {
+      "index": 30,
+      "title": "Bootstrap your own latent-a new approach to self-supervised learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in neural information processing systems",
+      "authors": "J.-B. Grill, F. Strub, F. Altché, C. Tallec, P. Richemond, E. Buchatskaya, C. Doersch, B. Avila Pires, Z. Guo, M. Gheshlaghi Azar, et al."
+    },
+    {
+      "index": 31,
+      "title": "Self-supervised Learning: Generative or Contrastive",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "X. Liu, F. Zhang, Z. Hou, L. Mian, Z. Wang, J. Zhang, and J. Tang",
+      "orig_title": "Self-supervised learning: Generative or contrastive",
+      "paper_id": "2006.08218v5"
+    },
+    {
+      "index": 32,
+      "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International conference on machine learning",
+      "authors": "T. Chen, S. Kornblith, M. Norouzi, and G. Hinton",
+      "orig_title": "A simple framework for contrastive learning of visual representations",
+      "paper_id": "2002.05709v3"
+    },
+    {
+      "index": 33,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 34,
+      "title": "220 band aviris hyperspectral image data set: June 12, 1992 indian pine test site 3",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Purdue University Research Repository",
+      "authors": "M. F. Baumgardner, L. L. Biehl, and D. A. Landgrebe"
+    },
+    {
+      "index": 35,
+      "title": "A comparative study of spatial approaches for urban mapping using hyperspectral rosis images over pavia city, northern italy",
+      "abstract": "",
+      "year": "2009",
+      "venue": "International Journal of Remote Sensing",
+      "authors": "X. Huang and L. Zhang"
+    },
+    {
+      "index": 36,
+      "title": "Hyperspectral and lidar data fusion: Outcome of the 2013 grss data fusion contest",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing",
+      "authors": "C. Debes, A. Merentitis, R. Heremans, J. Hahn, N. Frangiadakis, T. van Kasteren, W. Liao, R. Bellens, A. Pižurica, S. Gautama, W. Philips, S. Prasad, Q. Du, and F. Pacifici"
+    },
+    {
+      "index": 37,
+      "title": "Whu-hi: Uav-borne hyperspectral with high spatial resolution (h2) benchmark datasets and classifier for precise crop identification based on deep convolutional neural network with crf",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Remote Sensing of Environment",
+      "authors": "Y. Zhong, X. Hu, C. Luo, X. Wang, J. Zhao, and L. Zhang"
+    },
+    {
+      "index": 38,
+      "title": "Hyperspectral image classification based on knn sparse representation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 IEEE international geoscience and remote sensing symposium (IGARSS)",
+      "authors": "W. Song, S. Li, X. Kang, and K. Huang"
+    },
+    {
+      "index": 39,
+      "title": "Support vector machines for hyperspectral image classification with spectral-based kernels",
+      "abstract": "",
+      "year": "2003",
+      "venue": "IGARSS 2003.2003 IEEE International Geoscience and Remote Sensing Symposium",
+      "authors": "G. Mercier and M. Lennon"
+    },
+    {
+      "index": 40,
+      "title": "Semi-supervised classification of hyperspectral image using random forest algorithm",
+      "abstract": "",
+      "year": "2014",
+      "venue": "2014 IEEE Geoscience and Remote Sensing Symposium",
+      "authors": "S. Amini, S. Homayouni, and A. Safari"
+    }
+  ]
+}

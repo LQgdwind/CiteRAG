@@ -1,0 +1,589 @@
+{
+  "paper_id": "2107.12942v1",
+  "title": "Reinforcement Learning with Formal Performance Metrics for Quadcopter Attitude Control under Non-nominal Contexts",
+  "abstract": "Abstract\nWe explore the reinforcement learning approach to designing controllers by extensively discussing the case of a quadcopter attitude controller. We provide all details allowing to reproduce our approach, starting with a model of the dynamics of a crazyflie 2.0 under various nominal and non-nominal conditions, including partial motor failures and wind gusts.\nWe develop a robust form of a signal temporal logic to quantitatively evaluate the vehicle’s behavior and measure the performance of controllers.\nThe paper thoroughly describes the choices in training algorithms, neural net architecture, hyperparameters, observation space in view of the different performance metrics we have introduced. We discuss the robustness of the obtained controllers, both to partial loss of power for one rotor and to wind gusts and finish by drawing conclusions on practical controller design by reinforcement learning.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Reinforcement Learning and Optimal Control",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Athena Scientific optimization and computation series",
+      "authors": "D. Bertsekas"
+    },
+    {
+      "index": 1,
+      "title": "Deep Drone Acrobatics",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "E. Kaufmann, A. Loquercio, R. Ranftl, M. Müller, V. Koltun, D. Scaramuzza",
+      "orig_title": "Deep drone acrobatics",
+      "paper_id": "2006.05768v2"
+    },
+    {
+      "index": 2,
+      "title": "A few lessons learned in reinforcement learning for quadcopter attitude control",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM International Conference on Hybrid Systems: Computation and Control",
+      "authors": "N. Bernini, M. Bessa, R. Delmas, A. Gold, E. Goubault, R. Pennec, S. Putot, F. cois Sillion"
+    },
+    {
+      "index": 3,
+      "title": "Soft Actor-Critic Algorithms and Applications",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "T. Haarnoja, A. Zhou, K. Hartikainen, G. Tucker, S. Ha, J. Tan, V. Kumar, H. Zhu, A. Gupta, P. Abbeel, S. Levine",
+      "orig_title": "Soft actor-critic algorithms and applications",
+      "paper_id": "1812.05905v2"
+    },
+    {
+      "index": 4,
+      "title": "Addressing Function Approximation Error in Actor-Critic Methods",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Machine Learning Research",
+      "authors": "S. Fujimoto, H. van Hoof, D. Meger, et al.",
+      "orig_title": "Addressing function approximation error in actor-critic methods",
+      "paper_id": "1802.09477v3"
+    },
+    {
+      "index": 5,
+      "title": "System Identification of the Crazyflie 2.0 Nano Quadrocopter",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Institute for Dynamic Systems and Control, Swiss Federal Institute of Technology (ETH) Zurich",
+      "authors": "Förster, Julian"
+    },
+    {
+      "index": 6,
+      "title": "Reinforcement learning is direct adaptive optimal control",
+      "abstract": "",
+      "year": "1992",
+      "venue": "IEEE Control Systems Magazine",
+      "authors": "R. S. Sutton, A. G. Barto, R. J. Williams"
+    },
+    {
+      "index": 7,
+      "title": "Low-level control of a quadrotor with deep model-based reinforcement learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Robotics and Automation Letters",
+      "authors": "N. O. Lambert, D. S. Drew, J. Yaconelli, S. Levine, R. Calandra, K. S. J. Pister"
+    },
+    {
+      "index": 8,
+      "title": "Hybrid reinforcement learning control for a micro quadrotor flight",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Control Systems Letters",
+      "authors": "J. Yoo, D. Jang, H. J. Kim, K. H. Johansson"
+    },
+    {
+      "index": 9,
+      "title": "PILCO: A model-based and data-efficient approach to policy search",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICML",
+      "authors": "M. Deisenroth, C. Rasmussen"
+    },
+    {
+      "index": 10,
+      "title": "Continuous control with deep reinforcement learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "T. Lillicrap, J. Hunt, A. Pritzel, N. Heess, T. Erez, Y. Tassa, D. Silver, D. Wierstra"
+    },
+    {
+      "index": 11,
+      "title": "Proximal policy optimization algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "J. Schulman, F. Wolski, P. Dhariwal, A. Radford, O. Klimov"
+    },
+    {
+      "index": 12,
+      "title": "Reinforcement Learning with Non-Markovian Rewards",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "M. Gaon, R. I. Brafman",
+      "orig_title": "Reinforcement learning with non-markovian rewards",
+      "paper_id": "1912.02552v1"
+    },
+    {
+      "index": 13,
+      "title": "Robust markov decision processes with uncertain transition matrices",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": "A. Nilim, L. E. Ghaoui"
+    },
+    {
+      "index": 14,
+      "title": "Reinforcement Learning for UAV Attitude Control",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Trans. Cyber-Phys. Syst.",
+      "authors": "W. Koch, R. W. Renato Mancuso, A. Bestavros",
+      "orig_title": "Reinforcement Learning for UAV Attitude Control",
+      "paper_id": "1804.04154v1"
+    },
+    {
+      "index": 15,
+      "title": "Sim-to-(Multi)-Real: Transfer of Low-Level Robust Control Policies to Multiple Quadrotors",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "A. Molchanov, T. Chen, W. Hönig, J. A. Preiss, N. Ayanian, G. S. Sukhatme",
+      "orig_title": "Sim-to-(multi)-real: Transfer of low-level robust control policies to multiple quadrotors",
+      "paper_id": "1903.04628v2"
+    },
+    {
+      "index": 16,
+      "title": "Learn-to-recover: Retrofitting uavs with reinforcement learning-assisted flight control under cyberphysical attacks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICRA",
+      "authors": "F. Fei, Z. Tu, X. Deng"
+    },
+    {
+      "index": 17,
+      "title": "Developing a self-learning drone",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "T. Koning"
+    },
+    {
+      "index": 18,
+      "title": "Learning for quadcopter control",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "L. Bjarre"
+    },
+    {
+      "index": 19,
+      "title": "Correct-by-synthesis reinforcement learning with temporal logic constraints",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems",
+      "authors": "M. Wen, R. Ehlers, U. Topcu",
+      "orig_title": "Correct-by-synthesis reinforcement learning with temporal logic constraints",
+      "paper_id": "1503.01793v1"
+    },
+    {
+      "index": 20,
+      "title": "Reduced variance deep reinforcement learning with temporal logic specifications",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM/IEEE International Conference on Cyber-Physical Systems",
+      "authors": "Q. Gao, D. Hajinezhad, Y. Zhang, Y. Kantaros, M. M. Zavlanos"
+    },
+    {
+      "index": 21,
+      "title": "Reinforcement Learning for Temporal Logic Control Synthesis with Probabilistic Satisfaction Guarantees",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Decision and Control",
+      "authors": "M. Hasanbeig, Y. Kantaros, A. Abate, D. Kroening, G. J. Pappas, I. Lee",
+      "orig_title": "Reinforcement learning for temporal logic control synthesis with probabilistic satisfaction guarantees",
+      "paper_id": "1909.05304v1"
+    },
+    {
+      "index": 22,
+      "title": "Towards verifiable and safe model-free reinforcement learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Workshop on Artificial Intelligence and Formal Verification, Logic, Automata, and Synthesis",
+      "authors": "M. Hasanbeig, D. Kroening, A. Abate"
+    },
+    {
+      "index": 23,
+      "title": "Safe Reinforcement Learning via Shielding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "M. Alshiekh, R. Bloem, R. Ehlers, B. Könighofer, S. Niekum, U. Topcu",
+      "orig_title": "Safe reinforcement learning via shielding",
+      "paper_id": "1708.08611v2"
+    },
+    {
+      "index": 24,
+      "title": "MAMPS: Safe Multi-Agent Reinforcement Learning via Model Predictive Shielding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "W. Zhang, O. Bastani",
+      "orig_title": "MAMPS: safe multi-agent reinforcement learning via model predictive shielding",
+      "paper_id": "1910.12639v2"
+    },
+    {
+      "index": 25,
+      "title": "Safe Reinforcement Learning with Nonlinear Dynamics via Model Predictive Shielding",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "O. Bastani",
+      "orig_title": "Safe reinforcement learning with nonlinear dynamics via model predictive shielding",
+      "paper_id": "1905.10691v3"
+    },
+    {
+      "index": 26,
+      "title": "Safe reinforcement learning via online shielding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "O. Bastani"
+    },
+    {
+      "index": 27,
+      "title": "Robustness of temporal logic specifications for continuous-time signals",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "G. E. Fainekos, G. J. Pappas"
+    },
+    {
+      "index": 28,
+      "title": "On signal temporal logic",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Runtime Verification",
+      "authors": "A. Donzé"
+    },
+    {
+      "index": 29,
+      "title": "Stl: Extending signal temporal logic with signal-value freezing operator",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Inf. Comput.",
+      "authors": "L. Brim, P. Dluhos, D. Safránek, T. Vejpustek"
+    },
+    {
+      "index": 30,
+      "title": "Time Robustness in MTL and Expressivity in Hybrid System Falsification",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Computer Aided Verification",
+      "authors": "T. Akazaki, I. Hasuo",
+      "orig_title": "Time robustness in MTL and expressivity in hybrid system falsification",
+      "paper_id": "1505.06307v2"
+    },
+    {
+      "index": 31,
+      "title": "Specification and efficient monitoring beyond STL",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Tools and Algorithms for the Construction and Analysis of Systems",
+      "authors": "A. Bakhirkin, N. Basset"
+    },
+    {
+      "index": 32,
+      "title": "Temporal logic robustness for general signal classes",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM International Conference on Hybrid Systems: Computation and Control",
+      "authors": "H. Abbas, Y. V. Pant, R. Mangharam"
+    },
+    {
+      "index": 33,
+      "title": "Control from Signal Temporal Logic Specifications with Smooth Cumulative Quantitative Semantics",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Decision and Control",
+      "authors": "I. Haghighi, N. Mehdipour, E. Bartocci, C. Belta",
+      "orig_title": "Control from signal temporal logic specifications with smooth cumulative quantitative semantics",
+      "paper_id": "1904.11611v1"
+    },
+    {
+      "index": 34,
+      "title": "Arithmetic-Geometric Mean Robustness for Control from Signal Temporal Logic Specifications",
+      "abstract": "",
+      "year": "2019",
+      "venue": "American Control Conference",
+      "authors": "N. Mehdipour, C. I. Vasile, C. Belta",
+      "orig_title": "Arithmetic-geometric mean robustness for control from signal temporal logic specifications",
+      "paper_id": "1903.05186v1"
+    },
+    {
+      "index": 35,
+      "title": "A smooth robustness measure of signal temporal logic for symbolic control",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Control. Syst. Lett.",
+      "authors": "Y. Gilpin, V. Kurtz, H. Lin"
+    },
+    {
+      "index": 36,
+      "title": "Multi-armed bandits for boolean connectives in hybrid system falsification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Computer Aided Verification",
+      "authors": "Z. Zhang, I. Hasuo, P. Arcaini"
+    },
+    {
+      "index": 37,
+      "title": "Q-learning for robust satisfaction of signal temporal logic specifications",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Decision and Control",
+      "authors": "D. Aksaray, A. Jones, Z. Kong, M. Schwager, C. Belta"
+    },
+    {
+      "index": 38,
+      "title": "Temporal Logic Guided Safe Reinforcement Learning Using Control Barrier Functions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "X. Li, C. Belta",
+      "orig_title": "Temporal logic guided safe reinforcement learning using control barrier functions",
+      "paper_id": "1903.09885v1"
+    },
+    {
+      "index": 39,
+      "title": "Control barrier functions for signal temporal logic tasks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Control. Syst. Lett.",
+      "authors": "L. Lindemann, D. V. Dimarogonas"
+    },
+    {
+      "index": 40,
+      "title": "Inner and Outer Reachability for the Verification of Control Systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "HSCC",
+      "authors": "E. Goubault, S. Putot"
+    },
+    {
+      "index": 41,
+      "title": "Design of a Trajectory Tracking Controller for a Nanoquadcopter",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Mobile Robotics and Autonomous Systems Laboratory, Polytechnique Montreal",
+      "authors": "C. Luis, J. Le Ny"
+    },
+    {
+      "index": 42,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Bitcraze",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 43,
+      "title": "Nonlinear dynamic modeling for high performance control of a quadrotor",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Australasian Conference on Robotics and Automation",
+      "authors": "M. Bangura, R. Mahony"
+    },
+    {
+      "index": 44,
+      "title": "Gust load alleviation: Identification, control, and wind tunnel testing of a 2-d aeroelastic airfoil",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Control Systems Technology",
+      "authors": "C. Poussot-Vassal, F. Demourant, A. Lepage, D. Le Bihan"
+    },
+    {
+      "index": 45,
+      "title": "Understanding Deep Neural Networks with Rectified Linear Units",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "R. Arora, A. Basu, P. Mianjy, A. Mukherjee",
+      "orig_title": "Understanding deep neural networks with rectified linear units",
+      "paper_id": "1611.01491v6"
+    },
+    {
+      "index": 46,
+      "title": "The explicit linear quadratic regulator for constrained systems",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Automatica",
+      "authors": "A. Bemporad, M. Morari, V. Dua, E. N. Pistikopoulos"
+    },
+    {
+      "index": 47,
+      "title": "Two-Level Lattice Neural Network Architectures for Control of Nonlinear Systems",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "J. Ferlez, X. Sun, Y. Shoukry",
+      "orig_title": "Two-level lattice neural network architectures for control of nonlinear systems",
+      "paper_id": "2004.09628v2"
+    },
+    {
+      "index": 48,
+      "title": "AReN: Assured ReLU NN Architecture for Model Predictive Control of LTI Systems",
+      "abstract": "",
+      "year": "2020",
+      "venue": "HSCC, ACM",
+      "authors": "J. Ferlez, Y. Shoukry",
+      "orig_title": "Aren: assured relu NN architecture for model predictive control of LTI systems",
+      "paper_id": "1911.01608v1"
+    },
+    {
+      "index": 49,
+      "title": "A deep learning-based approach to robust nonlinear model predictive control",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IFAC-PapersOnLine",
+      "authors": "S. Lucia, B. Karg"
+    },
+    {
+      "index": 50,
+      "title": "Monitoring temporal properties of continuous signals",
+      "abstract": "",
+      "year": "2010",
+      "venue": "International Conference on Computer Aided Verification",
+      "authors": "A. Donze"
+    },
+    {
+      "index": 51,
+      "title": "Specification and efficient monitoring beyond stl",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Tools and Algorithms for the Construction and Analysis of Systems",
+      "authors": "A. Bakhirkin, N. Basset"
+    },
+    {
+      "index": 52,
+      "title": "Time Robustness in MTL and Expressivity in Hybrid System Falsification",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Computer Aided Verification",
+      "authors": "T. Akazaki, I. Hasuo",
+      "orig_title": "Time robustness in mtl and expressivity in hybrid system falsification",
+      "paper_id": "1505.06307v2"
+    },
+    {
+      "index": 53,
+      "title": "Stable Baselines",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "A. Hill, A. Raffin, M. Ernestus, A. Gleave, R. Traore, P. Dhariwal, C. Hesse, O. Klimov, A. Nichol, M. Plappert, A. Radford, J. Schulman, S. Sidor, Y. Wu"
+    },
+    {
+      "index": 54,
+      "title": "TensorFlow: A system for large-scale machine learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+      "authors": "M. Abadi, P. Barham, J. Chen, Z. Chen, A. Davis, J. Dean, M. Devin, S. Ghemawat, G. Irving, M. Isard, et al.",
+      "orig_title": "Tensorflow: A system for large-scale machine learning",
+      "paper_id": "1605.08695v2"
+    },
+    {
+      "index": 55,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Bazel Documentation",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 56,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Kubernetes Documentation",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 57,
+      "title": "Bazel Container Image Rules",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 58,
+      "title": "Bazel Kubernetes Rules",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 59,
+      "title": "Hiplot, interactive high-dimensionality plots",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "D. Haziza, J. Rapin, G. Synnaeve"
+    },
+    {
+      "index": 60,
+      "title": "D2RL: Deep Dense Architectures in Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "S. Sinha, H. Bharadhwaj, A. Srinivas, A. Garg",
+      "orig_title": "D2rl: Deep dense architectures in reinforcement learning",
+      "paper_id": "2010.09163v2"
+    },
+    {
+      "index": 61,
+      "title": "Striving for Simplicity and Performance in Off-Policy DRL: Output Normalization and Non-Uniform Sampling",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "C. Wang, Y. Wu, Q. Vuong, K. Ross",
+      "orig_title": "Striving for simplicity and performance in off-policy DRL: Output normalization and non-uniform sampling",
+      "paper_id": "1910.02208v4"
+    },
+    {
+      "index": 62,
+      "title": "How to make Deep RL work in Practice",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "N. Rao, E. Aljalbout, A. Sauer, S. Haddadin",
+      "orig_title": "How to make deep rl work in practice",
+      "paper_id": "2010.13083v2"
+    },
+    {
+      "index": 63,
+      "title": "Reducing overestimation bias by increasing representation dissimilarity in ensemble based deep q-learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "H. U. Sheikh, L. Bölöni"
+    },
+    {
+      "index": 64,
+      "title": "Learning to Locomote: Understanding How Environment Design Matters for Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Motion, Interaction and Games, MIG, Association for Computing Machinery",
+      "authors": "D. Reda, T. Tao, M. van de Panne",
+      "orig_title": "Learning to locomote: Understanding how environment design matters for deep reinforcement learning",
+      "paper_id": "2010.04304v1"
+    },
+    {
+      "index": 65,
+      "title": "Reachability analysis for neural feedback systems using regressive polynomial rule inference",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM International Conference on Hybrid Systems: Computation and Control",
+      "authors": "S. Dutta, X. Chen, S. Sankaranarayanan"
+    }
+  ]
+}

@@ -1,0 +1,529 @@
+{
+  "paper_id": "2309.03466v2",
+  "title": "Mira: Cracking Black-box Watermarking on Deep Neural Networks via Model Inversion-based Removal Attacks",
+  "sections": {
+    "overview of evaluation": "To evaluate the removal effectiveness of Mira, we perform a comprehensive study on the vulnerability of ten state-of-the-art black-box watermarking schemes listed in Table 1.\nBefore presenting the detailed evaluation results, we first provide a concise introduction to the experimental setups. ∙∙\\bullet Datasets and Victim Models.\nFollowing the settings in  [ref]33 3, we construct victim models on three benchmark datasets, namely, MNIST , CIFAR-10 and CIFAR-100 . The respective DNN architectures are LeNet-5 , ResNet-18  and ResNet-34.\nWe embed black-box watermarks into the victim models during the training. Then we perform watermark removal attacks including Mira and the baseline attacks to evaluate their effectiveness. ∙∙\\bullet Target Watermark Schemes.\nOur evaluation covers ten existing black-box DNN watermarks, which are categorized as fixed-class watermarks (i.e., all the watermark data are paired with the identical target class), and non-fixed-class watermarks (i.e., each watermark data is paired with its own target class) listed in Table 1. For more backgrounds on the watermarking schemes, please refer to Appendix B.1.\nWe implement the target black-box watermark schemes based on the open-source watermark framework provided by Lederer et al. [ref]32, with target class set to 6 for the fixed-class watermarks.\nFor the watermarks not included in the framework (such as EWE and Blind), we strictly follow the parameter settings described in the original papers.\nFor more implementation details and the performance of the watermarked models, please refer to Appendix B.2 and B.3. ∙∙\\bullet Baseline Removal Attacks.\nWe compare our Mira with the following three types of removal attacks, six baseline attacks in total. Pruning-based attacks:\n(1) Pruning   directly sets a proportion of DNN parameters with the smallest absolute values to zero.\n(2) Fine-pruning  prunes neurons that are infrequently activated by normal data, followed by a finetuning process. Finetuning-based attacks:\n(3) Finetuning   specifically finetunes the target model using a large learning rate, together with a carefully-designed scheduler.\n(4) Regularization 3  finetunes the target model with a large L2 regularization on the parameters.\n(5) Distraction  finetunes the target model on in-distribution or transfer data, together with another set of lure data that distracts the model’s attention away from the watermark. Unlearning-based attacks: (6) Laundering  leverages trigger reverse-engineering methods  in backdoor defense literature to recover watermark data, followed by neuron resetting and model retraining, to remove backdoor-based watermarks. The implementation details of these baseline attacks are clarified in Appendix B.4. ∙∙\\bullet Implementation of Mira.\nDuring watermark recovering, we set hyper-parameters M=250,αℓ2=0.01,αt​v=0.03,αb​n=0.1formulae-sequence𝑀250formulae-sequencesubscript𝛼subscriptℓ20.01formulae-sequencesubscript𝛼𝑡𝑣0.03subscript𝛼𝑏𝑛0.1M=250,\\alpha_{\\ell_{2}}=0.01,\\alpha_{tv}=0.03,\\alpha_{bn}=0.1. We use t​a​n​h​(⋅)𝑡𝑎𝑛ℎ⋅tanh(\\cdot) to constrain the batch data within a valid range, and optimize the recovering objective with the Adam optimizer of learning rate 0.1.\nFor target label detection, we set σ1=1.0,σ2=0.03formulae-sequencesubscript𝜎11.0subscript𝜎20.03\\sigma_{1}=1.0,\\sigma_{2}=0.03 for MNIST and σ1=0.5,σ2=0.015formulae-sequencesubscript𝜎10.5subscript𝜎20.015\\sigma_{1}=0.5,\\sigma_{2}=0.015 for CIFAR-10 and CIFAR-100 respectively.\nThe detection threshold T𝑇T is conservatively set to 0.40.40.4 for MNIST and CIFAR-10, while 0.30.30.3 for CIFAR-100.\nFor splitting the recovered samples, we set l𝑙l to be the penultimate layer of the target model, and saliency ratio β=0.95𝛽0.95\\beta=0.95, split ratio γ=0.5𝛾0.5\\gamma=0.5 in Alg.1.\nDuring watermark unlearning, we set αK​L=15subscript𝛼𝐾𝐿15\\alpha_{KL}=15 to ensure the unlearning strength for the basic Mira and the uniform loss weights for the improved Mira.\nThe model is finally finetuned for 101010 epochs using the SGD optimizer with the batch size 128128128.\nThe learning rate is set to 0.010.010.01 when auxiliary data is available and 0.0030.0030.003 when data-free. Noteworthily, the settings above are empirically chosen and lead to strong attack effectiveness uniformly over almost all the covered watermarking schemes, which supports the watermark-agnostic nature of our Mira. ∙∙\\bullet Evaluation Metrics.\nWe primarily focus on the utility and the watermark retention of the surrogate models obtained via removal attacks. Specifically, we use clean accuracy, i.e., the classification accuracy on the test set, to measure the utility, and watermark accuracy, i.e., the ratio of watermark samples correctly classified as target labels, to measure the watermark retention. To compare the attack effectiveness over different black-box watermark schemes, we follow Lukas et al.  to determine the decision threshold θ𝜃\\theta for each watermark on 202020 independently trained clean models, and then calculate a metric called the rescaled watermark accuracy.\nThe linear rescaling function is defined as S​(x;θ)=max⁡(0,1−θ′1−θ​x+θ′−θ1−θ)𝑆𝑥𝜃01superscript𝜃′1𝜃𝑥superscript𝜃′𝜃1𝜃S(x;\\theta)=\\max(0,\\frac{1-\\theta^{\\prime}}{1-\\theta}x+\\frac{\\theta^{\\prime}-\\theta}{1-\\theta}), which degrades to S​(x;θ)=max⁡(0,1−0.5​1−x1−θ)𝑆𝑥𝜃010.51𝑥1𝜃S(x;\\theta)=\\max(0,1-0.5\\frac{1-x}{1-\\theta}) when we set θ′=0.5superscript𝜃′0.5\\theta^{\\prime}=0.5.\nRescaled watermark accuracy unifies the watermark accuracy of surrogate models embedded with different watermarks. According to , the model watermark is fully removed if the rescaled watermark accuracy is lower than 50%percent5050\\%.\nTable B.1 in Appendix B.3 summarizes our estimated decision threshold for the ten black-box watermarking schemes. We define a removal attack is successful (i.e., cracks the target watermark scheme) if the rescaled watermark accuracy is below 50% and the surrogate model maintains at least 90% of the original utility.\nNote that our attack success criterion is slightly different from  in that they consider a maximum 5%percent55\\% utility loss.\nThis is mainly because we consider the more realistic data-limited settings (e.g., 2%percent22\\% of the source training set in Section 6.2), while they assume the attacker has access to over 30%percent3030\\% of the training set."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Hugging Face Datasets",
+      "abstract": "",
+      "year": "2023",
+      "venue": "https://huggingface.co/docs/datasets/index",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Protecting intellectual property of deep neural networks with watermarking",
+      "abstract": "",
+      "year": "2023",
+      "venue": "https://research.ibm.com/publications/protecting-intellectual-property-of-deep-neural-networks-with-watermarking",
+      "authors": ""
+    },
+    {
+      "index": 2,
+      "title": "Turning Your Weakness Into a Strength: Watermarking Deep Neural Networks by Backdooring",
+      "abstract": "",
+      "year": "2018",
+      "venue": "USENIX Security Symposium",
+      "authors": "Yossi Adi, Carsten Baum, Moustapha Cisse, Benny Pinkas, and Joseph Keshet",
+      "orig_title": "Turning your weakness into a strength: Watermarking deep neural networks by backdooring",
+      "paper_id": "1802.04633v3"
+    },
+    {
+      "index": 3,
+      "title": "Neural Network Laundering: Removing Black-Box Backdoor Watermarks from Deep Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Computers & Security",
+      "authors": "William Aiken, Hyoungshick Kim, and Simon S. Woo",
+      "orig_title": "Neural network laundering: Removing black-box backdoor watermarks from deep neural networks",
+      "paper_id": "2004.11368v1"
+    },
+    {
+      "index": 4,
+      "title": "Machine learning in tracking associations with stereo vision and lidar observations for an autonomous vehicle",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Intelligent Vehicles Symposium (IV)",
+      "authors": "Marco Allodi, Alberto Broggi, Domenico Giaquinto, Marco Patander, and Antonio Prioletti"
+    },
+    {
+      "index": 5,
+      "title": "Autonomous driving architectures: insights of machine learning and deep learning algorithms",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Machine Learning with Applications",
+      "authors": "Mrinal R Bachute and Javed M Subhedar"
+    },
+    {
+      "index": 6,
+      "title": "Detecting Backdoor Attacks on Deep Neural Networks by Activation Clustering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ArXiv",
+      "authors": "Bryant Chen, Wilka Carvalho, Nathalie Baracaldo, Heiko Ludwig, Ben Edwards, Taesung Lee, Ian Molloy, and B. Srivastava",
+      "orig_title": "Detecting backdoor attacks on deep neural networks by activation clustering",
+      "paper_id": "1811.03728v1"
+    },
+    {
+      "index": 7,
+      "title": "REFIT: A Unified Watermark Removal Framework For Deep Learning Systems With Limited Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM Asia Conference on Computer and Communications Security",
+      "authors": "Xinyun Chen, Wenxiao Wang, Chris Bender, Yiming Ding, Ruoxi Jia, Bo Li, and Dawn Song",
+      "orig_title": "Refit: a unified watermark removal framework for deep learning systems with limited data",
+      "paper_id": "1911.07205v3"
+    },
+    {
+      "index": 8,
+      "title": "Leveraging unlabeled data for watermark removal of deep neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML Workshop on Security and Privacy of Machine Learning",
+      "authors": "Xinyun Chen, Wenxiao Wang, Yiming Ding, Chris Bender, Ruoxi Jia, Bo Li, and Dawn Song"
+    },
+    {
+      "index": 9,
+      "title": "You are caught stealing my winning lottery ticket! Making a lottery ticket claim its ownership",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Xuxi Chen, Tianlong Chen, Zhenyu Zhang, and Zhangyang Wang",
+      "orig_title": "You are caught stealing my winning lottery ticket! making a lottery ticket claim its ownership",
+      "paper_id": "2111.00162v1"
+    },
+    {
+      "index": 10,
+      "title": "Linkbreaker: Breaking the backdoor-trigger link in dnns via neurons consistency check",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Information Forensics and Security",
+      "authors": "Zhenzhu Chen, Shang Wang, Anmin Fu, Yansong Gao, Shui Yu, and Robert H. Deng"
+    },
+    {
+      "index": 11,
+      "title": "Emnist: Extending mnist to handwritten letters",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Joint Conference on Neural Networks (IJCNN)",
+      "authors": "Gregory Cohen, Saeed Afshar, Jonathan Tapson, and Andre Van Schaik"
+    },
+    {
+      "index": 12,
+      "title": "Certified Adversarial Robustness via Randomized Smoothing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Jeremy Cohen, Elan Rosenfeld, and Zico Kolter",
+      "orig_title": "Certified adversarial robustness via randomized smoothing",
+      "paper_id": "1902.02918v2"
+    },
+    {
+      "index": 13,
+      "title": "Deepsigns: An end-to-end watermarking framework for ownership protection of deep neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Architectural Support for Programming Languages and Operating Systems",
+      "authors": "Bita Darvish Rouhani, Huili Chen, and Farinaz Koushanfar"
+    },
+    {
+      "index": 14,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.04805",
+      "authors": "Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova",
+      "orig_title": "Bert: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 15,
+      "title": "Model inversion attacks that exploit confidence information and basic countermeasures",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "Matt Fredrikson, Somesh Jha, and Thomas Ristenpart"
+    },
+    {
+      "index": 16,
+      "title": "Backdoor Smoothing: Demystifying Backdoor Attacks on Deep Neural Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Computers & Security",
+      "authors": "Kathrin Grosse, Taesung Lee, Battista Biggio, Youngja Park, Michael Backes, and Ian Molloy",
+      "orig_title": "Backdoor smoothing: Demystifying backdoor attacks on deep neural networks",
+      "paper_id": "2006.06721v4"
+    },
+    {
+      "index": 17,
+      "title": "Watermarking deep neural networks for embedded systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE/ACM International Conference on Computer-Aided Design (ICCAD)",
+      "authors": "Jia Guo and Miodrag Potkonjak"
+    },
+    {
+      "index": 18,
+      "title": "Fine-tuning Is Not Enough: A Simple yet Effective Watermark Removal Attack for DNN Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Joint Conference on Artificial Intelligence",
+      "authors": "Shangwei Guo, Tianwei Zhang, Han Qiu, Yi Zeng, Tao Xiang, and Yang Liu",
+      "orig_title": "Fine-tuning is not enough: A simple yet effective watermark removal attack for dnn models",
+      "paper_id": "2009.08697v2"
+    },
+    {
+      "index": 19,
+      "title": "Convolutional recurrent deep learning model for sentence classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Access",
+      "authors": "Abdalraouf Hassan and Ausif Mahmood"
+    },
+    {
+      "index": 20,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 21,
+      "title": "Densely connected convolutional networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Gao Huang, Zhuang Liu, Laurens Van Der Maaten, and Kilian Q Weinberger"
+    },
+    {
+      "index": 22,
+      "title": "Adversarial examples are not bugs, they are features",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Andrew Ilyas, Shibani Santurkar, Dimitris Tsipras, Logan Engstrom, Brandon Tran, and Aleksander Madry"
+    },
+    {
+      "index": 23,
+      "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Sergey Ioffe and Christian Szegedy"
+    },
+    {
+      "index": 24,
+      "title": "Entangled watermarks as a defense against model extraction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "USENIX Security Symposium",
+      "authors": "Hengrui Jia, Christopher A Choquette-Choo, Varun Chandrasekaran, and Nicolas Papernot"
+    },
+    {
+      "index": 25,
+      "title": "Watermarking techniques for intellectual property protection",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Design Automation Conference",
+      "authors": "Andrew B Kahng, John Lach, William H Mangione-Smith, Stefanus Mantik, Igor L Markov, Miodrag Potkonjak, Paul Tucker, Huijuan Wang, and Gregory Wolfe"
+    },
+    {
+      "index": 26,
+      "title": "Overcoming catastrophic forgetting in neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "National Academy of Sciences",
+      "authors": "James Kirkpatrick, Razvan Pascanu, Neil Rabinowitz, Joel Veness, Guillaume Desjardins, Andrei A Rusu, Kieran Milan, John Quan, Tiago Ramalho, Agnieszka Grabska-Barwinska, et al.",
+      "orig_title": "Overcoming catastrophic forgetting in neural networks",
+      "paper_id": "1612.00796v2"
+    },
+    {
+      "index": 27,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Alex Krizhevsky, Geoffrey Hinton, et al."
+    },
+    {
+      "index": 28,
+      "title": "Adversarial frontier stitching for remote neural network watermarking",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Neural Computing and Applications",
+      "authors": "Erwan Le Merrer, Patrick Perez, and Gilles Trédan"
+    },
+    {
+      "index": 29,
+      "title": "Gradient-based learning applied to document recognition",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Proceedings of the IEEE",
+      "authors": "Yann LeCun, Léon Bottou, Yoshua Bengio, and Patrick Haffner"
+    },
+    {
+      "index": 30,
+      "title": "The mnist database of handwritten digits",
+      "abstract": "",
+      "year": "1998",
+      "venue": "http://yann.lecun.com/exdb/mnist/",
+      "authors": "Yann LeCun, Corinna Cortes, and Christopher J.C. Burges"
+    },
+    {
+      "index": 31,
+      "title": "Identifying appropriate intellectual property protection mechanisms for machine learning models: A systematization of watermarking, fingerprinting, model access, and attacks",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2304.11285",
+      "authors": "Isabell Lederer, Rudolf Mayer, and Andreas Rauber"
+    },
+    {
+      "index": 32,
+      "title": "Evaluating the Robustness of Trigger Set-Based Watermarks Embedded in Deep Neural Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Dependable and Secure Computing",
+      "authors": "Suyoung Lee, Wonho Song, Suman Jana, Meeyoung Cha, and Sooel Son",
+      "orig_title": "Evaluating the robustness of trigger set-based watermarks embedded in deep neural networks",
+      "paper_id": "2106.10147v2"
+    },
+    {
+      "index": 33,
+      "title": "Piracy Resistant Watermarks for Deep Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.01226",
+      "authors": "Huiying Li, Emily Wenger, Shawn Shan, Ben Y Zhao, and Haitao Zheng",
+      "orig_title": "Piracy resistant watermarks for deep neural networks",
+      "paper_id": "1910.01226v3"
+    },
+    {
+      "index": 34,
+      "title": "Anti-Backdoor Learning: Training Clean Models on Poisoned Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Yige Li, Xixiang Lyu, Nodens Koren, Lingjuan Lyu, Bo Li, and Xingjun Ma",
+      "orig_title": "Anti-backdoor learning: Training clean models on poisoned data",
+      "paper_id": "2110.11571v3"
+    },
+    {
+      "index": 35,
+      "title": "How to Prove Your Model Belongs to You: A Blind-Watermark based Framework to Protect Intellectual Property of DNN",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Annual Computer Security Applications Conference",
+      "authors": "Zheng Li, Chengyu Hu, Yang Zhang, and Shanqing Guo",
+      "orig_title": "How to prove your model belongs to you: A blind-watermark based framework to protect intellectual property of dnn",
+      "paper_id": "1903.01743v4"
+    },
+    {
+      "index": 36,
+      "title": "Fine-Pruning: Defending Against Backdooring Attacks on Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Symposium on Research in Attacks, Intrusions, and Defenses (RAID)",
+      "authors": "Kang Liu, Brendan Dolan-Gavitt, and Siddharth Garg",
+      "orig_title": "Fine-pruning: Defending against backdooring attacks on deep neural networks",
+      "paper_id": "1805.12185v1"
+    },
+    {
+      "index": 37,
+      "title": "Removing Backdoor-Based Watermarks in Neural Networks with Limited Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Pattern Recognition (ICPR)",
+      "authors": "Xuankai Liu, Fengting Li, Bihan Wen, and Qi Li",
+      "orig_title": "Removing backdoor-based watermarks in neural networks with limited data",
+      "paper_id": "2008.00407v2"
+    },
+    {
+      "index": 38,
+      "title": "Sok: How robust is image classification deep neural network watermarking?",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Symposium on Security and Privacy (SP)",
+      "authors": "Nils Lukas, Edward Jiang, Xinda Li, and Florian Kerschbaum"
+    },
+    {
+      "index": 39,
+      "title": "Inceptionism: Going deeper into neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Alexander Mordvintsev, Christopher Olah, and Mike Tyka"
+    },
+    {
+      "index": 40,
+      "title": "Robust Watermarking of Neural Network with Exponential Weighting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Asia Conference on Computer and Communications Security",
+      "authors": "Ryota Namba and Jun Sakuma",
+      "orig_title": "Robust watermarking of neural network with exponential weighting",
+      "paper_id": "1901.06151v1"
+    },
+    {
+      "index": 41,
+      "title": "Deep face recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Omkar M Parkhi, Andrea Vedaldi, and Andrew Zisserman"
+    },
+    {
+      "index": 42,
+      "title": "On the robustness of backdoor-based watermarking in deep neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Workshop on Information Hiding and Multimedia Security",
+      "authors": "Masoumeh Shafieinejad, Jiaqi Wang, Nils Lukas, and Florian Kerschbaum"
+    },
+    {
+      "index": 43,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1556",
+      "authors": "Karen Simonyan and Andrew Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 44,
+      "title": "Single Image Backdoor Inversion via Robust Smoothed Classifiers",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Mingjie Sun and Zico Kolter",
+      "orig_title": "Single image backdoor inversion via robust smoothed classifiers",
+      "paper_id": "2303.00215v2"
+    },
+    {
+      "index": 45,
+      "title": "Detect and remove watermark in deep neural networks via generative adversarial networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Information Security - International Conference ISC",
+      "authors": "Shichang Sun, Haoqi Wang, Mingfu Xue, Yushu Zhang, Jian Wang, and Weiqiang Liu",
+      "orig_title": "Detect and remove watermark in deep neural networks via generative adversarial networks",
+      "paper_id": "2106.08104v1"
+    },
+    {
+      "index": 46,
+      "title": "Rethinking the inception architecture for computer vision",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jon Shlens, and Zbigniew Wojna"
+    },
+    {
+      "index": 47,
+      "title": "Embedding watermarks into deep neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM International Conference on Multimedia Retrieval",
+      "authors": "Yusuke Uchida, Yuki Nagai, Shigeyuki Sakazawa, and Shin’ichi Satoh"
+    },
+    {
+      "index": 48,
+      "title": "Visualizing Data using GTSNE",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Laurens Van der Maaten and Geoffrey Hinton",
+      "orig_title": "Visualizing data using t-sne",
+      "paper_id": "2108.01301v1"
+    },
+    {
+      "index": 49,
+      "title": "Neural cleanse: Identifying and mitigating backdoor attacks in neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Symposium on Security and Privacy (SP)",
+      "authors": "Bolun Wang, Yuanshun Yao, Shawn Shan, Huiying Li, Bimal Viswanath, Haitao Zheng, and Ben Y Zhao"
+    },
+    {
+      "index": 50,
+      "title": "RIGA: Covert and Robust White-Box Watermarking of Deep Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Web Conference",
+      "authors": "Tianhao Wang and Florian Kerschbaum",
+      "orig_title": "Riga: Covert and robust white-box watermarking of deep neural networks",
+      "paper_id": "1910.14268v4"
+    },
+    {
+      "index": 51,
+      "title": "Rethinking White-Box Watermarks on Deep Learning Models under Neural Structural Obfuscation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "USENIX Security Symposium",
+      "authors": "Yifan Yan, Xudong Pan, Mi Zhang, and Min Yang",
+      "orig_title": "Rethinking white-box watermarks on deep learning models under neural structural obfuscation",
+      "paper_id": "2303.09732v1"
+    },
+    {
+      "index": 52,
+      "title": "Effectiveness of Distillation Attack and Countermeasure on Neural Network Watermarking",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ArXiv",
+      "authors": "Ziqi Yang, Hung Dang, and Ee-Chien Chang",
+      "orig_title": "Effectiveness of distillation attack and countermeasure on neural network watermarking",
+      "paper_id": "1906.06046v1"
+    },
+    {
+      "index": 53,
+      "title": "Dreaming to Distill: Data-free Knowledge Transfer via DeepInversion",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Hongxu Yin, Pavlo Molchanov, Jose M Alvarez, Zhizhong Li, Arun Mallya, Derek Hoiem, Niraj K Jha, and Jan Kautz",
+      "orig_title": "Dreaming to distill: Data-free knowledge transfer via deepinversion",
+      "paper_id": "1912.08795v2"
+    },
+    {
+      "index": 54,
+      "title": "Few-shot Unlearning by Model Inversion",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2205.15567",
+      "authors": "Youngsik Yoon, Jinhwan Nam, Hyojeong Yun, Dongwoo Kim, and Jungseul Ok",
+      "orig_title": "Few-shot unlearning by model inversion",
+      "paper_id": "2205.15567v2"
+    },
+    {
+      "index": 55,
+      "title": "Protecting intellectual property of deep neural networks with watermarking",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Asia Conference on Computer and Communications Security",
+      "authors": "Jialong Zhang, Zhongshu Gu, Jiyong Jang, Hui Wu, Marc Ph Stoecklin, Heqing Huang, and Ian Molloy"
+    },
+    {
+      "index": 56,
+      "title": "Medical image classification using synergic deep learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Medical Image Analysis",
+      "authors": "Jianpeng Zhang, Yutong Xie, Qi Wu, and Yong Xia"
+    },
+    {
+      "index": 57,
+      "title": "Attention Distraction: Watermark Removal Through Continual Learning with Selective Forgetting",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE International Conference on Multimedia and Expo (ICME)",
+      "authors": "Qi Zhong, Leo Yu Zhang, Shengshan Hu, Longxiang Gao, Jun Zhang, and Yang Xiang",
+      "orig_title": "Attention distraction: Watermark removal through continual learning with selective forgetting",
+      "paper_id": "2204.01934v1"
+    }
+  ]
+}

@@ -1,0 +1,1775 @@
+{
+  "paper_id": "2010.09330v1",
+  "title": "Enabling High-Capacity, Latency-Tolerant, and Highly-Concurrent GPU Register Files via Software/Hardware Cooperation",
+  "abstract": "Abstract.\nGraphics Processing Units (GPUs) employ large register files to accommodate all active threads and accelerate context switching. Unfortunately, register files are a scalability bottleneck for future GPUs due to long access latency, high power consumption, and large silicon area provisioning. Prior work proposes hierarchical register file to reduce the register file power consumption by caching registers in a smaller register file cache. Unfortunately, this approach does not improve register access latency due to the low hit rate in the register file cache.\nIn this paper, we propose the Latency-Tolerant Register File (LTRF) architecture to achieve low latency in a two-level hierarchical structure while keeping power consumption low. We observe that compile-time interval analysis enables us to divide GPU program execution into intervals with an accurate estimate of a warp’s aggregate register working-set within each interval. The key idea of LTRF is to prefetch the estimated register working-set from the main register file to the register file cache under software control, at the beginning of each interval, and overlap the prefetch latency with the execution of other warps. We observe that register bank conflicts while prefetching the registers could greatly reduce the effectiveness of LTRF. Therefore, we devise a compile-time register renumbering technique to reduce the likelihood of register bank conflicts. Our experimental results show that LTRF enables high-capacity yet long-latency main GPU register files, paving the way for various optimizations. As an example optimization, we implement the main register file with emerging high-density high-latency memory technologies, enabling 8×\\times larger capacity and improving overall GPU performance by 34%.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Warped register file: A power efficient register file for GPGPUs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "HPCA",
+      "authors": "Mohammad Abdel-Majeed and Murali Annavaram"
+    },
+    {
+      "index": 1,
+      "title": "Pilot Register File: Energy efficient partitioned register file for GPUs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "HPCA",
+      "authors": "Mohammad Abdel-Majeed, Alireza Shafaei, Hyeran Jeon, Massoud Pedram, and Murali Annavaram"
+    },
+    {
+      "index": 2,
+      "title": "A scalable processing-in-memory accelerator for parallel graph processing",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISCA",
+      "authors": "Junwhan Ahn, Sungpack Hong, Sungjoo Yoo, Onur Mutlu, and Kiyoung Choi"
+    },
+    {
+      "index": 3,
+      "title": "Compilers: principles, techniques and tools (for Anna University), 2/e",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": "Alfred V Aho"
+    },
+    {
+      "index": 4,
+      "title": "Data prefetching by dependence graph precomputation",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ISCA",
+      "authors": "Murali Annavaram, Jignesh M Patel, and Edward S Davidson"
+    },
+    {
+      "index": 5,
+      "title": "Racetrack memory cell array with integrated magnetic tunnel junction readout",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEDM",
+      "authors": "AJ Annunziata, MC Gaidis, L Thomas, CW Chien, CC Hung, P Chevalier, EJ O’Sullivan, JP Hummel, EA Joseph, Y Zhu, et al."
+    },
+    {
+      "index": 6,
+      "title": "BOW: Breathing operand windows to exploit bypassing in GPUs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "MICRO",
+      "authors": "Hodjat Asghari Esfeden, Amirali Abdolrashidi, Shafiur Rahman, Daniel Wong, and Nael Abu-Ghazaleh"
+    },
+    {
+      "index": 7,
+      "title": "Self-contained, accurate precomputation prefetching",
+      "abstract": "",
+      "year": "2015",
+      "venue": "MICRO",
+      "authors": "Islam Atta, Xin Tong, Vijayalakshmi Srinivasan, Ioana Baldini, and Andreas Moshovos"
+    },
+    {
+      "index": 8,
+      "title": "Numerical analysis of domain wall propagation for dense memory arrays",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEDM",
+      "authors": "C Augustine, A Raychowdhury, B Behin-Aein, S Srinivasan, J Tschanz, Vivek K De, and K Roy"
+    },
+    {
+      "index": 9,
+      "title": "Exploiting Inter-Warp Heterogeneity to Improve GPGPU Performance",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PACT",
+      "authors": "Rachata Ausavarungnirun, Saugata Ghose, Onur Kayiran, Gabriel H Loh, Chita R Das, Mahmut T Kandemir, and Onur Mutlu"
+    },
+    {
+      "index": 10,
+      "title": "Prefetching with adaptive cache culling for striped disk arrays",
+      "abstract": "",
+      "year": "2008",
+      "venue": "USENIX ATC",
+      "authors": "Sung Hoon Baek and Kyu Ho Park"
+    },
+    {
+      "index": 11,
+      "title": "On-chip network design considerations for compute accelerators",
+      "abstract": "",
+      "year": "2010",
+      "venue": "PACT",
+      "authors": "Ali Bakhoda, John Kim, and Tor M Aamodt"
+    },
+    {
+      "index": 12,
+      "title": "Throughput-effective on-chip networks for manycore accelerators",
+      "abstract": "",
+      "year": "2010",
+      "venue": "MICRO",
+      "authors": "Ali Bakhoda, John Kim, and Tor M Aamodt"
+    },
+    {
+      "index": 13,
+      "title": "Designing on-chip networks for throughput accelerators",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM TACO",
+      "authors": "Ali Bakhoda, John Kim, and Tor M Aamodt"
+    },
+    {
+      "index": 14,
+      "title": "Analyzing CUDA workloads using a detailed GPU simulator",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ISPASS",
+      "authors": "Ali Bakhoda, George L Yuan, Wilson WL Fung, Henry Wong, and Tor M Aamodt"
+    },
+    {
+      "index": 15,
+      "title": "Fast Data Delivery for Many-Core Processors",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE TC",
+      "authors": "M. Bakhshalipour, P. Lotfi-Kamran, A. Mazloumi, F. Samandi, M. Naderan-Tahan, M. Modarressi, and H. Sarbazi-Azad"
+    },
+    {
+      "index": 16,
+      "title": "An efficient temporal data prefetcher for L1 caches",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE CAL",
+      "authors": "M. Bakhshalipour, P. Lotfi-Kamran, and H. Sarbazi-Azad"
+    },
+    {
+      "index": 17,
+      "title": "Domino temporal data prefetcher",
+      "abstract": "",
+      "year": "2018",
+      "venue": "HPCA",
+      "authors": "M. Bakhshalipour, P. Lotfi-Kamran, and H. Sarbazi-Azad"
+    },
+    {
+      "index": 18,
+      "title": "Bingo Spatial Data Prefetcher",
+      "abstract": "",
+      "year": "2019",
+      "venue": "HPCA",
+      "authors": "M. Bakhshalipour, M. Shakerinava, P. Lotfi-Kamran, and H. Sarbazi-Azad"
+    },
+    {
+      "index": 19,
+      "title": "Evaluation of hardware data prefetchers on server processors",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Comput. Surv.",
+      "authors": "Mohammad Bakhshalipour, Seyedali Tabaeiaghdaei, Pejman Lotfi-Kamran, and Hamid Sarbazi-Azad"
+    },
+    {
+      "index": 20,
+      "title": "Reducing the complexity of the register file in dynamic superscalar processors",
+      "abstract": "",
+      "year": "2001",
+      "venue": "MICRO",
+      "authors": "R. Balasubramonian, S. Dwarkadas, and D. H. Albonesi"
+    },
+    {
+      "index": 21,
+      "title": "Dspatch: Dual spatial pattern prefetcher",
+      "abstract": "",
+      "year": "2019",
+      "venue": "MICRO",
+      "authors": "Rahul Bera, Anant V Nori, Onur Mutlu, and Sreenivas Subramoney"
+    },
+    {
+      "index": 22,
+      "title": "Vertical tunnel field-effect transistor",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE TED",
+      "authors": "Krishna Kumar Bhuwalka, Stefan Sedlmaier, Alexandra Katherina Ludsteck, Carolin Tolksdorf, Joerg Schulze, and Ignaz Eisele"
+    },
+    {
+      "index": 23,
+      "title": "Loose loops sink chips",
+      "abstract": "",
+      "year": "2002",
+      "venue": "HPCA",
+      "authors": "Eric Borch, Eric Tune, Srilatha Manne, and Joel Emer"
+    },
+    {
+      "index": 24,
+      "title": "Register allocation via graph coloring",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": "Preston Briggs"
+    },
+    {
+      "index": 25,
+      "title": "Speculative precomputation on chip multiprocessors",
+      "abstract": "",
+      "year": "2002",
+      "venue": "MTEAC",
+      "authors": "Jeffery A Brown, Hong Wang, George Chrysos, Perry H Wang, and John P Shen"
+    },
+    {
+      "index": 26,
+      "title": "Implementation and performance of integrated application-controlled file caching, prefetching, and disk scheduling",
+      "abstract": "",
+      "year": "1996",
+      "venue": "ACM TOCS",
+      "authors": "Pei Cao, Edward W Felten, Anna R Karlin, and Kai Li"
+    },
+    {
+      "index": 27,
+      "title": "Disk Prefetching Mechanisms for Increasing HTTP Streaming Video Server Throughput",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM TOMPECS",
+      "authors": "Benjamin Cassell, Tyler Szepesi, Jim Summers, Tim Brecht, Derek Eager, and Bernard Wong"
+    },
+    {
+      "index": 28,
+      "title": "Register allocation via coloring",
+      "abstract": "",
+      "year": "1981",
+      "venue": "Computer languages",
+      "authors": "Gregory J Chaitin, Marc A Auslander, Ashok K Chandra, John Cocke, Martin E Hopkins, and Peter W Markstein"
+    },
+    {
+      "index": 29,
+      "title": "Simultaneous subordinate microthreading (SSMT)",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ISCA",
+      "authors": "Robert S Chappell, Jared Stark, Sangwook P Kim, Steven K Reinhardt, and Yale N Patt"
+    },
+    {
+      "index": 30,
+      "title": "Rodinia: A benchmark suite for heterogeneous computing",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IISWC",
+      "authors": "Shuai Che, Michael Boyer, Jiayuan Meng, David Tarjan, Jeremy W Sheaffer, Sang-Ha Lee, and Kevin Skadron"
+    },
+    {
+      "index": 31,
+      "title": "Effective hardware-based data prefetching for high-performance processors",
+      "abstract": "",
+      "year": "1995",
+      "venue": "IEEE TC",
+      "authors": "Tien-Fu Chen and Jean-Loup Baer"
+    },
+    {
+      "index": 32,
+      "title": "Application-aware prefetch prioritization in on-chip networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "PACT",
+      "authors": "Nachiappan Chidambaram Nachiappan, Asit K Mishra, Mahmut Kademir, Anand Sivasubramaniam, Onur Mutlu, and Chita R Das"
+    },
+    {
+      "index": 33,
+      "title": "Dynamic hot data stream prefetching for general-purpose programs",
+      "abstract": "",
+      "year": "2002",
+      "venue": "PLDI",
+      "authors": "Trishul M Chilimbi and Martin Hirzel"
+    },
+    {
+      "index": 34,
+      "title": "Dynamic speculative precomputation",
+      "abstract": "",
+      "year": "2001",
+      "venue": "MICRO",
+      "authors": "Jamison D Collins, Dean M Tullsen, Hong Wang, and John P Shen"
+    },
+    {
+      "index": 35,
+      "title": "Speculative precomputation: Long-range prefetching of delinquent loads",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ISCA",
+      "authors": "Jamison D Collins, Hong Wang, Dean M Tullsen, Christopher Hughes, Yong-Fong Lee, Dan Lavery, and John P Shen"
+    },
+    {
+      "index": 36,
+      "title": "Compiler-controlled memory",
+      "abstract": "",
+      "year": "1998",
+      "venue": "ASPLOS",
+      "authors": "Keith D. Cooper and Timothy J. Harvey"
+    },
+    {
+      "index": 37,
+      "title": "Introduction to algorithms",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Thomas H Cormen, Charles E Leiserson, Ronald L Rivest, and Clifford Stein"
+    },
+    {
+      "index": 38,
+      "title": "Multiple-banked register file architectures",
+      "abstract": "",
+      "year": "2000",
+      "venue": "ISCA",
+      "authors": "J. L. Cruz, A. Gonzalez, M. Valero, and N. P. Topham"
+    },
+    {
+      "index": 39,
+      "title": "DiskSeen: Exploiting disk layout and access history to enhance I/O prefetch.",
+      "abstract": "",
+      "year": "2007",
+      "venue": "USENIX ATC",
+      "authors": "Xiaoning Ding, Song Jiang, Feng Chen, Kei Davis, and Xiaodong Zhang"
+    },
+    {
+      "index": 40,
+      "title": "NVSim: A Circuit-Level Performance, Energy, and Area Model for Emerging Nonvolatile Memory",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE TCAD",
+      "authors": "X. Dong, C. Xu, Y. Xie, and N. P. Jouppi"
+    },
+    {
+      "index": 41,
+      "title": "Prefetch-aware shared resource management for multi-core systems",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ISCA",
+      "authors": "Eiman Ebrahimi, Chang Joo Lee, Onur Mutlu, and Yale N. Patt"
+    },
+    {
+      "index": 42,
+      "title": "Coordinated control of multiple prefetchers in multi-core systems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "MICRO",
+      "authors": "Eiman Ebrahimi, Onur Mutlu, Chang Joo Lee, and Yale N Patt"
+    },
+    {
+      "index": 43,
+      "title": "Techniques for bandwidth-efficient prefetching of linked data structures in hybrid prefetching systems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "HPCA",
+      "authors": "Eiman Ebrahimi, Onur Mutlu, and Yale N Patt"
+    },
+    {
+      "index": 44,
+      "title": "CORF: Coalescing operand register file for GPUs.",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ASPLOS",
+      "authors": "Hodjat Asghari Esfeden, Farzad Khorasani, Hyeran Jeon, Daniel Wong, and Nael Abu-Ghazaleh"
+    },
+    {
+      "index": 45,
+      "title": "Proactive instruction fetch",
+      "abstract": "",
+      "year": "2011",
+      "venue": "MICRO",
+      "authors": "Michael Ferdman, Cansu Kaynak, and Babak Falsafi"
+    },
+    {
+      "index": 46,
+      "title": "Loop-aware memory prefetching using code block working sets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "MICRO",
+      "authors": "Adi Fuchs, Shie Mannor, Uri Weiser, and Yoav Etsion"
+    },
+    {
+      "index": 47,
+      "title": "Low-current perpendicular domain wall motion cell for scalable high-speed MRAM",
+      "abstract": "",
+      "year": "2009",
+      "venue": "VLSIT",
+      "authors": "S Fukami, T Suzuki, K Nagahara, N Ohshima, Y Ozaki, S Saito, R Nebashi, N Sakimura, H Honjo, K Mori, et al."
+    },
+    {
+      "index": 48,
+      "title": "Energy-efficient mechanisms for managing thread context in throughput processors",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ISCA",
+      "authors": "Mark Gebhart, Daniel R Johnson, David Tarjan, Stephen W Keckler, William J Dally, Erik Lindholm, and Kevin Skadron"
+    },
+    {
+      "index": 49,
+      "title": "A compile-time managed multi-level register file hierarchy",
+      "abstract": "",
+      "year": "2011",
+      "venue": "MICRO",
+      "authors": "Mark Gebhart, Stephen W Keckler, and William J Dally"
+    },
+    {
+      "index": 50,
+      "title": "Unifying primary cache, scratch, and register file memories in a throughput processor",
+      "abstract": "",
+      "year": "2012",
+      "venue": "MICRO",
+      "authors": "Mark Gebhart, Stephen W Keckler, Brucek Khailany, Ronny Krashinsky, and William J Dally"
+    },
+    {
+      "index": 51,
+      "title": "Stephen W Keckler",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": "Mark Gebhart, Stephen W\nKeckler, Brucek Khailany, Ronny\nKrashinsky, and William J Dally.\n2012."
+    },
+    {
+      "index": 52,
+      "title": "James K Archibald",
+      "abstract": "",
+      "year": "1993",
+      "venue": "",
+      "authors": "Knuth Stener Grimsrud,\nJames K Archibald, and Brent E Nelson.\n1993."
+    },
+    {
+      "index": 53,
+      "title": "LTRF Register-Interval-Algorithm",
+      "abstract": "",
+      "year": "2018",
+      "venue": "https://github.com/CMU-SAFARI/Register-Interval",
+      "authors": "SAFARI Research Group.\n2018."
+    },
+    {
+      "index": 54,
+      "title": "Jayanth Gummaraju and Mendel Rosenblum",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": "Jayanth Gummaraju and\nMendel Rosenblum. 2005."
+    },
+    {
+      "index": 55,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "Sebastian Hack, Daniel\nGrund, and Gerhard Goos.\n2006.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 56,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Milad Hashemi, Onur\nMutlu, and Yale N Patt.\n2016.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 57,
+      "title": "Milad Hashemi and Yale N Patt",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Milad Hashemi and Yale N\nPatt. 2015."
+    },
+    {
+      "index": 58,
+      "title": "Flow analysis of computer programs",
+      "abstract": "",
+      "year": "1977",
+      "venue": "",
+      "authors": "Matthew S Hecht.\n1977."
+    },
+    {
+      "index": 59,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Chih-Chieh Hsiao, Slo-Li\nChu, and Chiu-Cheng Hsieh.\n2014.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 60,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": "Khaled Z Ibrahim,\nGregory T Byrd, and Eric Rotenberg.\n2003.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 61,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Yasuo Ishii, Mary Inaba,\nand Kei Hiraki. 2009.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 62,
+      "title": "Akanksha Jain and Calvin Lin",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Akanksha Jain and Calvin\nLin. 2013."
+    },
+    {
+      "index": 63,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Hyunjun Jang, Jinchun\nKim, Paul Gratz, Ki Hwan Yum, and\nEun Jung Kim. 2015.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 64,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "H. Jeon, H. A.\nEsfeden, N. B. Abu-Ghazaleh, D.\nWong, and S. Elango.\n2019.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 65,
+      "title": "Gokul Subramanian Ravi",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Hyeran Jeon,\nGokul Subramanian Ravi, Nam Sung Kim,\nand Murali Annavaram. 2015."
+    },
+    {
+      "index": 66,
+      "title": "George Michelogiannakis",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Nan Jiang, Daniel U\nBecker, George Michelogiannakis, James\nBalfour, Brian Towles, David E Shaw,\nJohn Kim, and William J Dally.\n2013a."
+    },
+    {
+      "index": 67,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Song Jiang, Xiaoning\nDing, Yuehai Xu, and Kei Davis.\n2013b.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 68,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Naifeng Jing, Li Jiang,\nTao Zhang, Chao Li,\nFengfeng Fan, and Xiaoyao Liang.\n2016.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 69,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Naifeng Jing, Haopeng\nLiu, Yao Lu, and Xiaoyao Liang.\n2013a.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 70,
+      "title": "Shrikanth Ganapathy",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Naifeng Jing, Yao Shen,\nYao Lu, Shrikanth Ganapathy,\nZhigang Mao, Minyi Guo,\nRamon Canal Corretger, and Xiaoyao\nLiang. 2013b."
+    },
+    {
+      "index": 71,
+      "title": "Nachiappan Chidambaram Nachiappan",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Adwait Jog, Onur Kayiran,\nNachiappan Chidambaram Nachiappan, Asit K\nMishra, Mahmut T Kandemir, Onur Mutlu,\nRavishankar Iyer, and Chita R Das.\n2013a."
+    },
+    {
+      "index": 72,
+      "title": "Mahmut T Kandemir",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Adwait Jog, Onur Kayiran,\nAsit K Mishra, Mahmut T Kandemir,\nOnur Mutlu, Ravishankar Iyer, and\nChita R Das. 2013b."
+    },
+    {
+      "index": 73,
+      "title": "Antonio González",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Timothy M. Jones, Michael\nF. P. O’Boyle, Jaume Abella, Antonio\nGonzález, and Oğuz Ergin.\n2009."
+    },
+    {
+      "index": 74,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "1990",
+      "venue": "",
+      "authors": "Norman P Jouppi.\n1990.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 75,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "David Kadjo, Jinchun Kim,\nPrabal Sharma, Reena Panda,\nPaul Gratz, and Daniel Jimenez.\n2014.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 76,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": "Md Kamruzzaman, Steven\nSwanson, and Dean M Tullsen.\n2011.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 77,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": "Ujval J Kapasi, William J\nDally, Scott Rixner, John D Owens, and\nBrucek Khailany. 2002.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 78,
+      "title": "Mahmut Taylan Kandemir",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Onur Kayıran, Adwait\nJog, Mahmut Taylan Kandemir, and\nChita Ranjan Das. 2013."
+    },
+    {
+      "index": 79,
+      "title": "Ashutosh Pattnaik",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Onur Kayiran, Adwait Jog,\nAshutosh Pattnaik, Rachata\nAusavarungnirun, Xulong Tang, Mahmut T\nKandemir, Gabriel H Loh, Onur Mutlu,\nand Chita R Das. 2016."
+    },
+    {
+      "index": 80,
+      "title": "Nachiappan Chidambaram Nachiappan",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Onur Kayiran,\nNachiappan Chidambaram Nachiappan, Adwait\nJog, Rachata Ausavarungnirun, Mahmut T\nKandemir, Gabriel H Loh, Onur Mutlu,\nand Chita R Das. 2014."
+    },
+    {
+      "index": 81,
+      "title": "H. Asghari Esfeden",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "F. Khorasani, H.\nAsghari Esfeden, N. Abu-Ghazaleh, and\nV. Sarkar. 2018."
+    },
+    {
+      "index": 82,
+      "title": "Hodjat Asghari Esfeden",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Farzad Khorasani,\nHodjat Asghari Esfeden, Amin\nFarmahini-Farahani, Nuwan Jayasena, and\nVivek Sarkar. 2018."
+    },
+    {
+      "index": 83,
+      "title": "Juan Del Cuvillo",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": "Dongkeun Kim, SS-W Liao,\nPerry H Wang, Juan Del Cuvillo,\nXinmin Tian, Xiang Zou,\nHong Wang, Donald Yeung,\nMilind Girkar, and John Paul Shen.\n2004."
+    },
+    {
+      "index": 84,
+      "title": "Dongkeun Kim and Donald Yeung",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": "Dongkeun Kim and Donald\nYeung. 2002."
+    },
+    {
+      "index": 85,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": "J. Kim, J. Balfour, and\nW. Dally. 2007.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 86,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Jinchun Kim, Seth H\nPugsley, Paul V Gratz, AL Reddy,\nChris Wilkerson, and Zeshan Chishti.\n2016.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 87,
+      "title": "Algorithm design",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "Jon Kleinberg and Eva\nTardos. 2006."
+    },
+    {
+      "index": 88,
+      "title": "Jonathan Beaumont",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "John Kloosterman, Jonathan\nBeaumont, D Anoushe Jamshidi, Jonathan\nBailey, Trevor Mudge, and Scott\nMahlke. 2017."
+    },
+    {
+      "index": 89,
+      "title": "Anand Sivasubramaniam",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Emre Kültürsay,\nMahmut Kandemir, Anand Sivasubramaniam,\nand Onur Mutlu. 2013."
+    },
+    {
+      "index": 90,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": "An-Chow Lai, Cem Fide,\nand Babak Falsafi. 2001.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 91,
+      "title": "Junjie Lai and André Seznec",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Junjie Lai and André\nSeznec. 2013."
+    },
+    {
+      "index": 92,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "N. B. Lakshminarayana and\nH. Kim. 2014.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 93,
+      "title": "Chris Lattner and Vikram Adve",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": "Chris Lattner and Vikram\nAdve. 2004."
+    },
+    {
+      "index": 94,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Benjamin C Lee, Engin\nIpek, Onur Mutlu, and Doug Burger.\n2009a.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 95,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Benjamin C Lee, Ping\nZhou, Jun Yang, Youtao Zhang,\nBo Zhao, Engin Ipek,\nOnur Mutlu, and Doug Burger.\n2010b.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 96,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": "Chang Joo Lee, Onur\nMutlu, Veynu Narasiman, and Yale N\nPatt. 2011.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 97,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Chang Joo Lee, Veynu\nNarasiman, Onur Mutlu, and Yale N\nPatt. 2009b.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 98,
+      "title": "Nagesh B Lakshminarayana",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Jaekyu Lee, Nagesh B\nLakshminarayana, Hyesoon Kim, and\nRichard Vuduc. 2010a."
+    },
+    {
+      "index": 99,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Sangpil Lee, Keunsoo Kim,\nGunjae Koo, Hyeran Jeon,\nWon Woo Ro, and Murali Annavaram.\n2015.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 100,
+      "title": "Tayler Hetherington",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Jingwen Leng, Tayler\nHetherington, Ahmed Eltantawy, Syed\nGilani, Nam Sung Kim, Tor M Aamodt,\nand Vijay Janapa Reddi. 2013."
+    },
+    {
+      "index": 101,
+      "title": "A Fernandez-Pacheco",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "ER Lewis, D Petit,\nL O’Brien, A Fernandez-Pacheco,\nJ Sampaio, AV Jausovec,\nHT Zeng, DE Read, and\nRP Cowburn. 2010."
+    },
+    {
+      "index": 102,
+      "title": "Rachata Ausavarungnirun",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Chen Li, Rachata\nAusavarungnirun, Christopher J Rossbach,\nYoutao Zhang, Onur Mutlu,\nYang Guo, and Jun Yang.\n2019."
+    },
+    {
+      "index": 103,
+      "title": "Shuaiwen Leon Song",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Chao Li, Shuaiwen Leon\nSong, Hongwen Dai, Albert Sidelnik,\nSiva Kumar Sastry Hari, and Huiyang\nZhou. 2015."
+    },
+    {
+      "index": 104,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Zhi Li, Jingweijia Tan,\nand Xin Fu. 2013.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 105,
+      "title": "Gerolf Hoflehner",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": "Steve SW Liao, Perry H\nWang, Hong Wang, Gerolf Hoflehner,\nDaniel Lavery, and John P Shen.\n2002."
+    },
+    {
+      "index": 106,
+      "title": "Simulating multiported memories using lower port count memories",
+      "abstract": "",
+      "year": "2008",
+      "venue": "US Patent 7,339,592",
+      "authors": "John Erik Lindholm, Ming Y\nSiu, Simon S Moy, Samuel Liu, and\nJohn R Nickolls. 2008."
+    },
+    {
+      "index": 107,
+      "title": "William J Schmidt",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": "Mikko H Lipasti, William J\nSchmidt, Steven R Kunkel, and Robert R\nRoediger. 1995."
+    },
+    {
+      "index": 108,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Xiaoxiao Liu, Yong Li,\nYaojun Zhang, Alex K Jones, and\nYiran Chen. 2014.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 109,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Xiaoxiao Liu, Mengjie\nMao, Xiuyuan Bi, Hai Li, and\nYiran Chen. 2015.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 110,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Yang Liu and Wang Wei.\n2014.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 111,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": "Jiwei Lu, Howard Chen,\nRao Fu, Wei-Chung Hsu,\nBobbie Othmer, Pen-Chung Yew, and\nDong-Yuan Chen. 2003.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 112,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": "Jiwei Lu, Abhinav Das,\nWei-Chung Hsu, Khoa Nguyen, and\nSantosh G Abraham. 2005.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 113,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": "Chi-Keung Luk.\n2001.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 114,
+      "title": "Chi-Keung Luk and Todd C Mowry",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": "Chi-Keung Luk and Todd C\nMowry. 1996."
+    },
+    {
+      "index": 115,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "A. Magni, C. Dubach,\nand M. F. P. O’Boyle. 2013.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 116,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Mengjie Mao, Wujie Wen,\nYaojun Zhang, Yiran Chen, and\nHai Li. 2014.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 117,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Pierre Michaud.\n2016.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 118,
+      "title": "Mohammad Sadrosadati",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Amirhossein Mirhosseini,\nMohammad Sadrosadati, Fatemeh\nAghamohammadi, Mehdi Modarressi, and\nHamid Sarbazi-Azad. 2019a."
+    },
+    {
+      "index": 119,
+      "title": "A. Fakhrzadehgan",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "A. Mirhosseini, M.\nSadrosadati, A. Fakhrzadehgan, M.\nModarressi, and H. Sarbazi-Azad.\n2015."
+    },
+    {
+      "index": 120,
+      "title": "Mohammad Sadrosadati",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Amirhossein Mirhosseini,\nMohammad Sadrosadati, Behnaz Soltani,\nHamid Sarbazi-Azad, and Thomas F\nWenisch. 2017."
+    },
+    {
+      "index": 121,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "A. Mirhosseini, M.\nSadrosadati, M. Zare, and H.\nSarbazi-Azad. 2016.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 122,
+      "title": "Akshitha Sriraman",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Amirhossein Mirhosseini,\nAkshitha Sriraman, and Thomas F.\nWenisch. 2019b."
+    },
+    {
+      "index": 123,
+      "title": "Saurabh Mookerjea and Suman Datta",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": "Saurabh Mookerjea and\nSuman Datta. 2008."
+    },
+    {
+      "index": 124,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": "Todd C Mowry, Monica S\nLam, and Anoop Gupta. 1992.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 125,
+      "title": "Rajeev Balasubramonian",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Technical Report. HP\nLaboratories",
+      "authors": "Naveen Muralimanohar,\nRajeev Balasubramonian, and Norman P\nJouppi. 2009."
+    },
+    {
+      "index": 126,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "G. S. Murthy, M.\nRavishankar, M. M. Baskaran, and P.\nSadayappan. 2010.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 127,
+      "title": "David N Armstrong",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Onur Mutlu, Hyesoon Kim,\nDavid N Armstrong, and Yale N Patt.\n2005c."
+    },
+    {
+      "index": 128,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Onur Mutlu, Hyesoon Kim,\nand Yale N Patt. 2005a.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 129,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Onur Mutlu, Hyesoon Kim,\nand Yale N Patt. 2005b.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 130,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "Onur Mutlu, Hyesoon Kim,\nand Yale N Patt. 2006.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 131,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Onur Mutlu, Hyesoon Kim,\nJared Stark, and Yale N Patt.\n2005d.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 132,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Onur Mutlu, Jared Stark,\nChris Wilkerson, and Yale N Patt.\n2003a.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 133,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Onur Mutlu, Jared Stark,\nChris Wilkerson, and Yale N Patt.\n2003b.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 134,
+      "title": "Michael Shebanow",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": "Veynu Narasiman, Michael\nShebanow, Chang Joo Lee, Rustam\nMiftakhutdinov, Onur Mutlu, and Yale N\nPatt. 2011."
+    },
+    {
+      "index": 135,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "N. Nematollahi, M.\nSadrosadati, H. Falahati, M.\nBarkhordar, and H. Sarbazi-Azad.\n2018.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 136,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": "P. R. Nuth and W. J.\nDally. 1995.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 137,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "NVIDIA.\n2014a.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 138,
+      "title": "White paper: NVIDIA GeForce GTX 980",
+      "abstract": "",
+      "year": "",
+      "venue": "Technical Report. NVIDIA",
+      "authors": "NVIDIA.\n2014b."
+    },
+    {
+      "index": 139,
+      "title": "White paper: NVIDIA Tesla P100",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Technical Report. NVIDIA",
+      "authors": "NVIDIA. 2016."
+    },
+    {
+      "index": 140,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": "David W. Oehmke, Nathan L.\nBinkert, Trevor Mudge, and Steven K.\nReinhardt. 2005.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 141,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Lois Orosa, Rodolfo\nAzevedo, and Onur Mutlu.\n2018.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 142,
+      "title": "Masamitsu Hayashi",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": "Stuart SP Parkin,\nMasamitsu Hayashi, and Luc Thomas.\n2008."
+    },
+    {
+      "index": 143,
+      "title": "Conflict-free register allocation using a multi-bank register file with input operand alignment",
+      "abstract": "",
+      "year": "2013",
+      "venue": "US Patent 8,555,035",
+      "authors": "Anjul Patney and\nWilliam J Dally. 2013."
+    },
+    {
+      "index": 144,
+      "title": "Informed prefetching and caching",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": "R Hugo Patterson, Garth A\nGibson, Eka Ginting, Daniel Stodolsky,\nand Jim Zelenka. 1995."
+    },
+    {
+      "index": 145,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Gennady Pekhimenko, Evgeny\nBolotin, Mike O’Connor, Onur Mutlu,\nTodd C Mowry, and Stephen W Keckler.\n2015.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 146,
+      "title": "Nandita Vijaykumar",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Gennady Pekhimenko, Evgeny\nBolotin, Nandita Vijaykumar, Onur Mutlu,\nTodd C Mowry, and Stephen W Keckler.\n2016."
+    },
+    {
+      "index": 147,
+      "title": "Massimiliano Poletto and Vivek Sarkar",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": "Massimiliano Poletto and\nVivek Sarkar. 1999."
+    },
+    {
+      "index": 148,
+      "title": "and Rajeev Balasubramonian",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Seth H Pugsley, Zeshan\nChishti, Chris Wilkerson, Peng-fei\nChuang, Robert L Scott, Aamer Jaleel,\nShih-Lien Lu, Kingsum Chow, and\nRajeev Balasubramonian. 2014."
+    },
+    {
+      "index": 149,
+      "title": "Vijayalakshmi Srinivasan",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Moinuddin K Qureshi,\nVijayalakshmi Srinivasan, and Jude A\nRivers. 2009."
+    },
+    {
+      "index": 150,
+      "title": "Oliverio J Santana",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "Tanausú Ramírez,\nAlex Pajuelo, Oliverio J Santana,\nOnur Mutlu, and Mateo Valero.\n2010."
+    },
+    {
+      "index": 151,
+      "title": "William M Reddick and Gehan AJ Amaratunga",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": "William M Reddick and\nGehan AJ Amaratunga. 1995."
+    },
+    {
+      "index": 152,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": "Scott Rixner, William J\nDally, Ujval J Kapasi, Peter Mattson,\nand John D Owens. 2000.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 153,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": "Timothy G Rogers, Mike\nO’Connor, and Tor M Aamodt.\n2012.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 154,
+      "title": "Amir Roth and Gurindar S Sohi",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": "Amir Roth and Gurindar S\nSohi. 1999."
+    },
+    {
+      "index": 155,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "1978",
+      "venue": "",
+      "authors": "Richard M. Russell.\n1978.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 156,
+      "title": "Seyed Borna Ehsani",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Mohammad Sadrosadati,\nSeyed Borna Ehsani, Hajar Falahati,\nRachata Ausavarungnirun, Arash Tavakkol,\nMojtaba Abaee, Lois Orosa,\nYaohua Wang, Hamid Sarbazi-Azad, and\nOnur Mutlu. 2019."
+    },
+    {
+      "index": 157,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "M. Sadrosadati, A.\nMirhosseini, H. Aghilinasab, and H.\nSarbazi-Azad. 2015.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 158,
+      "title": "Amirhossein Mirhosseini",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Mohammad Sadrosadati,\nAmirhossein Mirhosseini, Seyed Borna\nEhsani, Hamid Sarbazi-Azad, Mario\nDrumond, Babak Falsafi, Rachata\nAusavarungnirun, and Onur Mutlu.\n2018."
+    },
+    {
+      "index": 159,
+      "title": "Amirhossein Mirhosseini",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Mohammad Sadrosadati,\nAmirhossein Mirhosseini, Shahin\nRoozkhosh, Hazhir Bakhishi, and Hamid\nSarbazi-Azad. 2017."
+    },
+    {
+      "index": 160,
+      "title": "Hamed Abbasitabar",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Mohammad Hossein Samavatian,\nHamed Abbasitabar, Mohammad Arjomand,\nand Hamid Sarbazi-Azad. 2014."
+    },
+    {
+      "index": 161,
+      "title": "Mohammad Arjomand",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Mohammad Hossein Samavatian,\nMohammad Arjomand, Ramin Bashizade, and\nHamid Sarbazi-Azad. 2015."
+    },
+    {
+      "index": 162,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Ankit Sethia, Ganesh\nDasika, Mehrzad Samadi, and Scott\nMahlke. 2013.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 163,
+      "title": "Ankit Sethia and Scott Mahlke",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Ankit Sethia and Scott\nMahlke. 2014."
+    },
+    {
+      "index": 164,
+      "title": "Rangharajan Venkatesan",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Mrigank Sharad,\nRangharajan Venkatesan, Anand\nRaghunathan, and Kaushik Roy.\n2013."
+    },
+    {
+      "index": 165,
+      "title": "Ahmad Sharif and Hsien-Hsin S Lee",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": "Ahmad Sharif and\nHsien-Hsin S Lee. 2011."
+    },
+    {
+      "index": 166,
+      "title": "Masahiro Goshima",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "Ryota Shioya, Kazuo\nHorio, Masahiro Goshima, and Shuichi\nSakai. 2010."
+    },
+    {
+      "index": 167,
+      "title": "Krishnan Ramakrishnan",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "Jawar Singh, Krishnan\nRamakrishnan, S Mookerjea, Suman Datta,\nNarayanan Vijaykrishnan, and D\nPradhan. 2010."
+    },
+    {
+      "index": 168,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": "Yan Solihin, Jaejin Lee,\nand Josep Torrellas. 2002.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 169,
+      "title": "Thomas F Wenisch",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Stephen Somogyi, Thomas F\nWenisch, Anastasia Ailamaki, and Babak\nFalsafi. 2009."
+    },
+    {
+      "index": 170,
+      "title": "Thomas F Wenisch",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "Stephen Somogyi, Thomas F\nWenisch, Anastassia Ailamaki, Babak\nFalsafi, and Andreas Moshovos.\n2006."
+    },
+    {
+      "index": 171,
+      "title": "Seung Woo Son and Mahmut Kandemir",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "Seung Woo Son and Mahmut\nKandemir. 2006."
+    },
+    {
+      "index": 172,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": "Minseok Song.\n2007.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 173,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": "Santhosh Srinath, Onur\nMutlu, Hyesoon Kim, and Yale N Patt.\n2007.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 174,
+      "title": "Parboil: A revised benchmark suite for scientific and commercial throughput computing",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Technical Report. Center\nfor Reliable and High-Performance Computing, UIUC",
+      "authors": "John A Stratton,\nChristopher Rodrigues, I-Jui Sung,\nNady Obeid, Li-Wen Chang,\nNasser Anssari, Geng Daniel Liu, and\nWen-mei W Hwu. 2012."
+    },
+    {
+      "index": 175,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Jim Summers, Tim Brecht,\nDerek Eager, Tyler Szepesi,\nBen Cassell, and Bernard Wong.\n2014.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 176,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": "Karthik Sundaramoorthy,\nZach Purser, and Eric Rotenberg.\n2000.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 177,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "1988",
+      "venue": "",
+      "authors": "J. A. Swensen and Y. N.\nPatt. 1988.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 178,
+      "title": "Enabling Efficient RDMA-based Synchronous Mirroring of Persistent Memory Transactions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv:cs.DC/",
+      "authors": "Arash Tavakkol, Aasheesh\nKolli, Stanko Novakovic, Kaveh Razavi,\nJuan Gomez-Luna, Hasan Hassan,\nClaude Barthels, Yaohua Wang,\nMohammad Sadrosadati, Saugata Ghose,\nAnkit Singla, Pratap Subrahmanyam, and\nOnur Mutlu. 2018.",
+      "orig_title": "Enabling efficient RDMA-based synchronous mirroring of persistent memory transactions",
+      "paper_id": "1810.09360v1"
+    },
+    {
+      "index": 179,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "Luc Thomas, Rai Moriya,\nCharles Rettner, and Stuart SP Parkin.\n2010.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 180,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Yingying Tian, Sooraj\nPuthoor, Joseph L. Greathouse,\nBradford M. Beckmann, and Daniel A.\nJiménez. 2015.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 181,
+      "title": "Christopher Frost",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Steve VanDeBogart,\nChristopher Frost, and Eddie Kohler.\n2009."
+    },
+    {
+      "index": 182,
+      "title": "Shankar Ganesh Ramasubramanian",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Rangharajan Venkatesan,\nShankar Ganesh Ramasubramanian, Swagath\nVenkataramani, Kaushik Roy, and Anand\nRaghunathan. 2014."
+    },
+    {
+      "index": 183,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Rangharajan Venkatesan,\nMrigank Sharad, Kaushik Roy, and\nAnand Raghunathan. 2013.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 184,
+      "title": "Phillip B Gibbons",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Nandita Vijaykumar, Eiman\nEbrahimi, Kevin Hsieh, Phillip B\nGibbons, and Onur Mutlu.\n2018a."
+    },
+    {
+      "index": 185,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "N. Vijaykumar, K. Hsieh,\nG. Pekhimenko, S. Khan,\nA. Shrestha, S. Ghose,\nA. Jog, P. B. Gibbons, and\nO. Mutlu. 2016.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 186,
+      "title": "Diptesh Majumdar",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Nandita Vijaykumar,\nAbhilasha Jain, Diptesh Majumdar,\nKevin Hsieh, Gennady Pekhimenko,\nEiman Ebrahimi, Nastaran Hajinazar,\nPhillip B Gibbons, and Onur Mutlu.\n2018b."
+    },
+    {
+      "index": 187,
+      "title": "Gennady Pekhimenko",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Nandita Vijaykumar,\nGennady Pekhimenko, Adwait Jog,\nAbhishek Bhowmick, Rachata\nAusavarungnirun, Chita Das, Mahmut\nKandemir, Todd C Mowry, and Onur\nMutlu. 2015."
+    },
+    {
+      "index": 188,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Jue Wang and Yuan Xie.\n2015.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 189,
+      "title": "Complementary tunneling-FETs (CTFET) in CMOS technology",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": "Peng-Fei Wang.\n2003."
+    },
+    {
+      "index": 190,
+      "title": "Kathryn S McKinley",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": "Zhenlin Wang, Doug\nBurger, Kathryn S McKinley, Steven K\nReinhardt, and Charles C Weems.\n2003."
+    },
+    {
+      "index": 191,
+      "title": "Anastasia Ailamaki",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "Thomas F Wenisch, Michael\nFerdman, Anastasia Ailamaki, Babak\nFalsafi, and Andreas Moshovos.\n2010."
+    },
+    {
+      "index": 192,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Xiaolong Xie, Yun Liang,\nXiuhong Li, Yudong Wu,\nGuangyu Sun, Tao Wang, and\nDongrui Fan. 2015.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 193,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Xiaolong Xie, Yun Liang,\nGuangyu Sun, and Deming Chen.\n2013.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 194,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": "Yi Yang, Ping Xiang,\nJingfei Kong, Mike Mantor, and\nHuiyang Zhou. 2012.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 195,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": "Wing-kei S Yu, Ruirui\nHuang, Sarah Q Xu, Sung-En Wang,\nEdwin Kan, and G Edward Suh.\n2011.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 196,
+      "title": "Christopher J Hughes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Xiangyao Yu, Christopher J\nHughes, Nadathur Satish, and Srinivas\nDevadas. 2015."
+    },
+    {
+      "index": 197,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": "R. Yung and N. C.\nWilhelm. 1995.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 198,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "Hui Zeng and Kanad\nGhose. 2006.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 199,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": "Weifeng Zhang, Dean M\nTullsen, and Brad Calder.\n2007.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 200,
+      "title": "Xiaotong Zhuang and Santosh Pande",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": "Xiaotong Zhuang and\nSantosh Pande. 2003."
+    },
+    {
+      "index": 201,
+      "title": "Craig Zilles and Gurindar Sohi",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": "Craig Zilles and\nGurindar Sohi. 2001."
+    },
+    {
+      "index": 202,
+      "title": "Controller for a synchronous DRAM that maximizes throughput by allowing memory requests and commands to be issued out of order",
+      "abstract": "",
+      "year": "1997",
+      "venue": "US Patent 5,630,096",
+      "authors": "William K Zuravleff and\nTimothy Robinson. 1997."
+    }
+  ]
+}

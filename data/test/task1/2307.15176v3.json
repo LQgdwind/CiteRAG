@@ -1,0 +1,551 @@
+{
+  "paper_id": "2307.15176v3",
+  "title": "RCT Rejection Sampling for Causal Estimation Evaluation",
+  "abstract": "Abstract\nConfounding is a significant obstacle to unbiased estimation of causal effects from observational data. For settings with high-dimensional covariates—such as text data, genomics, or the behavioral social sciences—researchers have proposed methods to adjust for confounding by adapting machine learning methods to the goal of causal estimation. However, empirical evaluation of these adjustment methods has been challenging and limited. In this work, we build on a promising empirical evaluation strategy that simplifies evaluation design and uses real data: subsampling randomized controlled trials (RCTs) to create confounded observational datasets while using the average causal effects from the RCTs as ground-truth. We contribute a new sampling algorithm, which we call RCT rejection sampling, and provide theoretical guarantees that causal identification holds in the observational data to allow for valid comparisons to the ground-truth RCT. Using synthetic data, we show our algorithm indeed results in low bias when oracle estimators are evaluated on the confounded samples, which is not always the case for a previously proposed algorithm.\nIn addition to this identification result, we highlight several finite data considerations for evaluation designers who plan to use RCT rejection sampling on their own datasets. As a proof of concept, we implement an example evaluation pipeline and walk through these finite data considerations with a novel, real-world RCT—which we release publicly—consisting of approximately 70k observations and text data as high-dimensional covariates.\nTogether, these contributions build towards a broader agenda of improved empirical evaluation for causal estimation.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Comparing experimental and matching methods using a large-scale voter mobilization experiment",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Political Analysis",
+      "authors": "Kevin Arceneaux, Alan S Gerber, and Donald P Green"
+    },
+    {
+      "index": 1,
+      "title": "Approximate residual balancing: debiased inference of average treatment effects in high dimensions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of the Royal Statistical Society: Series B (Statistical Methodology)",
+      "authors": "Susan Athey, Guido W Imbens, and Stefan Wager"
+    },
+    {
+      "index": 2,
+      "title": "Recovering causal effects from selection bias",
+      "abstract": "",
+      "year": "2015",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Elias Bareinboim and Jin Tian"
+    },
+    {
+      "index": 3,
+      "title": "Inference on treatment effects after selection among high-dimensional controls",
+      "abstract": "",
+      "year": "2014",
+      "venue": "The Review of Economic Studies",
+      "authors": "Alexandre Belloni, Victor Chernozhukov, and Christian Hansen"
+    },
+    {
+      "index": 4,
+      "title": "On Testability of the Front-Door Model via Verma Constraints",
+      "abstract": "",
+      "year": "2022",
+      "venue": "The 38th Conference on Uncertainty in Artificial Intelligence",
+      "authors": "Rohit Bhattacharya and Razieh Nabi",
+      "orig_title": "On testability of the front-door model via Verma constraints",
+      "paper_id": "2203.00161v2"
+    },
+    {
+      "index": 5,
+      "title": "Semiparametric Inference For Causal Effects In Graphical Models With Hidden Variables",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Rohit Bhattacharya, Razieh Nabi, and Ilya Shpitser",
+      "orig_title": "Semiparametric inference for causal effects in graphical models with hidden variables",
+      "paper_id": "2003.12659v3"
+    },
+    {
+      "index": 6,
+      "title": "Double/debiased machine learning for treatment and structural parameters",
+      "abstract": "",
+      "year": "2018",
+      "venue": "The Econometrics Journal",
+      "authors": "Victor Chernozhukov, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James M Robins"
+    },
+    {
+      "index": 7,
+      "title": "Randomized trials and their observational emulations: A framework for benchmarking and joint analysis",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2203.14857",
+      "authors": "Issa J Dahabreh, Jon A Steingrimsson, James M Robins, and Miguel A Hernán"
+    },
+    {
+      "index": 8,
+      "title": "Deconfounding scores: Feature representations for causal effect estimation with weak overlap",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.05762",
+      "authors": "Alexander D’Amour and Alexander Franks"
+    },
+    {
+      "index": 9,
+      "title": "Automated versus do-it-yourself methods for causal inference: Lessons learned from a data analysis competition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Statistical Science",
+      "authors": "Vincent Dorie, Jennifer Hill, Uri Shalit, Marc Scott, and Dan Cervone"
+    },
+    {
+      "index": 10,
+      "title": "CatBoost: gradient boosting with categorical features support",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.11363",
+      "authors": "Anna Veronika Dorogush, Vasily Ershov, and Andrey Gulin",
+      "orig_title": "CatBoost: gradient boosting with categorical features support",
+      "paper_id": "1810.11363v1"
+    },
+    {
+      "index": 11,
+      "title": "Bias and high-dimensional adjustment in observational studies of peer effects∗",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "Dean Eckles and Eytan Bakshy",
+      "orig_title": "Bias and high-dimensional adjustment in observational studies of peer effects",
+      "paper_id": "1706.04692v1"
+    },
+    {
+      "index": 12,
+      "title": "Deep neural networks for estimation and inference",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Econometrica",
+      "authors": "Max H Farrell, Tengyuan Liang, and Sanjog Misra"
+    },
+    {
+      "index": 13,
+      "title": "Causal inference in natural language processing: Estimation, prediction, interpretation and beyond",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "authors": "Amir Feder, Katherine A Keith, Emaad Manzoor, Reid Pryzant, Dhanya Sridhar, Zach Wood-Doughty, Jacob Eisenstein, Justin Grimmer, Roi Reichart, Margaret E Roberts, et al."
+    },
+    {
+      "index": 14,
+      "title": "The Case for Evaluating Causal Models Using Interventional Measures and Empirical Data",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Amanda M Gentzel, Dan Garant, and David Jensen",
+      "orig_title": "The case for evaluating causal models using interventional measures and empirical data",
+      "paper_id": "1910.05387v2"
+    },
+    {
+      "index": 15,
+      "title": "How and why to use experimental data to evaluate methods for observational causal inference",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Amanda M Gentzel, Purva Pruthi, and David Jensen"
+    },
+    {
+      "index": 16,
+      "title": "A comparison of approaches to advertising measurement: Evidence from big field experiments at Facebook",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Marketing Science",
+      "authors": "Brett R Gordon, Florian Zettelmeyer, Neha Bhargava, and Dan Chapsky"
+    },
+    {
+      "index": 17,
+      "title": "Close enough? A large-scale exploration of non-experimental approaches to advertising measurement",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2201.07055",
+      "authors": "Brett R Gordon, Robert Moakler, and Florian Zettelmeyer"
+    },
+    {
+      "index": 18,
+      "title": "Sample splitting and threshold estimation",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Econometrica",
+      "authors": "Bruce E Hansen"
+    },
+    {
+      "index": 19,
+      "title": "Comment: Spherical cows in a vacuum: data analysis competitions for causal inference",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Statistical Science",
+      "authors": "Miguel A Hernán"
+    },
+    {
+      "index": 20,
+      "title": "Bayesian nonparametric modeling for causal inference",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of Computational and Graphical Statistics",
+      "authors": "Jennifer L Hill"
+    },
+    {
+      "index": 21,
+      "title": "A comparison of experimental and observational data analyses",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Applied Bayesian Modeling and Causal Inference from Incomplete-Data Perspectives: An Essential Journey with Donald Rubin’s Statistical Family",
+      "authors": "Jennifer L Hill, Jerome P Reiter, and Elaine L Zanutto"
+    },
+    {
+      "index": 22,
+      "title": "Statistics and causal inference",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "Paul W Holland"
+    },
+    {
+      "index": 23,
+      "title": "Assessing the accuracy of generalized inferences from comparison group studies using a within-study comparison approach: The methodology",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Evaluation Review",
+      "authors": "Andrew P Jaciw"
+    },
+    {
+      "index": 24,
+      "title": "Learning representations for counterfactual inference",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Fredrik Johansson, Uri Shalit, and David Sontag"
+    },
+    {
+      "index": 25,
+      "title": "Removing hidden confounding by experimental grounding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Nathan Kallus, Aahlad Manas Puli, and Uri Shalit"
+    },
+    {
+      "index": 26,
+      "title": "Text and Causal Inference: A Review of Using Text to Remove Confounding from Causal Estimates",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Association for Computational Linguistics",
+      "authors": "Katherine Keith, David Jensen, and Brendan O’Connor",
+      "orig_title": "Text and causal inference: A review of using text to remove confounding from causal estimates",
+      "paper_id": "2005.00649v1"
+    },
+    {
+      "index": 27,
+      "title": "Metalearners for estimating heterogeneous treatment effects using machine learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "National Academy of Sciences",
+      "authors": "Sören R Künzel, Jasjeet S Sekhon, Peter J Bickel, and Bin Yu"
+    },
+    {
+      "index": 28,
+      "title": "Measurement bias and effect restoration in causal inference",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Biometrika",
+      "authors": "Manabu Kuroki and Judea Pearl"
+    },
+    {
+      "index": 29,
+      "title": "Evaluating the econometric evaluations of training programs with experimental data",
+      "abstract": "",
+      "year": "1986",
+      "venue": "The American Economic Review",
+      "authors": "Robert J LaLonde"
+    },
+    {
+      "index": 30,
+      "title": "The changing science of machine learning",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Machine Learning",
+      "authors": "Pat Langley"
+    },
+    {
+      "index": 31,
+      "title": "Matching via dimensionality reduction for estimation of treatment effects in digital marketing campaigns",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Joint Conference on Artificial Intelligence",
+      "authors": "Sheng Li, Nikos Vlassis, Jaya Kawale, and Yun Fu"
+    },
+    {
+      "index": 32,
+      "title": "Estimating high-dimensional intervention effects from observational data",
+      "abstract": "",
+      "year": "2009",
+      "venue": "The Annals of Statistics",
+      "authors": "Marloes H Maathuis, Markus Kalisch, and Peter Bühlmann"
+    },
+    {
+      "index": 33,
+      "title": "EconML: A Python package for ML-based heterogeneous treatment effects estimation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Microsoft Research"
+    },
+    {
+      "index": 34,
+      "title": "Machine Learning: A Probabilistic Perspective",
+      "abstract": "",
+      "year": "2012",
+      "venue": "MIT press",
+      "authors": "Kevin P Murphy"
+    },
+    {
+      "index": 35,
+      "title": "RealCause: Realistic Causal Inference Benchmarking",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2011.15007",
+      "authors": "Brady Neal, Chin-Wei Huang, and Sunand Raghupathi",
+      "orig_title": "RealCause: Realistic causal inference benchmarking",
+      "paper_id": "2011.15007v2"
+    },
+    {
+      "index": 36,
+      "title": "Cross-fitting and fast remainder rates for semiparametric estimation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1801.09138",
+      "authors": "Whitney K Newey and James M Robins"
+    },
+    {
+      "index": 37,
+      "title": "Validating Causal Inference Methods",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Harsh Parikh, Carlos Varjao, Louise Xu, and Eric J Tchetgen Tchetgen",
+      "orig_title": "Validating causal inference methods",
+      "paper_id": "2202.04208v5"
+    },
+    {
+      "index": 38,
+      "title": "Causal diagrams for empirical research",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Biometrika",
+      "authors": "Judea Pearl"
+    },
+    {
+      "index": 39,
+      "title": "Causality",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Cambridge University Press",
+      "authors": "Judea Pearl"
+    },
+    {
+      "index": 40,
+      "title": "scikit-learn: Machine learning in Python",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Fabian Pedregosa, Gaël Varoquaux, Alexandre Gramfort, Vincent Michel, Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron Weiss, Vincent Dubourg, et al."
+    },
+    {
+      "index": 41,
+      "title": "Do ImageNet Classifiers Generalize to ImageNet?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Benjamin Recht, Rebecca Roelofs, Ludwig Schmidt, and Vaishaal Shankar",
+      "orig_title": "Do imagenet classifiers generalize to imagenet?",
+      "paper_id": "1902.10811v2"
+    },
+    {
+      "index": 42,
+      "title": "Beware of the Simulated DAG! Causal Discovery Benchmarks May Be Easy To Game",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Alexander Reisach, Christof Seiler, and Sebastian Weichwald",
+      "orig_title": "Beware of the simulated DAG! causal discovery benchmarks may be easy to game",
+      "paper_id": "2102.13647v3"
+    },
+    {
+      "index": 43,
+      "title": "Single world intervention graphs (SWIGs): A unification of the counterfactual and graphical approaches to causality",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Center for the Statistics and the Social Sciences, University of Washington Working Paper 128",
+      "authors": "Thomas S Richardson and James M Robins"
+    },
+    {
+      "index": 44,
+      "title": "Adjusting for confounding with text matching",
+      "abstract": "",
+      "year": "2020",
+      "venue": "American Journal of Political Science",
+      "authors": "Margaret E Roberts, Brandon M Stewart, and Richard A Nielsen"
+    },
+    {
+      "index": 45,
+      "title": "A new approach to causal inference in mortality studies with a sustained exposure period—application to control of the healthy worker survivor effect",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Mathematical Modelling",
+      "authors": "James M Robins"
+    },
+    {
+      "index": 46,
+      "title": "Estimation of regression coefficients when some regressors are not always observed",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "James M Robins, Andrea Rotnitzky, and Lue Ping Zhao"
+    },
+    {
+      "index": 47,
+      "title": "Efficient adjustment sets for population average causal treatment effect estimation in graphical models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Andrea Rotnitzky and Ezequiel Smucler"
+    },
+    {
+      "index": 48,
+      "title": "Searching for explanations: Testing social scientific methods in synthetic ground-truthed worlds",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Computational and Mathematical Organization Theory",
+      "authors": "Aurora C Schmidt, Christopher J Cameron, Corey Lowman, Joshua Brulé, Amruta J Deshpande, Seyyed A Fatemi, Vladimir Barash, Ariel M Greenberg, Cash J Costello, Eli S Sherman, et al."
+    },
+    {
+      "index": 49,
+      "title": "Can nonrandomized experiments yield accurate answers? A randomized experiment comparing random and nonrandom assignments",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "William R Shadish, Margaret H Clark, and Peter M Steiner"
+    },
+    {
+      "index": 50,
+      "title": "Adapting Neural Networks for the Estimation of Treatment Effects",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Claudia Shi, David Blei, and Victor Veitch",
+      "orig_title": "Adapting neural networks for the estimation of treatment effects",
+      "paper_id": "1906.02120v2"
+    },
+    {
+      "index": 51,
+      "title": "Benchmarking Framework for Performance-Evaluation of Causal Inference Analysis",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.05046",
+      "authors": "Yishai Shimoni, Chen Yanover, Ehud Karavani, and Yaara Goldschmnidt",
+      "orig_title": "Benchmarking framework for performance-evaluation of causal inference analysis",
+      "paper_id": "1802.05046v2"
+    },
+    {
+      "index": 52,
+      "title": "Outcome-adaptive lasso: variable selection for causal inference",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Biometrics",
+      "authors": "Susan M Shortreed and Ashkan Ertefaie"
+    },
+    {
+      "index": 53,
+      "title": "Causation, Prediction, and Search",
+      "abstract": "",
+      "year": "2000",
+      "venue": "MIT press",
+      "authors": "Peter L Spirtes, Clark N Glymour, and Richard Scheines"
+    },
+    {
+      "index": 54,
+      "title": "Causal stability ranking",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Bioinformatics",
+      "authors": "Daniel J Stekhoven, Izabel Moraes, Gardar Sveinbjörnsson, Lars Hennig, Marloes H Maathuis, and Peter Bühlmann"
+    },
+    {
+      "index": 55,
+      "title": "Statistical testing under distributional shifts",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Journal of the Royal Statistical Society Series B: Statistical Methodology",
+      "authors": "Nikolaj Thams, Sorawit Saengkyongam, Niklas Pfister, and Jonas Peters"
+    },
+    {
+      "index": 56,
+      "title": "Semiparametric Theory and Missing Data",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Springer Science & Business Media",
+      "authors": "Anastasios Tsiatis"
+    },
+    {
+      "index": 57,
+      "title": "Adapting Text Embeddings for Causal Inference",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Conference on Uncertainty in Artificial Intelligence",
+      "authors": "Victor Veitch, Dhanya Sridhar, and David Blei",
+      "orig_title": "Adapting text embeddings for causal inference",
+      "paper_id": "1905.12741v2"
+    },
+    {
+      "index": 58,
+      "title": "All of statistics: a concise course in statistical inference, volume 26",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Springer",
+      "authors": "Larry Wasserman"
+    },
+    {
+      "index": 59,
+      "title": "Adjusting for Confounders with Text: Challenges and an Empirical Evaluation Framework for Causal Inference",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International AAAI Conference on Web and Social Media",
+      "authors": "Galen Weld, Peter West, Maria Glenski, David Arbour, Ryan A Rossi, and Tim Althoff",
+      "orig_title": "Adjusting for confounders with text: Challenges and an empirical evaluation framework for causal inference",
+      "paper_id": "2009.09961v4"
+    },
+    {
+      "index": 60,
+      "title": "Challenges of Using Text Classifiers for Causal Inference",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conference on Empirical Methods in Natural Language Processing",
+      "authors": "Zach Wood-Doughty, Ilya Shpitser, and Mark Dredze",
+      "orig_title": "Challenges of using text classifiers for causal inference",
+      "paper_id": "1810.00956v1"
+    },
+    {
+      "index": 61,
+      "title": "Generating Synthetic Text Data to Evaluate Causal Inference Methods",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2102.05638",
+      "authors": "Zach Wood-Doughty, Ilya Shpitser, and Mark Dredze",
+      "orig_title": "Generating synthetic text data to evaluate causal inference methods",
+      "paper_id": "2102.05638v1"
+    },
+    {
+      "index": 62,
+      "title": "Uncovering interpretable potential confounders in electronic medical records",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Nature Communications",
+      "authors": "Jiaming Zeng, Michael F Gensheimer, Daniel L Rubin, Susan Athey, and Ross D Shachter"
+    },
+    {
+      "index": 63,
+      "title": "Bounding causal effects on continuous outcome",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Junzhe Zhang and Elias Bareinboim"
+    }
+  ]
+}

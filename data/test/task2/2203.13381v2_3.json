@@ -1,0 +1,455 @@
+{
+  "paper_id": "2203.13381v2",
+  "title": "Probing Representation Forgetting in Supervised and Unsupervised Continual Learning",
+  "sections": {
+    "introduction": "Continual Learning (CL) is concerned with methods for learners to manage changing training data distributions. The goal is to acquire new knowledge from new data distributions while not forgetting previous knowledge. A common scenario is CL in the classification setting, where the class labels presented to the learner change over time. In this scenario, a phenomenon known as catastrophic forgetting has been observed  . This phenomenon is often described as a loss of knowledge about previously seen data and is observed in the classification setting as a decrease in accuracy. Deep learning has been traditionally motivated as an approach, which can automatically learn representations , forgoing the need to design handcrafted features. Indeed representation learning is at the core of deep learning methods in supervised and unsupervised settings . In the case of many practical scenarios we may not simply be interested in the final performance of the model, but also the usefulness of the learned features for various downstream tasks 2. Although a model’s representation may change, sometimes drastically at task boundaries , this does not necessarily imply a loss of useful information and may instead correspond to a simple transformation. For example, consider a standard multi-head CL setting, where each task shares a representation and only differs through task specific “heads”. A permutation of the features leading into the classification heads leads to total catastrophic forgetting as measured by standard approaches as the task heads no longer match with the representations. However, this does not correspond to a loss of knowledge about the data, nor a less useful representation. Indeed recent works have highlighted the importance of fast remembering versus catastrophic forgetting [ref]17 [ref]14, a looser continual learning requirement where in the task performance may decrease but the agent is able to recover rapidly upon observing a few samples from the previous task. In this light, maintaining a useful representation, which facilitates rapid recovery, is as important as maintaining high performance for the task. CL envisions having learners operate over long time horizons while continually maintaining old knowledge and integrating new knowledge. Hence, in addition to directly measuring the performance on previous tasks using the last layer classifiers, it is sensible to consider the usefulness of their representations for previous tasks. In this paper we highlight that traditional approaches of evaluating forgetting are unable to properly disambiguate trivial changes in the features (e.g. permutation) from abrupt losses of useful representations. We instead use optimal Linear Probes (LP), commonly used to study unsupervised representations  and intermediate layer representations  8, to evaluate CL algorithms and their effectiveness. We revisit several CL settings and benchmarks and measure forgetting using LP. Our focus is particularly on re-evaluating finetuning approaches that do not apply explicit control for the non-iid nature of continual learning. We observe that in many commonly studied cases of catastrophic forgetting, the representations under naive finetuning approaches, undergo minimal forgetting, without losing critical task information. Our major contributions in this work are as follows.\nFirst we bring three new significant insights obtained and demonstrated through extensive experimental analysis: In a number of CL settings the observed accuracy can be a misleading metric for studying forgetting, particularly when compared to finetuning approaches Naive training with SupCon  or SimCLR (in the unsupervised case) have advantageous properties for continual learning, particularly in longer sequences. By using LP based evaluation, forgetting is clearly decreased for wider and deeper models, which is not seen that clearly from earlier observed accuracy. Secondly, we suggest a simple approach to facilitate fast remembering, which does not require using a large memory during training; it relies only on a small memory combined with SupCon based finetuning."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Memory Aware Synapses: Learning what (not) to forget",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV 2018",
+      "authors": "Rahaf Aljundi, Francesca Babiloni, Mohamed Elhoseiny, Marcus Rohrbach, and Tinne Tuytelaars",
+      "orig_title": "Memory aware synapses: Learning what (not) to forget",
+      "paper_id": "1711.09601v4"
+    },
+    {
+      "index": 1,
+      "title": "Expert Gate: Lifelong Learning with a Network of Experts",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Rahaf Aljundi, Punarjay Chakravarty, and Tinne Tuytelaars",
+      "orig_title": "Expert gate: Lifelong learning with a network of experts",
+      "paper_id": "1611.06194v2"
+    },
+    {
+      "index": 2,
+      "title": "Does an LSTM forget more than a CNN? an empirical study of catastrophic forgetting in NLP",
+      "abstract": "",
+      "year": "2019",
+      "venue": "The 17th Annual Workshop of the Australasian Language Technology Association",
+      "authors": "Gaurav Arora, Afshin Rahimi, and Timothy Baldwin"
+    },
+    {
+      "index": 3,
+      "title": "Representation learning: A review and new perspectives",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "Yoshua Bengio, Aaron Courville, and Pascal Vincent"
+    },
+    {
+      "index": 4,
+      "title": "Reducing representation drift in online continual learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.05025",
+      "authors": "Lucas Caccia, Rahaf Aljundi, Tinne Tuytelaars, Joelle Pineau, and Eugene Belilovsky"
+    },
+    {
+      "index": 5,
+      "title": "Overfitting in neural nets: Backpropagation, conjugate gradient, and early stopping",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Rich Caruana, Steve Lawrence, and Lee Giles"
+    },
+    {
+      "index": 6,
+      "title": "Continual learning with tiny episodic memories",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1902.10486",
+      "authors": "Arslan Chaudhry, Marcus Rohrbach, Mohamed Elhoseiny, Thalaiyasingam Ajanthan, Puneet K Dokania, Philip HS Torr, and Marc’Aurelio Ranzato"
+    },
+    {
+      "index": 7,
+      "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.05709",
+      "authors": "Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton",
+      "orig_title": "A simple framework for contrastive learning of visual representations",
+      "paper_id": "2002.05709v3"
+    },
+    {
+      "index": 8,
+      "title": "A Downsampled Variant of ImageNet as an Alternative to the CIFAR datasets",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1707.08819",
+      "authors": "Patryk Chrabaszcz, Ilya Loshchilov, and Frank Hutter",
+      "orig_title": "A downsampled variant of imagenet as an alternative to the cifar datasets",
+      "paper_id": "1707.08819v3"
+    },
+    {
+      "index": 9,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MIT Press",
+      "authors": "Ian Goodfellow, Yoshua Bengio, and Aaron Courville",
+      "orig_title": "Deep learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 10,
+      "title": "An empirical investigation of catastrophic forgetting in gradient-based neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.6211",
+      "authors": "Ian J Goodfellow, Mehdi Mirza, Da Xiao, Aaron Courville, and Yoshua Bengio"
+    },
+    {
+      "index": 11,
+      "title": "Dissecting supervised constrastive learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Florian Graf, Christoph Hofer, Marc Niethammer, and Roland Kwitt"
+    },
+    {
+      "index": 12,
+      "title": "A neural representation of sketch drawings",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1704.03477",
+      "authors": "David Ha and Douglas Eck"
+    },
+    {
+      "index": 13,
+      "title": "Embracing change: Continual learning in deep neural networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Trends in cognitive sciences",
+      "authors": "Raia Hadsell, Dushyant Rao, Andrei A Rusu, and Razvan Pascanu"
+    },
+    {
+      "index": 14,
+      "title": "Momentum Contrast for Unsupervised Visual Representation Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.05722",
+      "authors": "Kaiming He, Haoqi Fan, Yuxin Wu, Saining Xie, and Ross Girshick",
+      "orig_title": "Momentum contrast for unsupervised visual representation learning",
+      "paper_id": "1911.05722v3"
+    },
+    {
+      "index": 15,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 16,
+      "title": "Task Agnostic Continual Learning via Meta Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.05201",
+      "authors": "Xu He, Jakub Sygnowski, Alexandre Galashov, Andrei A Rusu, Yee Whye Teh, and Razvan Pascanu",
+      "orig_title": "Task agnostic continual learning via meta learning",
+      "paper_id": "1906.05201v1"
+    },
+    {
+      "index": 17,
+      "title": "Distilling the Knowledge in a Neural Network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1503.02531",
+      "authors": "Geoffrey Hinton, Oriol Vinyals, and Jeff Dean",
+      "orig_title": "Distilling the knowledge in a neural network",
+      "paper_id": "1503.02531v1"
+    },
+    {
+      "index": 18,
+      "title": "How well self-supervised pre-training performs with streaming data?",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.12081",
+      "authors": "Dapeng Hu, Qizhengqiu Lu, Lanqing Hong, Hailin Hu, Yifan Zhang, Zhenguo Li, Alfred Shen, and Jiashi Feng"
+    },
+    {
+      "index": 19,
+      "title": "On Quadratic Penalties in Elastic Weight Consolidation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1712.03847",
+      "authors": "Ferenc Huszár",
+      "orig_title": "On quadratic penalties in elastic weight consolidation",
+      "paper_id": "1712.03847v1"
+    },
+    {
+      "index": 20,
+      "title": "Supervised Contrastive Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Prannay Khosla, Piotr Teterwak, Chen Wang, Aaron Sarna, Yonglong Tian, Phillip Isola, Aaron Maschinot, Ce Liu, and Dilip Krishnan",
+      "orig_title": "Supervised contrastive learning",
+      "paper_id": "2004.11362v5"
+    },
+    {
+      "index": 21,
+      "title": "Overcoming catastrophic forgetting in neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1612.00796",
+      "authors": "James Kirkpatrick, Razvan Pascanu, Neil Rabinowitz, Joel Veness, Guillaume Desjardins, Andrei A Rusu, Kieran Milan, John Quan, Tiago Ramalho, Agnieszka Grabska-Barwinska, et al.",
+      "orig_title": "Overcoming catastrophic forgetting in neural networks",
+      "paper_id": "1612.00796v2"
+    },
+    {
+      "index": 22,
+      "title": "Similarity of Neural Network Representations Revisited",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Simon Kornblith, Mohammad Norouzi, Honglak Lee, and Geoffrey Hinton",
+      "orig_title": "Similarity of neural network representations revisited",
+      "paper_id": "1905.00414v4"
+    },
+    {
+      "index": 23,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "University of Toronto",
+      "authors": "Alex Krizhevsky, Geoffrey Hinton, et al."
+    },
+    {
+      "index": 24,
+      "title": "Learn to Grow: A Continual Structure Learning Framework for Overcoming Catastrophic Forgetting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Xilai Li, Yingbo Zhou, Tianfu Wu, Richard Socher, and Caiming Xiong",
+      "orig_title": "Learn to grow: A continual structure learning framework for overcoming catastrophic forgetting",
+      "paper_id": "1904.00310v3"
+    },
+    {
+      "index": 25,
+      "title": "Learning without Forgetting",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Zhizhong Li and Derek Hoiem",
+      "orig_title": "Learning without forgetting",
+      "paper_id": "1606.09282v3"
+    },
+    {
+      "index": 26,
+      "title": "Gradient Episodic Memory for Continual Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "David Lopez-Paz et al.",
+      "orig_title": "Gradient episodic memory for continual learning",
+      "paper_id": "1706.08840v6"
+    },
+    {
+      "index": 27,
+      "title": "SGDR: Stochastic Gradient Descent with Warm Restarts",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1608.03983",
+      "authors": "Ilya Loshchilov and Frank Hutter",
+      "orig_title": "Sgdr: Stochastic gradient descent with warm restarts",
+      "paper_id": "1608.03983v5"
+    },
+    {
+      "index": 28,
+      "title": "Decoupled Weight Decay Regularization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.05101",
+      "authors": "Ilya Loshchilov and Frank Hutter",
+      "orig_title": "Decoupled weight decay regularization",
+      "paper_id": "1711.05101v3"
+    },
+    {
+      "index": 29,
+      "title": "Supervised Contrastive Replay: Revisiting the Nearest Class Mean Classifier in Online Class-Incremental Continual Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Zheda Mai, Ruiwen Li, Hyunwoo Kim, and Scott Sanner",
+      "orig_title": "Supervised contrastive replay: Revisiting the nearest class mean classifier in online class-incremental continual learning",
+      "paper_id": "2103.13885v3"
+    },
+    {
+      "index": 30,
+      "title": "Catastrophic interference in connectionist networks: The sequential learning problem",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Psychology of learning and motivation",
+      "authors": "Michael McCloskey and Neal J Cohen"
+    },
+    {
+      "index": 31,
+      "title": "Tutorial on maximum likelihood estimation",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Journal of mathematical Psychology",
+      "authors": "In Jae Myung"
+    },
+    {
+      "index": 32,
+      "title": "Toward Understanding Catastrophic Forgetting in Continual Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.01091",
+      "authors": "Cuong V Nguyen, Alessandro Achille, Michael Lam, Tal Hassner, Vijay Mahadevan, and Stefano Soatto",
+      "orig_title": "Toward understanding catastrophic forgetting in continual learning",
+      "paper_id": "1908.01091v1"
+    },
+    {
+      "index": 33,
+      "title": "Variational Continual Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1710.10628",
+      "authors": "Cuong V Nguyen, Yingzhen Li, Thang D Bui, and Richard E Turner",
+      "orig_title": "Variational continual learning",
+      "paper_id": "1710.10628v3"
+    },
+    {
+      "index": 34,
+      "title": "Automated flower classification over a large number of classes",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Indian Conference on Computer Vision, Graphics and Image Processing",
+      "authors": "M-E. Nilsback and A. Zisserman"
+    },
+    {
+      "index": 35,
+      "title": "Building a Regular Decision Boundary with Deep Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Edouard Oyallon",
+      "orig_title": "Building a regular decision boundary with deep networks",
+      "paper_id": "1703.01775v1"
+    },
+    {
+      "index": 36,
+      "title": "Recognizing indoor scenes",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Computer Vision and Pattern Recognition, CVPR 2009. IEEE Conference on",
+      "authors": "Ariadna Quattoni and Antonio Torralba"
+    },
+    {
+      "index": 37,
+      "title": "Anatomy of catastrophic forgetting: Hidden representations and task semantics",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2007.07400",
+      "authors": "Vinay V Ramasesh, Ethan Dyer, and Maithra Raghu"
+    },
+    {
+      "index": 38,
+      "title": "Effect of scale on catastrophic forgetting in neural networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Vinay Venkatesh Ramasesh, Aitor Lewkowycz, and Ethan Dyer"
+    },
+    {
+      "index": 39,
+      "title": "iCaRL: Incremental Classifier and Representation Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Sylvestre-Alvise Rebuffi, Alexander Kolesnikov, Georg Sperl, and Christoph H Lampert",
+      "orig_title": "icarl: Incremental classifier and representation learning",
+      "paper_id": "1611.07725v2"
+    },
+    {
+      "index": 40,
+      "title": "Incremental Learning Through Deep Adaptation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "Amir Rosenfeld and John K Tsotsos",
+      "orig_title": "Incremental learning through deep adaptation",
+      "paper_id": "1705.04228v2"
+    },
+    {
+      "index": 41,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Journal of Computer Vision (IJCV)",
+      "authors": "Olga Russakovsky, Jia Deng, Hao Su, Jonathan Krause, Sanjeev Satheesh, Sean Ma, Zhiheng Huang, Andrej Karpathy, Aditya Khosla, Michael Bernstein, Alexander C. Berg, and Li Fei-Fei",
+      "orig_title": "ImageNet Large Scale Visual Recognition Challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 42,
+      "title": "Progressive Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.04671",
+      "authors": "Andrei A Rusu, Neil C Rabinowitz, Guillaume Desjardins, Hubert Soyer, James Kirkpatrick, Koray Kavukcuoglu, Razvan Pascanu, and Raia Hadsell",
+      "orig_title": "Progressive neural networks",
+      "paper_id": "1606.04671v4"
+    },
+    {
+      "index": 43,
+      "title": "The sketchy database: learning to retrieve badly drawn bunnies",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Patsorn Sangkloy, Nathan Burnell, Cusuh Ham, and James Hays"
+    },
+    {
+      "index": 44,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1556",
+      "authors": "Karen Simonyan and Andrew Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 45,
+      "title": "The Caltech-UCSD Birds-200-2011 Dataset",
+      "abstract": "",
+      "year": "2011",
+      "venue": "California Institute of Technology",
+      "authors": "Catherine Wah, Steve Branson, Peter Welinder, Pietro Perona, and Serge Belongie"
+    },
+    {
+      "index": 46,
+      "title": "Caltech-UCSD Birds 200",
+      "abstract": "",
+      "year": "2010",
+      "venue": "California Institute of Technology",
+      "authors": "P. Welinder, S. Branson, T. Mita, C. Wah, F. Schroff, S. Belongie, and P. Perona"
+    },
+    {
+      "index": 47,
+      "title": "Visualizing and understanding convolutional networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "European conference on computer vision",
+      "authors": "Matthew D Zeiler and Rob Fergus"
+    },
+    {
+      "index": 48,
+      "title": "Improved multitask learning through synaptic intelligence",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Friedemann Zenke, Ben Poole, and Surya Ganguli"
+    }
+  ]
+}

@@ -1,0 +1,601 @@
+{
+  "paper_id": "2306.16024v1",
+  "title": "Retrospective: RAIDR: Retention-Aware Intelligent DRAM Refresh",
+  "abstract": "Abstract\nDynamic Random Access Memory (DRAM) is the prevalent memory technology used to build main memory systems of almost all computers. A fundamental shortcoming of DRAM is the need to refresh memory cells to keep stored data intact. DRAM refresh consumes energy and degrades performance. It is also a technology scaling challenge as its negative effects become worse as DRAM cell size reduces and DRAM chip capacity increases.\nOur ISCA 2012 paper, RAIDR [1], examines the DRAM refresh problem from a modern computing systems perspective, demonstrating its projected impact on systems with higher-capacity DRAM chips expected to be manufactured in the future. It proposes and evaluates a simple and low-cost solution that greatly reduces the performance & energy overheads of refresh by exploiting variation in data retention times across DRAM rows. The key idea is to group the DRAM rows into bins in terms of their minimum data retention times, store the bins in low-cost Bloom filters, and refresh rows in different bins at different rates. Evaluations in our paper (and later works) show that the idea greatly improves performance & energy efficiency and its benefits increase with DRAM chip capacity. The paper embodies an approach we have termed system-DRAM co-design.\nThis short retrospective provides a brief analysis of our RAIDR paper and its impact. We briefly describe the mindset and circumstances that led to our focus on the DRAM refresh problem and RAIDR’s development, discuss later works that provided improved analyses and solutions, and make some educated guesses on what the future may bring on the DRAM refresh problem (and more generally in DRAM technology scaling).",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "RAIDR: Retention-Aware Intelligent DRAM Refresh",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ISCA",
+      "authors": "J. Liu et al."
+    },
+    {
+      "index": 1,
+      "title": "Field-effect Transistor Memory",
+      "abstract": "",
+      "year": "1968",
+      "venue": "",
+      "authors": "R. H. Dennard"
+    },
+    {
+      "index": 2,
+      "title": "Challenges and Future Directions for the Scaling of Dynamic Random-Access Memory (DRAM)",
+      "abstract": "",
+      "year": "2002",
+      "venue": "IBM JRD",
+      "authors": "J. A. Mandelman et al."
+    },
+    {
+      "index": 3,
+      "title": "Memory Scaling: A Systems Architecture Perspective",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IMW",
+      "authors": "O. Mutlu"
+    },
+    {
+      "index": 4,
+      "title": "Research Problems and Opportunities in Memory Systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "SUPERFRI",
+      "authors": "O. Mutlu and L. Subramanian"
+    },
+    {
+      "index": 5,
+      "title": "Stall-Time Fair Memory Access Scheduling for Chip Multiprocessors",
+      "abstract": "",
+      "year": "2007",
+      "venue": "MICRO",
+      "authors": "O. Mutlu and T. Moscibroda"
+    },
+    {
+      "index": 6,
+      "title": "Parallelism-Aware Batch Scheduling: Enhancing Both Performance and Fairness of Shared DRAM Systems",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ISCA",
+      "authors": "O. Mutlu et al."
+    },
+    {
+      "index": 7,
+      "title": "Thread Cluster Memory Scheduling: Exploiting Differences in Memory Access Behavior",
+      "abstract": "",
+      "year": "2010",
+      "venue": "MICRO",
+      "authors": "Y. Kim et al."
+    },
+    {
+      "index": 8,
+      "title": "ATLAS: A Scalable and High-performance Scheduling Algorithm for Multiple Memory Controllers",
+      "abstract": "",
+      "year": "2010",
+      "venue": "HPCA",
+      "authors": "Y. Kim et al."
+    },
+    {
+      "index": 9,
+      "title": "Reducing Memory Interference in Multicore Systems via Application-aware Memory Channel Partitioning",
+      "abstract": "",
+      "year": "2011",
+      "venue": "MICRO",
+      "authors": "S. Muralidhara"
+    },
+    {
+      "index": 10,
+      "title": "Memory power management via dynamic voltage/frequency scaling",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICAC",
+      "authors": "H. David et al."
+    },
+    {
+      "index": 11,
+      "title": "Architecting Phase Change Memory as a Scalable DRAM Alternative",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ISCA",
+      "authors": "B. C. Lee et al."
+    },
+    {
+      "index": 12,
+      "title": "Row Buffer Locality Aware Caching Policies for Hybrid Memories",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ICCD",
+      "authors": "H. Yoon et al."
+    },
+    {
+      "index": 13,
+      "title": "Enabling Efficient and Scalable Hybrid Memories using Fine-granularity DRAM Cache Management",
+      "abstract": "",
+      "year": "2012",
+      "venue": "CAL",
+      "authors": "J. Meza et al."
+    },
+    {
+      "index": 14,
+      "title": "Space/Time Trade-Offs in Hash Coding with Allowable Errors",
+      "abstract": "",
+      "year": "1970",
+      "venue": "CACM",
+      "authors": "B. Bloom"
+    },
+    {
+      "index": 15,
+      "title": "A new investigation of data retention time in truly nanoscaled DRAMs",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE EDL",
+      "authors": "K. Kim and J. Lee"
+    },
+    {
+      "index": 16,
+      "title": "An Experimental Study of Data Retention Behavior in Modern DRAM Devices: Implications for Retention Time Profiling Mechanisms",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISCA",
+      "authors": "J. Liu et al."
+    },
+    {
+      "index": 17,
+      "title": "SoftMC: A Flexible and Practical Open-Source Infrastructure for Enabling Experimental DRAM Studies",
+      "abstract": "",
+      "year": "2017",
+      "venue": "HPCA",
+      "authors": "H. Hassan et al."
+    },
+    {
+      "index": 18,
+      "title": "SoftMC Repository",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 19,
+      "title": "DRAM Bender: An Extensible and Versatile FPGA-based Infrastructure to Easily Test State-of-the-art DRAM Chips",
+      "abstract": "",
+      "year": "2023",
+      "venue": "TCAD",
+      "authors": "A. Olgun et al.",
+      "orig_title": "DRAM Bender: An Extensible and Versatile FPGA-based Infrastructure to Easily Test State-of-the-art DRAM Chips",
+      "paper_id": "2211.05838v5"
+    },
+    {
+      "index": 20,
+      "title": "DRAM Bender",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 21,
+      "title": "The impact of data-line interference noise on DRAM scaling",
+      "abstract": "",
+      "year": "1988",
+      "venue": "JSSC",
+      "authors": "Y. Nakagome et al."
+    },
+    {
+      "index": 22,
+      "title": "A Meta-stable Leakage Phenomenon in DRAM Charge Storage - Variable Hold Time",
+      "abstract": "",
+      "year": "1987",
+      "venue": "IEDM",
+      "authors": "D. Yaney et al."
+    },
+    {
+      "index": 23,
+      "title": "DRAM Variable Retention Time",
+      "abstract": "",
+      "year": "1992",
+      "venue": "IEDM",
+      "authors": "P. J. Restle et al."
+    },
+    {
+      "index": 24,
+      "title": "The Efficacy of Error Mitigation Techniques for DRAM Retention Failures: A Comparative Experimental Study",
+      "abstract": "",
+      "year": "2014",
+      "venue": "SIGMETRICS",
+      "authors": "S. Khan"
+    },
+    {
+      "index": 25,
+      "title": "AVATAR: A Variable-Retention-Time (VRT) Aware Refresh for DRAM Systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "DSN",
+      "authors": "M. K. Qureshi et al."
+    },
+    {
+      "index": 26,
+      "title": "PARBOR: An Efficient System-Level Technique to Detect Data Dependent Failures in DRAM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "DSN",
+      "authors": "S. Khan et al."
+    },
+    {
+      "index": 27,
+      "title": "A Case for Memory Content-Based Detection and Mitigation of Data-Dependent Failures in DRAM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CAL",
+      "authors": "S. Khan et al."
+    },
+    {
+      "index": 28,
+      "title": "Detecting and Mitigating Data-Dependent DRAM Failures by Exploiting Current Memory Content",
+      "abstract": "",
+      "year": "2017",
+      "venue": "MICRO",
+      "authors": "S. Khan et al."
+    },
+    {
+      "index": 29,
+      "title": "The Reach Profiler (REAPER): Enabling the Mitigation of DRAM Retention Failures via Profiling at Aggressive Conditions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISCA",
+      "authors": "M. Patel"
+    },
+    {
+      "index": 30,
+      "title": "Bit-Exact ECC Recovery (BEER): Determining DRAM On-Die ECC Functions by Exploiting DRAM Data Retention Characteristics",
+      "abstract": "",
+      "year": "2020",
+      "venue": "MICRO",
+      "authors": "M. Patel et al.",
+      "orig_title": "Bit-Exact ECC Recovery (BEER): Determining DRAM On-Die ECC Functions by Exploiting DRAM Data Retention Characteristics",
+      "paper_id": "2009.07985v1"
+    },
+    {
+      "index": 31,
+      "title": "HARP: Practically and Effectively Identifying Uncorrectable Errors in Main Memory Chips That Use On-Die ECC",
+      "abstract": "",
+      "year": "2021",
+      "venue": "MICRO",
+      "authors": "M. Patel et al."
+    },
+    {
+      "index": 32,
+      "title": "Understanding and Modeling On-die Error Correction in Modern DRAM: An Experimental Study using Real Devices",
+      "abstract": "",
+      "year": "2019",
+      "venue": "DSN",
+      "authors": "M. Patel et al."
+    },
+    {
+      "index": 33,
+      "title": "Co-Architecting Controllers and DRAM to Enhance DRAM Process Scaling",
+      "abstract": "",
+      "year": "2014",
+      "venue": "The Memory Forum",
+      "authors": "U. Kang et al."
+    },
+    {
+      "index": 34,
+      "title": "Flipping Bits in Memory Without Accessing Them: An Experimental Study of DRAM Disturbance Errors",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ISCA",
+      "authors": "Y. Kim et al."
+    },
+    {
+      "index": 35,
+      "title": "Revisiting RowHammer: An Experimental Analysis of Modern DRAM Devices and Mitigation Techniques",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ISCA",
+      "authors": "J. S. Kim et al.",
+      "orig_title": "Revisiting RowHammer: An Experimental Analysis of Modern DRAM Devices and Mitigation Techniques",
+      "paper_id": "2005.13121v2"
+    },
+    {
+      "index": 36,
+      "title": "A Deeper Look into RowHammer’s Sensitivities: Experimental Analysis of Real DRAM Chips and Implications on Future Attacks and Defenses",
+      "abstract": "",
+      "year": "2021",
+      "venue": "MICRO",
+      "authors": "L. Orosa",
+      "orig_title": "A Deeper Look into RowHammer’s Sensitivities: Experimental Analysis of Real DRAM Chips and Implications on Future Attacks and Defenses",
+      "paper_id": "2110.10291v1"
+    },
+    {
+      "index": 37,
+      "title": "RHAT: Efficient RowHammer-Aware Test for Modern DRAM Modules",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ETS",
+      "authors": "M. Farmani et al."
+    },
+    {
+      "index": 38,
+      "title": "TRRespass: Exploiting the Many Sides of Target Row Refresh",
+      "abstract": "",
+      "year": "2020",
+      "venue": "S&P",
+      "authors": "P. Frigo et al.",
+      "orig_title": "TRRespass: Exploiting the Many Sides of Target Row Refresh",
+      "paper_id": "2004.01807v1"
+    },
+    {
+      "index": 39,
+      "title": "Uncovering In-DRAM RowHammer Protection Mechanisms: A New Methodology, Custom RowHammer Patterns, and Implications",
+      "abstract": "",
+      "year": "2021",
+      "venue": "MICRO",
+      "authors": "H. Hassan et al.",
+      "orig_title": "Uncovering In-DRAM RowHammer Protection Mechanisms: A New Methodology, Custom RowHammer Patterns, and Implications",
+      "paper_id": "2110.10603v2"
+    },
+    {
+      "index": 40,
+      "title": "HiRA: Hidden Row Activation for Reducing Refresh Latency of Off-the-Shelf DRAM Chips",
+      "abstract": "",
+      "year": "2022",
+      "venue": "MICRO",
+      "authors": "A. G. Yağlikci et al.",
+      "orig_title": "HiRA: Hidden Row Activation for Reducing Refresh Latency of Off-the-Shelf DRAM Chips",
+      "paper_id": "2209.10198v1"
+    },
+    {
+      "index": 41,
+      "title": "Understanding RowHammer Under Reduced Wordline Voltage: An Experimental Study Using Real DRAM Devices",
+      "abstract": "",
+      "year": "2022",
+      "venue": "DSN",
+      "authors": "A. G. Yağlıkcı et al.",
+      "orig_title": "Understanding RowHammer Under Reduced Wordline Voltage: An Experimental Study Using Real DRAM Devices",
+      "paper_id": "2206.09999v1"
+    },
+    {
+      "index": 42,
+      "title": "An Experimental Analysis of RowHammer in HBM2 DRAM Chips",
+      "abstract": "",
+      "year": "2023",
+      "venue": "DSN Disrupt",
+      "authors": "A. Olgun et al.",
+      "orig_title": "An Experimental Analysis of RowHammer in HBM2 DRAM Chips",
+      "paper_id": "2305.17918v1"
+    },
+    {
+      "index": 43,
+      "title": "RowPress: Amplifying Read Disturbance in Modern DRAM Chips",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ISCA",
+      "authors": "H. Luo et al.",
+      "orig_title": "RowPress: Amplifying Read Disturbance in Modern DRAM Chips",
+      "paper_id": "2306.17061v5"
+    },
+    {
+      "index": 44,
+      "title": "Adaptive-Latency DRAM: Optimizing DRAM Timing for the Common-Case",
+      "abstract": "",
+      "year": "2015",
+      "venue": "HPCA",
+      "authors": "D. Lee et al."
+    },
+    {
+      "index": 45,
+      "title": "Understanding Latency Variation in Modern DRAM Chips: Experimental Characterization, Analysis, and Optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "SIGMETRICS",
+      "authors": "K. K. Chang et al."
+    },
+    {
+      "index": 46,
+      "title": "Design-induced Latency Variation in Modern DRAM Chips: Characterization, Analysis, and Latency Reduction Mechanisms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "POMACS",
+      "authors": "D. Lee et al."
+    },
+    {
+      "index": 47,
+      "title": "Solar-DRAM: Reducing DRAM Access Latency by Exploiting the Variation in Local Bitlines",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICCD",
+      "authors": "J. Kim et al."
+    },
+    {
+      "index": 48,
+      "title": "Understanding Reduced-Voltage Operation in Modern DRAM Devices: Experimental Characterization, Analysis, and Mechanisms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIGMETRICS",
+      "authors": "K. Chang et al."
+    },
+    {
+      "index": 49,
+      "title": "What Your DRAM Power Models Are Not Telling You: Lessons from a Detailed Experimental Study",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGMETRICS",
+      "authors": "S. Ghose et al."
+    },
+    {
+      "index": 50,
+      "title": "Fast Bulk Bitwise AND and OR in DRAM",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CAL",
+      "authors": "V. Seshadri et al."
+    },
+    {
+      "index": 51,
+      "title": "Ambit: In-Memory Accelerator for Bulk Bitwise Operations Using Commodity DRAM Technology",
+      "abstract": "",
+      "year": "2017",
+      "venue": "MICRO",
+      "authors": "V. Seshadri et al."
+    },
+    {
+      "index": 52,
+      "title": "PiDRAM: A Holistic End-to-end FPGA-based Framework for Processing-in-DRAM",
+      "abstract": "",
+      "year": "2023",
+      "venue": "TACO",
+      "authors": "A. Olgun et al.",
+      "orig_title": "PiDRAM: A Holistic End-to-end FPGA-based Framework for Processing-in-DRAM",
+      "paper_id": "2111.00082v6"
+    },
+    {
+      "index": 53,
+      "title": "ComputeDRAM: In-Memory Compute Using Off-the-Shelf DRAMs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "MICRO",
+      "authors": "F. Gao et al."
+    },
+    {
+      "index": 54,
+      "title": "FracDRAM: Fractional Values in Off-the-Shelf DRAM",
+      "abstract": "",
+      "year": "2022",
+      "venue": "MICRO",
+      "authors": "F. Gao et al."
+    },
+    {
+      "index": 55,
+      "title": "The DRAM Latency PUF: Quickly Evaluating Physical Unclonable Functions by Exploiting the Latency-Reliability Tradeoff in Modern Commodity DRAM Devices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "HPCA",
+      "authors": "J. S. Kim et al."
+    },
+    {
+      "index": 56,
+      "title": "D-RaNGe: Using Commodity DRAM Devices to Generate True Random Numbers with Low Latency and High Throughput",
+      "abstract": "",
+      "year": "2019",
+      "venue": "HPCA",
+      "authors": "J. Kim"
+    },
+    {
+      "index": 57,
+      "title": "QUAC-TRNG: High-Throughput True Random Number Generation Using Quadruple Row Activation in Commodity DRAMs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ISCA",
+      "authors": "A. Olgun et al."
+    },
+    {
+      "index": 58,
+      "title": "Improving DRAM Performance by Parallelizing Refreshes with Accesses",
+      "abstract": "",
+      "year": "2014",
+      "venue": "HPCA",
+      "authors": "K. K. Chang et al.",
+      "orig_title": "Improving DRAM Performance by Parallelizing Refreshes with Accesses",
+      "paper_id": "1712.07754v1"
+    },
+    {
+      "index": 59,
+      "title": "Understanding and Mitigating Refresh Overheads in High-Density DDR4 DRAM Systems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISCA",
+      "authors": "J. Mukundan et al."
+    },
+    {
+      "index": 60,
+      "title": "SECRET: Selective Error Correction for Refresh Energy Reduction in DRAMs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ICCD",
+      "authors": "C.-H. Lin et al."
+    },
+    {
+      "index": 61,
+      "title": "ArchShield: Architectural Framework for Assisting DRAM Scaling by Tolerating High Error Rates",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISCA",
+      "authors": "P. J. Nair et al."
+    },
+    {
+      "index": 62,
+      "title": "A Case for Refresh Pausing in DRAM Memory Systems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "HPCA",
+      "authors": "P. Nair et al."
+    },
+    {
+      "index": 63,
+      "title": "CREAM: A Concurrent-Refresh-Aware DRAM Memory Architecture",
+      "abstract": "",
+      "year": "2014",
+      "venue": "HPCA",
+      "authors": "T. Zhang et al."
+    },
+    {
+      "index": 64,
+      "title": "CROW: A Low-Cost Substrate for Improving DRAM Performance, Energy Efficiency, and Reliability",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ISCA",
+      "authors": "H. Hassan et al."
+    },
+    {
+      "index": 65,
+      "title": "A Case for Self-Managing DRAM Chips: Improving Performance, Efficiency, Reliability, and Security via Autonomous in-DRAM Maintenance Operations",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv:2207.13358",
+      "authors": "H. Hassan et al."
+    },
+    {
+      "index": 66,
+      "title": "VRL-DRAM: Improving DRAM Performance via Variable Refresh Latency",
+      "abstract": "",
+      "year": "2018",
+      "venue": "DAC",
+      "authors": "A. Das et al."
+    },
+    {
+      "index": 67,
+      "title": "Retention-Aware Placement in DRAM (RAPID): Software Methods for Quasi-Non-Volatile DRAM",
+      "abstract": "",
+      "year": "2006",
+      "venue": "HPCA",
+      "authors": "R. Venkatesan et al."
+    },
+    {
+      "index": 68,
+      "title": "Flikker: Saving DRAM Refresh-Power through Critical Data Partitioning",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ASPLOS",
+      "authors": "S. Liu et al."
+    },
+    {
+      "index": 69,
+      "title": "A 1.1V 16Gb DDR5 DRAM with Probabilistic-Aggressor Tracking, Refresh-Management Functionality, Per-Row Hammer Tracking, a Multi-Step Precharge, and Core-Bias Modulation for Security and Reliability Enhancement",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ISSCC",
+      "authors": "W. Kim"
+    },
+    {
+      "index": 70,
+      "title": "Fundamentally Understanding and Solving RowHammer",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ASP-DAC",
+      "authors": "O. Mutlu et al.",
+      "orig_title": "Fundamentally Understanding and Solving RowHammer",
+      "paper_id": "2211.07613v2"
+    }
+  ]
+}

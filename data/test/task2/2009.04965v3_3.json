@@ -1,0 +1,521 @@
+{
+  "paper_id": "2009.04965v3",
+  "title": "Visual Relationship Detection with Visual-Linguistic Knowledge from Multimodal Representations",
+  "sections": {
+    "i introduction": "VISUAL relationship detection (VRD) aims to detect objects and classify triplets of subject-predicate-object in a query image.\nIt is a very crucial task for enabling an intelligent system to understand the content of images, and has received much attention over the past few years  [ref]2       [ref]9 0 1 2 3 4 5 6 7 8.\nBased on VRD, Xu et al. 9 proposed scene graph generation (SGG)          , which targets at extracting a comprehensive and symbolic graph representation in an image, with vertices and edges denoting instances and for visual relationships respectively.\nWe focus on and use the term VRD throughout this paper for consistency.\nVRD is beneficial to various downstream tasks including but not limited to\nimage captioning 0 1,\nvisual question answering 2 3, etc. To enhance the performance of VRD systems, some recent works incorporate the external linguistic commonsense knowledge from pre-trained word vectors , structured knowledge bases 5, raw language corpora [ref]9, etc.,\nas priors,\nwhich has taken inspiration from human reasoning mechanism.\nFor instance, for a relationship triplet case person-ride-bike as shown in Figure 1, with linguistic commonsense, the predicate ride is more accurate for describing the relationship of person and bike\ncompared with other relational descriptions like on or above, which are rather abstract.\nIn addition, we argue that the external visual commonsense knowledge is also beneficial to lifting detection performance of the VRD models, which is however rarely considered previously.\nTake the same person-ride-bike in Figure 1 as an example.\nIf the pixels inside the bounding box of person are masked (zeroed) out, humans can still predict them as a person since we have seen many examples and have plenty of visual commonsense regarding such cases.\nThis reasoning process would be helpful for VRD systems since it incorporates relationships of the basic visual elements; however, most previous approaches learn visual knowledge only from target datasets and neglect external visual commonsense knowledge in abundant unlabeled data.\nInspired by the recent successful visual-linguistic pre-training methods (BERT-like models) 4 5,\nwe propose to exploit both linguistic and visual commonsense knowledge from Conceptual Captions 6 — a large-scale dataset containing 3.3M images with coarsely-annotated descriptions (alt-text) that were crawled from the web, to achieve boosted VRD performance.\nWe first pre-train our backbone model (multimodal BERT) on Conceptual Captions with different pretext tasks to learn the visual and linguistic commonsense knowledge.\nSpecifically, our model mines visual prior information via learning to predict labels for an image’s subregions that are randomly masked out.\nThe model also considers linguistic commonsense knowledge through learning to predict randomly masked out words of sentences in image captions.\nThe pre-trained weights are then used to initialize the backbone model and trained together with other additional modules (detailed at below) on visual relationship datasets. Besides visual and linguistic knowledge, spatial features are also important cues for reasoning over object relationships in images.\nFor instance, for A-on-B, the bounding box (or it’s center point) of A is often above that of B.\nHowever, such spatial information is not explicitly considered in BERT-like visual-linguistic models 7 5 4.\nWe thus design two additional modules to help our model better utilize such information: a mask attention module and a spatial Module.\nThe former predicts soft attention maps of target objects, which are then used to enhance visual features by focusing on target regions while suppressing unrelated areas;\nthe latter augments the final features with bounding boxes coordinates to explicitly take spatial information into account. We integrate the aforementioned designs into a novel VRD model,\nnamed Relational Visual-Linguistic Bidirectional Encoder Representations from Transformers (RVL-BERT).\nRVL-BERT makes use of the pre-trained visual-linguistic representations as the source of visual and language knowledge to facilitate the learning and reasoning process on the downstream VRD task.\nIt also incorporates a novel mask attention module to actively focus on the object locations in the input images and a spatial module to capture spatial relationships more accurately.\nMoreover, RVL-BERT is flexibxle in that it can be placed on top of any object detection model. Our contribution in this paper is three-fold.\nFirstly, we are among the first to identify the benefit of visual-linguistic commonsense knowledge to visual relationship detection, especially when objects are occluded.\nSecondly, we propose RVL-BERT – a multimodal VRD model pre-trained on visaul-linguistic commonsense knowledge bases learns to predict visual relationships with the attentions among visual and linguistic elements, with the aid of the spatial and mask attention module.\nFinally, we show through extensive experiments that the commonsense knowledge and the proposed modules effectively improve the model performance, and our RVL-BERT achieves competitive results on two VRD datasets."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Recognition using visual phrases",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "M. A. Sadeghi and A. Farhadi"
+    },
+    {
+      "index": 1,
+      "title": "Understanding kin relationships in a photo",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Transactions on Multimedia",
+      "authors": "S. Xia, M. Shao, J. Luo, and Y. Fu"
+    },
+    {
+      "index": 2,
+      "title": "Visual Relationship Detection with Language Priors",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European Conference on Computer Vision",
+      "authors": "C. Lu, R. Krishna, M. Bernstein, and L. Fei-Fei",
+      "orig_title": "Visual relationship detection with language priors",
+      "paper_id": "1608.00187v1"
+    },
+    {
+      "index": 3,
+      "title": "Vip-cnn: Visual phrase guided convolutional neural network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Y. Li, W. Ouyang, X. Wang, and X. Tang"
+    },
+    {
+      "index": 4,
+      "title": "Towards context-aware interaction recognition for visual relationship detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "B. Zhuang, L. Liu, C. Shen, and I. Reid"
+    },
+    {
+      "index": 5,
+      "title": "Detecting Visual Relationships with Deep Relational Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "B. Dai, Y. Zhang, and D. Lin",
+      "orig_title": "Detecting visual relationships with deep relational networks",
+      "paper_id": "1704.03114v2"
+    },
+    {
+      "index": 6,
+      "title": "Visual Translation Embedding Network for Visual Relation Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "H. Zhang, Z. Kyaw, S.-F. Chang, and T.-S. Chua",
+      "orig_title": "Visual translation embedding network for visual relation detection",
+      "paper_id": "1702.08319v1"
+    },
+    {
+      "index": 7,
+      "title": "Weakly-supervised learning of visual relations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "J. Peyre, J. Sivic, I. Laptev, and C. Schmid"
+    },
+    {
+      "index": 8,
+      "title": "Visual Relationship Detection with Internal and External Linguistic Knowledge Distillation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "R. Yu, A. Li, V. I. Morariu, and L. S. Davis",
+      "orig_title": "Visual relationship detection with internal and external linguistic knowledge distillation",
+      "paper_id": "1707.09423v2"
+    },
+    {
+      "index": 9,
+      "title": "PPR-FCN: Weakly Supervised Visual Relation Detection via Parallel Pairwise R-FCN",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "H. Zhang, Z. Kyaw, J. Yu, and S.-F. Chang",
+      "orig_title": "Ppr-fcn: Weakly supervised visual relation detection via parallel pairwise r-fcn",
+      "paper_id": "1708.01956v1"
+    },
+    {
+      "index": 10,
+      "title": "Zoom-Net: Mining Deep Feature Interactions for Visual Relationship Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision",
+      "authors": "G. Yin, L. Sheng, B. Liu, N. Yu, X. Wang, J. Shao, and C. Change Loy",
+      "orig_title": "Zoom-net: Mining deep feature interactions for visual relationship recognition",
+      "paper_id": "1807.04979v1"
+    },
+    {
+      "index": 11,
+      "title": "Tensorize, factorize and regularize: Robust visual relationship learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "S. Jae Hwang, S. N. Ravi, Z. Tao, H. J. Kim, M. D. Collins, and V. Singh"
+    },
+    {
+      "index": 12,
+      "title": "Visual relationship detection with language prior and softmax",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE International Conference on Image Processing, Applications and Systems (IPAS)",
+      "authors": "J. Jung and J. Park"
+    },
+    {
+      "index": 13,
+      "title": "Union visual translation embedding for visual relationship detection and scene graph generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1905.11624",
+      "authors": "Z.-S. Hung, A. Mallya, and S. Lazebnik"
+    },
+    {
+      "index": 14,
+      "title": "Scene graph generation with external knowledge and image reconstruction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "J. Gu, H. Zhao, Z. Lin, S. Li, J. Cai, and M. Ling"
+    },
+    {
+      "index": 15,
+      "title": "On Exploring Undetermined Relationships for Visual Relationship Detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Y. Zhan, J. Yu, T. Yu, and D. Tao",
+      "orig_title": "On exploring undetermined relationships for visual relationship detection",
+      "paper_id": "1905.01595v1"
+    },
+    {
+      "index": 16,
+      "title": "Exploring depth information for spatial relation recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Conference on Multimedia Information Processing and Retrieval (MIPR)",
+      "authors": "X. Ding, Y. Li, Y. Pan, D. Zeng, and T. Yao"
+    },
+    {
+      "index": 17,
+      "title": "Hierarchical graph attention network for visual relationship detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "L. Mi and Z. Chen"
+    },
+    {
+      "index": 18,
+      "title": "Scene Graph Generation by Iterative Message Passing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "D. Xu, Y. Zhu, C. B. Choy, and L. Fei-Fei",
+      "orig_title": "Scene graph generation by iterative message passing",
+      "paper_id": "1701.02426v2"
+    },
+    {
+      "index": 19,
+      "title": "Scene Graph Generation from Objects, Phrases and Region Captions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Y. Li, W. Ouyang, B. Zhou, K. Wang, and X. Wang",
+      "orig_title": "Scene graph generation from objects, phrases and region captions",
+      "paper_id": "1707.09700v2"
+    },
+    {
+      "index": 20,
+      "title": "Neural Motifs: Scene Graph Parsing with Global Context",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "R. Zellers, M. Yatskar, S. Thomson, and Y. Choi",
+      "orig_title": "Neural motifs: Scene graph parsing with global context",
+      "paper_id": "1711.06640v2"
+    },
+    {
+      "index": 21,
+      "title": "Graph R-CNN for Scene Graph Generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision",
+      "authors": "J. Yang, J. Lu, S. Lee, D. Batra, and D. Parikh",
+      "orig_title": "Graph r-cnn for scene graph generation",
+      "paper_id": "1808.00191v1"
+    },
+    {
+      "index": 22,
+      "title": "Factorizable Net: An Efficient Subgraph-based Framework for Scene Graph Generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Y. Li, W. Ouyang, B. Zhou, J. Shi, C. Zhang, and X. Wang",
+      "orig_title": "Factorizable net: an efficient subgraph-based framework for scene graph generation",
+      "paper_id": "1806.11538v2"
+    },
+    {
+      "index": 23,
+      "title": "Mapping Images to Scene Graphs with Permutation-Invariant Structured Prediction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "R. Herzig, M. Raboh, G. Chechik, J. Berant, and A. Globerson",
+      "orig_title": "Mapping images to scene graphs with permutation-invariant structured prediction",
+      "paper_id": "1802.05451v4"
+    },
+    {
+      "index": 24,
+      "title": "Knowledge-Embedded Routing Network for Scene Graph Generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "T. Chen, W. Yu, R. Chen, and L. Lin",
+      "orig_title": "Knowledge-embedded routing network for scene graph generation",
+      "paper_id": "1903.03326v1"
+    },
+    {
+      "index": 25,
+      "title": "Graphical Contrastive Losses for Scene Graph Parsing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "J. Zhang, K. J. Shih, A. Elgammal, A. Tao, and B. Catanzaro",
+      "orig_title": "Graphical contrastive losses for scene graph parsing",
+      "paper_id": "1903.02728v5"
+    },
+    {
+      "index": 26,
+      "title": "Attentive Relational Networks for Mapping Images to Scene Graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "M. Qi, W. Li, Z. Yang, Y. Wang, and J. Luo",
+      "orig_title": "Attentive relational networks for mapping images to scene graphs",
+      "paper_id": "1811.10696v2"
+    },
+    {
+      "index": 27,
+      "title": "Bridging knowledge graphs to generate scene graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2001.02314",
+      "authors": "A. Zareian, S. Karaman, and S.-F. Chang"
+    },
+    {
+      "index": 28,
+      "title": "Unbiased Scene Graph Generation from Biased Training",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "K. Tang, Y. Niu, J. Huang, J. Shi, and H. Zhang",
+      "orig_title": "Unbiased scene graph generation from biased training",
+      "paper_id": "2002.11949v3"
+    },
+    {
+      "index": 29,
+      "title": "Know more say less: Image captioning based on scene graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Multimedia",
+      "authors": "X. Li and S. Jiang"
+    },
+    {
+      "index": 30,
+      "title": "Visual relationship embedding network for image paragraph generation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Multimedia",
+      "authors": "W. Che, X. Fan, R. Xiong, and D. Zhao"
+    },
+    {
+      "index": 31,
+      "title": "Graph-Structured Representations for Visual Question Answering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "D. Teney, L. Liu, and A. van Den Hengel",
+      "orig_title": "Graph-structured representations for visual question answering",
+      "paper_id": "1609.05600v2"
+    },
+    {
+      "index": 32,
+      "title": "Explainable and Explicit Visual Reasoning over Scene Graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "J. Shi, H. Zhang, and J. Li",
+      "orig_title": "Explainable and explicit visual reasoning over scene graphs",
+      "paper_id": "1812.01855v2"
+    },
+    {
+      "index": 33,
+      "title": "VisualBERT: A Simple and Performant Baseline for Vision and Language",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.03557",
+      "authors": "L. H. Li, M. Yatskar, D. Yin, C.-J. Hsieh, and K.-W. Chang",
+      "orig_title": "Visualbert: A simple and performant baseline for vision and language",
+      "paper_id": "1908.03557v1"
+    },
+    {
+      "index": 34,
+      "title": "ViLBERT: Pretraining Task-Agnostic Visiolinguistic Representations for Vision-and-Language Tasks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems 32",
+      "authors": "J. Lu, D. Batra, D. Parikh, and S. Lee"
+    },
+    {
+      "index": 35,
+      "title": "Conceptual captions: A cleaned, hypernymed, image alt-text dataset for automatic image captioning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "authors": "P. Sharma, N. Ding, S. Goodman, and R. Soricut"
+    },
+    {
+      "index": 36,
+      "title": "Vl-bert: Pre-training of generic visual-linguistic representations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "W. Su, X. Zhu, Y. Cao, B. Li, L. Lu, F. Wei, and J. Dai"
+    },
+    {
+      "index": 37,
+      "title": "Interact as You Intend: Intention-Driven Human-Object Interaction Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Multimedia",
+      "authors": "B. Xu, J. Li, Y. Wong, Q. Zhao, and M. S. Kankanhalli",
+      "orig_title": "Interact as you intend: Intention-driven human-object interaction detection",
+      "paper_id": "1808.09796v2"
+    },
+    {
+      "index": 38,
+      "title": "Context-associative hierarchical memory model for human activity recognition and prediction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Multimedia",
+      "authors": "L. Wang, X. Zhao, Y. Si, L. Cao, and Y. Liu"
+    },
+    {
+      "index": 39,
+      "title": "Image retrieval using scene graphs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "J. Johnson, R. Krishna, M. Stark, L.-J. Li, D. Shamma, M. Bernstein, and L. Fei-Fei"
+    },
+    {
+      "index": 40,
+      "title": "Generating semantically precise scene graphs from textual descriptions for improved image retrieval",
+      "abstract": "",
+      "year": "2015",
+      "venue": "fourth Workshop on Vision and Language",
+      "authors": "S. Schuster, R. Krishna, A. Chang, L. Fei-Fei, and C. D. Manning"
+    },
+    {
+      "index": 41,
+      "title": "Ask me anything: Dynamic memory networks for natural language processing",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Machine Learning",
+      "authors": "A. Kumar, O. Irsoy, P. Ondruska, M. Iyyer, J. Bradbury, I. Gulrajani, V. Zhong, R. Paulus, and R. Socher"
+    },
+    {
+      "index": 42,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 43,
+      "title": "Deep contextualized word representations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long Papers)",
+      "authors": "M. Peters, M. Neumann, M. Iyyer, M. Gardner, C. Clark, K. Lee, and L. Zettlemoyer",
+      "orig_title": "Deep contextualized word representations",
+      "paper_id": "1802.05365v2"
+    },
+    {
+      "index": 44,
+      "title": "Language Models are Few-Shot Learners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2005.14165",
+      "authors": "T. B. Brown, B. Mann, N. Ryder, M. Subbiah, J. Kaplan, P. Dhariwal, A. Neelakantan, P. Shyam, G. Sastry, A. Askell et al.",
+      "orig_title": "Language models are few-shot learners",
+      "paper_id": "2005.14165v4"
+    },
+    {
+      "index": 45,
+      "title": "Aligning books and movies: Towards story-like visual explanations by watching movies and reading books",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Y. Zhu, R. Kiros, R. Zemel, R. Salakhutdinov, R. Urtasun, A. Torralba, and S. Fidler"
+    },
+    {
+      "index": 46,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)",
+      "authors": "J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova",
+      "orig_title": "BERT: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 47,
+      "title": "Gaussian Error Linear Units (GELUs)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.08415",
+      "authors": "D. Hendrycks and K. Gimpel",
+      "orig_title": "Gaussian error linear units (gelus)",
+      "paper_id": "1606.08415v5"
+    },
+    {
+      "index": 48,
+      "title": "SpatialSense: An Adversarially Crowdsourced Benchmark for Spatial Relation Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "K. Yang, O. Russakovsky, and J. Deng",
+      "orig_title": "Spatialsense: An adversarially crowdsourced benchmark for spatial relation recognition",
+      "paper_id": "1908.02660v2"
+    },
+    {
+      "index": 49,
+      "title": "Google’s Neural Machine Translation System: Bridging the Gap between Human and Machine Translation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1609.08144",
+      "authors": "Y. Wu, M. Schuster, Z. Chen, Q. V. Le, M. Norouzi, W. Macherey, M. Krikun, Y. Cao, Q. Gao, K. Macherey et al.",
+      "orig_title": "Google’s neural machine translation system: Bridging the gap between human and machine translation",
+      "paper_id": "1609.08144v2"
+    },
+    {
+      "index": 50,
+      "title": "Mask R-CNN",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "K. He, G. Gkioxari, P. Dollár, and R. Girshick",
+      "orig_title": "Mask r-cnn",
+      "paper_id": "1703.06870v3"
+    },
+    {
+      "index": 51,
+      "title": "Visual genome: Connecting language and vision using crowdsourced dense image annotations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Journal of Computer Vision",
+      "authors": "R. Krishna, Y. Zhu, O. Groth, J. Johnson, K. Hata, J. Kravitz, S. Chen, Y. Kalantidis, L.-J. Li, D. A. Shamma et al."
+    },
+    {
+      "index": 52,
+      "title": "Fast R-CNN",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "R. Girshick",
+      "orig_title": "Fast r-cnn",
+      "paper_id": "1504.08083v2"
+    },
+    {
+      "index": 53,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "S. Ren, K. He, R. Girshick, and J. Sun",
+      "orig_title": "Faster r-cnn: Towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 54,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "3rd International Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference Track Proceedings",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 55,
+      "title": "Learning to Compose Dynamic Tree Structures for Visual Contexts",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "K. Tang, H. Zhang, B. Wu, W. Luo, and W. Liu",
+      "orig_title": "Learning to compose dynamic tree structures for visual contexts",
+      "paper_id": "1812.01880v1"
+    }
+  ]
+}

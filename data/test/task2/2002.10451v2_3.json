@@ -1,0 +1,473 @@
+{
+  "paper_id": "2002.10451v2",
+  "title": "Neural Lyapunov Model Predictive Control: Learning Safe Global Controllers from Sub-optimal Examples",
+  "sections": {
+    "iii-b neural lyapunov mpc": "The loss (10) is used to both learn V𝑉V and to tune its scaling factor in the MPC loss, α≥1𝛼1\\alpha\\geq 1, to provide stability. We aim to improve the ROA of the initial controller, used to collect data, by replacing it with an MPC solving the following input-limited, state soft-constrained, optimal control problem: where x^​(i)^𝑥𝑖\\hat{x}(i) and u^​(i)^𝑢𝑖\\hat{u}(i) are the predicted state and the input at i𝑖i-steps in the future, s​(i)𝑠𝑖{s}(i) are slack variables, u¯={u​(i)}_​i=0N−1¯𝑢subscript𝑢𝑖_𝑖superscript0𝑁1\\underline{u}=\\{u(i)\\}_{\\_}{i=0}^{N-1}, the stage cost ℓℓ\\ell is given by (3), γ∈(0,1]𝛾01\\gamma\\in(0,1] is a discount factor,\nthe function V𝑉V is\nthe Lyapunov NN from (9), scaled by a factor α≥1𝛼1\\alpha\\geq 1 to provide stability, and x​(t)𝑥𝑡x(t) is the measured system state at the current time. The penalty ℓ_​𝕏subscriptℓ_𝕏\\ell_{\\_}\\mathbb{X} is used for state constraint violation, see . The optimal cost is denoted as J_​MPC⋆​(x​(t))subscript𝐽_superscriptMPC⋆𝑥𝑡J_{\\_}{\\text{MPC}}^{\\star}(x(t)). Problem (III-B) is solved online given the current state x​(t)𝑥𝑡x(t); then, the first element of the optimal control sequence, u⋆​(0)superscript𝑢⋆0u^{\\star}(0), provides the action for the physical system. Then, a new state is measured, and (III-B) is again solved, in a receding horizon.\nThe implementation details are given in Appendix. We extend standard results from [ref]20  to the discounted case and to the λ𝜆\\lambda-contractive V𝑉V from (5). In order to prove them, we make use of the uniform continuity of the model, the SQP solution and the terminal cost, V𝑉V, as done by .\nConsider the candidate MPC ROA: The following are obtained for system (1) in closed loop with the MPC defined by problem (III-B). Results are stated for 𝕏_​T={0}subscript𝕏_𝑇0\\mathbb{X}_{\\_}T=\\{0\\}. For 𝕏_​T≠{0}subscript𝕏_𝑇0\\mathbb{X}_{\\_}T\\not=\\{0\\}, convergence would occur to a set instead of 00. We assume V𝑉V being formally verified . Stability and robustness\nAssume that V​(x)𝑉𝑥V(x) satisfies (5), with λ∈[0,1)𝜆01\\lambda\\in[0,1), 𝕏_​T={0}subscript𝕏_𝑇0\\mathbb{X}_{\\_}T=\\{0\\}. Then, given N≥1𝑁1N\\geq 1, for the MPC (III-B) there exist a constant α¯≥0¯𝛼0\\bar{\\alpha}\\geq 0, a discount factor γ¯∈(0,1]¯𝛾01\\bar{\\gamma}\\in(0,1], and a model error bound μ¯¯𝜇\\bar{\\mu} such that, if α≥α¯𝛼¯𝛼\\alpha\\geq\\bar{\\alpha}, μ≤μ¯𝜇¯𝜇\\mu\\leq\\bar{\\mu} and γ≥γ¯𝛾¯𝛾\\gamma\\geq\\bar{\\gamma}, then, ∀x​(0)∈𝒞​(𝕏_​s)for-all𝑥0𝒞subscript𝕏_𝑠\\forall x(0)\\in\\mathcal{C}(\\mathbb{X}_{\\_}s): If N=1𝑁1N=1, μ=0𝜇0\\mu=0, then the system is asymptotically stable for any γ>0𝛾0\\gamma>0, ∀x​(0)∈Υ_​N,γ,α⊇𝕏_​sformulae-sequencefor-all𝑥0subscriptΥ_𝑁𝛾subscript𝕏_𝑠𝛼\\forall x(0)\\in\\Upsilon_{\\_}{N,\\gamma,\\alpha}\\supseteq\\mathbb{X}_{\\_}s. If N>1𝑁1N>1, μ=0𝜇0\\mu=0, then the system reaches a set 𝔹_​γsubscript𝔹_𝛾\\mathbb{B}_{\\_}{\\gamma} that is included in 𝕏_​ssubscript𝕏_𝑠\\mathbb{X}_{\\_}s. This set increases with decreasing discount, γ𝛾\\gamma, ∀x​(0)∈Υ_​N,γ,αfor-all𝑥0subscriptΥ_𝑁𝛾𝛼\\forall x(0)\\in\\Upsilon_{\\_}{N,\\gamma,\\alpha}. γ=1⇒𝔹_​γ={0}𝛾1⇒subscript𝔹_𝛾0\\gamma=1\\Rightarrow\\mathbb{B}_{\\_}{\\gamma}=\\{0\\}. If α​V​(x)𝛼𝑉𝑥\\alpha V(x) is the optimal value function in 𝕏_​ssubscript𝕏_𝑠\\mathbb{X}_{\\_}s for the problem, μ=0𝜇0\\mu=0, and if 𝒞​(𝕏_​s)≠𝕏_​s𝒞subscript𝕏_𝑠subscript𝕏_𝑠\\mathcal{C}(\\mathbb{X}_{\\_}s)\\neq\\mathbb{X}_{\\_}s, then the system is asymptotically stable, ∀x​(0)∈Υ_​N,γ,α⊃𝕏_​sformulae-sequencefor-all𝑥0subscriptΥ_𝑁𝛾subscript𝕏_𝑠𝛼\\forall x(0)\\in\\Upsilon_{\\_}{N,\\gamma,\\alpha}\\supset\\mathbb{X}_{\\_}s. If μ=0𝜇0\\mu=0, then α≥α¯𝛼¯𝛼\\alpha\\geq\\bar{\\alpha} implies that α​V​(x)≥V⋆​(x),∀x∈𝕏_​sformulae-sequence𝛼𝑉𝑥superscript𝑉⋆𝑥for-all𝑥subscript𝕏_𝑠\\alpha V(x)\\geq V^{\\star}(x),\\forall x\\in\\mathbb{X}_{\\_}s, where V⋆superscript𝑉⋆V^{\\star} is the optimal value for the infinite horizon problem with cost (3) subject to (2). The MPC has a stability margin. If the MPC uses a surrogate model satisfying (8), with one-step error bound ‖w‖_​22<μ¯2=1−λL_​V​L_​f^​x2​N​l_​ssubscriptnorm𝑤_superscript22superscript¯𝜇21𝜆subscript𝐿_𝑉subscript𝐿_^𝑓superscript𝑥2𝑁subscript𝑙_𝑠\\|w\\|_{\\_}2^{2}<\\bar{\\mu}^{2}=\\frac{1-\\lambda}{L_{\\_}VL_{\\_}{\\hat{f}x}^{2N}}l_{\\_}s, then the system is Input-to-State (practically) Stable (ISpS) and there exists a set 𝔹_​N,γ,μ:x​(t)→𝔹_​N,γ,μ:subscript𝔹_𝑁𝛾𝜇→𝑥𝑡subscript𝔹_𝑁𝛾𝜇\\mathbb{B}_{\\_}{N,{\\gamma},{\\mu}}:\\ x(t)\\rightarrow\\mathbb{B}_{\\_}{N,{\\gamma},{\\mu}}, ∀x​(0)∈β​Υ_​N,γ,αfor-all𝑥0𝛽subscriptΥ_𝑁𝛾𝛼\\forall x(0)\\in\\beta\\Upsilon_{\\_}{N,\\gamma,\\alpha}, β≤1𝛽1\\beta\\leq 1. Theorem 2 states that for a given horizon N𝑁N and contraction λ𝜆\\lambda, one can find a minimum scaling of the Lyapunov function V𝑉V and a lower bound on the discount factor γ𝛾\\gamma such that the system under the MPC has ROA Υ_​N,γ,α⊇𝕏_​ssubscript𝕏_𝑠subscriptΥ_𝑁𝛾𝛼\\Upsilon_{\\_}{N,\\gamma,\\alpha}\\supseteq\\mathbb{X}_{\\_}s. If the model is not perfect, its error being less than μ≤μ¯𝜇¯𝜇\\mu\\leq\\bar{\\mu}, then the ROA size decreases but the system is still safe. In this case, a shorter horizon can be beneficial.\nThe proof of the theorem follows standard MPC arguments and is in Appendix. In order to further motivate for the search of a V𝑉V giving the largest 𝕏_​ssubscript𝕏_𝑠\\mathbb{X}_{\\_}s, notice that a larger 𝕏_​ssubscript𝕏_𝑠\\mathbb{X}_{\\_}s can allow for shortening the MPC horizon, possibly yielding the same ROA. Contrary to , we demonstrate how model mismatch and longer horizons can decrease performance with respect to an infinite-horizon oracle with same cost and perfect model. This links RL to arguments used in nominal MPC robustness  [ref]25. Let 𝐄_​𝒟​[J_​V⋆​(K⋆)]subscript𝐄_𝒟delimited-[]subscript𝐽_superscript𝑉⋆superscript𝐾⋆\\mathbf{E}_{\\_}\\mathcal{D}[J_{\\_}{V^{\\star}}(K^{\\star})] define the expected infinite-horizon performance of the optimal policy K⋆superscript𝐾⋆K^{\\star}, evaluated by using the expected infinite-horizon performance (value function), V⋆superscript𝑉⋆V^{\\star}, for the stage cost (3) and subject to (2). Similarly, let 𝐄_​x∈𝒟​[J_⋆​MPC​(x)]subscript𝐄_𝑥𝒟delimited-[]subscriptsuperscript𝐽⋆_MPC𝑥\\mathbf{E}_{\\_}{x\\in\\mathcal{D}}[J^{\\star}_{\\_}{\\text{MPC}}(x)] define the MPC’s expected performance with the learned V𝑉V, when a surrogate model is used and 𝐄_​x∈𝒟​[J_⋆​MPC​(x;f)]subscript𝐄_𝑥𝒟delimited-[]subscriptsuperscript𝐽⋆_MPC𝑥𝑓\\mathbf{E}_{\\_}{x\\in\\mathcal{D}}[J^{\\star}_{\\_}{\\text{MPC}}(x;f)] when f𝑓f is known. Performance\nAssume that the value function error is bounded for all x𝑥x, namely, ‖V⋆​(x)−α​V​(x)‖_​22≤ϵsubscriptnormsuperscript𝑉⋆𝑥𝛼𝑉𝑥_superscript22italic-ϵ\\|V^{\\star}(x)-\\alpha V(x)\\|_{\\_}2^{2}\\leq\\epsilon, and that the model error satisfies (8), for some μ>0𝜇0\\mu>0.\nThen, for any δ>0𝛿0\\delta>0: where L¯_​f=min⁡(L_​f^​x,L_​f​x)subscript¯𝐿_𝑓subscript𝐿_^𝑓𝑥subscript𝐿_𝑓𝑥\\bar{L}_{\\_}{f}=\\min(L_{\\_}{\\hat{f}x},L_{\\_}{{f}x}) and ψ¯¯𝜓\\bar{\\psi} is a 𝒦_​∞subscript𝒦_\\mathcal{K}_{\\_}\\infty-function representing the constraint penalty terms. Theorem 3 is related to  for value-based RL. However, here we do not constrain the system and model to be stable, nor assume the MPC optimal cost to be Lipschitz. Theorem 3 shows that a discount γ𝛾\\gamma or a shorter horizon N𝑁N can mitigate model errors. Since γ≪1much-less-than𝛾1\\gamma\\ll 1 can limit stability (Theorem 2) we opt for the shortest horizon, hence N=1𝑁1N=1, γ=1𝛾1\\gamma=1. Proof of Theorem 3 is in Appendix. The stability bounds discussed in Theorem 2 can be conservative and their computation is non-trivial. Theoretically, the bigger the α𝛼\\alpha the larger is the ROA (the safe region) for the MPC, up to its maximum extent. Practically, for a very high α𝛼\\alpha, the MPC solver may not converge due to ill-conditioning.\nInitially, by using the tool from [ref]27 within an SQP scheme, we tried to tune the parameters through gradient-based optimization of the loss (10). These attempts were not successful, as expected from the considerations in . Therefore, for practical reasons, in this work we perform a grid search over the MPC parameter α𝛼\\alpha. Note that the discount factor γ𝛾\\gamma is mainly introduced for Theorem 3 and analysed in Theorem 2 to allow for future combination of stable MPC with value iteration."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Concrete Problems in AI Safety",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.06565",
+      "authors": "D. Amodei, C. Olah, J. Steinhardt, P. Christiano, J. Schulman, and D. Mané",
+      "orig_title": "Concrete problems in ai safety",
+      "paper_id": "1606.06565v2"
+    },
+    {
+      "index": 1,
+      "title": "Model-based reinforcement learning: A survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.16712",
+      "authors": "T. M. Moerland, J. Broekens, and C. M. Jonker"
+    },
+    {
+      "index": 2,
+      "title": "Plan Online, Learn Offline: Efficient Learning and Exploration via Model-Based Control",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1811.01848",
+      "authors": "K. Lowrey, A. Rajeswaran, S. Kakade, E. Todorov, and I. Mordatch",
+      "orig_title": "Plan online, learn offline: Efficient learning and exploration via model-based control",
+      "paper_id": "1811.01848v3"
+    },
+    {
+      "index": 3,
+      "title": "Nonlinear Control",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Pearson",
+      "authors": "H. K. Khalil"
+    },
+    {
+      "index": 4,
+      "title": "Sampling driven stability domains computation and predictive control of constrained nonlinear systems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Ph.D. dissertation",
+      "authors": "R. V. Bobiti"
+    },
+    {
+      "index": 5,
+      "title": "Sampling–based verification of Lyapunov’s inequality for piecewise continuous nonlinear systems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1609.00302",
+      "authors": "R. Bobiti and M. Lazar",
+      "orig_title": "Sampling-based verification of lyapunov’s inequality for piecewise continuous nonlinear systems",
+      "paper_id": "1609.00302v1"
+    },
+    {
+      "index": 6,
+      "title": "Safe Model-based Reinforcement Learning with Stability Guarantees",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1705.08551",
+      "authors": "F. Berkenkamp, M. Turchetta, A. P. Schoellig, and A. Krause",
+      "orig_title": "Safe model-based reinforcement learning with stability guarantees",
+      "paper_id": "1705.08551v3"
+    },
+    {
+      "index": 7,
+      "title": "Safe Interactive Model-Based Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.06556",
+      "authors": "M. Gallieri, S. S. M. Salehian, N. E. Toklu, A. Quaglino, J. Masci, J. Koutník, and F. Gomez",
+      "orig_title": "Safe interactive model-based learning",
+      "paper_id": "1911.06556v2"
+    },
+    {
+      "index": 8,
+      "title": "Neural Lyapunov Control",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2005.00611",
+      "authors": "Y.-C. Chang, N. Roohi, and S. Gao",
+      "orig_title": "Neural lyapunov control",
+      "paper_id": "2005.00611v4"
+    },
+    {
+      "index": 9,
+      "title": "Advantage-Weighted Regression: Simple and Scalable Off-Policy Reinforcement Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.00177",
+      "authors": "X. B. Peng, A. Kumar, G. Zhang, and S. Levine",
+      "orig_title": "Advantage-weighted regression: Simple and scalable off-policy reinforcement learning",
+      "paper_id": "1910.00177v3"
+    },
+    {
+      "index": 10,
+      "title": "Set-Theoretic Methods in Control (Systems & Control: Foundations & Applications)",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Birkhäuser",
+      "authors": "F. Blanchini and S. Miani"
+    },
+    {
+      "index": 11,
+      "title": "Robust constraint satisfaction: Invariant sets and predictive control",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Ph.D. dissertation",
+      "authors": "E. Kerrigan"
+    },
+    {
+      "index": 12,
+      "title": "Formal Synthesis of Lyapunov Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Control Systems Letters",
+      "authors": "A. Abate, D. Ahmed, M. Giacobbe, and A. Peruffo",
+      "orig_title": "Formal synthesis of lyapunov neural networks",
+      "paper_id": "2003.08910v2"
+    },
+    {
+      "index": 13,
+      "title": "dreach: δ𝛿\\delta-reachability analysis for hybrid systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Tools and Algorithms for the Construction and Analysis of Systems",
+      "authors": "S. Kong, S. Gao, W. Chen, and E. Clarke"
+    },
+    {
+      "index": 14,
+      "title": "Echo State Networks: analysis, training and predictive control",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 18th European Control Conference (ECC)",
+      "authors": "L. B. Armenio, E. Terzi, M. Farina, and R. Scattolini",
+      "orig_title": "Echo state networks: analysis, training and predictive control",
+      "paper_id": "1902.01618v1"
+    },
+    {
+      "index": 15,
+      "title": "Physics-informed echo state networks for chaotic systems forecasting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Lecture Notes in Computer Science",
+      "authors": "N. A. K. Doan, W. Polifke, and L. Magri"
+    },
+    {
+      "index": 16,
+      "title": "Using machine learning to replicate chaotic attractors and calculate lyapunov exponents from data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Chaos: An Interdisciplinary Journal of Nonlinear Science",
+      "authors": "J. Pathak, Z. Lu, B. R. Hunt, M. Girvan, and E. Ott"
+    },
+    {
+      "index": 17,
+      "title": "NAIS-Net: Stable Deep Networks from Non-Autonomous Differential Equations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv:1804.07209 [cs, stat]",
+      "authors": "M. Ciccone, M. Gallieri, J. Masci, C. Osendorfer, and F. Gomez",
+      "orig_title": "NAIS-Net: Stable Deep Networks from Non-Autonomous Differential Equations",
+      "paper_id": "1804.07209v4"
+    },
+    {
+      "index": 18,
+      "title": "Constrained model predictive control: Stability and optimality",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Automatica",
+      "authors": "D. Mayne, J. Rawlings, C. Rao, and P. Scokaert"
+    },
+    {
+      "index": 19,
+      "title": "Stable constrained MPC without terminal constraint",
+      "abstract": "",
+      "year": "2003",
+      "venue": "American Control Conference",
+      "authors": "D. Limon, T. Alamo, and E. Camacho"
+    },
+    {
+      "index": 20,
+      "title": "The Lyapunov Neural Network: Adaptive Stability Certification for Safe Learning of Dynamical Systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conference on Robot Learning",
+      "authors": "S. M. Richards, F. Berkenkamp, and A. Krause",
+      "orig_title": "The lyapunov neural network: Adaptive stability certification for safe learning of dynamical systems",
+      "paper_id": "1808.00924v2"
+    },
+    {
+      "index": 21,
+      "title": "Reinforcement learning: An introduction",
+      "abstract": "",
+      "year": "1998",
+      "venue": "MIT press",
+      "authors": "R. S. Sutton and A. G. Barto"
+    },
+    {
+      "index": 22,
+      "title": "Soft constraints and exact penalty functions in model predictive control",
+      "abstract": "",
+      "year": "2000",
+      "venue": "UKACC International Conference",
+      "authors": "E. C. Kerrigan and J. M. Maciejowski"
+    },
+    {
+      "index": 23,
+      "title": "Input-to-State Stability: A Unifying Framework for Robust Model Predictive Control",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Nonlinear Model Predictive Control",
+      "authors": "D. Limon, T. Alamo, D. M. Raimondo, D. M. de la Peña, J. M. Bravo, A. Ferramosca, and E. F. Camacho"
+    },
+    {
+      "index": 24,
+      "title": "LASSO-MPC – Predictive Control with ℓ_​1subscriptℓ_1\\ell_{\\_}1-Regularised Least Squares",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Springer-Verlag",
+      "authors": "M. Gallieri"
+    },
+    {
+      "index": 25,
+      "title": "Lipschitz Continuity in Model-based Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "K. Asadi, D. Misra, and M. Littman",
+      "orig_title": "Lipschitz continuity in model-based reinforcement learning",
+      "paper_id": "1804.07193v3"
+    },
+    {
+      "index": 26,
+      "title": "Differentiable convex optimization layers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.12430",
+      "authors": "A. Agrawal, B. Amos, S. Barratt, S. Boyd, S. Diamond, and Z. Kolter"
+    },
+    {
+      "index": 27,
+      "title": "Differentiable MPC for End-to-end Planning and Control",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.13400",
+      "authors": "B. Amos, I. D. J Rodriguez, J. Sacks, B. Boots, and J. Z. Kolter",
+      "orig_title": "Differentiable mpc for end-to-end planning and control",
+      "paper_id": "1810.13400v3"
+    },
+    {
+      "index": 28,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 29,
+      "title": "Constrained Policy Optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1705.10528",
+      "authors": "J. Achiam, D. Held, A. Tamar, and P. Abbeel",
+      "orig_title": "Constrained policy optimization",
+      "paper_id": "1705.10528v1"
+    },
+    {
+      "index": 30,
+      "title": "Benchmarking Safe Exploration in Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "A. Ray, J. Achiam, and D. Amodei"
+    },
+    {
+      "index": 31,
+      "title": "Proximal policy optimization algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1707.06347",
+      "authors": "J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov"
+    },
+    {
+      "index": 32,
+      "title": "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1801.01290",
+      "authors": "T. Haarnoja, A. Zhou, P. Abbeel, and S. Levine",
+      "orig_title": "Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor",
+      "paper_id": "1801.01290v2"
+    },
+    {
+      "index": 33,
+      "title": "When to trust your model: Model-based policy optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "M. Janner, J. Fu, M. Zhang, and S. Levine"
+    },
+    {
+      "index": 34,
+      "title": "Model Predictive Control Theory and Design",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Nob Hill Pub, Llc",
+      "authors": "J. B. Rawlings and D. Q. Mayne"
+    },
+    {
+      "index": 35,
+      "title": "Homothetic tube model predictive control",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Automatica",
+      "authors": "S. V. Raković, B. Kouvaritakis, R. Findeisen, and M. Cannon"
+    },
+    {
+      "index": 36,
+      "title": "Stabilization with discounted optimal control",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Systems & Control Letters",
+      "authors": "V. Gaitsgory, L. Grüne, and N. Thatcher"
+    },
+    {
+      "index": 37,
+      "title": "Synthesis and stabilization of complex behaviors through online trajectory optimization",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems",
+      "authors": "Y. Tassa, T. Erez, and E. Todorov"
+    },
+    {
+      "index": 38,
+      "title": "Numerical optimization",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Springer Science & Business Media",
+      "authors": "J. Nocedal and S. Wright"
+    },
+    {
+      "index": 39,
+      "title": "SNODE: Spectral Discretization of Neural ODEs for System Identification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv:1906.07038 [cs]",
+      "authors": "A. Quaglino, M. Gallieri, J. Masci, and J. Koutník"
+    },
+    {
+      "index": 40,
+      "title": "ODE2VAE: Deep generative second order ODEs with Bayesian neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv:1905.10994 [cs, stat]",
+      "authors": "C. Yıldız, M. Heinonen, and H. Lähdesmäki"
+    },
+    {
+      "index": 41,
+      "title": "Tustin neural networks: a class of recurrent nets for adaptive MPC of mechanical systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "S. Pozzoli, M. Gallieri, and R. Scattolini",
+      "orig_title": "Tustin neural networks: a class of recurrent nets for adaptive MPC of mechanical systems",
+      "paper_id": "1911.01310v1"
+    },
+    {
+      "index": 42,
+      "title": "Lvis: learning from value function intervals for contact-aware robot controllers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Robotics and Automation (ICRA)",
+      "authors": "R. Deits, T. Koolen, and R. Tedrake"
+    },
+    {
+      "index": 43,
+      "title": "Sample-Efficient Reinforcement Learning with Stochastic Ensemble Value Expansion",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1807.01675",
+      "authors": "J. Buckman, D. Hafner, G. Tucker, E. Brevdo, and H. Lee",
+      "orig_title": "Sample-efficient reinforcement learning with stochastic ensemble value expansion",
+      "paper_id": "1807.01675v2"
+    },
+    {
+      "index": 44,
+      "title": "On the infinite horizon performance of receding horizon controllers",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Transactions on Automatic Control",
+      "authors": "L. Grune and A. Rantzer"
+    },
+    {
+      "index": 45,
+      "title": "Learning-based Model Predictive Control for Safe Exploration",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 IEEE Conference on Decision and Control (CDC)",
+      "authors": "T. Koller, F. Berkenkamp, M. Turchetta, and A. Krause",
+      "orig_title": "Learning-based model predictive control for safe exploration",
+      "paper_id": "1803.08287v3"
+    },
+    {
+      "index": 46,
+      "title": "Learning-based model predictive control: Toward safe learning in control",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Annual Review of Control, Robotics, and Autonomous Systems",
+      "authors": "L. Hewing, K. P. Wabersich, M. Menner, and M. N. Zeilinger"
+    },
+    {
+      "index": 47,
+      "title": "Lyapunov Criterion for Stochastic Systems and Its Applications in Distributed Computation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Automatic Control",
+      "authors": "Y. Qin, M. Cao, and B. D. Anderson",
+      "orig_title": "Lyapunov criterion for stochastic systems and its applications in distributed computation",
+      "paper_id": "1902.04332v1"
+    },
+    {
+      "index": 48,
+      "title": "The explicit solution of model predictive control via multiparametric quadratic programming",
+      "abstract": "",
+      "year": "2000",
+      "venue": "American Control Conference",
+      "authors": "A. Bemporad, M. Morari, V. Dua, and E. Pistikopoulos"
+    },
+    {
+      "index": 49,
+      "title": "Sequential quadratic programming for task plan optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems",
+      "authors": "D. Hadfield-Menell, C. Lin, R. Chitnis, S. Russell, and P. Abbeel"
+    },
+    {
+      "index": 50,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1912.01703",
+      "authors": "A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, T. Killeen, Z. Lin, N. Gimelshein, L. Antiga et al.",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 51,
+      "title": "Handbook of marine craft hydrodynamics and motion control",
+      "abstract": "",
+      "year": "2011",
+      "venue": "John Wiley & Sons",
+      "authors": "T. I. Fossen"
+    },
+    {
+      "index": 52,
+      "title": "Understanding the difficulty of training deep feedforward neural networks",
+      "abstract": "",
+      "year": "2010",
+      "venue": "International Conference on Artificial Intelligence and Statistics (AISTATS)",
+      "authors": "X. Glorot and Y. Bengio"
+    }
+  ]
+}

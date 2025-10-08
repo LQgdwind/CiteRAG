@@ -1,0 +1,2941 @@
+{
+  "paper_id": "2107.11820v1",
+  "title": "A Survey of Monte Carlo Methods for Parameter Estimation",
+  "abstract": "Abstract\nStatistical signal processing applications usually require the estimation of some parameters of interest given a set of observed data.\nThese estimates are typically obtained either by solving a multi-variate optimization problem, as in the maximum likelihood (ML) or maximum a posteriori (MAP) estimators, or by performing a multi-dimensional integration, as in the minimum mean squared error (MMSE) estimators.\nUnfortunately, analytical expressions for these estimators cannot be found in most real-world applications, and the Monte Carlo (MC) methodology is one feasible approach.\nMC methods proceed by drawing random samples, either from the desired distribution or from a simpler one, and using them to compute consistent estimators.\nThe most important families of MC algorithms are Markov chain MC (MCMC) and importance sampling (IS).\nOn the one hand, MCMC methods draw samples from a proposal density, building then an ergodic Markov chain whose stationary distribution is the desired distribution by accepting or rejecting those candidate samples as the new state of the chain.\nOn the other hand, IS techniques draw samples from a simple proposal density, and then assign them suitable weights that measure their quality in some appropriate way.\nIn this paper, we perform a thorough review of MC methods for the estimation of static parameters in signal processing applications.\nA historical note on the development of MC schemes is also provided, followed by the basic MC method and a brief description of the rejection sampling (RS) algorithm, as well as three sections describing many of the most relevant MCMC and IS algorithms, and their combined use.\nFinally, five numerical examples (including the estimation of the parameters of a chaotic system, a localization problem in wireless sensor networks and a spectral analysis application) are provided in order to demonstrate the performance of the described approaches.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "R.L.: Statistical Inference. Duxbury",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Statistical Inference",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Duxbury",
+      "authors": "Casella, G., Berger, R.L."
+    },
+    {
+      "index": 2,
+      "title": "Statistical Signal Processing",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Addison-Wesley",
+      "authors": "Scharf, L.L."
+    },
+    {
+      "index": 3,
+      "title": "Fundamentals of Statistical Signal Processing: Estimation Theory",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Prentice Hall",
+      "authors": "Kay, S.M."
+    },
+    {
+      "index": 4,
+      "title": "Detection, Estimation, and Modulation Theory, Part I: Detection, Estimation, and Linear Modulation Theory",
+      "abstract": "",
+      "year": "2004",
+      "venue": "John Wiley & Sons",
+      "authors": "Van Trees, H.L."
+    },
+    {
+      "index": 5,
+      "title": "Digital Audio Restoration, 1st edn.",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Springer",
+      "authors": "Godsill, S.J., Rayner, P.J.W."
+    },
+    {
+      "index": 6,
+      "title": "Fried deconvolution",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Prentice Hall",
+      "authors": "Haykin, S.S.",
+      "orig_title": "Blind Deconvolution",
+      "paper_id": "2411.02890v1"
+    },
+    {
+      "index": 7,
+      "title": "Blind Equalization and Identification",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Marcel Dekker",
+      "authors": "Ding, Z., Li, Y."
+    },
+    {
+      "index": 8,
+      "title": "Handbook of Blind Source Separation: Independent Component Analysis and Applications",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Academic Press",
+      "authors": "Comon, P., Jutten, C."
+    },
+    {
+      "index": 9,
+      "title": "Wireless Sensor Networks: An Information Processing Approach",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Morgan Kaufmann",
+      "authors": "Zhao, F., Guibas, L.J."
+    },
+    {
+      "index": 10,
+      "title": "Wireless Sensor Networks: Signal Processing and Communications",
+      "abstract": "",
+      "year": "2007",
+      "venue": "John Wiley & Sons",
+      "authors": "Swami, A., Zhao, Q., Hong, Y.-W., Tong, L."
+    },
+    {
+      "index": 11,
+      "title": "Bayesian theory",
+      "abstract": "",
+      "year": "2001",
+      "venue": "IOP Publishing",
+      "authors": "Bernardo, J.M., Smith, A.F.M."
+    },
+    {
+      "index": 12,
+      "title": "Methods for approximating integrals in statistics with special emphasis on Bayesian integration problems",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Statistical Science",
+      "authors": "Evans, M., Swartz, T."
+    },
+    {
+      "index": 13,
+      "title": "The variational approximation for Bayesian inference",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Signal Processing Magazine",
+      "authors": "Tzikas, D.G., Likas, A.C., Galatsanos, N.P."
+    },
+    {
+      "index": 14,
+      "title": "A tutorial on variational Bayesian inference",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Artificial Intelligence Review",
+      "authors": "Fox, C.W., Roberts, S.J."
+    },
+    {
+      "index": 15,
+      "title": "The St. Petersburg paradox",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Stanford Encyclopedia of Philosophy",
+      "authors": "Martin, R."
+    },
+    {
+      "index": 16,
+      "title": "Solutions des problémes qui regardoient le jeu du franc carreau",
+      "abstract": "",
+      "year": "1733",
+      "venue": "Histoire de l’Acadèmie Royale des Sciences de Paris",
+      "authors": "Georges-Louis Leclerc, Comte de Buffon"
+    },
+    {
+      "index": 17,
+      "title": "Essai d’arithmétique morale",
+      "abstract": "",
+      "year": "1777",
+      "venue": "Supplèment á l’Histoire Naturelle",
+      "authors": "Georges-Louis Leclerc, Comte de Buffon"
+    },
+    {
+      "index": 18,
+      "title": "Théorie Analytique des Probabilités vol. 7",
+      "abstract": "",
+      "year": "1820",
+      "venue": "Courcier",
+      "authors": "de Laplace, P.S."
+    },
+    {
+      "index": 19,
+      "title": "A Budget of Paradoxes",
+      "abstract": "",
+      "year": "1872",
+      "venue": "Longmans Green",
+      "authors": "De Morgan, A."
+    },
+    {
+      "index": 20,
+      "title": "On an experimental determination of π𝜋\\pi",
+      "abstract": "",
+      "year": "1873",
+      "venue": "Messenger of Mathematics",
+      "authors": "Hall, A."
+    },
+    {
+      "index": 21,
+      "title": "Un’applicazione del calcolo della probabilità",
+      "abstract": "",
+      "year": "1902",
+      "venue": "Periodico di Matematico",
+      "authors": "Lazzarini, M."
+    },
+    {
+      "index": 22,
+      "title": "Rudolf Wolf’s contribution to the Buffon needle problem (an early Monte Carlo experiment) and application of least squares",
+      "abstract": "",
+      "year": "1990",
+      "venue": "The American Statistician",
+      "authors": "Riedwyl, H."
+    },
+    {
+      "index": 23,
+      "title": "Geometric probability and the number π𝜋\\pi",
+      "abstract": "",
+      "year": "1960",
+      "venue": "Scripta Mathematika",
+      "authors": "Gridgeman, T."
+    },
+    {
+      "index": 24,
+      "title": "Puzzles and Paradoxes",
+      "abstract": "",
+      "year": "1965",
+      "venue": "Oxford University Press",
+      "authors": "O’Beirne, T.H."
+    },
+    {
+      "index": 25,
+      "title": "Lazzarini’s lucky approximation of π𝜋\\pi",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Mathematics Magazine",
+      "authors": "Badger, L."
+    },
+    {
+      "index": 26,
+      "title": "Stochastic simulation in the nineteenth century",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Statistical Science",
+      "authors": "Stigler, S.M."
+    },
+    {
+      "index": 27,
+      "title": "The probable error of a mean",
+      "abstract": "",
+      "year": "1908",
+      "venue": "Biometrika",
+      "authors": "William S. Gosset (“Student”)"
+    },
+    {
+      "index": 28,
+      "title": "Probable error of a correlation coefficient",
+      "abstract": "",
+      "year": "1908",
+      "venue": "Biometrika",
+      "authors": "William S. Gosset (“Student”)"
+    },
+    {
+      "index": 29,
+      "title": "British statistics and statisticians today",
+      "abstract": "",
+      "year": "1930",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "Hotelling, H."
+    },
+    {
+      "index": 30,
+      "title": "On Student’s 1908 Article “The Probable Error of a Mean”",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "Zabell, S.L."
+    },
+    {
+      "index": 31,
+      "title": "On the extreme individuals and the range of samples taken from a normal population",
+      "abstract": "",
+      "year": "1925",
+      "venue": "Biometrika",
+      "authors": "Tippett, L.H.C."
+    },
+    {
+      "index": 32,
+      "title": "Random sampling numbers",
+      "abstract": "",
+      "year": "1927",
+      "venue": "",
+      "authors": "Tippett, L.H.C."
+    },
+    {
+      "index": 33,
+      "title": "Dice for statistical experiments",
+      "abstract": "",
+      "year": "1890",
+      "venue": "",
+      "authors": "Galton, F."
+    },
+    {
+      "index": 34,
+      "title": "From X-rays to Quarks: Modern Physicists and Their Discoveries",
+      "abstract": "",
+      "year": "1980",
+      "venue": "WH Freeman",
+      "authors": "Segrè, E."
+    },
+    {
+      "index": 35,
+      "title": "Metropolis, Monte Carlo and the MANIAC",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Los Alamos Science",
+      "authors": "Anderson, H.L."
+    },
+    {
+      "index": 36,
+      "title": "The beginning of the Monte Carlo method",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Los Alamos Science",
+      "authors": "Metropolis, N."
+    },
+    {
+      "index": 37,
+      "title": "Model world: tales from the time line—the definition of OR and the origins of Monte Carlo simulation",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Interfaces",
+      "authors": "Gass, S.I., Assad, A.A."
+    },
+    {
+      "index": 38,
+      "title": "Stan Ulam, John von Neumann, and the Monte Carlo method",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Los Alamos Science",
+      "authors": "Eckhardt, R."
+    },
+    {
+      "index": 39,
+      "title": "The Monte Carlo method",
+      "abstract": "",
+      "year": "1949",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "Metropolis, N., Ulam, S."
+    },
+    {
+      "index": 40,
+      "title": "A note on early Monte Carlo computations and scientific meetings",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Annals of the History of Computing",
+      "authors": "Hurd, C.C."
+    },
+    {
+      "index": 41,
+      "title": "Various techniques used in connection with random digits",
+      "abstract": "",
+      "year": "1951",
+      "venue": "National Bureau of Standards",
+      "authors": "von Neumann, J."
+    },
+    {
+      "index": 42,
+      "title": "Mathematical methods in large-scale computing units",
+      "abstract": "",
+      "year": "1951",
+      "venue": "Harvard University Press",
+      "authors": "Lehmer, D.H."
+    },
+    {
+      "index": 43,
+      "title": "Equation of state calculations by fast computing machines",
+      "abstract": "",
+      "year": "1953",
+      "venue": "The Journal of Chemical Physics",
+      "authors": "Metropolis, N., Rosenbluth, A.W., Rosenbluth, M.N., Teller, A.H., Teller, E."
+    },
+    {
+      "index": 44,
+      "title": "Monte Carlo sampling methods using Markov chains and their applications",
+      "abstract": "",
+      "year": "1970",
+      "venue": "Biometrika",
+      "authors": "Hastings, W.K."
+    },
+    {
+      "index": 45,
+      "title": "Monte Carlo calculation of the radial distribution functions for a proton–electron plasma",
+      "abstract": "",
+      "year": "1965",
+      "venue": "Australian Journal of Physics",
+      "authors": "Barker, A.A."
+    },
+    {
+      "index": 46,
+      "title": "Optimum Monte-Carlo sampling using Markov chains",
+      "abstract": "",
+      "year": "1973",
+      "venue": "Biometrika",
+      "authors": "Peskun, P.H."
+    },
+    {
+      "index": 47,
+      "title": "A history of the Metropolis–Hastings algorithm",
+      "abstract": "",
+      "year": "2003",
+      "venue": "The American Statistician",
+      "authors": "Hitchcock, D.B."
+    },
+    {
+      "index": 48,
+      "title": "Stochastic relaxation, Gibbs distributions, and the Bayesian restoration of images",
+      "abstract": "",
+      "year": "1984",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Geman, S., Geman, D."
+    },
+    {
+      "index": 49,
+      "title": "Sampling-based approaches to calculating marginal densities",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "Gelfand, A.E., Smith, A.F.M."
+    },
+    {
+      "index": 50,
+      "title": "Iterative and non-iterative simulation algorithms",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Computing Science and Statistics: Symposium on the Interface",
+      "authors": "Gelman, A."
+    },
+    {
+      "index": 51,
+      "title": "E.I.: Explaining the Gibbs sampler. The American Statistician 46(3)",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 52,
+      "title": "E.: Understanding the Metropolis-Hastings algorithm. The American Statistician 49(4)",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 53,
+      "title": ": Modelling complexity: applications of Gibbs sampling in medicine",
+      "abstract": "",
+      "year": "1993",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 54,
+      "title": "J.: Bayesian comparison of econometric models. Technical report",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 55,
+      "title": "D.B.: Markov chain Monte Carlo methods in biostatistics. Statistical Methods in Medical Research 5(4)",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 56,
+      "title": "B.: Bayesian phylogenetic inference via Markov chain Monte Carlo methods. Biometrics 55(1)",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 57,
+      "title": "F.: Guest editors’ introduction: The top 10 algorithms. Computing in Science & Engineering 2(1)",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 58,
+      "title": "T.-H.: Blind deconvolution of discrete-valued signals. In: Proceedings of the 27th Asilomar Conference on Signals",
+      "abstract": "",
+      "year": "1993",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 59,
+      "title": "T.-H.: Blind restoration of linearly degraded discrete signals by Gibbs sampling. IEEE Transactions on Signal Processing 43(10)",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 60,
+      "title": "P.: Fully Bayesian analysis of hidden Markov models. In: Proceedings of the 8th European Signal Processing Conference (EUSIPCO)",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 61,
+      "title": "In: Proceedings of the IEE Colloquium on Adaptive Signal Processing for Mobile Communication Systems",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 62,
+      "title": "E.: Simulation-based methods for blind maximum-likelihood filter identification. Signal processing 73(1)",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 63,
+      "title": "W.J.: Interpolation of missing samples for audio restoration. IEE Electronics Letters 30(8)",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 64,
+      "title": "In: Proceedings of the IEEE International Conference on Acoustics",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 65,
+      "title": "S.J.: Bayesian enhancement of speech and audio signals which can be modelled as ARMA processes. International Statistical Review 65(1)",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 66,
+      "title": "S.S.: Tractable models and efficient algorithms for Bayesian tomography. In: Proceedings of the IEEE International Conference on Acoustics",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 67,
+      "title": "K.: ML parameter estimation for Markov random fields with applications to Bayesian tomography. IEEE Transactions on Image Processing 7(7)",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 68,
+      "title": "W.: Parameter estimation of time-varying autoregressive models using the Gibbs sampler. IEE Electronics Letters 31(13)",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 69,
+      "title": "Image and Signal Processing 144(4)",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 70,
+      "title": "W.J.: Markov chain Monte Carlo methods with applications to signal processing. Signal Processing 81(1)",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 71,
+      "title": "S.J.: Guest editorial special issue on Monte Carlo methods for statistical signal processing. IEEE Transactions on Signal Processing 50(2)",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 72,
+      "title": "J.S.: Monte Carlo Bayesian signal processing for wireless communications. The Journal of VLSI Signal Processing 30(1)",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 73,
+      "title": "M.I.: An introduction to MCMC for machine learning. Machine learning 50(1)",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 74,
+      "title": "X.: Monte Carlo methods for signal processing: a review in the statistical signal processing context. IEEE Signal Processing Magazine 22(6)",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 75,
+      "title": "H.: Random sampling (Monte Carlo) techniques in neutron attenuation problems. Nucleonics 6(5)",
+      "abstract": "",
+      "year": "1950",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 76,
+      "title": "A.W.: Methods of reducing sample size in Monte Carlo computations. Journal of the Operations Research Society of America 1(5)",
+      "abstract": "",
+      "year": "1953",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 77,
+      "title": "W.A.: Sampling techniques for increasing the efficiency of simulations of queuing systems. PhD thesis",
+      "abstract": "",
+      "year": "1965",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 78,
+      "title": ": Analytical results of variance reduction characteristics of biased Monte Carlo for deep-penetration problems",
+      "abstract": "",
+      "year": "1986",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 79,
+      "title": "T.E.: A Monte Carlo learning/biasing experiment with intelligent random numbers. Nuclear Science and Engineering 92(3)",
+      "abstract": "",
+      "year": "1986",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 80,
+      "title": "B.R.: An improved importance sampling method for digital communication system simulations. IEEE Transactions on Communications 34(7)",
+      "abstract": "",
+      "year": "1986",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 81,
+      "title": "M.C.: Developments in the theory and application of importance sampling. IEEE Transactions on Communications 35(7)",
+      "abstract": "",
+      "year": "1987",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 82,
+      "title": "A.: Monte Carlo simulation of computer system availability/reliability models. In: Proceedings of the 17th Symposium on Fault-Tolerant Computing",
+      "abstract": "",
+      "year": "1986",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 83,
+      "title": "T.C.: Importance sampling in multivariate problems. In: Proceedings of the Statistical Computing Section",
+      "abstract": "",
+      "year": "1987",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 84,
+      "title": ": Bayesian estimates of equation system parameters: an application of integration by Monte Carlo",
+      "abstract": "",
+      "year": "1978",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 85,
+      "title": "L.: Multiparameter univariate Bayesian analysis. Journal of the American Statistical Association 74(367)",
+      "abstract": "",
+      "year": "1979",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 86,
+      "title": "T.C.: Importance sampling for Bayesian estimation. In: Buja",
+      "abstract": "",
+      "year": "1991",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 87,
+      "title": ": Weighted Average Importance Sampling and Defensive Mixture Distributions",
+      "abstract": "",
+      "year": "1991",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 88,
+      "title": "T.C.: Weighted average importance sampling and defensive mixture distributions. Technometrics 37(2)",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 89,
+      "title": "In: Proceedings of the 22nd Annual Conference on Computer Graphics and Interactive Techniques",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 90,
+      "title": "Y.: Safe and effective importance sampling. Journal of the American Statistical Association 95(449)",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 91,
+      "title": ": Novel approach to nonlinear/non-Gaussian Bayesian state estimation",
+      "abstract": "",
+      "year": "1993",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 92,
+      "title": "A.M.: A tutorial on particle filtering and smoothing: Fifteen years later. Handbook of nonlinear filtering 12(656-704)",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 93,
+      "title": "Y.: Population Monte Carlo algorithms. Transactions of the Japanese Society for Artificial Intelligence 16(2)",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 94,
+      "title": "C.P.: Population Monte Carlo. Journal of Computational and Graphical Statistics 13(4)",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 95,
+      "title": "C.P.: Adaptive importance sampling in general mixture classes. Statistics and Computing 18",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 96,
+      "title": "M.F.: Improving population Monte Carlo: Alternative weighting and resampling schemes. Signal Processing 131",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 97,
+      "title": "C.P.: Adaptive multiple importance sampling. Scandinavian Journal of Statistics 39(4)",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 98,
+      "title": "J.: An adaptive population importance sampler: Learning from the uncertanity. IEEE Transactions on Signal Processing 63(16)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 99,
+      "title": "et al.: The pseudo-marginal approach for efficient monte carlo computations. The Annals of Statistics 37(2)",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 100,
+      "title": "R.J.: Approximate Bayesian computational methods. Statistics and Computing",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 101,
+      "title": "C.: Approximate Bayesian computation. PLoS Computational Biology 9(1)",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 102,
+      "title": "W.: Big learning with Bayesian methods. arXiv:1411.6370 (2014)",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 103,
+      "title": "G.: Monte Carlo Statistical Methods. Springer",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 104,
+      "title": "H.F.: Markov Chain Monte Carlo: Stochastic Simulation for Bayesian Inference. Chapman and Hall/CRC",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 105,
+      "title": "J.S.: Monte Carlo Strategies in Scientific Computing. Springer",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 106,
+      "title": "R.: Advanced Markov Chain Monte Carlo Methods: Learning from Past Samples vol. 714. John Wiley & Sons",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 107,
+      "title": "X.-L.: Handbook of Markov Chain Monte Carlo. CRC press",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 108,
+      "title": ": Handbook of Monte Carlo Methods vol",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 109,
+      "title": "N.: Beyond the Kalman Filter: Particle Filters for Tracking Applications. Artech House",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 110,
+      "title": "B.: Particle Filters for Random Set Models vol. 798. Springer",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 111,
+      "title": "J.V.: Bayesian Signal Processing: Classical",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 112,
+      "title": "N.: Sequential Monte Carlo Methods in Practice",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 113,
+      "title": "S.: Bayesian Filtering and Smoothing vol. 3. Cambridge University Press",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 114,
+      "title": "L.: Non-uniform random variate generation. Springer",
+      "abstract": "",
+      "year": "1986",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 115,
+      "title": "J.: Principles of Random Variate Generation. Clarendon Press (Oxford and New York)",
+      "abstract": "",
+      "year": "1988",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 116,
+      "title": "G.: Automatic Nonuniform Random Variate Generation. Springer",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 117,
+      "title": "J.E.: Random Number Generation and Monte Carlo Methods. Springer",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 118,
+      "title": "J.: Independent Random Sampling Methods. Springer",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 119,
+      "title": "P.M.: Monte Carlo methods for signal processing: recent advances. In: 12th European Signal Processing Conference (EUSIPCO)",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 120,
+      "title": "C.P.: Bayesian computation: a summary of the current state",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 121,
+      "title": "L.: A review of Multiple Try MCMC algorithms for signal processing. Digital Signal Processing (2018)",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 122,
+      "title": "C.: Accelerating mcmc algorithms. arXiv:1804.02719 (2018)",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 123,
+      "title": "J.: Adaptive importance sampling in signal processing. Digital Signal Processing 47",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 124,
+      "title": "F.: Adaptive population importance samplers: A general perspective. IEEE Sensor Array and Multichannel Signal Processing Workshop (SAM)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 125,
+      "title": "P.: Adaptive importance sampling. The past",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 126,
+      "title": "D.: Winbugs-a bayesian modelling framework: concepts",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 127,
+      "title": "N.: The bugs project: evolution",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 128,
+      "title": "D.: The BUGS Book: A Practical Introduction to Bayesian Analysis. CRC press",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 129,
+      "title": "K.: Jags: A program for analysis of bayesian graphical models using gibbs sampling. In: Proceedings of DSC",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 130,
+      "title": "J.: Stan: A probabilistic programming language for bayesian inference and optimization. Journal of Educational and Behavioral Statistics 40(5)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 131,
+      "title": "A.: Stan: A probabilistic programming language. Journal of statistical software 76(1) (2017)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 132,
+      "title": "J.: Adaptive importance sampling in signal processing. Digital Signal Processing 47",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 133,
+      "title": "U.: Computer methods for sampling from gamma",
+      "abstract": "",
+      "year": "1974",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 134,
+      "title": "S.G.: Sampling truncated normal",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 135,
+      "title": "Series C (Applied Statistics) 26",
+      "abstract": "",
+      "year": "1977",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 136,
+      "title": "C.: Efficient Nakagami-m fading channel simulation. IEEE Transaction on Vehicular Technology 54(2)",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 137,
+      "title": "L.: Almost rejectionless sampling from Nakagami-m𝑚m distributions (m≥1𝑚1m\\geq 1). IET Electronics Letters 48(24)",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 138,
+      "title": "X.M.: Highly efficient rejection method for generating Nakagami-m sequences. IET Electronics Letters 47(19)",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 139,
+      "title": ": Extremely efficient acceptance-rejection method for simulating uncorrelated Nakagami fading channels",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 140,
+      "title": "P.: Adaptive Rejection Sampling for Gibbs Sampling. Applied Statistics 41(2)",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 141,
+      "title": "J.: Transformed density rejection with inflection points. Statistics and computing 23",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 142,
+      "title": "J.: A novel rejection sampling scheme for posterior probability distributions. Proc. of the 34th IEEE ICASSP (2009)",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 143,
+      "title": "W.: A rejection technique for sampling from T-concave distributions. ACM Transactions on Mathematical Software 21(2)",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 144,
+      "title": "J.: Generalized rejection sampling schemes and applications in signal processing. Signal Processing 90(11)",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 145,
+      "title": "Y.W.: Concave convex adaptive rejection sampling. Journal of Computational and Graphical Statistics 20(3)",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 146,
+      "title": "J.: A generalization of the adaptive rejection sampling algorithm. Statistics and Computing 21(4)",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 147,
+      "title": "T.: Random variate generation using concavity properties of transformed densities. Journal of Computational and Graphical Statistics 7(4)",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 148,
+      "title": "F.: Adaptive rejection sampling with fixed number of nodes. (To appear) Communications in Statistics - Simulation and Computation (2017)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 149,
+      "title": "L.: Parsimonious Adaptive Rejection Sampling. IET Electronics Letters 53(16)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 150,
+      "title": "W.: A universal generator for bivariate log-concave distributions. Computing 52",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 151,
+      "title": "V.: Metropolis Sampling. Wiley StatsRef: Statistics Reference Online (2017)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 152,
+      "title": "B.P.: Markov chain Monte Carlo convergence diagnostics: a comparative review. Journal of the American Statistical Association 91(434)",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 153,
+      "title": "et al.: Weak convergence and optimal scaling of random walk metropolis algorithms. The annals of applied probability 7(1)",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 154,
+      "title": "et al.: Efficient metropolis jumping rules. Bayesian statistics 5(599-608)",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 155,
+      "title": "J.: Optimal scaling of metropolis algorithms: is 0.234 as robust as is believed? Technical report (2007)",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 156,
+      "title": "M.: Optimal acceptance rates for metropolis algorithms: Moving beyond 0.234. Stochastic Processes and their Applications 118(12)",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 157,
+      "title": "M.: Efficient sampling using metropolis algorithms: Applications of optimal scaling results. Journal of Computational and Graphical Statistics 17(2)",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 158,
+      "title": "et al.: Optimal scalings for local metropolis–hastings chains on nonproduct targets in high dimensions. The Annals of Applied Probability 19(3)",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 159,
+      "title": "et al.: Optimal scaling and diffusion limits for the langevin algorithm in high dimensions. The Annals of Applied Probability 22(6)",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 160,
+      "title": "S.M.: Markov chain Monte Carlo in small worlds. Statistics and Computing 16(2)",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 161,
+      "title": "S.M.: Small-world MCMC and convergence to multi-modal distributions: From slow mixing to fast mixing. The Annals of Applied Probability 17(1)",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 162,
+      "title": "R.L.: Rates of convergence of the Hastings and Metropolis algorithms. The Annals of Statistics 24(1)",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 163,
+      "title": "R.L.: Geometric convergence and central limit theorems for multidimensional Hastings and Metropolis algorithms. Biometrika 83(1)",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 164,
+      "title": "M.P.: Optimization by simulated annealing. Science 220(4598)",
+      "abstract": "",
+      "year": "1983",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 165,
+      "title": "J.S.: Surprising convergence properties of some simple gibbs samplers under various scans. International Journal of Statistics and Probability 5(1)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 166,
+      "title": "J.S.: Metropolized Gibbs sampler: an improvement. Technical report",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 167,
+      "title": "G.: The Recycling Gibbs Sampler for efficient learning. Digital Signal Processing 74",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 168,
+      "title": "B.P.: On the convergence of successive substitution sampling. Journal of Computational and Graphical statistics 1(2)",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 169,
+      "title": ": The collapsed Gibbs sampler in Bayesian computations with applications to a gene regulation problem",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 170,
+      "title": ": Polya urn latent Dirichlet allocation: a doubly sparse massively parallel sampler",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 171,
+      "title": "M.R.: Generalized linear models with random effects; a Gibbs sampling approach. Journal of the American statistical association 86(413)",
+      "abstract": "",
+      "year": "1991",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 172,
+      "title": "M.A.: The griddy Gibbs sampler. Technical report",
+      "abstract": "",
+      "year": "1991",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 173,
+      "title": "M.A.: Facilitating the Gibbs sampler: the Gibbs stopper and the griddy-Gibbs sampler. Journal of the American Statistical Association 87(419)",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 174,
+      "title": ": On Markov chain Monte Carlo methods for nonlinear and non-Gaussian state-space models",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 175,
+      "title": ": Bayesian estimation of state-space models using the Metropolis-Hastings algorithm within Gibbs sampling",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 176,
+      "title": "D.: Independent doubly adaptive rejection Metropolis sampling within Gibbs sampling. IEEE Transactions on Signal Processing 63(12)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 177,
+      "title": "et al.: Optimal scaling for partially updating mcmc algorithms. The Annals of Applied Probability 16(2)",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 178,
+      "title": "J.: A fast universal self-tuned sampler within Gibbs sampling. Digital Signal Processing 47",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 179,
+      "title": "W.H.: The calculation of posterior distributions by data augmentation. Journal of the American statistical Association 82(398)",
+      "abstract": "",
+      "year": "1987",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 180,
+      "title": ": Maximum likelihood from incomplete data via the EM algorithm",
+      "abstract": "",
+      "year": "1977",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 181,
+      "title": "R.M.: Slice sampling. The Annals of Statistics 31(3)",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 182,
+      "title": "Amsterdam (Netherland) (1979)",
+      "abstract": "",
+      "year": "1979",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 183,
+      "title": "R.L.: Monte Carlo techniques for generating random feasible solutions to mathematical programs. In: Proceedings of the ORSA/TIMS Conference",
+      "abstract": "",
+      "year": "1980",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 184,
+      "title": "R.L.: Efficient Monte Carlo procedures for generating points uniformly distributed over bounded regions. Operations Research 32(6)",
+      "abstract": "",
+      "year": "1984",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 185,
+      "title": "J.: Hit-and-run algorithms for the identification of nonredundant linear inequalities. Mathematical Programming 37(2)",
+      "abstract": "",
+      "year": "1987",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 186,
+      "title": "R.L.: Direction choice for accelerated convergence in hit-and-run sampling. Operations Research 46(1)",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 187,
+      "title": "B.: Performance of the Gibbs",
+      "abstract": "",
+      "year": "1993",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 188,
+      "title": "E.I.: Adaptive direction sampling. The Statistician",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 189,
+      "title": "W.R.: Convergence of adaptive direction sampling. Journal of Multivariate Analysis 49(2)",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 190,
+      "title": "C.J.: Practical Markov chain Monte Carlo. Statistical science",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 191,
+      "title": "L.M.: Subsampling the Gibbs sampler. The American Statistician 48(3)",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 192,
+      "title": "M.J.: On thinning of chains in MCMC. Methods in Ecology and Evolution 3(1)",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 193,
+      "title": "Statistically efficient thinning of a Markov chain sampler",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "",
+      "orig_title": ": Statistically efficient thinning of a Markov chain sampler",
+      "paper_id": "1510.07727v7"
+    },
+    {
+      "index": 194,
+      "title": "J.: A tutorial on adaptive MCMC. Statistics and Computing 18(4)",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 195,
+      "title": "J.: An adaptive Metropolis algorithm. Bernoulli 7(2)",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 196,
+      "title": "et al.: Efficient Metropolis jumping rules. Bayesian Statistics 5(599-608)",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 197,
+      "title": "E.: DRAM: efficient adaptive MCMC. Statistics and Computing 16(4)",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 198,
+      "title": "R.: Adaptive independent Metropolis–Hastings by fast estimation of mixtures of normals. Journal of Computational and Graphical Statistics 19(2)",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 199,
+      "title": "L.: Fully adaptive Gaussian mixture Metropolis-Hastings algorithm. In: Proceedings of the IEEE International Conference on Acoustics",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 200,
+      "title": "H.: Adaptive Metropolis algorithm using variational Bayesian adaptive Kalman filter. Computational Statistics and Data Analysis 83",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 201,
+      "title": "G.: Limit theorems for some adaptive MCMC algorithms with subgeometric kernels. Bernoulli 16(1)",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 202,
+      "title": "M.: On the stability and ergodicity of adaptive scaling Metropolis algorithms. Stochastic Processes and their Applications 121(12)",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 203,
+      "title": "M.: Robust adaptive Metropolis algorithm with coerced acceptance rate. Statistics and Computing 22(5)",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 204,
+      "title": ": Adaptive Rejection Metropolis Sampling within Gibbs Sampling",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 205,
+      "title": "F.: Adaptive rejection Metropolis sampling using Lagrange interpolation polynomials of degree 2. Computational Statistics and Data Analysis 52(7)",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 206,
+      "title": "D.: Independent doubly adaptive rejection Metropolis sampling. In: Proceedings of the IEEE International Conference on Acoustics",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 207,
+      "title": "D.: Adaptive Independent Sticky MCMC algorithms. (to appear) EURASIP Journal on Advances in Signal Processing (2017)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 208,
+      "title": "J.S.: Coupling and ergodicity of adaptive Markov chain Monte Carlo algorithms. Journal of Applied Probability 44(2)",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 209,
+      "title": "G.: Air Markov chain Monte Carlo. Technical report (2018)",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 210,
+      "title": "O.: Langevin diffusions and Metropolis-Hastings algorithms. Methodology and Computing in Applied Probability 4",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 211,
+      "title": "B.: Riemann manifold Langevin and Hamiltonian Monte Carlo methods. Journal of the Royal Statistical Society: Series B (Statistical Methodology) 73(2)",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 212,
+      "title": "E.: Numerical Solution of Stochastic Differential Equations. Springer",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 213,
+      "title": "Journal of the Royal Statistical Society: Series B (Statistical Methodology) 60(1)",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 214,
+      "title": "D.: Hybrid Monte Carlo. Physics Letters B 195(2)",
+      "abstract": "",
+      "year": "1987",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 215,
+      "title": "X.-L.: Handbook of Markov Chain Monte Carlo. CRC Press",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 216,
+      "title": "In: Handbook of Markov Chain Monte Carlo",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 217,
+      "title": "et al.: Optimal tuning of the hybrid monte carlo algorithm. Bernoulli 19(5A)",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 218,
+      "title": "Y.: Manifold stochastic dynamics for Bayesian learning. Neural computation 13(11)",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 219,
+      "title": "A.: The No-U-turn sampler: adaptively setting path lengths in Hamiltonian Monte Carlo. Journal of Machine Learning Research 15(1)",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 220,
+      "title": "J.S.: Exploring hybrid Monte Carlo in Bayesian computation. In: Proceedings of the International Symposium on Bayesian Analysis (ISBA) (2000)",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 221,
+      "title": "S.: Explicit variable step-size and time-reversible integration. Applied Numerical Mathematics 39(3)",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 222,
+      "title": "A.: Optimal tuning of the hybrid Monte Carlo algorithm. Bernoulli 19(5A)",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 223,
+      "title": "M.: Optimizing the integrator step size for Hamiltonian Monte Carlo. arXiv:1411.6669 (2014)",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 224,
+      "title": "M.: The geometric foundations of Hamiltonian Monte Carlo. arXiv:1410.5110 (2014)",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 225,
+      "title": "M.: A conceptual introduction to Hamiltonian Monte Carlo. arXiv:1701.02434 (2017)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 226,
+      "title": "D.: Geometrically Tempered Hamiltonian Monte Carlo. arXiv:1604.00872",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 227,
+      "title": "B.: Wormhole Hamiltonian Monte Carlo. in Proceedings of the Twenty-Eighth AAAI Conference on Artificial Intelligence",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 228,
+      "title": "H.: Random Number Generation and Quasi-Monte Carlo Methods. Society for Industrial Mathematics",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 229,
+      "title": "C.: Learn from thy neighbor: Parallel-chains and regional adaptive MCMC. Journal of the American Statistical Association 104(448)",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 230,
+      "title": "F.: Interacting multiple try algorithms with different proposal distributions. Statistics and Computing 23",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 231,
+      "title": "F.: Orthogonal parallel MCMC methods for sampling and optimization. Digital Signal Processing 58",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 232,
+      "title": "F.: Parallel metropolis coupled Markov Chain Monte Carlo for bayesian phylogenetic inference. Bioinformatics 20(3)",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 233,
+      "title": "C.J.: Markov Chain Monte Carlo maximum likelihood. Computing Science and Statistics: Proceedings of the 23rd Symposium on the Interface",
+      "abstract": "",
+      "year": "1991",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 234,
+      "title": "J.: Smelly parallel MCMC chains. IEEE International Conference on Acoustics",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 235,
+      "title": "F.: Parallel Metropolis chains with cooperative adaptation. IEEE International Conference on Acoustics",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 236,
+      "title": "E.A.: Annealing Markov Chain Monte Carlo with applications to ancestral inference. Journal of the American Statistical Association 90",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 237,
+      "title": "C.C.: On population-based simulation for static inference. Statistics and Computing 17(3)",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 238,
+      "title": "T.: Bayesian model learning based on a parallel MCMC strategy. Statistics Computing 16",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 239,
+      "title": "T.: Parallel interacting MCMC for learning of topologies of graphical models. Data Mining and Knowledge Discovery 17(3)",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 240,
+      "title": ": A general construction for parallelizing Metropolis-Hastings algorithms",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 241,
+      "title": "C.: On Markov chain Monte Carlo methods for tall data. arXiv:1505.02827 (2015)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 242,
+      "title": "E.: Asymptotically exact",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 243,
+      "title": ": Parallelizing MCMC via Weierstrass sampler",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 244,
+      "title": ": Parallelizing MCMC with random partition trees",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 245,
+      "title": "A.E.: Parallel Markov chain Monte Carlo simulation by pre-fetching. Journal of Computational and Graphical Statistics 15(1)",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 246,
+      "title": "et al.: Mrbayes: Bayesian inference of phylogenetic trees. Bioinformatics 17(8)",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 247,
+      "title": "J.S.: Parallel computing and Monte Carlo algorithms. Far east journal of theoretical statistics 4(2)",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 248,
+      "title": "I.: Efficient parallelisation of Metropolis-Hastings algorithms using a prefetching approach. Computational Statistics & Data Analysis 54(11)",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 249,
+      "title": "D.: GPU-accelerated Gibbs sampling: a case study of the Horseshoe Probit model. Statistics and Computing 29(2)",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 250,
+      "title": "D.: Asynchronous Gibbs sampling. arXiv:1509.08999v5 (2018)",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 251,
+      "title": "A.: Some adaptive Monte Carlo methods for Bayesian inference. Statistics in Medicine 18",
+      "abstract": "",
+      "year": "1999",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 252,
+      "title": "J.: Non-reversible Metropolis-Hastings. Statistics and Computing 26(6)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 253,
+      "title": "R.M.: Improving asymptotic variance of MCMC estimators: Non-reversible chains are better. Technical report",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 254,
+      "title": "M.: Non-reversible Monte Carlo simulations of spin models. Computer Physics Communications 182(9)",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 255,
+      "title": "M.: Irreversible Monte Carlo algorithms for efficient sampling. Physica D: Nonlinear Phenomena 240(4)",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 256,
+      "title": "G.T.: Monte carlo methods beyond detailed balance. Physica A: Statistical Mechanics and its Applications 418",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 257,
+      "title": "M.: Lifting — a non-reversible Markov Chain Carlo algorithm. arXiv:1412.8762",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 258,
+      "title": "M.: Irreversible Monte Carlo algorithms for efficient sampling. Physica D: Nonlinear Phenomena 240(4-5)",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 259,
+      "title": "G.T.: Monte Carlo methods beyond detailed balance. Physica A: Statistical Mechanics and its Applications 418",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 260,
+      "title": "D.B.: Bayesian Data Analysis",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 261,
+      "title": "A.: General methods for monitoring convergence of iterative simulations. Journal of Computational and Graphical Statistics 7(4)",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 262,
+      "title": "A.: Nonparametric convergence assessment for MCMC model selection. Journal of Computational and Graphical Statistics 12(1)",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 263,
+      "title": "D.B.: Inference from iterative simulation using multiple sequences. Statistical Science 7(4)",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 264,
+      "title": "L.: Measuring sample quality with Stein’s method. In: Advances in Neural Information Processing Systems (NIPS)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 265,
+      "title": "L.: Measuring sample quality with diffusions. arXiv:1611.06972v6 (2018)",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 266,
+      "title": "A.: A kernel test of goodness of fit. In: International Conference on Machine Learning (ICML) (2016). JMLR: Workshop and Conference Proceedings",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 267,
+      "title": "M.: A kernelized Stein discrepancy for goodness-of-fit tests. In: International Conference on Machine Learning (ICML)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 268,
+      "title": "N.: Control functionals for Monte Carlo integration. Journal of the Royal Statistical Society: Series B (Statistical Methodology) 79(3)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 269,
+      "title": "L.: Measuring sample quality with kernels. In: Proceedings of the 34th International Conference on Machine Learning (ICML)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 270,
+      "title": "D.B.: MCMC for imbalanced categorical data. Journal of the American Statistical Association",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 271,
+      "title": "L.: Optimally combining sampling techniques for Monte Carlo rendering. In SIGGRAPH 1995 Proceedings",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 272,
+      "title": "J.: Layered Adaptive Importance Sampling. Statistics and Computing 27(3)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 273,
+      "title": "M.F.: Improving Population Monte Carlo: Alternative weighting and resampling schemes. Signal Processing 131(12)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 274,
+      "title": ": Generalized multiple importance sampling",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 275,
+      "title": "M.F.: Efficient multiple importance sampling estimators. IEEE Signal Processing Letters 22(10)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 276,
+      "title": "M.F.: Heretical multiple importance sampling. IEEE Signal Processing Letters 23(10)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 277,
+      "title": "J.: A gradient adaptive population importance sampler. In: Proceedings of the IEEE International Conference on Acoustics",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 278,
+      "title": "J.: A population Monte Carlo scheme with transformed weights and its application to stochastic kinetic models. Statistics and Computing (2014)",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 279,
+      "title": "J.: An adaptive population importance sampler. IEEE International Conference on Acoustics",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 280,
+      "title": "I.: Gradient importance sampling. arXiv:1507.05781",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 281,
+      "title": "J.: MCMC-driven adaptive multiple importance sampling. In: Polpo",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 282,
+      "title": "A.L.: Regenerative Markov chain importance sampling. Communications in Statistics - Simulation and Computation (2015)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 283,
+      "title": "B.: Markov chain importance sampling with applications to rare event probability estimation. Statistics and Computing 23",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 284,
+      "title": "C.Z.: A novel adaptive importance sampling algorithm based on Markov chain and low-discrepancy sequence. Aerospace Science and Technology 29",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 285,
+      "title": "A.: Sequential Monte Carlo samplers. Journal of the Royal Statistical Society: Series B (Statistical Methodology) 68(3)",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 286,
+      "title": "J.O.: Adaptive importance sampling in Monte Carlo integration. Journal of Statistical Computation and Simulation 41(3-4)",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 287,
+      "title": "J.: Bayesian inference in econometric models using Monte Carlo integration. Econometrica: Journal of the Econometric Society",
+      "abstract": "",
+      "year": "1989",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 288,
+      "title": "R.: Another look at rejection sampling through importance sampling. Statistics & Probability Letters 72",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 289,
+      "title": "A.: A note on importance sampling using standardized weights. University of Chicago",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 290,
+      "title": "W.H.: Sequential imputations and Bayesian missing data problems. Journal of the American Statistical Association 89(425)",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 291,
+      "title": "N. (eds.): Sequential Monte Carlo Methods in Practice. Springer",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 292,
+      "title": "G.: Introducing Monte Carlo Methods With R. Springer",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 293,
+      "title": "com/2010/09/24/effective-sample-size/ (2010)",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 294,
+      "title": "F.: Effective Sample Size for importance sampling based on discrepancy measures. Signal Processing 131",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 295,
+      "title": ": Importance sampling: Computational complexity and intrinsic dimension",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 296,
+      "title": "K.: On the role of interaction in sequential Monte Carlo algorithms. Bernoulli 22(1)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 297,
+      "title": ": Convergence of sequential Monte Carlo based sampling methods",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 298,
+      "title": "F.: An improved sir-based sequential monte carlo algorithm. In: IEEE Statistical Signal Processing Workshop (SSP)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 299,
+      "title": "F.: Independent resampling sequential monte carlo algorithms. IEEE Transactions on Signal Processing 65(20)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 300,
+      "title": "F.: Weighting a resampled particle in Sequential Monte Carlo. IEEE Statistical Signal Processing Workshop",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 301,
+      "title": "T.B.: Nested Sequential Monte Carlo methods. Proceedings of theInternational Conference on Machine Learning 37",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 302,
+      "title": "G.: Group Importance Sampling for particle filtering and MCMC. Digital Signal Processing 82",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 303,
+      "title": "F.: Cooperative parallel particle filters for on-line model selection and applications to urban mobility. Digital Signal Processing 60",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 304,
+      "title": "S.: Resampling algorithms and architectures for distributed particle filters. IEEE Transactions Signal Processing 53(7)",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 305,
+      "title": "M.A.: A proof of uniform convergence over time for a distributed particle filter. Signal Processing 122",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 306,
+      "title": "J.: A distributed particle filter for nonlinear tracking in wireless sensor networks. Signal Processing 98",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 307,
+      "title": "E.: On parallel implementation of sequential Monte Carlo methods: the island particle model. Statistics and Computing 25(2)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 308,
+      "title": "J.: Convergence properties of weighted particle islands with application to the double bootstrap algorithm. arXiv:1410.4231",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 309,
+      "title": ": A sequential Monte Carlo algorithm to incorporate model uncertainty in Bayesian sequential design",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 310,
+      "title": "P.M.: Sequential Monte Carlo methods under model uncertainty. In: 2016 IEEE Statistical Signal Processing Workshop (SSP)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 311,
+      "title": ": High-dimensional filtering using nested sequential Monte Carlo",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 312,
+      "title": "R.B.: A statistical contribution to historical linguistics. Phd Thesis (2015)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 313,
+      "title": "J.: Particle filtering. IEEE Signal Processing Magazine 20(5)",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 314,
+      "title": "A.M.: A tutorial on particle filtering and smoothing: fifteen years later. technical report (2008)",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 315,
+      "title": ": A multi-model particle filtering algorithm for indoor tracking of mobile terminals using rss data",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 316,
+      "title": "R.: Particle Markov chain Monte Carlo methods. Journal of the Royal Statistical Society B 72(3)",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 317,
+      "title": "T.B.: Particle Gibbs with ancestor sampling. Journal of Machine Learning Research 15(1)",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 318,
+      "title": "J.: Particle and sigma-point methods for state and parameter estimation in nonlinear dynamic systems. Phd Thesis",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 319,
+      "title": "W.H.: The multiple-try method and local optimization in Metropolis sampling. Journal of the American Statistical Association 95(449)",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 320,
+      "title": "J.: On the flexibility of the design of multiple try Metropolis schemes. Computational Statistics 28(6)",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 321,
+      "title": "J.: A multi-point Metropolis scheme with generic weight functions. Statistics & Probability Letters 82(7)",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 322,
+      "title": "E.: Scaling analysis of multiple-try MCMC methods. Stochastic Processes and their Applications 122",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 323,
+      "title": "C.: Acceleration of the Multiple Try Metropolis algorithm using antithetic and stratified sampling. Statistics and Computing 17(2)",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 324,
+      "title": "F.: Issues in the Multiple Try Metropolis mixing. Computational Statistics 32(1)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 325,
+      "title": "J.: On multiple try schemes and the Particle Metropolis-Hastings algorithm. viXra:1409.0051 (2014)",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 326,
+      "title": "C.P.: Rao-Blackwellisation of sampling schemes. Biometrika 83(1)",
+      "abstract": "",
+      "year": "1996",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 327,
+      "title": "R.: MCMC using ensembles of states for problems with fast and slow variables such as Gaussian process regression. arXiv:1101.0387 (2011)",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 328,
+      "title": ": Combining particle MCMC with Rao-Blackwellized Monte Carlo data association for parameter estimation in multiple target tracking",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 329,
+      "title": "G.O.: The pseudo-marginal approach for efficient monte carlo computations. The Annals of Statistics 37(2)",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 330,
+      "title": "D.: MCMC for doubly-intractable distributions. Proceedings of the Twenty-Second Conference on Uncertainty in Artificial Intelligence (UAI2006)",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 331,
+      "title": "K.: An efficient Markov Chain Monte Carlo method for distributions with intractable normalising constants. Biometrika 93",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 332,
+      "title": ": Markov Chain Monte Carlo without likelihoods",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 333,
+      "title": "M.A.: Estimation of population growth or decline in genetically monitored populations. Genetics 164",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 334,
+      "title": "R.J.: Approximate Bayesian computational methods. Statistics and Computing 22(6)",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 335,
+      "title": ": Towards scaling up Markov Chain Monte Carlo: an adaptive subsampling approach",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 336,
+      "title": "M.: Austerity in MCMC land: Cutting the Metropolis-Hastings budget. Proceedings of the 31st International Conference on Machine Learning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 337,
+      "title": "C.: Markov Chain Monte Carlo using an approximation. Journal of Computational and Graphical Statistics 14",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 338,
+      "title": "delayed-acceptance MCMC for targets with expensive likelihoods. Journal of Computational and Graphical Statistics 26(2)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 339,
+      "title": "H.: Efficient MCMC for climate model parameter estimation: Parallel adaptive chains and Early Rejection. Bayesian Analysis 7(3)",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 340,
+      "title": "In: IEEE 6th International Workshop on Computational Advances in Multi-Sensor Adaptive Processing (CAMSAP)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 341,
+      "title": "Firefly Monte Carlo: Exact MCMC with Subsets of Data",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "",
+      "orig_title": ": Firefly Monte Carlo: Exact MCMC with subsets of data",
+      "paper_id": "1403.5693v1"
+    },
+    {
+      "index": 342,
+      "title": "M.F.: Efficient linear fusion of partial estimators. Digital Signal Processing 78",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 343,
+      "title": "R.E.: Bayes and big data: The consensus Monte Carlo algorithm. In: EFaBBayes 250th Conference",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 344,
+      "title": ": Coupled MCMC with a randomized acceptance probability",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 345,
+      "title": "A.: Noisy Monte Carlo: Convergence of Markov chains with approximate transition kernels. Statistics and Computing 26(2)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 346,
+      "title": "G.O.: Stability of noisy Metropolis-Hastings. Statistics and Computing 26(6)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 347,
+      "title": "S.: Bayesian Filtering and Smoothing. Cambridge University Press",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 348,
+      "title": ": Parameter estimation in stochastic differential equations with markov chain monte carlo and non-linear kalman filtering",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 349,
+      "title": ": Posterior inference on parameters of stochastic differential equations via non-linear Gaussian filtering and adaptive MCMC",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 350,
+      "title": "D.: Optimal approximating Markov chains for Bayesian inference. arXiv:1508.03387 (2015)",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 351,
+      "title": ": Error bounds for approximations of geometrically ergodic Markov chains",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 352,
+      "title": "M.: Adiabatic Monte Carlo. arXiv:1405.3489 (2014)",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 353,
+      "title": ": Model-free forecasting outperforms the correct mechanistic model for simulated and experimental data",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 354,
+      "title": "G.: Reply to Hartig and Dormann: The true model myth. Proceedings of the National Academy of Sciences (PNAS) 110(42)",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 355,
+      "title": "P.: Law of Chaos. Birkhöuser",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 356,
+      "title": "A.S.: Nonparametric belief propagation for self-localization of sensor networks. IEEE Journal on Selected Areas in Communications 23(4)",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 357,
+      "title": "D.T.: An empirical study of collaborative acoustic source localization. Journal of Signal Processing Systems 57(3)",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 358,
+      "title": "P.: List of references on spectral line analysis. Signal Processing 31(3)",
+      "abstract": "",
+      "year": "1993",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 359,
+      "title": "K.C.: Linear prediction approach for efficient frequency estimation of multiple real sinusoids: algorithms and analyses. Signal Processing",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 360,
+      "title": "S.C.: Adaptive algorithms for the rejection of sinusoidal disturbances with unknown frequency. Automatica 33(12)",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 361,
+      "title": ": Cancelation of unknown multiharmonic disturbance for nonlinear plant with input delay",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 362,
+      "title": "A.: Suppression of multiple narrowband interferers in a spread-spectrum communication system. IEEE Journal on Selected Areas in Communications 18(8)",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 363,
+      "title": "E.: A nonlinear adaptive filter for narrowband interference mitigation in spread spectrum systems. Signal processing 85(3)",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 364,
+      "title": "J.G.: Digital Communications. McGraw-Hill",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 365,
+      "title": "Series B (Methodological)",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": ""
+    }
+  ]
+}

@@ -1,0 +1,319 @@
+{
+  "paper_id": "2011.06631v2",
+  "title": "Steady State Analysis of Episodic Reinforcement Learning",
+  "sections": {
+    "preliminaries": "Markov chain.\nIn this paper, a markov chain is a homogeneous discrete-time stochastic process with countable (finite or infinite) state space. The state-transition probabilities are written into a transition matrix M𝑀M, where M​(s,s′)𝑀𝑠superscript𝑠′M(s,s^{\\prime}) is the entry of row s𝑠s and column s′superscript𝑠′s^{\\prime} which specifies ℙ[st+1=s′|st=s]ℙsubscript𝑠𝑡1conditionalsuperscript𝑠′subscript𝑠𝑡𝑠\\operatorname*{\\mathbb{P}}[s_{t+1}=s^{\\prime}|s_{t}=s]. A rollout of M𝑀M generates a trajectory ζ=(s0,s1,s2,…)𝜁subscript𝑠0subscript𝑠1subscript𝑠2…\\zeta=(s_{0},s_{1},s_{2},\\dots) of infinite length. Let row vector ρ(t)superscript𝜌𝑡\\rho^{\\scriptscriptstyle(t)} denote the marginal distribution of the state at time t𝑡t, so st∼ρ(t)=ρ(t−1)​Msimilar-tosubscript𝑠𝑡superscript𝜌𝑡superscript𝜌𝑡1𝑀s_{t}\\sim\\rho^{\\scriptscriptstyle(t)}=\\rho^{\\scriptscriptstyle(t-1)}M. The limiting distribution of stsubscript𝑠𝑡s_{t}, if exists, is the marginal distribution at infinite time, i.e. limt→∞ρ(t)subscript→𝑡superscript𝜌𝑡\\lim_{t\\rightarrow\\infty}\\rho^{\\scriptscriptstyle(t)}, and the stationary (or steady-state) distribution is defined as the fixed-point distribution with ρ=ρ​M𝜌𝜌𝑀\\rho=\\rho M. The existence and uniqueness of stationary and limiting distributions are characterized by the following well-known concepts and conditions: Given a markov chain with transition matrix M𝑀M, a state s𝑠s is reachable from a state s¯¯𝑠\\bar{s} if ℙ[st=s|s0=s¯]>0ℙsubscript𝑠𝑡conditional𝑠subscript𝑠0¯𝑠0\\operatorname*{\\mathbb{P}}[s_{t}=s|s_{0}=\\bar{s}]>0 for some t≥1𝑡1t\\geq 1, and the markov chain M𝑀M is said irreducible if every state is reachable from any state in M𝑀M. The mean recurrence time of a state s𝑠s is the expected number of steps for s𝑠s to reach itself, denoted as 𝔼[Ts]≐∑t=1∞t⋅ℙ[st=s​ and ​s∉{s1:t−1}|s0=s]approaches-limitsubscript𝔼absentsubscript𝑇𝑠superscriptsubscript𝑡1⋅𝑡ℙsubscript𝑠𝑡𝑠 and 𝑠conditionalsubscript𝑠:1𝑡1subscript𝑠0𝑠\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}\\end{subarray}}[T_{s}]\\doteq\\sum_{t=1}^{\\infty}t\\cdot\\operatorname*{\\mathbb{P}}[s_{t}=s\\texttt{~{}and~{}}s\\not\\in\\{s_{1:t-1}\\}|s_{0}=s], and state s𝑠s is said positive recurrent if 𝔼[Ts]<∞subscript𝔼absentsubscript𝑇𝑠\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}\\end{subarray}}[T_{s}]<\\infty. The markov chain M𝑀M is positive recurrent if every state in M𝑀M is positive recurrent. Finally, a state s𝑠s is aperiodic if s𝑠s can reach itself in two trajectories with co-prime lengths, i.e. if gcd⁡{t>0:ℙ[st=s|s0=s]>0}=1:𝑡0ℙsubscript𝑠𝑡conditional𝑠subscript𝑠0𝑠01\\gcd\\{t>0:\\operatorname*{\\mathbb{P}}[s_{t}=s|s_{0}=s]>0\\}=1. An irreducible markov chain M𝑀M has a unique stationary distribution ρM=1/𝔼[Ts]subscript𝜌𝑀1subscript𝔼absentsubscript𝑇𝑠\\rho_{\\scriptscriptstyle M}=1/\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}\\end{subarray}}[T_{s}] if and only if M𝑀M is positive recurrent.\n(, Theorem 54) An irreducible and positive-recurrent markov chain M𝑀M has a limiting distribution limt→∞ρ(t)=ρMsubscript→𝑡superscript𝜌𝑡subscript𝜌𝑀\\lim\\limits_{t\\rightarrow\\infty}\\rho^{\\scriptscriptstyle(t)}=\\rho_{\\scriptscriptstyle M} if and only if there exists one aperiodic state in M𝑀M.\n(, Theorem 59) A markov chain satisfying the condition in Proposition 2 is called an ergodic markov chain. Markov Decision Process (MDP).\nAn MDP ℳ=(SS,𝒜,R,P,ρ0)ℳSS𝒜𝑅𝑃subscript𝜌0\\mathcal{M}=(\\SS,\\mathcal{A},R,P,\\rho_{0}) is a sequential decision making model where SSSS\\SS is a countable state space, 𝒜𝒜\\mathcal{A} a countable action space, R​(s)∈[rm​i​n,rm​a​x]𝑅𝑠subscript𝑟𝑚𝑖𝑛subscript𝑟𝑚𝑎𝑥R(s)\\in[r_{min},r_{max}] is a reward assigned to each state s∈SS𝑠SSs\\in\\SS, P​(s′|s,a)≐ℙ[st+1=s′|st=s,at=a]approaches-limit𝑃conditionalsuperscript𝑠′𝑠𝑎ℙsubscript𝑠𝑡1conditionalsuperscript𝑠′subscript𝑠𝑡𝑠subscript𝑎𝑡𝑎P(s^{\\prime}|s,a)\\doteq\\operatorname*{\\mathbb{P}}[s_{t+1}=s^{\\prime}|s_{t}=s,a_{t}=a] specifies action-conditioned transition probabilities between states, and ρ0subscript𝜌0\\rho_{0} is the initial distribution with s0∼ρ0similar-tosubscript𝑠0subscript𝜌0s_{0}\\sim\\rho_{0}. A policy function π:SS×𝒜→ :𝜋→SS𝒜01\\pi:\\SS\\times\\mathcal{A}\\to  prescribes the probability to take action under each state. With ℙ[at=a|st=s]=π​(s,a)ℙsubscript𝑎𝑡conditional𝑎subscript𝑠𝑡𝑠𝜋𝑠𝑎\\operatorname*{\\mathbb{P}}[a_{t}=a|s_{t}=s]=\\pi(s,a), every policy π𝜋\\pi induces a markov chain with transition matrix Mπ​(s,s′)=∑aπ​(s,a)​P​(s′|s,a)subscript𝑀𝜋𝑠superscript𝑠′subscript𝑎𝜋𝑠𝑎𝑃conditionalsuperscript𝑠′𝑠𝑎M_{\\pi}(s,s^{\\prime})=\\sum_{a}\\pi(s,a)P(s^{\\prime}|s,a). Accordingly, row vectors ρπ(t)subscriptsuperscript𝜌𝑡𝜋\\rho^{\\scriptscriptstyle(t)}_{\\pi} and ρπsubscript𝜌𝜋\\rho_{\\pi} denote the marginal and stationary distributions of stsubscript𝑠𝑡s_{t} under policy π𝜋\\pi, respectively, so ρπ(t+1)=ρπ(t)​Mπsubscriptsuperscript𝜌𝑡1𝜋subscriptsuperscript𝜌𝑡𝜋subscript𝑀𝜋\\rho^{\\scriptscriptstyle(t+1)}_{\\pi}=\\rho^{\\scriptscriptstyle(t)}_{\\pi}M_{\\pi}, and ρπ=ρπ​Mπsubscript𝜌𝜋subscript𝜌𝜋subscript𝑀𝜋\\rho_{\\pi}=\\rho_{\\pi}M_{\\pi}. An MDP is ergodic if for every policy π𝜋\\pi the induced markov chain Mπsubscript𝑀𝜋M_{\\pi} is ergodic, in which case the steady-state performance  of a policy π𝜋\\pi is Ja​v​g​(π)≐limT→∞1T​∑t=1TR​(st)=𝔼s∼ρπ[R​(s)]approaches-limitsubscript𝐽𝑎𝑣𝑔𝜋subscript→𝑇1𝑇superscriptsubscript𝑡1𝑇𝑅subscript𝑠𝑡subscript𝔼similar-to𝑠subscript𝜌𝜋𝑅𝑠J_{avg}(\\pi)\\doteq\\lim\\limits_{T\\rightarrow\\infty}\\frac{1}{T}\\sum_{t=1}^{T}R(s_{t})=\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}s\\sim\\rho_{\\pi}\\end{subarray}}[R(s)].\nWhen a set of terminal states SS⟂⊂SSsubscriptSSperpendicular-toSS\\SS_{\\perp}\\subset\\SS is identified, a rollout trajectory ζ𝜁\\zeta is said terminated when it reaches a terminal state. We use T​(ζ)≐inf{t≥1:st∈SS⟂}approaches-limit𝑇𝜁infimumconditional-set𝑡1subscript𝑠𝑡subscriptSSperpendicular-toT(\\zeta)\\doteq\\inf\\{t\\geq 1:s_{t}\\in\\SS_{\\perp}\\} to denote the termination time of ζ𝜁\\zeta,\nand the episode-wise performance of a policy π𝜋\\pi is defined as Je​p​i​(π)≐𝔼ζ∼Mπ[∑t=1T​(ζ)R​(st)]approaches-limitsubscript𝐽𝑒𝑝𝑖𝜋subscript𝔼similar-to𝜁subscript𝑀𝜋superscriptsubscript𝑡1𝑇𝜁𝑅subscript𝑠𝑡J_{epi}(\\pi)\\doteq\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}\\zeta\\sim M_{\\pi}\\end{subarray}}[\\sum_{t=1}^{T(\\zeta)}R(s_{t})]. A value function Q:SS×𝒜→ℝ:𝑄→SS𝒜ℝQ:\\SS\\times\\mathcal{A}\\to\\mathbb{R} prescribes the “value” of taking an action under a state.\nIn this paper, we consider the following product-form family of value functions        : in which P​(s,a)𝑃𝑠𝑎P(s,a) and π​(s′)𝜋superscript𝑠′\\pi(s^{\\prime}) are short-hands for the conditional distributions P(⋅|s,a)P(\\cdot|s,a) and π(⋅|s′)\\pi(\\cdot|s^{\\prime}), and γ:SS→ :𝛾→SS01\\gamma:\\SS\\to  is called the discounting function. Besides entailing the Bellman equation (2), the definition of Qπsubscript𝑄𝜋Q_{\\pi}, i.e. (1), also induces the state-value function Vπ​(s)≐𝔼a∼π​(s)[Qπ​(s,a)]approaches-limitsubscript𝑉𝜋𝑠subscript𝔼similar-to𝑎𝜋𝑠subscript𝑄𝜋𝑠𝑎V_{\\pi}(s)\\doteq\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}a\\sim\\pi(s)\\end{subarray}}[Q_{\\pi}(s,a)]. With γ​(s)=γc𝛾𝑠subscript𝛾𝑐\\gamma(s)=\\gamma_{c} for constant γc∈[0,1)subscript𝛾𝑐01\\gamma_{c}\\in[0,1), the product-form value functions Qπsubscript𝑄𝜋Q_{\\pi} and Vπsubscript𝑉𝜋V_{\\pi} subsume the classic value functions that have been underlying much of the existing RL literature, and we will use Qπγcsubscriptsuperscript𝑄subscript𝛾𝑐𝜋Q^{\\scriptscriptstyle\\gamma_{c}}_{\\pi} and Vπγcsubscriptsuperscript𝑉subscript𝛾𝑐𝜋V^{\\scriptscriptstyle\\gamma_{c}}_{\\pi} to refer to this particular form of value functions with constant discounting function.\nOn the other hand, with γ​(s)=𝟙​(s∉SS⟂)𝛾𝑠1𝑠subscriptSSperpendicular-to\\gamma(s)=\\mathds{1}(s\\not\\in\\SS_{\\perp}), the episode-wise performance Je​p​isubscript𝐽𝑒𝑝𝑖J_{epi} can be recast as the product-form value of the initial state : Je​p​i​(π)=Vπ​(s0)subscript𝐽𝑒𝑝𝑖𝜋subscript𝑉𝜋subscript𝑠0J_{epi}(\\pi)=V_{\\pi}(s_{0}) if γ​(s)=1𝛾𝑠1\\gamma(s)=1 for s∉SS⟂𝑠subscriptSSperpendicular-tos\\not\\in\\SS_{\\perp} and γ​(s)=0𝛾𝑠0\\gamma(s)=0 for s∈SS⟂𝑠subscriptSSperpendicular-tos\\in\\SS_{\\perp}. We will call the function γ​(s)=𝟙​(s∉SS⟂)𝛾𝑠1𝑠subscriptSSperpendicular-to\\gamma(s)=\\mathds{1}(s\\not\\in\\SS_{\\perp}), the episodic discounting function. See Appendix A for more discussions on the formulation choices behind the MDP model. Reinforcement Learning (RL).\nIn continual RL, we are given a decision task modeled by an ergodic MDP ℳDsubscriptℳ𝐷\\mathcal{M}_{D}, and the goal is to find good policy with respect to the steady-state performance Ja​v​gsubscript𝐽𝑎𝑣𝑔J_{avg} through a single continual rollout of ℳDsubscriptℳ𝐷\\mathcal{M}_{D}. In episodic RL, the decision task ℳDsubscriptℳ𝐷\\mathcal{M}_{D} is a finite-horizon MDP with terminal states, and the goal is to optimize the episode-wise performance Je​p​isubscript𝐽𝑒𝑝𝑖J_{epi} through repeatedly rolling out ℳDsubscriptℳ𝐷\\mathcal{M}_{D} from the beginning. In this case, a special resetting procedure will intervene the learning process to start a new decision episode upon the end of the last . A common and basic idea, for both continual and episodic RL algorithms, is to use the rollout data to optimize a parameterized policy function π​(s,a;θ)𝜋𝑠𝑎𝜃\\pi(s,a;\\theta) with respect to a surrogate objective J~​(θ)~𝐽𝜃\\tilde{J}(\\theta) via the stochastic gradient method. At a update time t𝑡t, the gradient ∇θJ~subscript∇𝜃~𝐽\\nabla_{\\theta}\\tilde{J} is approximately computed as a sample mean of some computable function F𝐹F over a “mini-batch” 𝒟tsubscript𝒟𝑡\\mathcal{D}_{t}, with\n∇θJ~​(θt)≈1|𝒟t|​∑(s,a)∈𝒟tF​(s,a,θt)subscript∇𝜃~𝐽subscript𝜃𝑡1subscript𝒟𝑡subscript𝑠𝑎subscript𝒟𝑡𝐹𝑠𝑎subscript𝜃𝑡\\nabla_{\\theta}\\tilde{J}(\\theta_{t})\\approx\\frac{1}{|\\mathcal{D}_{t}|}\\sum_{(s,a)\\in\\mathcal{D}_{t}}F(s,a,\\theta_{t}), where 𝒟tsubscript𝒟𝑡\\mathcal{D}_{t} is a selected subset of all the rollout data up to time t𝑡t. For example, policy gradient algorithms, as a family of widely used RL algorithms, work on policy functions π​(s,a;θ)𝜋𝑠𝑎𝜃\\pi(s,a;\\theta) that are directly differentiable, and typically choose J~p​g​(θ)≐𝔼s0∼ρ0[Vπ​(θ)γc​(s0)]approaches-limitsubscript~𝐽𝑝𝑔𝜃subscript𝔼similar-tosubscript𝑠0subscript𝜌0subscriptsuperscript𝑉subscript𝛾𝑐𝜋𝜃subscript𝑠0\\tilde{J}_{pg}(\\theta)\\doteq\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}s_{0}\\sim\\rho_{0}\\end{subarray}}[V^{\\scriptscriptstyle\\gamma_{c}}_{\\scriptscriptstyle\\pi(\\theta)}(s_{0})]\n 111\nTo simplify notations we will write ρθsubscript𝜌𝜃\\rho_{\\theta}, Qθsubscript𝑄𝜃Q_{\\theta}, Vθsubscript𝑉𝜃V_{\\theta}, J​(θ)𝐽𝜃J(\\theta) for ρπ​(θ)subscript𝜌𝜋𝜃\\rho_{\\pi(\\theta)}, Qπ​(θ)subscript𝑄𝜋𝜃Q_{\\pi(\\theta)}, Vπ​(θ)subscript𝑉𝜋𝜃V_{\\pi(\\theta)}, J​(π​(θ))𝐽𝜋𝜃J(\\pi(\\theta)) from now on.\n\nin episodic tasks as the surrogate objective, whose gradient can be estimated by Fp​g​(s,a,θ)≐Qθγc^​(s,a)​∇log⁡π​(s,a;θ)approaches-limitsubscript𝐹𝑝𝑔𝑠𝑎𝜃^subscriptsuperscript𝑄subscript𝛾𝑐𝜃𝑠𝑎∇𝜋𝑠𝑎𝜃F_{pg}(s,a,\\theta)\\doteq\\widehat{Q^{\\scriptscriptstyle\\gamma_{c}}_{\\theta}}(s,a)\\nabla\\log\\pi(s,a;\\theta), where Qθγc^​(s,a)^subscriptsuperscript𝑄subscript𝛾𝑐𝜃𝑠𝑎\\widehat{Q^{\\scriptscriptstyle\\gamma_{c}}_{\\theta}}(s,a) is some practical estimation of Qθγc​(s,a)subscriptsuperscript𝑄subscript𝛾𝑐𝜃𝑠𝑎Q^{\\scriptscriptstyle\\gamma_{c}}_{\\theta}(s,a) for the specific (s,a)∈𝒟t𝑠𝑎subscript𝒟𝑡(s,a)\\in\\mathcal{D}_{t}.\nSubstituting J~p​gsubscript~𝐽𝑝𝑔\\tilde{J}_{pg} and Fp​gsubscript𝐹𝑝𝑔F_{pg} to the general RL algorithmic framework above, yields where the equality part in (3) is known as the classic policy gradient theorem . Policy gradient algorithms illustrate a general disparity observed in episodic RL between the “desired” data distribution and the data actually collected. Specifically, according to (3), the policy gradient should be estimated by rolling out an episode using π​(θ)𝜋𝜃\\pi(\\theta) then summing over (γc)τ⋅Fp​g⋅superscriptsubscript𝛾𝑐𝜏subscript𝐹𝑝𝑔(\\gamma_{c})^{\\tau}\\cdot F_{pg} across all steps τ𝜏\\tau in the episode, which collectively provide one sample point to the right-hand side of (3). Many policy gradient algorithms indeed work this way [ref]5 6. However, some modern policy gradient algorithms, such as A3C 4 or the variant of REINFORCE as described in , compute the policy gradient based on data only from a small time window, much smaller than the average episode length. Such an “online” approach [ref]5 has witnessed remarkable empirical success in practice 4. A popular explanation for the disparity above is to re-arrange the sum ∑τ=0∞(γc)τ​∑sτρθ(τ)​(sτ)superscriptsubscript𝜏0superscriptsubscript𝛾𝑐𝜏subscriptsubscript𝑠𝜏subscriptsuperscript𝜌𝜏𝜃subscript𝑠𝜏\\sum_{\\tau=0}^{\\infty}~{}(\\gamma_{c})^{\\tau}\\sum_{s_{\\tau}}\\rho^{\\scriptscriptstyle(\\tau)}_{\\theta}(s_{\\tau}) in (3) into ∑s(∑τ=0∞(γc)τ​ρθ(τ)​(s))subscript𝑠superscriptsubscript𝜏0superscriptsubscript𝛾𝑐𝜏subscriptsuperscript𝜌𝜏𝜃𝑠\\sum_{s}\\big{(}\\sum_{\\tau=0}^{\\infty}(\\gamma_{c})^{\\tau}\\rho^{\\scriptscriptstyle(\\tau)}_{\\theta}(s)\\big{)}, which is a weighted sum over states, thus can be interpreted as an expectation over a state distribution that we will call it the episode-wise visitation distribution μπγc​(s)≐∑τ=0∞(γc)τ​ρπ(τ)​(s)/Zapproaches-limitsuperscriptsubscript𝜇𝜋subscript𝛾𝑐𝑠superscriptsubscript𝜏0superscriptsubscript𝛾𝑐𝜏subscriptsuperscript𝜌𝜏𝜋𝑠𝑍\\mu_{\\pi}^{\\scriptscriptstyle\\gamma_{c}}(s)\\doteq\\sum_{\\tau=0}^{\\infty}(\\gamma_{c})^{\\tau}\\rho^{\\scriptscriptstyle(\\tau)}_{\\pi}(s)/Z  6 , where Z𝑍Z is a normalizing term. However, the visitation-distribution interpretation cannot explain why a single rollout data point stsubscript𝑠𝑡s_{t} can serve as a faithful sample of μπγcsubscriptsuperscript𝜇subscript𝛾𝑐𝜋\\mu^{\\scriptscriptstyle\\gamma_{c}}_{\\pi}. For γc<1subscript𝛾𝑐1\\gamma_{c}<1, we know that stsubscript𝑠𝑡s_{t} is just biased to μπγcsubscriptsuperscript𝜇subscript𝛾𝑐𝜋\\mu^{\\scriptscriptstyle\\gamma_{c}}_{\\pi} ; for γc=1subscript𝛾𝑐1\\gamma_{c}=1, we have μπ1∝𝔼π[∑t𝟙​(st=s)]proportional-tosubscriptsuperscript𝜇1𝜋subscript𝔼𝜋subscript𝑡1subscript𝑠𝑡𝑠\\mu^{1}_{\\pi}\\propto\\operatorname*{\\mathbb{E}}_{\\begin{subarray}{c}\\pi\\end{subarray}}[\\sum_{t}\\mathds{1}(s_{t}=s)], which justifies the practice of taking long-run average across multiple episodes [ref]5 6, but still cannot explain why a single step can represent this long-run average 4 . Importantly, we remark that the aforementioned disparity between desired data and actual data is observed not only in policy gradient algorithms, but also in other policy-based algorithms like PPO8, and in value-based and off-policy algorithms like Q-Learning2  too. The disparity between theory and practice in data collection is currently a general issue in the RL framework thus discussed (which subsumes all these algorithms, see Appendix B for more details)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Pybullet gymperium.",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Dynamic programming and optimal control, volume 1.",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Athena scientific Belmont, MA",
+      "authors": "D. P. Bertsekas."
+    },
+    {
+      "index": 2,
+      "title": "Openai gym.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.01540",
+      "authors": "G. Brockman, V. Cheung, L. Pettersson, J. Schneider, J. Schulman, J. Tang, and W. Zaremba."
+    },
+    {
+      "index": 3,
+      "title": "Off-policy actor-critic.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "arXiv preprint arXiv:1205.4839",
+      "authors": "T. Degris, M. White, and R. S. Sutton."
+    },
+    {
+      "index": 4,
+      "title": "Benchmarking Deep Reinforcement Learning for Continuous Control",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Y. Duan, X. Chen, R. Houthooft, J. Schulman, and P. Abbeel.",
+      "orig_title": "Benchmarking deep reinforcement learning for continuous control.",
+      "paper_id": "1604.06778v3"
+    },
+    {
+      "index": 5,
+      "title": "Addressing Function Approximation Error in Actor-Critic Methods",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.09477",
+      "authors": "S. Fujimoto, H. Van Hoof, and D. Meger.",
+      "orig_title": "Addressing function approximation error in actor-critic methods.",
+      "paper_id": "1802.09477v3"
+    },
+    {
+      "index": 6,
+      "title": "Continuous Deep Q-Learning with Model-based Acceleration",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Machine Learning",
+      "authors": "S. Gu, T. Lillicrap, I. Sutskever, and S. Levine.",
+      "orig_title": "Continuous deep q-learning with model-based acceleration.",
+      "paper_id": "1603.00748v1"
+    },
+    {
+      "index": 7,
+      "title": "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "T. Haarnoja, A. Zhou, P. Abbeel, and S. Levine.",
+      "orig_title": "Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor.",
+      "paper_id": "1801.01290v2"
+    },
+    {
+      "index": 8,
+      "title": "A natural policy gradient.",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Advances in neural information processing systems",
+      "authors": "S. M. Kakade."
+    },
+    {
+      "index": 9,
+      "title": "Continuous control with deep reinforcement learning.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1509.02971",
+      "authors": "T. P. Lillicrap, J. J. Hunt, A. Pritzel, N. Heess, T. Erez, Y. Tassa, D. Silver, and D. Wierstra."
+    },
+    {
+      "index": 10,
+      "title": "Simulation-based optimization of markov reward processes.",
+      "abstract": "",
+      "year": "2001",
+      "venue": "IEEE Transactions on Automatic Control",
+      "authors": "P. Marbach and J. N. Tsitsiklis."
+    },
+    {
+      "index": 11,
+      "title": "Markov chains and stochastic stability.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Springer Science & Business Media",
+      "authors": "S. P. Meyn and R. L. Tweedie."
+    },
+    {
+      "index": 12,
+      "title": "Human-level control through deep reinforcement learning.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature",
+      "authors": "V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G. Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski, et al."
+    },
+    {
+      "index": 13,
+      "title": "Asynchronous methods for deep reinforcement learning.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International conference on machine learning",
+      "authors": "V. Mnih, A. P. Badia, M. Mirza, A. Graves, T. Lillicrap, T. Harley, D. Silver, and K. Kavukcuoglu."
+    },
+    {
+      "index": 14,
+      "title": "Time Limits in Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1712.00378",
+      "authors": "F. Pardo, A. Tavakoli, V. Levdik, and P. Kormushev.",
+      "orig_title": "Time limits in reinforcement learning.",
+      "paper_id": "1712.00378v4"
+    },
+    {
+      "index": 15,
+      "title": "Trust Region Policy Optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning",
+      "authors": "J. Schulman, S. Levine, P. Abbeel, M. Jordan, and P. Moritz.",
+      "orig_title": "Trust region policy optimization.",
+      "paper_id": "1502.05477v5"
+    },
+    {
+      "index": 16,
+      "title": "Equivalence Between Policy Gradients and Soft Q-Learning",
+      "abstract": "",
+      "year": "2017a",
+      "venue": "arXiv preprint arXiv:1704.06440",
+      "authors": "J. Schulman, X. Chen, and P. Abbeel.",
+      "orig_title": "Equivalence between policy gradients and soft q-learning.",
+      "paper_id": "1704.06440v4"
+    },
+    {
+      "index": 17,
+      "title": "Proximal policy optimization algorithms.",
+      "abstract": "",
+      "year": "2017b",
+      "venue": "arXiv preprint arXiv:1707.06347",
+      "authors": "J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov."
+    },
+    {
+      "index": 18,
+      "title": "Basics of applied stochastic processes.",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Springer Science & Business Media",
+      "authors": "R. Serfozo."
+    },
+    {
+      "index": 19,
+      "title": "Deterministic policy gradient algorithms.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICML",
+      "authors": "D. Silver, G. Lever, N. Heess, T. Degris, D. Wierstra, and M. Riedmiller."
+    },
+    {
+      "index": 20,
+      "title": "The predictron: End-to-end learning and planning.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "D. Silver, H. van Hasselt, M. Hessel, T. Schaul, A. Guez, T. Harley, G. Dulac-Arnold, D. Reichert, N. Rabinowitz, A. Barreto, et al."
+    },
+    {
+      "index": 21,
+      "title": "A new q (lambda) with interim forward view and monte carlo equivalence.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conference on Machine Learning",
+      "authors": "R. Sutton, A. R. Mahmood, D. Precup, and H. Hasselt."
+    },
+    {
+      "index": 22,
+      "title": "Td models: modeling the world at a mixture of time scales.",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Twelfth International Conference on Machine Learning",
+      "authors": "R. S. Sutton."
+    },
+    {
+      "index": 23,
+      "title": "Reinforcement learning: An introduction.",
+      "abstract": "",
+      "year": "2018",
+      "venue": "MIT press",
+      "authors": "R. S. Sutton and A. G. Barto."
+    },
+    {
+      "index": 24,
+      "title": "Policy gradient methods for reinforcement learning with function approximation.",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Advances in neural information processing systems",
+      "authors": "R. S. Sutton, D. A. McAllester, S. P. Singh, and Y. Mansour."
+    },
+    {
+      "index": 25,
+      "title": "Horde: a scalable real-time architecture for learning knowledge from unsupervised sensorimotor interaction.",
+      "abstract": "",
+      "year": "2011",
+      "venue": "The 10th International Conference on Autonomous Agents and Multiagent Systems",
+      "authors": "R. S. Sutton, J. Modayil, M. Delp, T. Degris, P. M. Pilarski, A. White, and D. Precup."
+    },
+    {
+      "index": 26,
+      "title": "An Emphatic Approach to the Problem of Off-policy Temporal-Difference Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "R. S. Sutton, A. R. Mahmood, and M. White.",
+      "orig_title": "An emphatic approach to the problem of off-policy temporal-difference learning.",
+      "paper_id": "1503.04269v2"
+    },
+    {
+      "index": 27,
+      "title": "Bias in natural actor-critic algorithms.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International conference on machine learning",
+      "authors": "P. Thomas."
+    },
+    {
+      "index": 28,
+      "title": "On average versus discounted reward temporal-difference learning.",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Machine Learning",
+      "authors": "J. N. Tsitsiklis and B. Van Roy."
+    },
+    {
+      "index": 29,
+      "title": "Deep Reinforcement Learning with Double Q-learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "AAAI",
+      "authors": "H. Van Hasselt, A. Guez, and D. Silver.",
+      "orig_title": "Deep reinforcement learning with double q-learning.",
+      "paper_id": "1509.06461v3"
+    },
+    {
+      "index": 30,
+      "title": "Insights in reinforcement rearning: formal analysis and empirical evaluation of temporal-difference learning algorithms.",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Utrecht University",
+      "authors": "H. P. van Hasselt."
+    },
+    {
+      "index": 31,
+      "title": "Learning from delayed rewards.",
+      "abstract": "",
+      "year": "1989",
+      "venue": "King’s College, University of Cambridge",
+      "authors": "C. Watkins."
+    },
+    {
+      "index": 32,
+      "title": "Unifying Task Specification in Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "M. White.",
+      "orig_title": "Unifying task specification in reinforcement learning.",
+      "paper_id": "1609.01995v4"
+    },
+    {
+      "index": 33,
+      "title": "Simple statistical gradient-following algorithms for connectionist reinforcement learning.",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Machine learning",
+      "authors": "R. J. Williams."
+    },
+    {
+      "index": 34,
+      "title": "On convergence of emphatic temporal-difference learning.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Conference on Learning Theory",
+      "authors": "H. Yu."
+    },
+    {
+      "index": 35,
+      "title": "Generalized Off-Policy Actor-Critic",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "S. Zhang, W. Boehmer, and S. Whiteson.",
+      "orig_title": "Generalized off-policy actor-critic.",
+      "paper_id": "1903.11329v8"
+    }
+  ]
+}

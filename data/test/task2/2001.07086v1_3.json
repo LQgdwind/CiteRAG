@@ -1,0 +1,369 @@
+{
+  "paper_id": "2001.07086v1",
+  "title": "2PS: High-Quality Edge Partitioning with Two-Phase Streaming",
+  "sections": {
+    "introduction": "In recent years, distributed graph processing frameworks, such as Pregel , Giraph , GPS  and PowerGraph 2, have emerged as a way to perform complex graph analytics on massive real-world graphs on a cluster of servers. In a distributed graph processing framework, the graph analytics algorithms are provided in form of a vertex function (“think-like-a-vertex”), which is then executed iteratively until a convergence criterion is met . In doing so, the different servers execute the vertex function on disjoint parts of the graph, which are called graph partitions. While executing the vertex function, on each server, updates on vertex states are computed. If such updates refer to a vertex that is part of a different partition, communication between servers is initiated in order to synchronize the state, which is costly and increases the run-time of the graph processing task.\nTo minimize the required communication between servers that perform distributed graph processing, the goal of edge partitioning is to divide the edges of the graph into k𝑘k equally-sized partitions such that the number of vertex replications is minimized. The graph partitioning problem is known to be NP-hard, and hence, can only be solved heuristically for large graphs . The current approaches to solve the edge partitioning problem can be categorized into two groups. Random-access partitioners 8 [ref]34   5 load the complete graph into memory and then perform partitioning on it. In contrast to this, streaming partitioners     ingest the graph as a stream of edges, i.e., edge by edge, and assign each edge of the stream immediately and irrevocably to a partition. The streaming approach has the advantage that graphs can be partitioned with low memory overhead, as the edge set does not need to be kept in memory completely at any time. This way, the monetary costs of graph partitioning can be reduced, as smaller machines can be used for partitioning very large graphs. However, streaming edge partitioning yields a higher vertex replication than random-access approaches. We attribute this shortcoming to the uninformed assignment problem : A streaming partitioner only has a partial view of the graph structure. In particular, when processing an edge eisubscript𝑒𝑖e_{i} in the graph stream, the partitioner does not know the subsequent edges ei+1,ei+2,…subscript𝑒𝑖1subscript𝑒𝑖2…e_{i+1},e_{i+2},..., but still has to decide to which partition it shall assign eisubscript𝑒𝑖e_{i}. Current approaches to overcome the uninformed assignment problem either do not apply to the edge partitioning problem  or require locality in the edge stream . In this paper, we provide a method for streaming edge partitioning that overcomes the uninformed assignment problem and yields a significantly lower replication factor than existing streaming solutions. Our contributions are threefold: We propose 2PS, a novel two-phase streaming algorithm for edge partitioning. In the first phase, 2PS gathers information about the global graph structure by performing streaming clustering. In the second phase, clustering information is exploited to perform high-quality edge partitioning decisions. By combining two different algorithms, we exploit the flexibility of graph clustering and at the same time solve the more rigid edge partitioning problem. We provide a thorough theoretical analysis of 2PS regarding time and space complexity. Further, we prove that, on power-law graphs, the replication factor obtained with 2PS is strictly better than competing streaming partitioners. We perform extensive evaluations on large real-world graphs, showing the superior performance of 2PS compared to other streaming algorithms. On web graphs, 2PS yields a comparable replication factor to resource intensive random-access partitioners. The rest of the paper is organized as follows. In Section 2, we formalize the problem of edge partitioning and introduce a model of stateful streaming partitioning. In Section 3, we introduce our novel 2PS algorithm for high-quality stateful streaming edge partitioning. In Section 4, we perform a thorough theoretical analysis of 2PS regarding time and space complexity as well as replication factor on power-law graphs. In Section 5, we perform extensive evaluations of 2PS on a variety of real-world graphs. Finally, in Section 6 we discuss related work and then conclude the paper in Section 7."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Apache Giraph.",
+      "abstract": "",
+      "year": "",
+      "venue": "giraph.apache.org",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Random evolution in massive graphs.",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Handbook of massive data sets",
+      "authors": "William Aiello, Fan Chung, and Linyuan Lu."
+    },
+    {
+      "index": 2,
+      "title": "Streaming min-max hypergraph partitioning.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "28th International Conference on Neural Information Processing Systems - Volume 2",
+      "authors": "Dan Alistarh, Jennifer Iglesias, and Milan Vojnovic."
+    },
+    {
+      "index": 3,
+      "title": "BUbiNG: Massive Crawling for the Masses",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Companion Publication of the 23rd International Conference on World Wide Web",
+      "authors": "Paolo Boldi, Andrea Marino, Massimo Santini, and Sebastiano Vigna.",
+      "orig_title": "BUbiNG: Massive crawling for the masses.",
+      "paper_id": "1601.06919v1"
+    },
+    {
+      "index": 4,
+      "title": "Layered label propagation: A multiresolution coordinate-free ordering for compressing social networks.",
+      "abstract": "",
+      "year": "2011",
+      "venue": "20th international conference on World Wide Web",
+      "authors": "Paolo Boldi, Marco Rosa, Massimo Santini, and Sebastiano Vigna."
+    },
+    {
+      "index": 5,
+      "title": "The WebGraph framework I: Compression techniques.",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Thirteenth International World Wide Web Conference (WWW 2004)",
+      "authors": "Paolo Boldi and Sebastiano Vigna."
+    },
+    {
+      "index": 6,
+      "title": "Balanced graph edge partition.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "20th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+      "authors": "Florian Bourse, Marc Lelarge, and Milan Vojnovic."
+    },
+    {
+      "index": 7,
+      "title": "Recent Advances in Graph Partitioning, pages 117–158.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Springer International Publishing",
+      "authors": "Aydın Buluç, Henning Meyerhenke, Ilya Safro, Peter Sanders, and Christian Schulz."
+    },
+    {
+      "index": 8,
+      "title": "Powerlyra: Differentiated graph computation and partitioning on skewed graphs.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Tenth European Conference on Computer Systems, EuroSys ’15",
+      "authors": "Rong Chen, Jiaxin Shi, Yanzhe Chen, and Haibo Chen."
+    },
+    {
+      "index": 9,
+      "title": "Parallel hypergraph partitioning for scientific computing.",
+      "abstract": "",
+      "year": "2006",
+      "venue": "20th IEEE International Parallel Distributed Processing Symposium",
+      "authors": "Karen D. Devine, Erik G. Boman, Robert T. Heaphy, Rob H. Bisseling, and Umit V. Catalyurek."
+    },
+    {
+      "index": 10,
+      "title": "Community detection in graphs.",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Physics Reports",
+      "authors": "Santo Fortunato."
+    },
+    {
+      "index": 11,
+      "title": "Powergraph: Distributed graph-parallel computation on natural graphs.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "10th USENIX Symposium on Operating Systems Design and Implementation (OSDI 12)",
+      "authors": "Joseph E. Gonzalez, Yucheng Low, Haijie Gu, Danny Bickson, and Carlos Guestrin."
+    },
+    {
+      "index": 12,
+      "title": "Graphx: Graph processing in a distributed dataflow framework.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "11th USENIX Symposium on Operating Systems Design and Implementation (OSDI 14)",
+      "authors": "Joseph E. Gonzalez, Reynold S. Xin, Ankur Dave, Daniel Crankshaw, Michael J. Franklin, and Ion Stoica."
+    },
+    {
+      "index": 13,
+      "title": "Bounds on multiprocessing timing anomalies.",
+      "abstract": "",
+      "year": "1969",
+      "venue": "SIAM journal on Applied Mathematics",
+      "authors": "Ronald L. Graham."
+    },
+    {
+      "index": 14,
+      "title": "Distributed Edge Partitioning for Trillion-edge Graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "VLDB Endow.",
+      "authors": "Masatoshi Hanai, Toyotaro Suzumura, Wen Jun Tan, Elvis Liu, Georgios Theodoropoulos, and Wentong Cai.",
+      "orig_title": "Distributed edge partitioning for trillion-edge graphs.",
+      "paper_id": "1908.05855v2"
+    },
+    {
+      "index": 15,
+      "title": "A streaming algorithm for graph clustering.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS 2017-Wokshop on Advances in Modeling and Learning Interactions from Complex Data",
+      "authors": "Alexandre Hollocou, Julien Maudet, Thomas Bonald, and Marc Lelarge."
+    },
+    {
+      "index": 16,
+      "title": "Social hash partitioner: A scalable distributed hypergraph partitioner.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "VLDB Endow.",
+      "authors": "Igor Kabiljo, Brian Karrer, Mayank Pundir, Sergey Pupyrev, and Alon Shalita."
+    },
+    {
+      "index": 17,
+      "title": "A fast and high quality multilevel scheme for partitioning irregular graphs.",
+      "abstract": "",
+      "year": "1998",
+      "venue": "SIAM J. Sci. Comput.",
+      "authors": "George Karypis and Vipin Kumar."
+    },
+    {
+      "index": 18,
+      "title": "Cola: Optimizing stream processing applications via graph partitioning.",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Middleware 2009",
+      "authors": "Rohit Khandekar, Kirsten Hildrum, Sujay Parekh, Deepak Rajan, Joel Wolf, Kun-Lung Wu, Henrique Andrade, and Buğra Gedik."
+    },
+    {
+      "index": 19,
+      "title": "What is twitter, a social network or a news media?",
+      "abstract": "",
+      "year": "2010",
+      "venue": "19th International Conference on World Wide Web, WWW ’10",
+      "authors": "Haewoon Kwak, Changhyun Lee, Hosung Park, and Sue Moon."
+    },
+    {
+      "index": 20,
+      "title": "Graphchi: Large-scale graph computation on just a PC.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "10th USENIX Symposium on Operating Systems Design and Implementation (OSDI 12)",
+      "authors": "Aapo Kyrola, Guy Blelloch, and Carlos Guestrin."
+    },
+    {
+      "index": 21,
+      "title": "SNAP Datasets: Stanford large network dataset collection.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "snap.stanford.edu/data",
+      "authors": "Jure Leskovec and Andrej Krevl."
+    },
+    {
+      "index": 22,
+      "title": "Mosaic: Processing a trillion-edge graph on a single machine.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Twelfth European Conference on Computer Systems, EuroSys ’17",
+      "authors": "Steffen Maass, Changwoo Min, Sanidhya Kashyap, Woonhak Kang, Mohan Kumar, and Taesoo Kim."
+    },
+    {
+      "index": 23,
+      "title": "Pregel: A system for large-scale graph processing.",
+      "abstract": "",
+      "year": "2010",
+      "venue": "2010 ACM SIGMOD International Conference on Management of Data, SIGMOD ’10",
+      "authors": "Grzegorz Malewicz, Matthew H. Austern, Aart J.C Bik, James C. Dehnert, Ilan Horn, Naty Leiser, and Grzegorz Czajkowski."
+    },
+    {
+      "index": 24,
+      "title": "A scalable distributed graph partitioner.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "VLDB Endow.",
+      "authors": "Daniel Margo and Margo Seltzer."
+    },
+    {
+      "index": 25,
+      "title": "Spinner: Scalable graph partitioning in the cloud.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE 33rd International Conference on Data Engineering (ICDE)",
+      "authors": "Claudio Martella, Dionysios Logothetis, Andreas Loukas, and Georgos Siganos."
+    },
+    {
+      "index": 26,
+      "title": "HYPE: Massive Hypergraph Partitioning with Neighborhood Expansion",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 IEEE International Conference on Big Data (Big Data)",
+      "authors": "Christian Mayer, Ruben Mayer, Sukanya Bhowmik, Lukas Epple, and Kurt Rothermel.",
+      "orig_title": "Hype: Massive hypergraph partitioning with neighborhood expansion.",
+      "paper_id": "1810.11319v4"
+    },
+    {
+      "index": 27,
+      "title": "Adwise: Adaptive window-based streaming edge partitioning for high-speed graph processing.",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 IEEE 38th International Conference on Distributed Computing Systems (ICDCS)",
+      "authors": "Christian Mayer, Ruben Mayer, Muhammad Adnan Tariq, Heiko Geppert, Larissa Laich, Lukas Rieger, and Kurt Rothermel."
+    },
+    {
+      "index": 28,
+      "title": "Scalability! but at what COST?",
+      "abstract": "",
+      "year": "2015",
+      "venue": "15th Workshop on Hot Topics in Operating Systems (HotOS XV)",
+      "authors": "Frank McSherry, Michael Isard, and Derek G. Murray."
+    },
+    {
+      "index": 29,
+      "title": "Modularity and community structure in networks.",
+      "abstract": "",
+      "year": "2006",
+      "venue": "National Academy of Sciences",
+      "authors": "Mark E. J. Newman."
+    },
+    {
+      "index": 30,
+      "title": "Restreaming graph partitioning: Simple versatile algorithms for advanced balancing.",
+      "abstract": "",
+      "year": "2013",
+      "venue": "19th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, KDD ’13",
+      "authors": "Joel Nishimura and Johan Ugander."
+    },
+    {
+      "index": 31,
+      "title": "Hdrf: Stream-based partitioning for power-law graphs.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "24th ACM International on Conference on Information and Knowledge Management, CIKM ’15",
+      "authors": "Fabio Petroni, Leonardo Querzoni, Khuzaima Daudjee, Shahin Kamali, and Giorgio Iacoboni."
+    },
+    {
+      "index": 32,
+      "title": "Gps: A graph processing system.",
+      "abstract": "",
+      "year": "2013",
+      "venue": "25th International Conference on Scientific and Statistical Database Management, SSDBM",
+      "authors": "Semih Salihoglu and Jennifer Widom."
+    },
+    {
+      "index": 33,
+      "title": "Scalable edge partitioning.",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Twenty-First Workshop on Algorithm Engineering and Experiments (ALENEX)",
+      "authors": "Sebastian Schlag, Christian Schulz, Daniel Seemaier, and Darren Strash."
+    },
+    {
+      "index": 34,
+      "title": "Partitioning Trillion-edge Graphs in Minutes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE International Parallel and Distributed Processing Symposium (IPDPS)",
+      "authors": "George M. Slota, Sivasankaran Rajamanickam, Karen Devine, and Kamesh Madduri.",
+      "orig_title": "Partitioning trillion-edge graphs in minutes.",
+      "paper_id": "1610.07220v1"
+    },
+    {
+      "index": 35,
+      "title": "Streaming graph partitioning for large distributed graphs.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "18th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, KDD ’12",
+      "authors": "Isabelle Stanton and Gabriel Kliot."
+    },
+    {
+      "index": 36,
+      "title": "Parallel multilevel algorithms for hypergraph partitioning.",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of Parallel and Distributed Computing",
+      "authors": "Aleksandar Trifunović and William J. Knottenbelt."
+    },
+    {
+      "index": 37,
+      "title": "Fennel: Streaming graph partitioning for massive scale graphs.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "7th ACM International Conference on Web Search and Data Mining, WSDM ’14",
+      "authors": "Charalampos Tsourakakis, Christos Gkantsidis, Bozidar Radunovic, and Milan Vojnovic."
+    },
+    {
+      "index": 38,
+      "title": "Np-complete scheduling problems.",
+      "abstract": "",
+      "year": "1975",
+      "venue": "J. Comput. Syst. Sci.",
+      "authors": "Jeffrey D. Ullman."
+    },
+    {
+      "index": 39,
+      "title": "Speedup graph processing by graph ordering.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 International Conference on Management of Data, SIGMOD ’16",
+      "authors": "Hao Wei, Jeffrey Xu Yu, Can Lu, and Xuemin Lin."
+    },
+    {
+      "index": 40,
+      "title": "Distributed power-law graph computing: Theoretical and empirical analysis.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in Neural Information Processing Systems 27",
+      "authors": "Cong Xie, Ling Yan, Wu-Jun Li, and Zhihua Zhang."
+    },
+    {
+      "index": 41,
+      "title": "Defining and evaluating network communities based on ground-truth.",
+      "abstract": "",
+      "year": "2012",
+      "venue": "2012 IEEE 12th International Conference on Data Mining",
+      "authors": "Jaewon Yang and Jure Leskovec."
+    },
+    {
+      "index": 42,
+      "title": "Graph edge partitioning via neighborhood heuristic.",
+      "abstract": "",
+      "year": "2017",
+      "venue": "23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, KDD ’17",
+      "authors": "Chenzi Zhang, Fan Wei, Qin Liu, Zhihao Gavin Tang, and Zhenguo Li."
+    },
+    {
+      "index": 43,
+      "title": "Gridgraph: Large-scale graph processing on a single machine using 2-level hierarchical partitioning.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 USENIX Annual Technical Conference (USENIX ATC 15)",
+      "authors": "Xiaowei Zhu, Wentao Han, and Wenguang Chen."
+    }
+  ]
+}

@@ -1,0 +1,285 @@
+{
+  "paper_id": "2008.04303v1",
+  "title": "Contents",
+  "sections": {
+    "sub-logarithmic distance-2 coloring": "In this section, we extend the algorithm of Section 2 and combine it with the graph shattering technique  , which has been used extensively in recent years to get sub-logarithmic-time distributed algorithms for a large number of graph problems (mostly in the LOCAL model). By using this technique in our setting, we prove the following theorem. Theorem 1.2 (restated).\nThere is a randomized CONGEST algorithm that d2-colors a graph with Δ2+1superscriptΔ21\\Delta^{2}+1 colors in O​(log⁡Δ)+𝑁𝐷2​(log⁡n)⋅poly⁡log⁡log⁡n𝑂Δ⋅subscript𝑁𝐷2𝑛poly𝑛O(\\log\\Delta)+\\mathit{ND}_{2}(\\log n)\\cdot\\operatorname{poly}\\log\\log n rounds, with high probability. Here 𝑁𝐷2​(log⁡n)subscript𝑁𝐷2𝑛\\mathit{ND}_{2}(\\log n) is the sum of d⋅c⋅x⋅𝑑𝑐𝑥d\\cdot c\\cdot x and the time to compute a distance-222 x𝑥x-CONGEST-routable network decomposition with weak cluster diameter d𝑑d and c𝑐c cluster colors on subgraphs of size poly⁡log⁡npoly𝑛\\operatorname{poly}\\log n with node identifiers from a space of size poly⁡npoly𝑛\\operatorname{poly}n (cf. Definition 3.16 for a formal definition). The current state of the art for 𝑁𝐷2​(log⁡n)subscript𝑁𝐷2𝑛\\mathit{ND}_{2}(\\log n) is 2O​(log⁡log⁡n)superscript2𝑂𝑛2^{O(\\sqrt{\\log\\log n})} [ref]22. However, the complexity for distance-111 network decompositions that can deal with a large identifier space was improved subsequent to the submission of this manuscript to poly⁡log⁡log⁡npoly𝑛\\operatorname{poly}\\log\\log n rounds . Before the publication of  the complexity in Theorem 1.2 for distance-222 coloring matched the state of the art for distance-111 (Δ+1)Δ1(\\Delta+1)-coloring [ref]19. As the achievements of  improve the complexity for distance-111 coloring from O​(log⁡Δ)+2O​(log⁡log⁡n)𝑂Δsuperscript2𝑂𝑛O(\\log\\Delta)+2^{O(\\sqrt{\\log\\log n})} to O​(log⁡Δ)+poly⁡log⁡log⁡n𝑂Δpoly𝑛O(\\log\\Delta)+\\operatorname{poly}\\log\\log n there currently is a gap between the complexities of distance-111 and distance-222 coloring. If  (or an alternative approach) extends to distance-222 decompositions, and such an extension is very likely, it will match again. In the remaining part of the writeup we use the best known upper bound of 𝑁𝐷2​(log⁡n)=2O​(log⁡log⁡n)subscript𝑁𝐷2𝑛superscript2𝑂𝑛\\mathit{ND}_{2}(\\log n)=2^{O(\\sqrt{\\log\\log n})}. From a very high-level point of view, the rough idea of graph shattering applied to our problem is as follows. The algorithm of Section 2 consists of O​(log⁡n)𝑂𝑛O(\\log n) individual O​(1)𝑂1O(1)-round steps, where in each step, each live node gets colored with constant probability. Thus, very roughly, if we just run the algorithm for O​(log⁡Δ)𝑂ΔO(\\log\\Delta) steps, each node remains uncolored with probability at most 1/poly⁡(Δ)1polyΔ1/\\operatorname{poly}(\\Delta). Further, if nodes succeeded sufficiently independently, after O​(log⁡Δ)𝑂ΔO(\\log\\Delta) rounds, each node would only have O​(log⁡n)𝑂𝑛O(\\log n) uncolored neighbors. By combining these two properties, one can hope that after O​(log⁡Δ)𝑂ΔO(\\log\\Delta) rounds, all the remaining live nodes induce components (in G2superscript𝐺2G^{2}) of size at most polylog⁡npolylog𝑛\\operatorname{polylog}n. By adapting techniques developed in  to our G2superscript𝐺2G^{2}-coloring algorithm, we will show that this indeed (almost) is the case. We call this part of the algorithm, where we reduce the original problem to a problem on components of polylog⁡npolylog𝑛\\operatorname{polylog}n size, the preshattering phase of our algorithm. The remaining problem that we need to solve on the components of size polylog⁡npolylog𝑛\\operatorname{polylog}n is a list coloring problem. Because these problems for each component are on much smaller graphs, they can be solved efficiently by using the best known deterministic algorithm. For the specific setting, where we have small components, but each node still has an ID from the original large ID space, the best known deterministic CONGEST algorithm (that can tolerate such a large ID space and works for G2superscript𝐺2G^{2}) can be obtained by combining a network decomposition algorithm of Ghaffari and Portmann [ref]22 with a recent deterministic CONGEST coloring algorithm of Bamberger, Kuhn, and Maus . It requires 2O​(log⁡N)=2O​(log⁡log⁡n)superscript2𝑂𝑁superscript2𝑂𝑛2^{O(\\sqrt{\\log N})}=2^{O(\\sqrt{\\log\\log n})} time, where N=polylog⁡n𝑁polylog𝑛N=\\operatorname{polylog}n is the maximum component size. We call this second phase of solving the remaining list coloring instances on the components the postshattering phase. While the general outline of the algorithm is relatively standard and largely follows the ideas of the distance-1 coloring algorithm for the LOCAL model in , there are various challenges that we have to cope with in order to apply the idea in the CONGEST model and to the d2-coloring problem.\nIn  [ref]19,\nthe algorithm for the preshattering phase is very simple: In each step of the algorithm, every live node tries a uniformly random color from its current list of available colors. As we have seen in Sec. 2, we cannot run this algorithm in the d2-coloring setting as it is not possible for a live node to learn its list of available colors (i.e., learn the colors already chosen by its 2-neighbors). We would therefore like to show that the much more involved randomized algorithm of Sec. 2 also has the same shattering properties as the basic “choose-a-random-available-color” algorithm. Unfortunately, this is not obvious and we use a multi-stage algorithm to prove what we need. Greatly simplified, we do the following. We first show that O​(log⁡Δ)𝑂ΔO(\\log\\Delta) rounds of an adaptation of the algorithm of Sec. 2 suffice to (essentially) reduce the maximum degree of the subgraph of G2superscript𝐺2G^{2} induced by the live nodes to O​(log⁡n)𝑂𝑛O(\\log n). At this point, it is possible for each live node to learn a sufficiently large list of available colors in O​(log⁡Δ)𝑂ΔO(\\log\\Delta) rounds and we can now indeed run the basic preshattering algorithm of  to reduce the problem to a problem on polylog⁡npolylog𝑛\\operatorname{polylog}n-size components. For the postshattering phase, while we only have components of poly⁡log⁡npoly𝑛\\operatorname{poly}\\log n size, the input to the problem is still large because each node still has an ID of size O​(log⁡n)𝑂𝑛O(\\log n) bits and because each node has a color list consisting of up to O​(log⁡n)𝑂𝑛O(\\log n) colors from a range of size O​(Δ2)𝑂superscriptΔ2O(\\Delta^{2}). In order to have an efficient CONGEST algorithm for the problem, we have to reduce both the ID space and the color space of the remaining components. It is sufficient to obtain new node IDs that are unique up to distance poly⁡log⁡log⁡npoly𝑛\\operatorname{poly}\\log\\log n. We can obtain such IDs with O​(log⁡log⁡n)𝑂𝑛O(\\log\\log n) bits by first applying the network decomposition algorithm of [ref]22 and then assigning unique labels in each cluster. For reducing the color space, we show that in each cluster of the network decomposition, we can efficiently (and deterministically) find a renaming of the colors such that for every node v𝑣v, all colors in v𝑣v’s list are mapped to distinct new colors and such that the colors are from a space of size poly⁡log⁡npoly𝑛\\operatorname{poly}\\log n. For each of the steps, the implementation in G2superscript𝐺2G^{2} rather than in G𝐺G adds some additional complications. In the following, we give a detailed overview over all the steps of our algorithm. Before going into the details of the algorithm, let us note that some regimes of ΔΔ\\Delta in relation to n𝑛n greatly simplify the problem. If log⁡n=O​(log⁡Δ)𝑛𝑂Δ\\log n=O(\\log\\Delta), using the O​(log⁡n)𝑂𝑛O(\\log n)-time algorithm of Section 2 already yields the claimed time complexity. The problem is also simpler when Δ≤log⁡n⋅poly⁡log⁡log⁡nΔ⋅𝑛poly𝑛\\Delta\\leq\\log n\\cdot\\operatorname{poly}\\log\\log n, as we can then essentially simulate the preshattering algorithm of  for G𝐺G on G2superscript𝐺2G^{2} and combine it with our postshattering algorithm from Section 3.2 (for details, see Appendix C). From now on, in Section 3.1, we assume to be out of those simpler regimes, i.e., we assume throughout that Δ=2o​(log⁡n)∩Ω~​(log⁡n)Δsuperscript2𝑜𝑛~Ω𝑛\\Delta=2^{o(\\log n)}\\cap\\tilde{\\Omega}(\\log n) holds."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A fast and simple randomized parallel algorithm for the maximal independent set problem",
+      "abstract": "",
+      "year": "1986",
+      "venue": "J. of Algorithms",
+      "authors": "N. Alon, L. Babai, and A. Itai"
+    },
+    {
+      "index": 1,
+      "title": "Sublinear algorithms for (Δ+1) vertex coloring",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM-SIAM Symposium on Discrete Algorithms (SODA)",
+      "authors": "S. Assadi, Y. Chen, and S. Khanna"
+    },
+    {
+      "index": 2,
+      "title": "Network decomposition and locality in distributed computation",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "B. Awerbuch, A. V. Goldberg, M. Luby, and S. A. Plotkin"
+    },
+    {
+      "index": 3,
+      "title": "Efficient deterministic distributed coloring with small bandwidth",
+      "abstract": "",
+      "year": "2020",
+      "venue": "39th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "P. Bamberger, F. Kuhn, and Y. Maus"
+    },
+    {
+      "index": 4,
+      "title": "Distributed approximation on power graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "39th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "R. Bar-Yehuda, K. Censor-Hillel, Y. Maus, S. Pai, and S. V. Pemmaraju"
+    },
+    {
+      "index": 5,
+      "title": "Deterministic (Δ + 1)-coloring in sublinear (in Δ) time in static, dynamic and faulty networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "34th Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "L. Barenboim"
+    },
+    {
+      "index": 6,
+      "title": "Deterministic distributed vertex coloring in polylogarithmic time",
+      "abstract": "",
+      "year": "2010",
+      "venue": "29th Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "L. Barenboim and M. Elkin"
+    },
+    {
+      "index": 7,
+      "title": "Distributed Graph Coloring: Fundamentals and Recent Developments",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Morgan & Claypool Publishers",
+      "authors": "L. Barenboim and M. Elkin"
+    },
+    {
+      "index": 8,
+      "title": "Locally-Iterative Distributed (Δ+1)-Coloring below Szegedy-Vishwanathan Barrier, and Applications to Self-Stabilization and to Restricted-Bandwidth Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "37th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "L. Barenboim, M. Elkin, and U. Goldenberg",
+      "orig_title": "Locally-iterative distributed (Δ+1)-coloring below Szegedy-Vishwanathan barrier, and applications to self-stabilization and to restricted-bandwidth models",
+      "paper_id": "1712.00285v2"
+    },
+    {
+      "index": 9,
+      "title": "Distributed (Δ+1)-coloring in linear (in Δ) time",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIAM J. on Computing",
+      "authors": "L. Barenboim, M. Elkin, and F. Kuhn"
+    },
+    {
+      "index": 10,
+      "title": "The locality of distributed symmetry breaking",
+      "abstract": "",
+      "year": "2012",
+      "venue": "53th Symp. on Foundations of Computer Science (FOCS)",
+      "authors": "L. Barenboim, M. Elkin, S. Pettie, and J. Schneider"
+    },
+    {
+      "index": 11,
+      "title": "An algorithmic approach to the Lovaśz local lemma",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Random Structures & Algorithms",
+      "authors": "J. Beck"
+    },
+    {
+      "index": 12,
+      "title": "Derandomizing local distributed algorithms under bandwidth restrictions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "31st Symp. on Distributed Computing (DISC)",
+      "authors": "K. Censor-Hillel, M. Parter, and G. Schwartzman"
+    },
+    {
+      "index": 13,
+      "title": "An optimal distributed (Δ+1)-coloring algorithm?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Symposium on Theory of Computing (STOC)",
+      "authors": "Y. J. Chang, W. Li, and S. Pettie"
+    },
+    {
+      "index": 14,
+      "title": "A spatial-reuse TDMA/FDMA for mobile multi-hop radio networks",
+      "abstract": "",
+      "year": "1985",
+      "venue": "4th IEEE Int. Conf. on Computer Communications (INFOCOM)",
+      "authors": "I. Chlamtac and S. Kutten"
+    },
+    {
+      "index": 15,
+      "title": "Deterministic Distributed Dominating Set Approximation in the CONGEST Model",
+      "abstract": "",
+      "year": "2019",
+      "venue": "38th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "J. Deurer, F. Kuhn, and Y. Maus",
+      "orig_title": "Deterministic distributed dominating set approximation in the CONGEST model",
+      "paper_id": "1905.10775v2"
+    },
+    {
+      "index": 16,
+      "title": "(2​Δ−1)-edge-coloring is much easier than maximal matching in the distributed setting",
+      "abstract": "",
+      "year": "2015",
+      "venue": "26th ACM-SIAM Symp. on Discrete Algorithms (SODA)",
+      "authors": "M. Elkin, S. Pettie, and H.-H. Su"
+    },
+    {
+      "index": 17,
+      "title": "Distributed testing of distance-k colorings",
+      "abstract": "",
+      "year": "2020",
+      "venue": "27th Coll. on Structural Information and Communication Complexity (SIROCCO)",
+      "authors": "P. Fraigniaud, M. M. Halldórsson, and A. Nolin"
+    },
+    {
+      "index": 18,
+      "title": "Distributed maximal independent set using small messages",
+      "abstract": "",
+      "year": "2019",
+      "venue": "30th ACM-SIAM Symposium on Discrete Algorithms (SODA)",
+      "authors": "M. Ghaffari"
+    },
+    {
+      "index": 19,
+      "title": "Improved Deterministic Network Decomposition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "M. Ghaffari, C. Grunau, and V. Rozhoň",
+      "orig_title": "Improved deterministic network decomposition",
+      "paper_id": "2007.08253v1"
+    },
+    {
+      "index": 20,
+      "title": "On derandomizing local distributed algorithms",
+      "abstract": "",
+      "year": "2018",
+      "venue": "59th Symp. on Foundations of Computer Science (FOCS)",
+      "authors": "M. Ghaffari, D. G. Harris, and F. Kuhn"
+    },
+    {
+      "index": 21,
+      "title": "Improved Network Decompositions using Small Messages with Applications on MIS, Neighborhood Covers, and Beyond",
+      "abstract": "",
+      "year": "2019",
+      "venue": "33rd Int. Symp. on Distributed Computing (DISC)",
+      "authors": "M. Ghaffari and J. Portmann",
+      "orig_title": "Improved network decompositions using small messages with applications on MIS, neighborhood covers, and beyond",
+      "paper_id": "1908.03500v1"
+    },
+    {
+      "index": 22,
+      "title": "Distance-2 Coloring in the CONGEST Model",
+      "abstract": "",
+      "year": "2020",
+      "venue": "39th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "M. M. Halldórsson, F. Kuhn, and Y. Maus",
+      "orig_title": "Distance-2 coloring in the CONGEST model",
+      "paper_id": "2005.06528v1"
+    },
+    {
+      "index": 23,
+      "title": "Distributed (Δ+1)-coloring in sublogarithmic rounds",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Symposium on Theory of Computing (STOC)",
+      "authors": "D. G. Harris, J. Schneider, and H.-H. Su"
+    },
+    {
+      "index": 24,
+      "title": "Simple distributed Δ+1-coloring of graphs",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Inf. Process. Lett.",
+      "authors": "Ö. Johansson"
+    },
+    {
+      "index": 25,
+      "title": "Faster deterministic distributed coloring through recursive list coloring",
+      "abstract": "",
+      "year": "2020",
+      "venue": "31st ACM-SIAM Symp. on Discrete Algorithms (SODA)",
+      "authors": "F. Kuhn"
+    },
+    {
+      "index": 26,
+      "title": "On the complexity of distributed graph coloring",
+      "abstract": "",
+      "year": "2006",
+      "venue": "25th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "F. Kuhn and R. Wattenhofer"
+    },
+    {
+      "index": 27,
+      "title": "Locality in distributed graph algorithms",
+      "abstract": "",
+      "year": "1992",
+      "venue": "SIAM Journal on Computing",
+      "authors": "N. Linial"
+    },
+    {
+      "index": 28,
+      "title": "A simple parallel algorithm for the maximal independent set problem",
+      "abstract": "",
+      "year": "1986",
+      "venue": "SIAM J. on Computing",
+      "authors": "M. Luby"
+    },
+    {
+      "index": 29,
+      "title": "MAC layer and coloring",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Algorithms for Sensor and Ad Hoc Networks",
+      "authors": "S. Mecke"
+    },
+    {
+      "index": 30,
+      "title": "Distributed Computing: A Locality-Sensitive Approach",
+      "abstract": "",
+      "year": "2000",
+      "venue": "SIAM",
+      "authors": "D. Peleg"
+    },
+    {
+      "index": 31,
+      "title": "Polylogarithmic-Time Deterministic Network Decomposition and Distributed Derandomization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Symposium on Theory of Computing (STOC)",
+      "authors": "V. Rozhon and M. Ghaffari",
+      "orig_title": "Polylogarithmic-time deterministic network decomposition and distributed derandomization",
+      "paper_id": "1907.10937v2"
+    },
+    {
+      "index": 32,
+      "title": "A new technique for distributed symmetry breaking",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ACM Symposium on Principles of Distributed Computing (PODC)",
+      "authors": "J. Schneider and R. Wattenhofer"
+    }
+  ]
+}

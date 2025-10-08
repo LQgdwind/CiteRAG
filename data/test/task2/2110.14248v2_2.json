@@ -1,0 +1,515 @@
+{
+  "paper_id": "2110.14248v2",
+  "title": "Learning Domain Invariant Representations in Goal-conditioned Block MDPs",
+  "sections": {
+    "introduction": "Deep Reinforcement Learning (RL) has achieved remarkable success in solving high-dimensional Markov Decision Processes (MDPs) problems, e.g., Alpha Zero  for Go, DQN [ref]2 for Atari games and SAC [ref]3 for locomotion control. However, current RL algorithms requires massive amounts of trial and error to learn  [ref]2 [ref]3. They also tend to overfit to specific environments and often fail to generalize beyond the environment they were trained on . Unfortunately, this characteristic limits the applicability of RL algorithms for many real world applications. Deployed RL agents, e.g. robots in the field, will often face environment changes in their input such as different backgrounds, lighting conditions or object shapes [ref]5. Many of these changes are often spurious and unrelated to the underlying task, e.g. control. However, RL agents trained without experiencing these changes are sensitive to the changes and often perform poorly in practice [ref]5  . In our work, we seek to tackle changing, diverse problems with goal-conditioned RL agents. Goal-conditioned Reinforcement Learning is a popular research topic as its formulation and method is practical for many robot learning problems  . In goal-conditioned MDPs, the agent has to achieve a desired goal state g𝑔g which is sampled from a prior distribution. The agent should be able to achieve not only the training goals but also new test-time goals. Moreover, in practice, goal-conditioned RL agents often receive high-dimensional inputs for both observations and goals 0 1. Thus, it is important to ensure that the behaviour of goal-conditioned RL agents is invariant to any irrelevant environmental changes in the input at test time.\nPrevious work  tries to address these problems via model bisimulation metric 2.\nThese methods aim to acquire a minimal representation which is invariant to irrelevant environment factors. However, as goal-conditioned MDPs are a family of MDPs indexed by the goals, it is inefficient for these methods to acquire the model bisimulation representation for every possible goal, especially in high-dimensional continuous goal spaces (such as images). In our work, we instead choose to optimize a surrogate objective to learn the invariant policy. Our main contributions are: We formulate the Goal-conditioned Block MDPs (GBMDPs) to study domain generalization in the goal-conditioned reinforcement learning setting (Section 2), and propose a general theory characterizing how well a policy generalizes to unseen environments (Section 3.1). We propose a theoretically-motivated algorithm based on optimizing a surrogate objective, perfect alignment, with aligned data (Section 3.2). We then describe a practical implementation based on Skew-Fit 3 to achieve the objective (Section 3.3). Empirically, our experiments for a sawyer arm robot simulation with visual observations and goals demonstrates that our proposed method achieves state-of-the-art performance compared to data augmentation and bisimulation baselines at generalizing to unseen test environments in goal-conditioned tasks (Section 4)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Mastering the game of go without human knowledge",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Nature",
+      "authors": "David Silver, Julian Schrittwieser, Karen Simonyan, Aj Antonoglou, Ioannis abd Huang, Arthur Guez, Thomas Hubert, Lucas Baker, Matthew Lai, Adrian Bolton, Yutian Chen, Timothy Lillicrap, Fan Hui, Laurent Sifre, George van den Driessche, Thore Graepel, and Demis Hassabis"
+    },
+    {
+      "index": 1,
+      "title": "Human-level control through deep reinforcement learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature",
+      "authors": "Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei A Rusu, Joel Veness, Marc Bellemare, Alex Graves, Martin Riedmiller, Andreas Fidjeland, Georg strovski, Stig Petersen, Charles Beattie, Amir Sadik, Ioannis Antonoglou, Helen King, Dharshan umaran, Daan Wierstra, Shane Legg, and Demis Hassabis"
+    },
+    {
+      "index": 2,
+      "title": "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine",
+      "orig_title": "Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor",
+      "paper_id": "1801.01290v2"
+    },
+    {
+      "index": 3,
+      "title": "Assessing Generalization in Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Charles Packer, Katelyn Gao, Jernej Kos, Philipp Krähenbühl, Vladlen Koltun, and Dawn Song",
+      "orig_title": "Assessing generalization in deep reinforcement learning",
+      "paper_id": "1810.12282v2"
+    },
+    {
+      "index": 4,
+      "title": "Efficient adaptation for end-to-end vision-based robotic manipulation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2004.10190",
+      "authors": "Ryan Julian, Benjamin Swanson, Gaurav S Sukhatme, Sergey Levine, Chelsea Finn, and Karol Hausman"
+    },
+    {
+      "index": 5,
+      "title": "Invariant Causal Prediction for Block MDPs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Amy Zhang, Clare Lyle, Shagun Sodhani, Angelos Filos, Marta Kwiatkowska, Joelle Pineau, Yarin Gal, and Doina Precup",
+      "orig_title": "Invariant causal prediction for block MDPs",
+      "paper_id": "2003.06016v2"
+    },
+    {
+      "index": 6,
+      "title": "Learning Invariant Representations for Reinforcement Learning without Reconstruction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.10742",
+      "authors": "Amy Zhang, Rowan McAllister, Roberto Calandra, Yarin Gal, and Sergey Levine",
+      "orig_title": "Learning invariant representations for reinforcement learning without reconstruction",
+      "paper_id": "2006.10742v2"
+    },
+    {
+      "index": 7,
+      "title": "Hindsight experience replay",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Andrychowicz Marcin, Wolski Filip, Ray Alex, Schneider Jonas, Fong Rachel, Welinder Peter, McGrew Bob, Tobin Josh, Abbeel Pieter, and Zaremba Wojciech"
+    },
+    {
+      "index": 8,
+      "title": "C-learning: Learning to achieve goals via recursive classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2011.08909",
+      "authors": "Benjamin Eysenbach, Ruslan Salakhutdinov, and Sergey Levine"
+    },
+    {
+      "index": 9,
+      "title": "Planning from Pixels using Inverse Dynamics Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2012.02419",
+      "authors": "Keiran Paster, Sheila A McIlraith, and Jimmy Ba",
+      "orig_title": "Planning from pixels using inverse dynamics models",
+      "paper_id": "2012.02419v1"
+    },
+    {
+      "index": 10,
+      "title": "Unsupervised Learning of Goal Spaces for Intrinsically Motivated Goal Exploration",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Alexandre Péré, Sébastien Forestier, Olivier Sigaud, and Pierre-Yves Oudeyer",
+      "orig_title": "Unsupervised learning of goal spaces for intrinsically motivated goal exploration",
+      "paper_id": "1803.00781v3"
+    },
+    {
+      "index": 11,
+      "title": "Bisimulation metrics for continuous markov decision processes",
+      "abstract": "",
+      "year": "2011",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Norm Ferns, Prakash Panangaden, and Doina Precup"
+    },
+    {
+      "index": 12,
+      "title": "Skew-Fit: State-Covering Self-Supervised Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Vitchyr Pong, Murtaza Dalal, Steven Lin, Ashvin Nair, Shikhar Bahl, and Sergey Levine",
+      "orig_title": "Skew-fit: State-covering self-supervised reinforcement learning",
+      "paper_id": "1903.03698v4"
+    },
+    {
+      "index": 13,
+      "title": "Provably efficient RL with Rich Observations via Latent State Decoding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Simon Du, Akshay Krishnamurthy, Nan Jiang, Alekh Agarwal, Miroslav Dudik, and John Langford",
+      "orig_title": "Provably efficient RL with rich observations via latent state decoding",
+      "paper_id": "1901.09018v3"
+    },
+    {
+      "index": 14,
+      "title": "Learning to achieve goals",
+      "abstract": "",
+      "year": "1993",
+      "venue": "IJCAI",
+      "authors": "Leslie Pack Kaelbling"
+    },
+    {
+      "index": 15,
+      "title": "Universal value function approximators",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International conference on machine learning",
+      "authors": "Tom Schaul, Daniel Horgan, Karol Gregor, and David Silver"
+    },
+    {
+      "index": 16,
+      "title": "Openai gym",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Brockman Greg, Cheung Vicki, Pettersson Ludwig, Schneider Jonas, Schulman John, Tang Jie, and Zaremba Wojciech"
+    },
+    {
+      "index": 17,
+      "title": "multiworld",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Vitchyr Pong, Murtaza Dalal, Steven Lin, and Ashvin Nair"
+    },
+    {
+      "index": 18,
+      "title": "Wilds: A Benchmark of in-the-Wild Distribution Shifts",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2012.07421",
+      "authors": "Pang Wei Koh, Shiori Sagawa, Henrik Marklund, Sang Michael Xie, Marvin Zhang, Akshay Balsubramani, Weihua Hu, Michihiro Yasunaga, Richard Lanas Phillips, Sara Beery, et al.",
+      "orig_title": "Wilds: A benchmark of in-the-wild distribution shifts",
+      "paper_id": "2012.07421v3"
+    },
+    {
+      "index": 19,
+      "title": "Invariant risk minimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.02893",
+      "authors": "Martin Arjovsky, Léon Bottou, Ishaan Gulrajani, and David Lopez-Paz"
+    },
+    {
+      "index": 20,
+      "title": "A theory of learning from different domains",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Machine learning",
+      "authors": "Shai Ben-David, John Blitzer, Koby Crammer, Alex Kulesza, Fernando Pereira, and Jennifer Wortman Vaughan"
+    },
+    {
+      "index": 21,
+      "title": "Domain Adversarial Neural Networks for Domain Generalization: When It Works and How to Improve",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2102.03924",
+      "authors": "Anthony Sicilia, Xingchen Zhao, and Seong Jae Hwang",
+      "orig_title": "Domain adversarial neural networks for domain generalization: When it works and how to improve",
+      "paper_id": "2102.03924v2"
+    },
+    {
+      "index": 22,
+      "title": "Generalizing to unseen domains via distribution matching",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.00804",
+      "authors": "Isabela Albuquerque, João Monteiro, Mohammad Darvishi, Tiago H Falk, and Ioannis Mitliagkas",
+      "orig_title": "Generalizing to unseen domains via distribution matching",
+      "paper_id": "1911.00804v6"
+    },
+    {
+      "index": 23,
+      "title": "Total variation distance of probability measures — Wikipedia, the free encyclopedia",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Wikipedia"
+    },
+    {
+      "index": 24,
+      "title": "Transferable adversarial training: A general approach to adapting deep classifiers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Hong Liu, Mingsheng Long, Jianmin Wang, and Michael Jordan"
+    },
+    {
+      "index": 25,
+      "title": "Adversarial invariant feature learning with accuracy constraint for domain generalization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Joint European Conference on Machine Learning and Knowledge Discovery in Databases",
+      "authors": "Kei Akuzawa, Yusuke Iwasawa, and Yutaka Matsuo"
+    },
+    {
+      "index": 26,
+      "title": "The Variational Fair Autoencoder",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICLR",
+      "authors": "Christos Louizos, Kevin Swersky, Yujia Li, Max Welling, and Richard S Zemel",
+      "orig_title": "The variational fair autoencoder",
+      "paper_id": "1511.00830v6"
+    },
+    {
+      "index": 27,
+      "title": "Deep domain generalization via conditional invariant adversarial networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Ya Li, Xinmei Tian, Mingming Gong, Yajing Liu, Tongliang Liu, Kun Zhang, and Dacheng Tao"
+    },
+    {
+      "index": 28,
+      "title": "Feature Alignment and Restoration for Domain Generalization and Adaptation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.12009",
+      "authors": "Xin Jin, Cuiling Lan, Wenjun Zeng, and Zhibo Chen",
+      "orig_title": "Feature alignment and restoration for domain generalization and adaptation",
+      "paper_id": "2006.12009v1"
+    },
+    {
+      "index": 29,
+      "title": "Addressing Function Approximation Error in Actor-Critic Methods",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Scott Fujimoto, Herke Hoof, and David Meger",
+      "orig_title": "Addressing function approximation error in actor-critic methods",
+      "paper_id": "1802.09477v3"
+    },
+    {
+      "index": 30,
+      "title": "A kernel method for the two-sample problem",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Arthur Gretton, Karsten M Borgwardt, Malte J Rasch, Bernhard Schölkopf, and Alexander Smola"
+    },
+    {
+      "index": 31,
+      "title": "Fastmmd: Ensemble of circular discrepancy for efficient two-sample test",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Neural computation",
+      "authors": "Ji Zhao and Deyu Meng"
+    },
+    {
+      "index": 32,
+      "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International conference on machine learning",
+      "authors": "Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton",
+      "orig_title": "A simple framework for contrastive learning of visual representations",
+      "paper_id": "2002.05709v3"
+    },
+    {
+      "index": 33,
+      "title": "CURL: Contrastive Unsupervised Representations for Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Michael Laskin, Aravind Srinivas, and Pieter Abbeel",
+      "orig_title": "Curl: Contrastive unsupervised representations for reinforcement learning",
+      "paper_id": "2004.04136v4"
+    },
+    {
+      "index": 34,
+      "title": "Visual Reinforcement Learning with Imagined Goals",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Neural Information Processing Systems",
+      "authors": "Ashvin Nair, Vitchyr Pong, Murtaza Dalal, Shikhar Bahl, Steven Lin, and Sergey Levine",
+      "orig_title": "Visual reinforcement learning with imagined goals",
+      "paper_id": "1807.04742v2"
+    },
+    {
+      "index": 35,
+      "title": "The distracting control suite–a challenging benchmark for reinforcement learning from pixels",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2101.02722",
+      "authors": "Austin Stone, Oscar Ramirez, Kurt Konolige, and Rico Jonschkowski"
+    },
+    {
+      "index": 36,
+      "title": "Reinforcement Learning with Augmented Data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2004.14990",
+      "authors": "Michael Laskin, Kimin Lee, Adam Stooke, Lerrel Pinto, Pieter Abbeel, and Aravind Srinivas",
+      "orig_title": "Reinforcement learning with augmented data",
+      "paper_id": "2004.14990v5"
+    },
+    {
+      "index": 37,
+      "title": "Roll: Visual self-supervised reinforcement learning with object reasoning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2011.06777",
+      "authors": "Yufei Wang, Gautham Narayan Narasimhan, Xingyu Lin, Brian Okorn, and David Held"
+    },
+    {
+      "index": 38,
+      "title": "Weakly-Supervised Reinforcement Learning for Controllable Behavior",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2004.02860",
+      "authors": "Lisa Lee, Benjamin Eysenbach, Ruslan Salakhutdinov, Chelsea Finn, et al.",
+      "orig_title": "Weakly-supervised reinforcement learning for controllable behavior",
+      "paper_id": "2004.02860v2"
+    },
+    {
+      "index": 39,
+      "title": "Exploration via hindsight goal generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Zhizhou Ren, Kefan Dong, Yuan Zhou, Qiang Liu, and Jian Peng"
+    },
+    {
+      "index": 40,
+      "title": "Learning to Reach Goals via Iterated Supervised Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv e-prints",
+      "authors": "Dibya Ghosh, Abhishek Gupta, Ashwin Reddy, Justin Fu, Coline Devin, Benjamin Eysenbach, and Sergey Levine",
+      "orig_title": "Learning to reach goals via iterated supervised learning",
+      "paper_id": "1912.06088v4"
+    },
+    {
+      "index": 41,
+      "title": "Automatic Goal Generation for Reinforcement Learning Agents",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on machine learning",
+      "authors": "Carlos Florensa, David Held, Xinyang Geng, and Pieter Abbeel",
+      "orig_title": "Automatic goal generation for reinforcement learning agents",
+      "paper_id": "1705.06366v5"
+    },
+    {
+      "index": 42,
+      "title": "Hierarchical Foresight: Self-Supervised Learning of Long-Horizon Tasks via Visual Subgoal Generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Suraj Nair and Chelsea Finn",
+      "orig_title": "Hierarchical foresight: Self-supervised learning of long-horizon tasks via visual subgoal generation",
+      "paper_id": "1909.05829v1"
+    },
+    {
+      "index": 43,
+      "title": "Maximum entropy gain exploration for long horizon multi-goal reinforcement learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Silviu Pitis, Harris Chan, Stephen Zhao, Bradly Stadie, and Jimmy Ba"
+    },
+    {
+      "index": 44,
+      "title": "Goal-aware prediction: Learning to model what matters",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Suraj Nair, Silvio Savarese, and Chelsea Finn"
+    },
+    {
+      "index": 45,
+      "title": "Learning subgoal representation with slow dynamics",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Siyuan Li, Lulu Zheng, Jianhao Wang, and Chongjie Zhang"
+    },
+    {
+      "index": 46,
+      "title": "Near-Optimal Representation Learning for Hierarchical Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Ofir Nachum, Shixiang Gu, Honglak Lee, and Sergey Levine",
+      "orig_title": "Near-optimal representation learning for hierarchical reinforcement learning",
+      "paper_id": "1810.01257v2"
+    },
+    {
+      "index": 47,
+      "title": "World Model as a Graph: Learning Latent Landmarks for Planning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2011.12491",
+      "authors": "Lunjun Zhang, Ge Yang, and Bradly C Stadie",
+      "orig_title": "World model as a graph: Learning latent landmarks for planning",
+      "paper_id": "2011.12491v3"
+    },
+    {
+      "index": 48,
+      "title": "Data-efficient hierarchical reinforcement learning for robotic assembly control applications",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Industrial Electronics",
+      "authors": "Zhimin Hou, Jiajun Fei, Yuelin Deng, and Jing Xu"
+    },
+    {
+      "index": 49,
+      "title": "DeepMDP: Learning Continuous Latent Space Models for Representation Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Carles Gelada, Saurabh Kumar, Jacob Buckman, Ofir Nachum, and Marc G Bellemare",
+      "orig_title": "Deepmdp: Learning continuous latent space models for representation learning",
+      "paper_id": "1906.02736v1"
+    },
+    {
+      "index": 50,
+      "title": "Contrastive Behavioral Similarity Embeddings for Generalization in Reinforcement Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2101.05265",
+      "authors": "Rishabh Agarwal, Marlos C Machado, Pablo Samuel Castro, and Marc G Bellemare",
+      "orig_title": "Contrastive behavioral similarity embeddings for generalization in reinforcement learning",
+      "paper_id": "2101.05265v2"
+    },
+    {
+      "index": 51,
+      "title": "Image augmentation is all you need: Regularizing deep reinforcement learning from pixels",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2004.13649",
+      "authors": "Ilya Kostrikov, Denis Yarats, and Rob Fergus"
+    },
+    {
+      "index": 52,
+      "title": "Self-Supervised Policy Adaptation during Deployment",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2007.04309",
+      "authors": "Nicklas Hansen, Yu Sun, Pieter Abbeel, Alexei A Efros, Lerrel Pinto, and Xiaolong Wang",
+      "orig_title": "Self-supervised policy adaptation during deployment",
+      "paper_id": "2007.04309v3"
+    },
+    {
+      "index": 53,
+      "title": "A Geometric Perspective on Self-Supervised Policy Adaptation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2011.07318",
+      "authors": "Cristian Bodnar, Karol Hausman, Gabriel Dulac-Arnold, and Rico Jonschkowski",
+      "orig_title": "A geometric perspective on self-supervised policy adaptation",
+      "paper_id": "2011.07318v1"
+    },
+    {
+      "index": 54,
+      "title": "Trust Region Policy Optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International conference on machine learning",
+      "authors": "John Schulman, Sergey Levine, Pieter Abbeel, Michael Jordan, and Philipp Moritz",
+      "orig_title": "Trust region policy optimization",
+      "paper_id": "1502.05477v5"
+    },
+    {
+      "index": 55,
+      "title": "Q-learning",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Machine learning",
+      "authors": "Christopher JCH Watkins and Peter Dayan"
+    }
+  ]
+}

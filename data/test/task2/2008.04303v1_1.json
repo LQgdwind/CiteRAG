@@ -1,0 +1,285 @@
+{
+  "paper_id": "2008.04303v1",
+  "title": "Contents",
+  "sections": {
+    "introduction": "The distributed coloring problem is arguably the most intensively studied problem in the area of distributed graph algorithms and certainly also one of the most intensively studied problems in distributed computing more generally. The standard assumption is that the coloring graph – the graph on which we want to compute a coloring – is also the communication network – the graph forming the network topology. We explore in this paper the case when the latter is weaker than the former: the communication is constrained, and direct links are not available to all the “neighbors” that are to be colored differently. The primary setting for this is the distance-222 coloring problem in the standard distributed CONGEST model. Given a graph G=(V,E)𝐺𝑉𝐸G=(V,E), in the d2-coloring problem on G𝐺G, the objective is to assign a color xvsubscript𝑥𝑣x_{v} to each node v∈V𝑣𝑉v\\in V such that any two nodes u𝑢u and v𝑣v at distance at most 222 in G𝐺G are assigned different colors xu≠xvsubscript𝑥𝑢subscript𝑥𝑣x_{u}\\neq x_{v}. Equivalently, d2-coloring asks for a coloring of the nodes of G𝐺G such that for every u∈V𝑢𝑉u\\in V, all the nodes in the set {u}∪N​(u)𝑢𝑁𝑢\\left\\{u\\right\\}\\cup N(u) (where N​(u)𝑁𝑢N(u) denotes the set of neighbors of u𝑢u) are assigned distinct colors. Further note that d2-coloring on G𝐺G is also equivalent to the usual vertex coloring problem on the graph G2superscript𝐺2G^{2}, where V​(G2)=V𝑉superscript𝐺2𝑉V(G^{2})=V and there is an edge {u,v}∈E​(G2)𝑢𝑣𝐸superscript𝐺2\\left\\{u,v\\right\\}\\in E(G^{2}) whenever dG​(u,v)≤2subscript𝑑𝐺𝑢𝑣2d_{G}(u,v)\\leq 2. The CONGEST model is a standard synchronous message passing model [ref]31. The graph on which we want to compute a coloring is also assumed to form the network topology. Each node u∈V𝑢𝑉u\\in V of the graph has a unique O​(log⁡n)𝑂𝑛O(\\log n)-bit identifier ID⁡(u)ID𝑢\\operatorname{ID}(u), where n=|V|𝑛𝑉n=|V| is the number of nodes of G𝐺G. Time is divided into synchronous rounds and in each round, each node u∈V𝑢𝑉u\\in V of G𝐺G can do some arbitrary internal computation, send a (potentially different) message to each of its neighbors v∈N​(u)𝑣𝑁𝑢v\\in N(u), and receive the messages sent by its neighbors in the current round. If the size of the messages is not restricted, the model is known as the LOCAL model  [ref]31. In the CONGEST model, it is further assumed that each message consists of at most O​(log⁡n)𝑂𝑛O(\\log n) bits. As our main result, we give an efficient O​(log⁡n)𝑂𝑛O(\\log n)-time randomized algorithm for d2-coloring G𝐺G with at most Δ2+1superscriptΔ21\\Delta^{2}+1 colors, where ΔΔ\\Delta is the maximum degree of G𝐺G. This improves on a recent O​(log⁡Δ⋅log⁡n)𝑂⋅Δ𝑛O(\\log\\Delta\\cdot\\log n)-time algorithm  and it matches the best known bound for ordinary distance-1 (Δ+1)Δ1(\\Delta+1)-coloring in CONGEST as a function of n𝑛n alone.\nWe further explore more efficient algorithms when Δ≪nmuch-less-thanΔ𝑛\\Delta\\ll n. Combining our main method with a range of powerful recent techniques, we obtain an algorithm that runs in time O​(log⁡Δ)+2O​(log⁡log⁡n)𝑂Δsuperscript2𝑂𝑛O(\\log\\Delta)+2^{O(\\sqrt{\\log\\log n})}. Before discussing our results in more detail, we first discuss why we believe d2-coloring is interesting, what is known for the corresponding coloring problems on G𝐺G and why it is challenging to transform CONGEST algorithms to color G𝐺G into CONGEST algorithms for d2-coloring. Wireless networking is a major motivation for distance-2 coloring, where nodes with a common neighbor should not simultaneously communicate to avoid a collision at the common neighbor 5 . While the coloring is to be used for scheduling, the wireless channel need not be the medium for computing the coloring. With the advent of software-defined radio and hierarchical / heterogeneous networks, it is well motivated to consider coloring computation in a communication model more powerful than radio networks. Yet, asking for the different-message-to/from-all-neighbors feature of CONGEST may be hoping for too much.\nMore generally, we view it as a major question in distributed graph algorithms whether one can relax the communication requirements for graph coloring. We ask: How constrained can the communication structure be to allow for fast (logarithmic, sublogarithmic) distributed graph coloring computation? Distributed d2-coloring is an interesting and important problem for several other reasons. The d2-coloring problem for example also occurs naturally when single-round randomized algorithms are derandomized using the method of conditional expectation .\nd2-coloring in CONGEST is further of special interest as it appears to lie at the edge of what is computable efficiently, i.e., in polylogarithmic time, while distance-3 coloring is even hard to verify . Distance-k𝑘k problems have not been addressed widely in a distributed setting, partly because distance-k𝑘k communication can be simulated in k𝑘k steps of the LOCAL model. In CONGEST, the situation changes drastically as simulating a single round of a distance-1 coloring algorithm can incur a factor Θ​(Δk−1)ΘsuperscriptΔ𝑘1\\Theta(\\Delta^{k-1}) overhead, i.e., even for k=2𝑘2k=2, the overhead can be linear in ΔΔ\\Delta. Even the very simple algorithm where each node picks a random available color cannot be efficiently used for d2-coloring as it is in general not possible to keep track of the set of colors chosen by 222-hop neighbors in time o​(Δ)𝑜Δo(\\Delta).\nRecently, Halldórsson, Kuhn and Maus  treated d2-coloring in CONGEST and gave a randomized algorithm using Δ2+1superscriptΔ21\\Delta^{2}+1-colors in O​(log⁡Δ⋅log⁡n)𝑂⋅Δ𝑛O(\\log\\Delta\\cdot\\log n) rounds, as well as a deterministic algorithm using (1+ϵ)​Δ21italic-ϵsuperscriptΔ2(1+\\epsilon)\\Delta^{2} colors in p​o​l​y​(log⁡n)𝑝𝑜𝑙𝑦𝑛poly(\\log n) rounds. Our main approach builds heavily on their framework, while simplifying certain features and strengthening structural properties. Distributed graph optimization problems on G2superscript𝐺2G^{2} (with CONGEST-communication in G𝐺G) such as vertex cover and minimum dominating set have recently been studied in . The standard variant of the distributed coloring problem on G𝐺G asks for computing a vertex coloring with at most Δ+1Δ1\\Delta+1 colors, which is computed by a simple sequential greedy algorithm.\nThe main focus in the literature on distributed coloring has been on the LOCAL model, where by now the problem is understood relatively well.\nThe best randomized (Δ+1)Δ1(\\Delta+1)-coloring algorithm known in the LOCAL model, due to Chang, Li, and Pettie , runs in poly⁡log⁡log⁡npoly𝑛\\operatorname{poly}\\log\\log n rounds. The complexity given in  is 2O​(log⁡log⁡n)superscript2𝑂𝑛2^{O(\\sqrt{\\log\\log n})}, while the improvement to poly⁡log⁡log⁡npoly𝑛\\operatorname{poly}\\log\\log n immediately follows from the recent breakthrough work on deterministic network decomposition of Rozhoň and Ghaffari .\nFor a more detailed discussion of related work on distributed coloring, we refer to   . While most known distributed coloring algorithms were developed for the LOCAL model,\nmany of them work directly in the CONGEST model, including those in       0    . Still, the best complexity known for coloring in CONGEST, as a function of n𝑛n alone, is O​(log⁡n)𝑂𝑛O(\\log n), which is achieved by the following very simple OneShotColoring algorithm:\nInitially all nodes are uncolored. The algorithm runs in synchronous phases, where in each phase, each still uncolored node v𝑣v chooses a uniform random color among its available colors (i.e., among the colors that have not already been picked by a neighbor) and v𝑣v keeps the color if no of its uncolored neighbors tries the same color at the same time  1. The only known published algorithm in CONGEST with a better bound is due to Ghaffari 9, who obtains a (Δ+1)Δ1(\\Delta+1)-coloring in time O​(log⁡Δ)+2O​(log⁡log⁡n)𝑂Δsuperscript2𝑂𝑛O(\\log\\Delta)+2^{O(\\sqrt{\\log\\log n})}. The second term is due to a network decomposition algorithm also introduced in 9. Unlike for results in the LOCAL model, it is not directly possible to replace this decomposition with the recent construction in  to improve the dependence on n𝑛n. The reason is that the complexity of the network decomposition construction of  grows at least linearly in the length of the node identifier bit strings. In the LOCAL model, it is possible to use a standard coloring algorithm of  to first map the IDs to O​(log⁡log⁡n)𝑂𝑛O(\\log\\log n)-bit values that are unique up to a sufficient distance so that one can afterwards apply the algorithm of . Subsequent to the publication of our results  improved upon the network decomposition algorithm from  (to deal with large IDs in the CONGEST model) and as a result obtains a O​(log⁡Δ)+poly⁡log⁡log⁡n𝑂Δpoly𝑛O(\\log\\Delta)+\\operatorname{poly}\\log\\log n CONGEST algorithm for (Δ+1)Δ1(\\Delta+1)-coloring. Note that if we have graphs of size N𝑁N and if IDs and colors can be represented with poly⁡log⁡Npoly𝑁\\operatorname{poly}\\log N bits, there is a recent deterministic (𝑑𝑒𝑔+1)𝑑𝑒𝑔1(\\mathit{deg}+1)-list coloring algorithm running in polylog⁡Npolylog𝑁\\operatorname{polylog}N time in CONGEST ."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A fast and simple randomized parallel algorithm for the maximal independent set problem",
+      "abstract": "",
+      "year": "1986",
+      "venue": "J. of Algorithms",
+      "authors": "N. Alon, L. Babai, and A. Itai"
+    },
+    {
+      "index": 1,
+      "title": "Sublinear algorithms for (Δ+1) vertex coloring",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM-SIAM Symposium on Discrete Algorithms (SODA)",
+      "authors": "S. Assadi, Y. Chen, and S. Khanna"
+    },
+    {
+      "index": 2,
+      "title": "Network decomposition and locality in distributed computation",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "B. Awerbuch, A. V. Goldberg, M. Luby, and S. A. Plotkin"
+    },
+    {
+      "index": 3,
+      "title": "Efficient deterministic distributed coloring with small bandwidth",
+      "abstract": "",
+      "year": "2020",
+      "venue": "39th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "P. Bamberger, F. Kuhn, and Y. Maus"
+    },
+    {
+      "index": 4,
+      "title": "Distributed approximation on power graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "39th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "R. Bar-Yehuda, K. Censor-Hillel, Y. Maus, S. Pai, and S. V. Pemmaraju"
+    },
+    {
+      "index": 5,
+      "title": "Deterministic (Δ + 1)-coloring in sublinear (in Δ) time in static, dynamic and faulty networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "34th Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "L. Barenboim"
+    },
+    {
+      "index": 6,
+      "title": "Deterministic distributed vertex coloring in polylogarithmic time",
+      "abstract": "",
+      "year": "2010",
+      "venue": "29th Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "L. Barenboim and M. Elkin"
+    },
+    {
+      "index": 7,
+      "title": "Distributed Graph Coloring: Fundamentals and Recent Developments",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Morgan & Claypool Publishers",
+      "authors": "L. Barenboim and M. Elkin"
+    },
+    {
+      "index": 8,
+      "title": "Locally-Iterative Distributed (Δ+1)-Coloring below Szegedy-Vishwanathan Barrier, and Applications to Self-Stabilization and to Restricted-Bandwidth Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "37th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "L. Barenboim, M. Elkin, and U. Goldenberg",
+      "orig_title": "Locally-iterative distributed (Δ+1)-coloring below Szegedy-Vishwanathan barrier, and applications to self-stabilization and to restricted-bandwidth models",
+      "paper_id": "1712.00285v2"
+    },
+    {
+      "index": 9,
+      "title": "Distributed (Δ+1)-coloring in linear (in Δ) time",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIAM J. on Computing",
+      "authors": "L. Barenboim, M. Elkin, and F. Kuhn"
+    },
+    {
+      "index": 10,
+      "title": "The locality of distributed symmetry breaking",
+      "abstract": "",
+      "year": "2012",
+      "venue": "53th Symp. on Foundations of Computer Science (FOCS)",
+      "authors": "L. Barenboim, M. Elkin, S. Pettie, and J. Schneider"
+    },
+    {
+      "index": 11,
+      "title": "An algorithmic approach to the Lovaśz local lemma",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Random Structures & Algorithms",
+      "authors": "J. Beck"
+    },
+    {
+      "index": 12,
+      "title": "Derandomizing local distributed algorithms under bandwidth restrictions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "31st Symp. on Distributed Computing (DISC)",
+      "authors": "K. Censor-Hillel, M. Parter, and G. Schwartzman"
+    },
+    {
+      "index": 13,
+      "title": "An optimal distributed (Δ+1)-coloring algorithm?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Symposium on Theory of Computing (STOC)",
+      "authors": "Y. J. Chang, W. Li, and S. Pettie"
+    },
+    {
+      "index": 14,
+      "title": "A spatial-reuse TDMA/FDMA for mobile multi-hop radio networks",
+      "abstract": "",
+      "year": "1985",
+      "venue": "4th IEEE Int. Conf. on Computer Communications (INFOCOM)",
+      "authors": "I. Chlamtac and S. Kutten"
+    },
+    {
+      "index": 15,
+      "title": "Deterministic Distributed Dominating Set Approximation in the CONGEST Model",
+      "abstract": "",
+      "year": "2019",
+      "venue": "38th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "J. Deurer, F. Kuhn, and Y. Maus",
+      "orig_title": "Deterministic distributed dominating set approximation in the CONGEST model",
+      "paper_id": "1905.10775v2"
+    },
+    {
+      "index": 16,
+      "title": "(2​Δ−1)-edge-coloring is much easier than maximal matching in the distributed setting",
+      "abstract": "",
+      "year": "2015",
+      "venue": "26th ACM-SIAM Symp. on Discrete Algorithms (SODA)",
+      "authors": "M. Elkin, S. Pettie, and H.-H. Su"
+    },
+    {
+      "index": 17,
+      "title": "Distributed testing of distance-k colorings",
+      "abstract": "",
+      "year": "2020",
+      "venue": "27th Coll. on Structural Information and Communication Complexity (SIROCCO)",
+      "authors": "P. Fraigniaud, M. M. Halldórsson, and A. Nolin"
+    },
+    {
+      "index": 18,
+      "title": "Distributed maximal independent set using small messages",
+      "abstract": "",
+      "year": "2019",
+      "venue": "30th ACM-SIAM Symposium on Discrete Algorithms (SODA)",
+      "authors": "M. Ghaffari"
+    },
+    {
+      "index": 19,
+      "title": "Improved Deterministic Network Decomposition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "M. Ghaffari, C. Grunau, and V. Rozhoň",
+      "orig_title": "Improved deterministic network decomposition",
+      "paper_id": "2007.08253v1"
+    },
+    {
+      "index": 20,
+      "title": "On derandomizing local distributed algorithms",
+      "abstract": "",
+      "year": "2018",
+      "venue": "59th Symp. on Foundations of Computer Science (FOCS)",
+      "authors": "M. Ghaffari, D. G. Harris, and F. Kuhn"
+    },
+    {
+      "index": 21,
+      "title": "Improved Network Decompositions using Small Messages with Applications on MIS, Neighborhood Covers, and Beyond",
+      "abstract": "",
+      "year": "2019",
+      "venue": "33rd Int. Symp. on Distributed Computing (DISC)",
+      "authors": "M. Ghaffari and J. Portmann",
+      "orig_title": "Improved network decompositions using small messages with applications on MIS, neighborhood covers, and beyond",
+      "paper_id": "1908.03500v1"
+    },
+    {
+      "index": 22,
+      "title": "Distance-2 Coloring in the CONGEST Model",
+      "abstract": "",
+      "year": "2020",
+      "venue": "39th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "M. M. Halldórsson, F. Kuhn, and Y. Maus",
+      "orig_title": "Distance-2 coloring in the CONGEST model",
+      "paper_id": "2005.06528v1"
+    },
+    {
+      "index": 23,
+      "title": "Distributed (Δ+1)-coloring in sublogarithmic rounds",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Symposium on Theory of Computing (STOC)",
+      "authors": "D. G. Harris, J. Schneider, and H.-H. Su"
+    },
+    {
+      "index": 24,
+      "title": "Simple distributed Δ+1-coloring of graphs",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Inf. Process. Lett.",
+      "authors": "Ö. Johansson"
+    },
+    {
+      "index": 25,
+      "title": "Faster deterministic distributed coloring through recursive list coloring",
+      "abstract": "",
+      "year": "2020",
+      "venue": "31st ACM-SIAM Symp. on Discrete Algorithms (SODA)",
+      "authors": "F. Kuhn"
+    },
+    {
+      "index": 26,
+      "title": "On the complexity of distributed graph coloring",
+      "abstract": "",
+      "year": "2006",
+      "venue": "25th ACM Symp. on Principles of Distributed Computing (PODC)",
+      "authors": "F. Kuhn and R. Wattenhofer"
+    },
+    {
+      "index": 27,
+      "title": "Locality in distributed graph algorithms",
+      "abstract": "",
+      "year": "1992",
+      "venue": "SIAM Journal on Computing",
+      "authors": "N. Linial"
+    },
+    {
+      "index": 28,
+      "title": "A simple parallel algorithm for the maximal independent set problem",
+      "abstract": "",
+      "year": "1986",
+      "venue": "SIAM J. on Computing",
+      "authors": "M. Luby"
+    },
+    {
+      "index": 29,
+      "title": "MAC layer and coloring",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Algorithms for Sensor and Ad Hoc Networks",
+      "authors": "S. Mecke"
+    },
+    {
+      "index": 30,
+      "title": "Distributed Computing: A Locality-Sensitive Approach",
+      "abstract": "",
+      "year": "2000",
+      "venue": "SIAM",
+      "authors": "D. Peleg"
+    },
+    {
+      "index": 31,
+      "title": "Polylogarithmic-Time Deterministic Network Decomposition and Distributed Derandomization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Symposium on Theory of Computing (STOC)",
+      "authors": "V. Rozhon and M. Ghaffari",
+      "orig_title": "Polylogarithmic-time deterministic network decomposition and distributed derandomization",
+      "paper_id": "1907.10937v2"
+    },
+    {
+      "index": 32,
+      "title": "A new technique for distributed symmetry breaking",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ACM Symposium on Principles of Distributed Computing (PODC)",
+      "authors": "J. Schneider and R. Wattenhofer"
+    }
+  ]
+}

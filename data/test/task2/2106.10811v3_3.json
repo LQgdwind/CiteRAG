@@ -1,0 +1,429 @@
+{
+  "paper_id": "2106.10811v3",
+  "title": "DiGS : Divergence guided shape implicit neural representation for unoriented point clouds",
+  "sections": {
+    "surface reconstruction": "The task of surface reconstruction of unoriented point clouds is specified as follows. Given an input point cloud 𝒳⊂ℝ3𝒳superscriptℝ3\\mathcal{X}\\subset\\mathbb{R}^{3} find the surface 𝒮𝒮\\mathcal{S} from which 𝒳𝒳\\mathcal{X} was sampled. The point set is usually acquired by a 3D scanner which introduces various types of data corruptions, e.g., noise, occlusions, nonuniform sampling. We evaluate the performance of our method on the Surface Reconstruction Benchmark dataset  and on ShapeNet . We compare our results to recent prominent methods, most of which have shown to outperform classical methods, including SAL , IGR , SIREN [ref]37, DGP [ref]44 and NSP [ref]45.\nNote that apart from SAL, these methods report results using normal vector supervision, therefore for fair comparison we evaluate on SIREN and IGR without the normal vector loss term (note that the same cannot be done with DGP and NSP).\nFurthermore we compare to results reported from the concurrent work PHASE 6, who evaluate on SRB. While PHASE uses normal information, they also provide a version without normals that uses Fourier features, PHASE+FF, and a baseline for IGR without normal information, IGR+FF. Surface Reconstruction Benchmark (SRB).\nWe use the simulated scan and ground truth data provided in Williams et al. [ref]44 (freely available for academic use). The dataset contains five shapes, each with it own challenging traits, e.g., complex topology, high level of detail, missing data, and different feature sizes. In Table 2 we report the average Chamfer and Hausdorff distance for the shapes, and since the shapes have varying difficulties, we also report the mean deviation from the best performing method for each shape.\nIt shows that our method is consistently better than SoTA methods on both metrics when normal information is not available.\nQualitative results for a subset of the dataset are shown in Figure 6. In the absence of normal information, SIREN and IGR struggle to converge to the correct zero level set and produce undesired artifacts (ghost geometries).\nDiGS, on the other hand, is able to remove such artifacts. When compared to the version with normal supervision added there is not much change other than DiGS being slightly smoother. In fact, DiGS manages to get similar results to the methods that use normal supervision.\nFor extended results (results per shape, results with normal supervision and more metrics), visualization of all shapes and a video showing the shapes from multiple angles, see the supplemental material. ShapeNet.\nThe ShapeNet dataset contains 3D CAD models of a diverse range of objects. These shapes often have internal structure, inconsistent normals, and non-manifold meshes. We use the preprocessing and split of Williams et al. [ref]45, who evaluate on 20 shapes in each of 13 categories, and preprocess to make the normals consistent and internal structure to be manifold meshes.\nThe results are reported in Table 3 and we provide visualizations in Figure 7. When adding normal supervision to DiGS, our method has a much better median squared Chamfer distance and median IoU among the 260 shapes. We attribute this to our divergence term smoothing out the space, which does well on shapes without much internal structure. However for some shapes with internal structure (e.g., a loudspeaker with components inside or a sofa with structural beams) we get significant internal ghost geometry. As a result our mean squared Chamfer distance, while competitive with the other methods, is worse than methods such as SIREN. Note, however, that ths does not affect the IoU as much, our mean IoU is still better than other methods. When comparing without normals, DiGS has similar medians on both metrics to when normal supervision is added, however it has better means. We attribute this to having fewer internal ghost geometries when not attempting to fit normal vectors at internal points.\nNote that DiGS outperforms other methods that do not use normal supervision on both metrics. The improvement in IoU is significant, which we attribute to other methods failing to contain ghost geometry and being inconsistent with what is inside/outside the shape. On the other hand, DiGS appropriately deals with both of these challenges by its structured training procedure. Scene reconstruction.\nQualitative results for scene reconstruction are presented in Figure 8. Here we use eight layers with 512 units and train on the scene from Sitzmann et al. [ref]37 which includes 10M oriented points.\nWe train SIREN with and without the normal constraint, and the proposed DiGS method. In this experiment we did not use a geometric initialization because, unlike the shape reconstruction task, the target surface is vastly different than a sphere, and instead only increase the frequencies. When training SIREN without normal supervision we observe many ghost geometries (SIREN wo n). On the other hand, DiGS is able to reconstruct the scene without these, though it produces a very smooth result. This is desirable in most planar regions, e.g., ceiling, floor and table, however, this trait has the drawback of smoothing out fine details, e.g., sofa legs and picture frame."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "The power crust, unions of balls, and the medial axis transform",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Computational Geometry",
+      "authors": "Nina Amenta, Sunghee Choi, and Ravi Krishna Kolluri"
+    },
+    {
+      "index": 1,
+      "title": "SAL: Sign Agnostic Learning of Shapes from Raw Data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Matan Atzmon and Yaron Lipman",
+      "orig_title": "SAL: Sign Agnostic Learning of shapes from raw data",
+      "paper_id": "1911.10414v2"
+    },
+    {
+      "index": 2,
+      "title": "SALD: Sign Agnostic Learning with Derivatives",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "Matan Atzmon and Yaron Lipman",
+      "orig_title": "SALD: Sign Agnostic Learning with Derivatives",
+      "paper_id": "2006.05400v2"
+    },
+    {
+      "index": 3,
+      "title": "Neural RGB-D Surface Reconstruction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.04532",
+      "authors": "Dejan Azinovic, Ricardo Martin-Brualla, Dan B Goldman, Matthias Nießner, and Justus Thies",
+      "orig_title": "Neural RGB-D surface reconstruction",
+      "paper_id": "2104.04532v3"
+    },
+    {
+      "index": 4,
+      "title": "DeepFit: 3D Surface Fitting via Neural Network Weighted Least Squares",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Yizhak Ben-Shabat and Stephen Gould",
+      "orig_title": "DeepFit: 3D surface fitting via neural network weighted least squares",
+      "paper_id": "2003.10826v1"
+    },
+    {
+      "index": 5,
+      "title": "Nesti-Net: Normal Estimation for Unstructured 3D Point Clouds using Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Yizhak Ben-Shabat, Michael Lindenbaum, and Anath Fischer",
+      "orig_title": "Nesti-net: Normal estimation for unstructured 3D point clouds using convolutional neural networks",
+      "paper_id": "1812.00709v1"
+    },
+    {
+      "index": 6,
+      "title": "A benchmark for surface reconstruction",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM Trans. on Graphics (ToG)",
+      "authors": "Matthew Berger, Joshua A Levine, Luis Gustavo Nonato, Gabriel Taubin, and Claudio T Silva"
+    },
+    {
+      "index": 7,
+      "title": "A survey of surface reconstruction from point clouds",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Computer Graphics Forum",
+      "authors": "Matthew Berger, Andrea Tagliasacchi, Lee M Seversky, Pierre Alliez, Gael Guennebaud, Joshua A Levine, Andrei Sharf, and Claudio T Silva"
+    },
+    {
+      "index": 8,
+      "title": "The ball-pivoting algorithm for surface reconstruction",
+      "abstract": "",
+      "year": "1999",
+      "venue": "IEEE Trans. on Visualization and Computer Graphics",
+      "authors": "Fausto Bernardini, Joshua Mittleman, Holly Rushmeier, Claudio Silva, and Gabriel Taubin"
+    },
+    {
+      "index": 9,
+      "title": "Dynamic FAUST: Registering human bodies in motion",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Federica Bogo, Javier Romero, Gerard Pons-Moll, and Michael J Black"
+    },
+    {
+      "index": 10,
+      "title": "Geometric deep learning: Going beyond Euclidean data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Signal Processing Magazine",
+      "authors": "Michael M Bronstein, Joan Bruna, Yann LeCun, Arthur Szlam, and Pierre Vandergheynst"
+    },
+    {
+      "index": 11,
+      "title": "Reconstruction and representation of 3D objects with radial basis functions",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Conference on Computer Graphics and Interactive Techniques",
+      "authors": "Jonathan C Carr, Richard K Beatson, Jon B Cherrie, Tim J Mitchell, W Richard Fright, Bruce C McCallum, and Tim R Evans"
+    },
+    {
+      "index": 12,
+      "title": "Delaunay triangulation based surface reconstruction",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Effective Computational Geometry for Curves and Surfaces",
+      "authors": "Frédéric Cazals and Joachim Giesen"
+    },
+    {
+      "index": 13,
+      "title": "Estimating differential quantities using polynomial fitting of osculating jets",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Computer Aided Geometric Design",
+      "authors": "Frédéric Cazals and Marc Pouget"
+    },
+    {
+      "index": 14,
+      "title": "ShapeNet: An Information-Rich 3D Model Repository",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1512.03012",
+      "authors": "Angel X Chang, Thomas Funkhouser, Leonidas Guibas, Pat Hanrahan, Qixing Huang, Zimo Li, Silvio Savarese, Manolis Savva, Shuran Song, Hao Su, et al.",
+      "orig_title": "ShapeNet: An information-rich 3D model repository",
+      "paper_id": "1512.03012v1"
+    },
+    {
+      "index": 15,
+      "title": "Learning Implicit Fields for Generative Shape Modeling",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Zhiqin Chen and Hao Zhang",
+      "orig_title": "Learning implicit fields for generative shape modeling",
+      "paper_id": "1812.02822v5"
+    },
+    {
+      "index": 16,
+      "title": "Implicit Geometric Regularization for Learning Shapes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Amos Gropp, Lior Yariv, Niv Haim, Matan Atzmon, and Yaron Lipman",
+      "orig_title": "Implicit Geometric Regularization for learning shapes",
+      "paper_id": "2002.10099v2"
+    },
+    {
+      "index": 17,
+      "title": "A papier-mâché approach to learning 3D surface generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Thibault Groueix, Matthew Fisher, Vladimir G Kim, Bryan C Russell, and Mathieu Aubry"
+    },
+    {
+      "index": 18,
+      "title": "PCPNet Learning Local Shape Properties from Raw Point Clouds",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Computer Graphics Forum",
+      "authors": "Paul Guerrero, Yanir Kleiman, Maks Ovsjanikov, and Niloy J Mitra",
+      "orig_title": "PCPNet: Learning local shape properties from raw point clouds",
+      "paper_id": "1710.04954v4"
+    },
+    {
+      "index": 19,
+      "title": "Local Implicit Grid Representations for 3D Scenes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Chiyu Jiang, Avneesh Sud, Ameesh Makadia, Jingwei Huang, Matthias Nießner, Thomas Funkhouser, et al.",
+      "orig_title": "Local implicit grid representations for 3D scenes",
+      "paper_id": "2003.08981v1"
+    },
+    {
+      "index": 20,
+      "title": "SDFDiff: Differentiable Rendering of Signed Distance Fields for 3D Shape Optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Yue Jiang, Dantong Ji, Zhizhong Han, and Matthias Zwicker",
+      "orig_title": "SDFDiff: Differentiable rendering of signed distance fields for 3D shape optimization",
+      "paper_id": "1912.07109v2"
+    },
+    {
+      "index": 21,
+      "title": "Poisson surface reconstruction",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Eurographics Symposium on Geometry Processing (SGP)",
+      "authors": "Michael Kazhdan, Matthew Bolitho, and Hugues Hoppe"
+    },
+    {
+      "index": 22,
+      "title": "Screened poisson surface reconstruction",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM Trans. on Graphics (ToG)",
+      "authors": "Michael Kazhdan and Hugues Hoppe"
+    },
+    {
+      "index": 23,
+      "title": "Spectral surface reconstruction from noisy point clouds",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Eurographics Symposium on Geometry Processing (SGP)",
+      "authors": "Ravikrishna Kolluri, Jonathan Richard Shewchuk, and James F O’Brien"
+    },
+    {
+      "index": 24,
+      "title": "Deep Iterative Surface Normal Estimation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Jan Eric Lenssen, Christian Osendorfer, and Jonathan Masci",
+      "orig_title": "Deep iterative surface normal estimation",
+      "paper_id": "1904.07172v3"
+    },
+    {
+      "index": 25,
+      "title": "Phase Transitions, Distance Functions, and Implicit Neural Representations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.07689",
+      "authors": "Yaron Lipman",
+      "orig_title": "Phase transitions, distance functions, and implicit neural representations",
+      "paper_id": "2106.07689v1"
+    },
+    {
+      "index": 26,
+      "title": "Marching cubes: A high resolution 3D surface construction algorithm",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Intl. Conference on Computer Graphics and Interactive Techniques (SIGGRAPH)",
+      "authors": "William E Lorensen and Harvey E Cline"
+    },
+    {
+      "index": 27,
+      "title": "Vector calculus",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Macmillan",
+      "authors": "Jerrold E Marsden and Anthony Tromba"
+    },
+    {
+      "index": 28,
+      "title": "Occupancy Networks: Learning 3D Reconstruction in Function Space",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Lars Mescheder, Michael Oechsle, Michael Niemeyer, Sebastian Nowozin, and Andreas Geiger",
+      "orig_title": "Occupancy networks: Learning 3D reconstruction in function space",
+      "paper_id": "1812.03828v2"
+    },
+    {
+      "index": 29,
+      "title": "Implicit surface representations as layers in neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Computer Vision (ICCV)",
+      "authors": "Mateusz Michalkiewicz, Jhony K Pontes, Dominic Jack, Mahsa Baktashmotlagh, and Anders Eriksson"
+    },
+    {
+      "index": 30,
+      "title": "Methods of theoretical physics",
+      "abstract": "",
+      "year": "1954",
+      "venue": "American Journal of Physics",
+      "authors": "Philip M Morse and Herman Feshbach"
+    },
+    {
+      "index": 31,
+      "title": "Smoothing of partition of unity implicit surfaces for noise robust surface reconstruction",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Computer Graphics Forum",
+      "authors": "Yukie Nagai, Yutaka Ohtake, and Hiromasa Suzuki"
+    },
+    {
+      "index": 32,
+      "title": "Sparse low-degree implicit surfaces with applications to high quality rendering, feature extraction, and smoothing",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Eurographics Symposium on Geometry Processing (SGP)",
+      "authors": "Yutaka Ohtake, Alexander Belyaev, and Marc Alexa"
+    },
+    {
+      "index": 33,
+      "title": "DeepSDF: Learning Continuous Signed Distance Functions for Shape Representation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Jeong Joon Park, Peter Florence, Julian Straub, Richard Newcombe, and Steven Lovegrove",
+      "orig_title": "DeepSDF: Learning continuous signed distance functions for shape representation",
+      "paper_id": "1901.05103v1"
+    },
+    {
+      "index": 34,
+      "title": "Shape As Points: A Differentiable Poisson Solver",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.03452",
+      "authors": "Songyou Peng, Chiyu Jiang, Yiyi Liao, Michael Niemeyer, Marc Pollefeys, and Andreas Geiger",
+      "orig_title": "Shape As Points: A differentiable poisson solver",
+      "paper_id": "2106.03452v2"
+    },
+    {
+      "index": 35,
+      "title": "Convolutional occupancy networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Songyou Peng, Michael Niemeyer, Lars Mescheder, Marc Pollefeys, and Andreas Geiger"
+    },
+    {
+      "index": 36,
+      "title": "Implicit Neural Representations with Periodic Activation Functions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Vincent Sitzmann, Julien Martel, Alexander Bergman, David Lindell, and Gordon Wetzstein",
+      "orig_title": "Implicit neural representations with periodic activation functions",
+      "paper_id": "2006.09661v1"
+    },
+    {
+      "index": 37,
+      "title": "Scene Representation Networks: Continuous 3D-Structure-Aware Neural Scene Representations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Vincent Sitzmann, Michael Zollhöfer, and Gordon Wetzstein",
+      "orig_title": "Scene Representation Networks: Continuous 3d-structure-aware neural scene representations",
+      "paper_id": "1906.01618v2"
+    },
+    {
+      "index": 38,
+      "title": "Fourier Features Let Networks Learn High Frequency Functions in Low Dimensional Domains",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "Matthew Tancik, Pratul P. Srinivasan, Ben Mildenhall, Sara Fridovich-Keil, Nithin Raghavan, Utkarsh Singhal, Ravi Ramamoorthi, Jonathan T. Barron, and Ren Ng",
+      "orig_title": "Fourier features let networks learn high frequency functions in low dimensional domains",
+      "paper_id": "2006.10739v1"
+    },
+    {
+      "index": 39,
+      "title": "Octree Generating Networks: Efficient Convolutional Architectures for High-resolution 3D Outputs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Computer Vision (ICCV)",
+      "authors": "Maxim Tatarchenko, Alexey Dosovitskiy, and Thomas Brox",
+      "orig_title": "Octree generating networks: Efficient convolutional architectures for high-resolution 3D outputs",
+      "paper_id": "1703.09438v3"
+    },
+    {
+      "index": 40,
+      "title": "State of the Art on Neural Rendering",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Computer Graphics Forum",
+      "authors": "Ayush Tewari, Ohad Fried, Justus Thies, Vincent Sitzmann, Stephen Lombardi, Kalyan Sunkavalli, Ricardo Martin-Brualla, Tomas Simon, Jason Saragih, Matthias Nießner, et al.",
+      "orig_title": "State of the art on neural rendering",
+      "paper_id": "2004.03805v1"
+    },
+    {
+      "index": 41,
+      "title": "DPDist : Comparing Point Clouds Using Deep Point Cloud Distance",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Dahlia Urbach, Yizhak Ben-Shabat, and Michael Lindenbaum",
+      "orig_title": "DPDist: Comparing point clouds using deep point cloud distance",
+      "paper_id": "2004.11784v2"
+    },
+    {
+      "index": 42,
+      "title": "Provably Stable Full-Spectrum Dispersion Relation Preserving Schemes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2110.04957",
+      "authors": "Christopher Williams and Kenneth Duru",
+      "orig_title": "Provably stable full-spectrum dispersion relation preserving schemes",
+      "paper_id": "2110.04957v1"
+    },
+    {
+      "index": 43,
+      "title": "Deep Geometric Prior for Surface Reconstruction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Francis Williams, Teseo Schneider, Claudio Silva, Denis Zorin, Joan Bruna, and Daniele Panozzo",
+      "orig_title": "Deep Geometric Prior for surface reconstruction",
+      "paper_id": "1811.10943v2"
+    },
+    {
+      "index": 44,
+      "title": "Neural Splines: Fitting 3D Surfaces with Infinitely-Wide Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Francis Williams, Matthew Trager, Joan Bruna, and Denis Zorin",
+      "orig_title": "Neural Splines: Fitting 3D surfaces with infinitely-wide neural networks",
+      "paper_id": "2006.13782v3"
+    },
+    {
+      "index": 45,
+      "title": "Geometry-Consistent Neural Shape Representation with Implicit Displacement Fields",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.05187",
+      "authors": "Wang Yifan, Lukas Rahmann, and Olga Sorkine-Hornung",
+      "orig_title": "Geometry-consistent neural shape representation with implicit displacement fields",
+      "paper_id": "2106.05187v3"
+    }
+  ]
+}

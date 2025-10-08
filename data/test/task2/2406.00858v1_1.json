@@ -1,0 +1,491 @@
+{
+  "paper_id": "2406.00858v1",
+  "title": "Chiplet-Gym: Optimizing Chiplet-based AI Accelerator Design with Reinforcement Learning",
+  "sections": {
+    "introduction": "As Large Language Models (LLMs), such as chatGPT, GPT-4, LLaMA , etc.,\ngain widespread use, there is a growing demand for energy-efficient hardware that can deliver high throughput. To support hundreds of trillions of operations and hundreds of Giga Bytes of data movement, the high-performance and energy-efficient\nhardware demands more silicon area, accommodating more\ncompute cores and memory capacity. Training any state-of-the-art AI or Deep Learning (DL) model with a single GPU or accelerator is nearly impossible due to extreme computing and memory demands. The data centers are equipped with clusters of powerful computers and GPUs connected via PCIe, NVLink, etc..\nEven though these supercomputers can deal with large workloads, they consume a significant amount of energy  and involve longer latency. Because off-board communications consume at least one order of magnitude more power and time than any on-package communications [ref]4. The ideal\nscenario would be a hardware capable of housing the\nentire model parameters and intermediate activations on-chip[ref]5, promising optimal performance and energy efficiency. Unfortunately, this is not feasible due to the stagnation of Moore’s law and Dennerd’s scaling, die size reaching the reticle limit, and the prohibitive manufacturing cost and yield limitations. Consequently, researchers endeavor to replicate this ‘hypothetical ideal’ hardware concept by integrating multiple smaller chiplets at the package level, allowing near-ideal performance while minimizing costs and energy consumption. With the advent of advanced packaging technologies, the chiplet-based heterogeneous integration has opened up a new dimension of chip design, More-than-Moore . In chiplet-based system, multiple chiplets (i.e., SoCs) of diverse functionalities (e.g., logic dies, memories, analog IPs, accelerators etc.) and tech nodes (e.g., 7nm or beyond) from different foundries are interconnected in package level using the advanced packaging technologies, such as CoWoS, EMIB,\netc. . The value proposition of chiplet-based architectures is manifold. Compared to multiple monolithic SoCs interconnected via off-package or off-board links such as PCIe, NVLink, CXL etc. , package-level integration of multiple monolithic SoCs via 2.5D or 3D has accelerated performance and lower energy consumption alleviating off-package communications. Chiplet-based systems offer lower RE (Recurrent Engineering) cost by providing higher yield and lower NRE (Non-Recurrent Engineering) by enabling IP reuse and shortening IC design cycle . The commercial chiplet-based general purpose products  [ref]8 are designed and developed at vertically integrated companies without exposing much knowledge about the chiplet-based architectures’ design space. Unlike these general purpose products, chiplet-based AI accelerators demand extensive design space exploration to hit the target Power, Performance, Area, and Cost (PPAC) budget. From architectural perspective, designers must consider the resource allocation, mapping and dataflow of the DNN workloads. From communication and integration perspective, chiplet placement, routing protocols, stacking/packaging technologies, interconnect types, and finally from application perspective, system requirement, such as reliability, scalibility etc., should be considered all at the same time while optimizing for PPAC . The existing works often focus either on the architectural or integration aspects as a separate design flow: explore routing and packaging given chiplets 012\nor explore chiplets architecture given the packaging [ref]534 5.\nAn isolated approach, addressing individual aspects independently, may result in sub-optimal designs due to the inter-dependency among these factors. For instance, varying resource allocation impacts communication demands, influencing the choice of packaging and its configuration, consequently leading to cost variations. Currently, many flavors of packaging technologies, both from 2.5D and 3D, are available from the industry leaders, which makes it difficult for system designers and integrators to choose the optimum set of configurations from the vast design space based on the system requirements . The various packaging technologies differ in fabrication cost and complexity, performance, and underlying integration technologies . As a result, no single package technology can be marked as superior to others. Each of the other domains, such as resource allocation, chiplet granularity, placement, Network on Package (NoP), and interconnect architectures, to name a few, also has an extensive design space. A proper co-optimization across all these domains based on the system and application requirements at the available cost is necessary for a successful chiplet based system design.\nOptimizing all possible domains results in a combinatorial explosion where brute force search is not an option and random search might not result in the optimum point. The expensive simulation environment of chip design exacerbates this problem. To overcome these limitations, in this paper, we make the following contributions bridging the gap between the system requirements and design aggregation, planning, and optimization for chiplet-based architecture. We develop a co-design methodology for chiplet-based AI accelerators. The co-design task contemplates resource allocation, such as the number of AI chiplets, memory capacity, and bandwidth; partitioning and placement of chiplets such as aspect ratio of the accelerator chiplet arrays, and logical placement of accelerator and memory chiplet; different packaging technologies (i.e., CoWoS, EMIB, SoIC, and FOVEROS ) and their attributes such as bandwidth, bump pitch density, cost and complexity, to optimize the system-level Power, Performance, Area, and Cost (PPAC) of the chiplet-based AI accelerators. We formulate an analytical cost model for assessing the chiplet-based architectures. This analytical model enables us to assess the chiplet-based AI accelerator in a time-and-resource-constrained environment. To optimize throughput, energy efficiency, and cost, we identify the inter-dependency of the design space parameters and formulate the optimization problem as a Reinforcement Learning (RL) problem. We also explore non-RL based optimization approaches, such as simulated annealing, and combine these two approaches to ensure the robustness of the optimizer. Finally, we validate our methodology by comparing the performance of our optimized design against state-of-the-art monolithic GPU on MLPerf benchmark and justify the performance improvement. The rest of the article is organized as follows. Section 2 presents the background. Section 3 describes the analytical modeling and design space exploration. The optimization framework is presented in section 4 followed by experiments and results in Section 5, related works in Section 6, limitations and future works in Section 7 and conclusion in Section 8."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A Survey on Evaluation of Large Language Models",
+      "abstract": "",
+      "year": "2024",
+      "venue": "ACM Trans. Intell. Syst. Technol.",
+      "authors": "Y. Chang et .al",
+      "orig_title": "A survey on evaluation of large language models",
+      "paper_id": "2307.03109v9"
+    },
+    {
+      "index": 1,
+      "title": "Zeus: Understanding and Optimizing GPU Energy Consumption of DNN Training",
+      "abstract": "",
+      "year": "2023",
+      "venue": "20th USENIX Symposium on Networked Systems Design and Implementation (NSDI 23)",
+      "authors": "You, Jie et. al."
+    },
+    {
+      "index": 2,
+      "title": "Heterogeneous Integration Roadmap",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 3,
+      "title": "Automated Design of Chiplets",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Symposium on Physical Design",
+      "authors": "Sangiovanni-Vincentelli, Alberto et. al."
+    },
+    {
+      "index": 4,
+      "title": "Chiplet Cloud: Building AI Supercomputers for Serving Large Generative Language Models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2307.02666",
+      "authors": "Peng, Huwan et al.",
+      "orig_title": "Chiplet Cloud: Building AI Supercomputers for Serving Large Generative Language Models",
+      "paper_id": "2307.02666v4"
+    },
+    {
+      "index": 5,
+      "title": "Chiplet Actuary: A Quantitative Cost Model and Multi-Chiplet Architecture Exploration",
+      "abstract": "",
+      "year": "2022",
+      "venue": "59th ACM/IEEE Design Automation Conference",
+      "authors": "Y. Feng and K. Ma",
+      "orig_title": "Chiplet Actuary: A Quantitative Cost Model and Multi-Chiplet Architecture Exploration",
+      "paper_id": "2203.12268v4"
+    },
+    {
+      "index": 6,
+      "title": "Intel’s Ponte Vecchio GPU : Architecture, systems & software",
+      "abstract": "",
+      "year": "2022",
+      "venue": "2022 IEEE Hot Chips 34 Symposium",
+      "authors": "H. Jiang"
+    },
+    {
+      "index": 7,
+      "title": "Pioneering Chiplet Technology and Design for the AMD EPYC™ and Ryzen™ Processor Families : Industrial Product",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 ACM/IEEE 48th Annual International Symposium on Computer Architecture",
+      "authors": "Naffziger, Samuel et al."
+    },
+    {
+      "index": 8,
+      "title": "Monad: Towards Cost-effective Specialization for Chiplet-based Spatial Accelerators",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/ACM International Conference on Computer Aided Design (ICCAD)",
+      "authors": "Hao, Xiaochen et. al.",
+      "orig_title": "Monad: Towards Cost-Effective Specialization for Chiplet-Based Spatial Accelerators",
+      "paper_id": "2302.11256v3"
+    },
+    {
+      "index": 9,
+      "title": "Application Defined On-chip Networks for Heterogeneous Chiplets: An Implementation Perspective",
+      "abstract": "",
+      "year": "2022",
+      "venue": "2022 IEEE International Symposium on High-Performance Computer Architecture",
+      "authors": "Wang, Tianqi et al."
+    },
+    {
+      "index": 10,
+      "title": "Cross-Layer Co-Optimization of Network Design and Chiplet Placement in 2.5-D Systems",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE TRANSACTIONS ON COMPUTER-AIDED DESIGN OF INTEGRATED CIRCUITS AND SYSTEMS",
+      "authors": "Coskun, Ayse et al."
+    },
+    {
+      "index": 11,
+      "title": "A Deep Reinforcement Learning Framework for Architectural Exploration: A Routerless NoC Case Study",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 IEEE International Symposium on High Performance Computer Architecture",
+      "authors": "Lin, Ting-Ru et al."
+    },
+    {
+      "index": 12,
+      "title": "Simba: Scaling deep-learning inference with multi-chip-module-based architecture",
+      "abstract": "",
+      "year": "2019",
+      "venue": "52nd Annual IEEE/ACM International Symposium on Microarchitecture",
+      "authors": "Shao, Yakun Sophia et al."
+    },
+    {
+      "index": 13,
+      "title": "NN-Baton: DNN Workload Orchestration and Chiplet Granularity Exploration for Multichip Accelerators",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 ACM/IEEE 48th Annual International Symposium on Computer Architecture",
+      "authors": "Tan, Zhanhong et al."
+    },
+    {
+      "index": 14,
+      "title": "Scaling Deep-Learning Inference with Chiplet-based Architecture and Photonic Interconnects",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 58th ACM/IEEE Design Automation Conference (DAC)",
+      "authors": "Y. Li, A. Louri, and A. Karanth"
+    },
+    {
+      "index": 15,
+      "title": "Zero-Shot Text-to-Image Generation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "A. Ramesh, M. Pavlov, G. Goh, S. Gray, C. Voss, A. Radford, M. Chen, and I. Sutskever",
+      "orig_title": "Zero-shot text-to-image generation",
+      "paper_id": "2102.12092v2"
+    },
+    {
+      "index": 16,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Vaswani et al.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 17,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 18,
+      "title": "Tpu v4: An optically reconfigurable supercomputer for machine learning with hardware support for embeddings",
+      "abstract": "",
+      "year": "2023",
+      "venue": "50th Annual International Symposium on Computer Architecture",
+      "authors": "Jouppi, Norm et. al."
+    },
+    {
+      "index": 19,
+      "title": "System and Design Technology Co-optimization of SOT-MRAM for High-Performance AI Accelerator Memory System",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems",
+      "authors": "K. Mishty and M. Sadi",
+      "orig_title": "System and Design Technology Co-Optimization of SOT-MRAM for High-Performance AI Accelerator Memory System",
+      "paper_id": "2303.12310v2"
+    },
+    {
+      "index": 20,
+      "title": "Designs of Communication Circuits for Side-by-Side and Stacked Chiplets",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ISSCC 2021 Forums",
+      "authors": "K. C.-H. Hsieh"
+    },
+    {
+      "index": 21,
+      "title": "Embedded Multi-die Interconnect Bridge (EMIB) – A High Density, High Bandwidth Packaging Interconnect",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE 66th Electronic Components and Technology Conference",
+      "authors": "Mahajan, Ravi et al."
+    },
+    {
+      "index": 22,
+      "title": "Thermal-aware design space exploration of 3-D systolic ml accelerators",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Journal on Exploratory Solid-State Computational Devices and Circuits",
+      "authors": "Mathur, Rahul et. al."
+    },
+    {
+      "index": 23,
+      "title": "Foveros: 3D Integration and the use of Face-to-Face Chip Stacking for Logic Devices",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 IEEE International Electron Devices Meeting",
+      "authors": "Ingerly, D. B. et a;."
+    },
+    {
+      "index": 24,
+      "title": "System on integrated chips (SoICTM) for 3d heterogeneous integration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 IEEE 69th Electronic Components and Technology Conference",
+      "authors": "Chen, F.C. et al."
+    },
+    {
+      "index": 25,
+      "title": "IEEE Std P1838: DfT standard-under-development for 2.5D-, 3D-, and 5.5D-SICs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 21th IEEE European Test Symposium (ETS)",
+      "authors": "E. J. Marinissen, T. McLaurin, and H. Jiao"
+    },
+    {
+      "index": 26,
+      "title": "Architecture, dataflow and physical design implications of 3D-ICs for DNN-accelerators",
+      "abstract": "",
+      "year": "2021",
+      "venue": "22nd International Symposium on Quality Electronic Design",
+      "authors": "Joseph, Jan Moritz et. al."
+    },
+    {
+      "index": 27,
+      "title": "How to Evaluate Deep Neural Network Processors: TOPS/W (Alone) Considered Harmful",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Solid-State Circuits Magazine",
+      "authors": "Sze, Vivienne et. al."
+    },
+    {
+      "index": 28,
+      "title": "Kite: A Family of Heterogeneous Interposer Topologies Enabled via Accurate Interconnect Modeling",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 57th ACM/IEEE Design Automation Conference (DAC)",
+      "authors": "Bharadwaj, Srikant et. al."
+    },
+    {
+      "index": 29,
+      "title": "System and Design Technology Co-optimization of Chiplet-based AI Accelerator with Machine Learning",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Great Lakes Symposium on VLSI",
+      "authors": "K. Mishty and M. Sadi"
+    },
+    {
+      "index": 30,
+      "title": "Hbm3",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 31,
+      "title": "Amd mi300",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 32,
+      "title": "Cost-Aware Exploration for Chiplet-Based Architecture with Advanced Packaging Technologies",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2206.07308",
+      "authors": "T. Tang and Y. Xie"
+    },
+    {
+      "index": 33,
+      "title": "A systematic methodology for characterizing scalability of dnn accelerators using scale-sim",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE International Symposium on Performance Analysis of Systems and Software",
+      "authors": "A. Samajdar et al."
+    },
+    {
+      "index": 34,
+      "title": "Timeloop: A systematic approach to dnn accelerator evaluation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Symposium on Performance Analysis of Systems and Software",
+      "authors": "Parashar, Angshuman et. al."
+    },
+    {
+      "index": 35,
+      "title": "Maestro: A data-centric approach to understand reuse, performance, and hardware cost of dnn mappings",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Micro",
+      "authors": "Kwon, Hyoukjun et. al."
+    },
+    {
+      "index": 36,
+      "title": "ASTRA-sim2.0: Modeling Hierarchical Networks and Disaggregated Systems for Large-model Training at Scale",
+      "abstract": "",
+      "year": "2023",
+      "venue": "2023 IEEE International Symposium on Performance Analysis of Systems and Software (ISPASS)",
+      "authors": "Won, William et.al.",
+      "orig_title": "Astra-sim2.0: Modeling hierarchical networks and disaggregated systems for large-model training at scale",
+      "paper_id": "2303.14006v1"
+    },
+    {
+      "index": 37,
+      "title": "Stonne: Enabling cycle-level microarchitectural simulation for dnn inference accelerators",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 IEEE International Symposium on Workload Characterization (IISWC)",
+      "authors": "Muñoz-Martínez, Francisco et. al."
+    },
+    {
+      "index": 38,
+      "title": "ConfuciuX: Autonomous Hardware Resource Assignment for DNN Accelerators using Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 53rd Annual IEEE/ACM International Symposium on Microarchitecture (MICRO)",
+      "authors": "Kao, Sheng-Chun et. al.",
+      "orig_title": "Confuciux: Autonomous hardware resource assignment for dnn accelerators using reinforcement learning",
+      "paper_id": "2009.02010v1"
+    },
+    {
+      "index": 39,
+      "title": "Architecture, chip, and package codesign flow for interposer-based 2.5-d chiplet integration enabling heterogeneous ip reuse",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Very Large Scale Integration (VLSI) Systems",
+      "authors": "Kim, Jinwoo et. al."
+    },
+    {
+      "index": 40,
+      "title": "Reinforcement learning: An introduction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "MIT press",
+      "authors": "R. S. Sutton and A. G. Barto"
+    },
+    {
+      "index": 41,
+      "title": "Openai gym",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 42,
+      "title": "Proximal policy optimization algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1707.06347",
+      "authors": "Schulman, John et. al."
+    },
+    {
+      "index": 43,
+      "title": "Stable-baselines3",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 44,
+      "title": "Systolic building block for logic-on-logic 3d-ic implementations of convolutional neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 IEEE International Symposium on Circuits and Systems (ISCAS)",
+      "authors": "Kung, H. T. et. al."
+    },
+    {
+      "index": 45,
+      "title": "Temperature-Aware Sizing of Multi-Chip Module Accelerators for Multi-DNN Workloads",
+      "abstract": "",
+      "year": "2023",
+      "venue": "2023 Design, Automation & Test in Europe Conference & Exhibition (DATE)",
+      "authors": "Shukla, Prachi et. al."
+    },
+    {
+      "index": 46,
+      "title": "IntAct: A 96-Core Processor With Six Chiplets 3D-Stacked on an Active Interposer With Distributed Interconnects and Integrated Power Management",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Journal of Solid-State Circuits",
+      "authors": "Vivet, Pascal et. al."
+    },
+    {
+      "index": 47,
+      "title": "Synopsys 14nm PDK",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 48,
+      "title": "MLPerf Benchmark",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 49,
+      "title": "NVIDIA Ampere100 GPU.",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 50,
+      "title": "On effective through-silicon via repair for 3-d-stacked ics",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems",
+      "authors": "Q. X. L. Jiang and B. Eklow"
+    },
+    {
+      "index": 51,
+      "title": "Centaur: A Chiplet-based, Hybrid Sparse-Dense Accelerator for Personalized Recommendations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM/IEEE 47th Annual International Symposium on Computer Architecture",
+      "authors": "Hwang, Ranggi et al.",
+      "orig_title": "Centaur: A Chiplet-based, Hybrid Sparse-Dense Accelerator for Personalized Recommendations",
+      "paper_id": "2005.05968v1"
+    },
+    {
+      "index": 52,
+      "title": "The Next Era for Chiplet Innovation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "2023 Design, Automation & Test in Europe Conference & Exhibition (DATE)",
+      "authors": "G. H. Loh and R. Swaminathan"
+    },
+    {
+      "index": 53,
+      "title": "Multi-Agent Reinforcement Learning for Microprocessor Design Space Exploration",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Krishnan, Srivatsan et al."
+    },
+    {
+      "index": 54,
+      "title": "Chip Placement with Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2004.10746",
+      "authors": "Mirhoseini, Azalia et. al.",
+      "orig_title": "Chip placement with deep reinforcement learning",
+      "paper_id": "2004.10746v1"
+    },
+    {
+      "index": 55,
+      "title": "GCN-RL Circuit Designer: Transferable Transistor Sizing with Graph Neural Networks and Reinforcement Learning",
+      "abstract": "",
+      "year": "",
+      "venue": "2020 57th ACM/IEEE Design Automation Conference",
+      "authors": "Wang, Hanrui et. al.",
+      "orig_title": "GCN-RL circuit designer: Transferable transistor sizing with graph neural networks and reinforcement learning",
+      "paper_id": "2005.00406v1"
+    },
+    {
+      "index": 56,
+      "title": "AutoCkt: Deep reinforcement learning of analog circuit designs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 Design, Automation & Test in Europe Conference & Exhibition (DATE)",
+      "authors": "Settaluri, Keertana et. al."
+    }
+  ]
+}

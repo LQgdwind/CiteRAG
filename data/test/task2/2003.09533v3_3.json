@@ -1,0 +1,301 @@
+{
+  "paper_id": "2003.09533v3",
+  "title": "Testing Polynomials for Vanishing on Cartesian Products of Planar Point Sets: Collinearity Testing and Related ProblemsWork by Boris Aronov was partially supported by NSF grant CCF-15-40656 and by grant 2014/170 from the US-Israel Binational Science Foundation. Work by Esther Ezra was partially supported by NSF CAREER under grant CCF:AF-1553354 and by Grant 824/17 from the Israel Science Foundation. Work by Micha Sharir was partially supported by ISF Grant 260/18, by grant 1367/2016 from the German-Israeli Science Foundation (GIF), and by Blavatnik Research Fund in Computer Science at Tel Aviv University.",
+  "sections": {
+    "appendix a hierarchical polynomial partitioning": "The idea of a hierarchical polynomial partition is very similar to the\nearlier constructions of hierarchical cuttings, proposed by Chazelle  and\nby Matoušek  already in the 1990s. Still, it has hardly been used\nin the context of polynomial partitionings, mostly because almost all the applications\nof this technique to date have been combinatorial, so the issue of efficient algorithmic\nconstruction of the partitioning polynomial seldom arises. One notable early exception\nis the work of Agarwal et al. [ref]2, mentioned above, which uses a data structure similar\nto the one developed here, albeit in a different context.\nMore recent algorithms are by Aronov et al.  and by Agarwal et al. ,\nwhich construct polynomial partitions for a set of varieties. We begin by presenting the hierarchical approach for planar point sets. Let P𝑃P be\na set of n𝑛n points in the plane, and let 1≤r≤n1𝑟𝑛1\\leq r\\leq n be an integer parameter.\nOur goal is to efficiently obtain a hierarchical polynomial partitioning of P𝑃P into\nO​(n/r)𝑂𝑛𝑟O(n/r) subsets, each of size at most r𝑟r, that has properties similar to the single\npartitioning of Guth and Katz —see below. The following easy (but useful) property is related to, but is much simpler than\nProposition 2.1. Let γ⊂ℝ2𝛾superscriptℝ2\\gamma\\subset\\mathbb{R}^{2} be an algebraic curve of degree δ𝛿\\delta,\ncontaining a finite set Q𝑄Q. Then there is a subset X⊂γ∖Q𝑋𝛾𝑄X\\subset\\gamma\\setminus Q\nof O​(δ2)𝑂superscript𝛿2O(\\delta^{2}) points, such that γ∖X𝛾𝑋\\gamma\\setminus X consists of O​(δ2)𝑂superscript𝛿2O(\\delta^{2})\narcs, each containing at most |Q|/δ2𝑄superscript𝛿2\\lvert Q\\rvert/\\delta^{2} points of Q𝑄Q.\nMoreover, each point p∈X𝑝𝑋p\\in X has an open neighborhood on γ𝛾\\gamma (disjoint from Q𝑄Q) such that any\npoint of that neighborhood could replace p𝑝p without affecting the partitioning property.\nThe partition can be constructed in O​(|Q|)𝑂𝑄O(\\lvert Q\\rvert) time, where the constant of proportionality\ndepends on δ𝛿\\delta. Proposition 2.1 yields a partitioning with a\nsingle polynomial f𝑓f of degree O​(n/r)𝑂𝑛𝑟O(\\sqrt{n/r}). However, when r𝑟r is relatively small\n(so the degree of f𝑓f is large), the computation of the partition might be costly.\nConcretely, the best algorithm for constructing (an approximation of)\nsuch a polynomial is the algorithm by Agarwal et al. [ref]2,\nwhich runs in randomized expected time O​(n2/r+n3/r3)𝑂superscript𝑛2𝑟superscript𝑛3superscript𝑟3O(n^{2}/r+n^{3}/r^{3}). To circumvent this issue, we resort to a hierarchical approach,\nwhere we recursively construct polynomial partitioning of appropriately chosen\nconstant degree. That is, let D≥1𝐷1D\\geq 1 be a sufficiently large constant.151515As we will shortly describe, D𝐷D depends on the prescribed parameter ε𝜀\\varepsilon.\nWe apply Proposition 2.1 with degree O​(D)𝑂𝐷O(D) and Proposition A.1 with δ=D𝛿𝐷\\delta=D,\nand obtain a partition of P𝑃P into at most c​D2𝑐superscript𝐷2cD^{2} one- and two-dimensional cells,\nfor a suitable absolute constant c>0𝑐0c>0, so that each cell contains at most n/D2𝑛superscript𝐷2n/D^{2} points of P𝑃P.\nWe then recurse with each two-dimensional (resp., one-dimensional) cell τ𝜏\\tau by applying\nPropositions 2.1 and A.1\n(resp., only Proposition A.1)\nto P∩τ𝑃𝜏P\\cap\\tau. The procedure for the one-dimensional case is trivial to perform. However, the second-level cells τ′superscript𝜏′\\tau^{\\prime} produced at τ𝜏\\tau do not have\nto be contained in τ𝜏\\tau, so the decomposition of the plane that all the second-level cells\nproduce, over all τ𝜏\\tau, is not necessarily a partition of the plane.\nWe handle this as follows: The subset associated with a child cell τ′superscript𝜏′\\tau^{\\prime} of the partition\nis formed by intersecting τ′superscript𝜏′\\tau^{\\prime} with the set associated with its parent cell τ𝜏\\tau;\nonly the points of P𝑃P in that intersection are passed to the subproblem at τ′superscript𝜏′\\tau^{\\prime}.\nIf this set is empty, we do not create a recursive subproblem at τ′superscript𝜏′\\tau^{\\prime}. With this modification,\nthe subsets of P𝑃P associated with the current level of recursion form a partition of P𝑃P. We obtain, in the second recursive stage, a collection of at most c2​D4superscript𝑐2superscript𝐷4c^{2}D^{4} cells,\neach of which is associated with a subset of at most n/D4𝑛superscript𝐷4n/D^{4} points of P𝑃P which\nthe cell contains (in addition to other points that the cell might also contain\nbut which are not associated with it). We continue in this manner recursively, so that at the\nj𝑗jth level of recursion we get at most cj​D2​jsuperscript𝑐𝑗superscript𝐷2𝑗c^{j}D^{2j} cells, each associated with a subset\nof at most n/D2​j𝑛superscript𝐷2𝑗n/D^{2j} points of P𝑃P which it contains.\n(The situation shares common features with the simplicial partitioning scheme\nof Matoušek , which is based on standard cuttings.)\nThe recursion terminates when the number of points in a cell is at most r𝑟r.\nThis leads to a simple recurrence on the number of cells, which solves to\nthe bound O​((n/r)1+ε)𝑂superscript𝑛𝑟1𝜀O((n/r)^{1+\\varepsilon}), for any ε>0𝜀0\\varepsilon>0 (ε𝜀\\varepsilon depends on D𝐷D,\nor rather D𝐷D depends on ε𝜀\\varepsilon; to achieve a bound with a smaller ε𝜀\\varepsilon we need to increase D𝐷D,\nand pay for the improved bound with a larger constant of proportionality).\nIn particular, this is an upper bound on the number of cells obtained at the last level.\nWe refer to them as the bottom-level cells. So far, this hierarchical construction makes little sense, as there are many other\n(more trivial) ways to partition P𝑃P in this manner. It is the next observation that\nmakes the hierarchical partition useful, as it shows that the partitioning almost possesses\n(with an ε𝜀\\varepsilon-loss in the exponents)\nthe same properties as does a standard polynomial partition. Specifically, let\nγ𝛾\\gamma be an algebraic curve of constant degree b𝑏b, and suppose that D𝐷D is chosen\nto be sufficiently larger than b𝑏b (see below).\nWe bound the number of cells in the decomposition of P𝑃P that γ𝛾\\gamma\nreaches, where we say, as above, that γ𝛾\\gamma reaches a cell τ𝜏\\tau if γ𝛾\\gamma intersects\nτ𝜏\\tau and all its ancestral cells. Bounding the number of these cells proceeds as follows. At the first level of recursion, γ𝛾\\gamma meets at most b​D+1𝑏𝐷1bD+1 cells,\nwhich easily follows from Bézout’s theorem. Clearly, γ𝛾\\gamma reaches all these cells.\nLet Xγ​(n)subscript𝑋𝛾𝑛X_{\\gamma}(n) be an upper bound on the maximum number of cells\nin a partition of n𝑛n points that γ𝛾\\gamma reaches.161616This recurrence counts the number of reached cells at all levels of the hierarchy.\nIf we are only interested in the number of bottom-level cells that γ𝛾\\gamma reaches,\nthe nonrecursive term b​D+1𝑏𝐷1bD+1 should be removed.\nWe then obtain the recurrence for n>r𝑛𝑟n>r. For n≤r𝑛𝑟n\\leq r, Xγ​(n)=1subscript𝑋𝛾𝑛1X_{\\gamma}(n)=1, as no further partitioning is done in this case.\nUsing induction on n𝑛n, it is easy to verify that the solution is\nXγ​(n)=O​((n/r)1/2+ε)subscript𝑋𝛾𝑛𝑂superscript𝑛𝑟12𝜀X_{\\gamma}(n)=O((n/r)^{1/2+\\varepsilon}), for any ε>0𝜀0\\varepsilon>0, as long as we\nchoose D𝐷D sufficiently larger than b1/(2​ε)superscript𝑏12𝜀b^{1/(2\\varepsilon)}.\nThus, as promised, this hierarchical partition has similar properties to polynomial partitioning\nwith a single polynomial of degree O​(n/r)𝑂𝑛𝑟O(\\sqrt{n/r}) (up to the extra ε𝜀\\varepsilon in the exponent): Let P𝑃P be a set of n𝑛n points in the plane, let 1≤r≤n1𝑟𝑛1\\leq r\\leq n be an integer parameter,\nand ε>0𝜀0\\varepsilon>0 be an arbitrarily small number. Then the following hold: \n(i) There is a hierarchical polynomial partition for P𝑃P with O​((n/r)1+ε)𝑂superscript𝑛𝑟1𝜀O((n/r)^{1+\\varepsilon}) bottom-level cells,\neach of which is associated with at most r𝑟r points of P𝑃P which it contains.\nThe overall number of cells is also O​((n/r)1+ε)𝑂superscript𝑛𝑟1𝜀O((n/r)^{1+\\varepsilon}). \n(ii) Any algebraic curve γ𝛾\\gamma of constant degree reaches (in the meaning\ndefined above) at most O​((n/r)1/2+ε)𝑂superscript𝑛𝑟12𝜀O((n/r)^{1/2+\\varepsilon}) cells at all levels of this partition. \nThe constants in the bounds depend on ε𝜀\\varepsilon and on the degree of γ𝛾\\gamma. The analysis of algorithms for constructing this partition, as well as its\nextensions to higher dimensions, presented next, will be given later in this section."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "An efficient algorithm for generalized polynomial partitioning and its applications",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Int. Symp. Comput. Geom.",
+      "authors": "P. K. Agarwal, B. Aronov, E. Ezra, and J. Zahl"
+    },
+    {
+      "index": 1,
+      "title": "On range searching with semialgebraic sets II",
+      "abstract": "",
+      "year": "2013",
+      "venue": "SIAM J. Comput.",
+      "authors": "P. K. Agarwal, J. Matoušek, and M. Sharir"
+    },
+    {
+      "index": 2,
+      "title": "Geometric Pattern Matching Reduces to 𝑘-SUM",
+      "abstract": "",
+      "year": "",
+      "venue": "Inter. Sympos. Algorithms Comput. (ISAAC 2020)",
+      "authors": "B. Aronov and J. Cardinal",
+      "orig_title": "Geometric pattern matching reduces to k𝑘k-SUM.",
+      "paper_id": "2003.11890v1"
+    },
+    {
+      "index": 3,
+      "title": "Testing polynomials for vanishing on Cartesian products of planar point sets",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Inter. Sympos. Comput. Geom.",
+      "authors": "B. Aronov, E. Ezra, and M. Sharir"
+    },
+    {
+      "index": 4,
+      "title": "Constructive polynomial partitioning for algebraic curves in ℝ3superscriptℝ3\\mathbb{R}^{3} with applications",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM-SIAM Sympos. Discrete Algorithms",
+      "authors": "B. Aronov, E. Ezra, and J. Zahl"
+    },
+    {
+      "index": 5,
+      "title": "Subquadratic algorithms for algebraic 3SUM",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "L. Barba, J. Cardinal, J. Iacono, S. Langerman, A. Ooms, and N. Solomon"
+    },
+    {
+      "index": 6,
+      "title": "Lower bounds for algebraic computation trees",
+      "abstract": "",
+      "year": "1983",
+      "venue": "ACM Sympos. Theory Comput.",
+      "authors": "M. Ben-Or"
+    },
+    {
+      "index": 7,
+      "title": "Géométrie algébrique réelle (Second edition in English: Real Algebraic Geometry), volume 12 (36) of Ergebnisse der Mathematik und ihrer Grenzgebiete [Results in Mathematics and Related Areas]",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Springer-Verlag",
+      "authors": "J. Bochnak, M. Coste, and M.F. Roy."
+    },
+    {
+      "index": 8,
+      "title": "More logarithmic-factor speedups for 3SUM, (median,++)-convolution, and some geometric 3SUM-hard problems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM-SIAM Sympos. on Discrete Algorithms",
+      "authors": "T. M. Chan"
+    },
+    {
+      "index": 9,
+      "title": "Cutting hyperplanes for Divide-and-Conquer",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "B. Chazelle"
+    },
+    {
+      "index": 10,
+      "title": "A deterministic view of random sampling and its use in geometry",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Combinatorica",
+      "authors": "B. Chazelle and J. Friedman"
+    },
+    {
+      "index": 11,
+      "title": "A singly exponential stratification scheme for real semi–algebraic varieties and its applications",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Theoretical Computer Science",
+      "authors": "B. Chazelle, H. Edelsbrunner, L. Guibas and M. Sharir"
+    },
+    {
+      "index": 12,
+      "title": "Quantifier elimination for the elementary theory of real closed fields by cylindrical algebraic decomposition",
+      "abstract": "",
+      "year": "1975",
+      "venue": "GI Conf. Automata Theory and Formal Languages, Springer LNCS",
+      "authors": "G. E. Collins"
+    },
+    {
+      "index": 13,
+      "title": "Ideals, Varieties, and Algorithms: An Introduction to Computational Algebraic Geometry and Commutative Algebra",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Springer Verlag",
+      "authors": "D. Cox, J. Little and D. O’Shea"
+    },
+    {
+      "index": 14,
+      "title": "A combinatorial problem on polynomials and rational functions",
+      "abstract": "",
+      "year": "2000",
+      "venue": "J. Combinat. Theory Ser. A",
+      "authors": "G. Elekes and L. Rónyai"
+    },
+    {
+      "index": 15,
+      "title": "How to find groups? (And how to use them in Erdős geometry?)",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Combinatorica",
+      "authors": "G. Elekes and E. Szabó"
+    },
+    {
+      "index": 16,
+      "title": "Better lower bounds on detecting affine and spherical degeneracies",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "J. Erickson and R. Seidel"
+    },
+    {
+      "index": 17,
+      "title": "Improved subquadratic 3SUM",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Algorithmica",
+      "authors": "A. Freund"
+    },
+    {
+      "index": 18,
+      "title": "On a class of O​(n2)𝑂superscript𝑛2{O}(n^{2}) problems in computational geometry",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Comput. Geom. Theory Appl.",
+      "authors": "A. Gajentaan and M. H. Overmars"
+    },
+    {
+      "index": 19,
+      "title": "Improved bounds for 3SUM, k𝑘k-SUM, and linear degeneracy",
+      "abstract": "",
+      "year": "2017",
+      "venue": "European Sympos. Algorithms",
+      "authors": "O. Gold and M. Sharir"
+    },
+    {
+      "index": 20,
+      "title": "Threesomes, degenerates, and love triangles",
+      "abstract": "",
+      "year": "2018",
+      "venue": "J. ACM",
+      "authors": "A. Grønlund and S. Pettie"
+    },
+    {
+      "index": 21,
+      "title": "On the Erdős distinct distances problem in the plane",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Annals Math.",
+      "authors": "L. Guth and N. H. Katz"
+    },
+    {
+      "index": 22,
+      "title": "Polynomial factorization",
+      "abstract": "",
+      "year": "1982",
+      "venue": "Computer Algebra",
+      "authors": "E. Kaltofen"
+    },
+    {
+      "index": 23,
+      "title": "Near-optimal linear decision trees for k-SUM and related problems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Sympos. Theory Comput.",
+      "authors": "D. M. Kane, S. Lovett, and S. Moran",
+      "orig_title": "Near-optimal linear decision trees for k-SUM and related problems",
+      "paper_id": "1705.01720v1"
+    },
+    {
+      "index": 24,
+      "title": "Almost tight upper bounds for vertical decompositions in four dimensions",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. ACM",
+      "authors": "V. Koltun"
+    },
+    {
+      "index": 25,
+      "title": "Efficient partition trees",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "J. Matoušek"
+    },
+    {
+      "index": 26,
+      "title": "Range searching with efficient hierarchical cuttings",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "J. Matoušek"
+    },
+    {
+      "index": 27,
+      "title": "Multilevel Polynomial Partitions and Simplified Range Searching",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Discrete Comput. Geom.",
+      "authors": "J. Matoušek and Z. Patáková"
+    },
+    {
+      "index": 28,
+      "title": "Computational Geometry: An Introduction",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Texts and Monographs in Computer Science. Springer",
+      "authors": "F. P. Preparata and M. I. Shamos"
+    },
+    {
+      "index": 29,
+      "title": "Polynomials vanishing on grids: The Elekes–Rónyai problem revisited",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Amer. J. Math.",
+      "authors": "O. E. Raz, M. Sharir, and J. Solymosi"
+    },
+    {
+      "index": 30,
+      "title": "Polynomials vanishing on Cartesian products: The Elekes–Szabó theorem revisited",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Duke Math. J.",
+      "authors": "O. E. Raz, M. Sharir, and F. de Zeeuw"
+    },
+    {
+      "index": 31,
+      "title": "On the Piano Movers’ problem: II. General techniques for computing topological properties of real algebraic manifolds",
+      "abstract": "",
+      "year": "1983",
+      "venue": "Advances in Appl. Math.",
+      "authors": "J.T. Schwartz and M. Sharir"
+    },
+    {
+      "index": 32,
+      "title": "Incidence bounds for complex algebraic curves on Cartesian products",
+      "abstract": "",
+      "year": "2018",
+      "venue": "New Trends in Intuitive Geometry. Springer Verlag",
+      "authors": "J. Solymosi and F. de Zeeuw"
+    },
+    {
+      "index": 33,
+      "title": "Davenport Schinzel Sequences and their Geometric Applications",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Cambridge University Press",
+      "authors": "M. Sharir and P. K. Agarwal"
+    },
+    {
+      "index": 34,
+      "title": "Irreducibility of multivariate polynomials",
+      "abstract": "",
+      "year": "1985",
+      "venue": "J. Computer Systems Science",
+      "authors": "J. von zur Gathen"
+    },
+    {
+      "index": 35,
+      "title": "Ordinary lines in space",
+      "abstract": "",
+      "year": "",
+      "venue": "arXiv:1803.09524",
+      "authors": "F. de Zeeuw"
+    }
+  ]
+}

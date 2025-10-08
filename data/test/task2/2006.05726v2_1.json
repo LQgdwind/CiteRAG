@@ -1,0 +1,283 @@
+{
+  "paper_id": "2006.05726v2",
+  "title": "Estimating semantic structure for the VQA answer space",
+  "sections": {
+    "related work": "VQA as a classification task — \nThe broad majority of works are approaching VQA as a classification task. This strategy simplifies the supervision part of the training and makes the VQA approaches easily comparable between each other. Indeed, many VQA approaches, including attention-based networks , object-based attention mechanisms , bilinear fusion methods , and, more recently, Transformer -based models , have been introduced and evaluated on the VQA classification benchmarks. Biases in VQA datasets — \nThe success of these works is in part due to the creation of large annotated VQA corpus. The VQAv1 [ref]1 dataset gathers more than 200k real-world images annotated with 760K questions in natural language. Moreover, each question is annotated with 10 ground truth answers in order to model the ambiguity and the disagreement between annotators. Nevertheless, as the data collection is fastidious and costly, VQAv1 suffers from numerous language biases as pointed out by many works such as , and  [ref]11.\nIn order to downplay the influence of the language bias,  released an updated version of the same dataset (baptized VQAv2) by carefully balancing the answer distribution per question type.\n went one step further by designing a fully synthetic dataset called CLEVR in which automatically generated questions are asked on synthetically generated 3D images. This corpus is thought as a diagnostic dataset aimed at evaluating the visual reasoning capability of the models.\nHowever, the limited environment of CLEVR  prevents from generalizing to complex realistic images such as in VQAv2 .\nFinally,  built the GQA dataset, a semi-synthetic dataset where automatically generated questions are asked on real images, which can be seen as an intermediate step between CLEVR and VQAv2. The generalization curse of VQA — \nNevertheless, despite the efforts made on data collection, the language bias issue persists and VQA models continue to suffer from the generalization curse. Early works raised an alarm by diagnosing many drawbacks on VQA models, such as their tendency to pay little attention to the image and to \\sayonly read half of the question [ref]11. Similarly, [ref]13 showed that attention-based models do not attend to the same visual regions as humans do. More recently,  pointed out the gender biases learned by image captioning models. To better diagnose the generalization gap on VQA,  reorganized VQAv1 [ref]1 and VQAv2  into the VQA-CP (VQA under Changing Priors), a new dataset where the per-question answer distribution of the train split is made explicitly different from the one in the test split. In particular, they show that a blind model (which only has access to the question without seeing the image) achieves a surprisingly high accuracy on VQAv2 – 44%percent4444\\% – whereas it reaches only 16%percent1616\\% on VQAv2-CP . Moreover, many of the successful models on VQA datasets fall short on VQA-CP unveiling their lack in visual understanding and their tendency to rely on question biases. Reducing language biases on VQA — \nTherefore, several works have recently tried to tackle this generalisation issue.  trained their model using an adversarial game against a question-only adversary in order to discourage the base model to rely on language prior. Similarly, the authors of RUBi  added a question-only branch to the base model during the training to adapt its prediction in order to prevent it from learning question biases. Other methods make use of additional annotated supervision to improve the generalization capability. Using the VQA-HAT dataset’s annotations [ref]13, the HINT  model is supervised to attend to the same visual regions as humans.\n built upon HINT proposing even a more sophisticated approach by carefully designing a three-steps learning strategy, named Self-Critical Reasoning (SRC).\nSRC accentuates the model sensitivity to the important visual regions.\nIt should be noted that SRC requires additional data annotations such as human attention maps [ref]13 or textual explanations .\nFinally,  introduced a Decomposed Linguistic Representation111To the best of our knowledge, at the time of writing of our paper, paper  has not yet been accepted to a peer-reviewed conference or journal. (DLR) approach consisting in learning to decompose the question into the \\saytype representation, \\sayobject representation and \\sayconcept representation. Although it allows to improve the model’s accuracy on VQAv2-CP , it causes a significant drop of performance on VQAv2 .\nIn this paper, we contribute to these efforts as we demonstrate how a semantic loss, helping the model to structure its output space, permits to reduce dependency towards language biases."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Vqa: Visual question answering",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Stanislaw Antol, Aishwarya Agrawal, Jiasen Lu, Margaret Mitchell, Dhruv Batra, C Lawrence Zitnick, and Devi Parikh"
+    },
+    {
+      "index": 1,
+      "title": "Making the V in VQA Matter: Elevating the Role of Image Understanding in Visual Question Answering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Yash Goyal, Tejas Khot, Douglas Summers-Stay, Dhruv Batra, and Devi Parikh",
+      "orig_title": "Making the v in vqa matter: Elevating the role of image understanding in visual question answering",
+      "paper_id": "1612.00837v3"
+    },
+    {
+      "index": 2,
+      "title": "Gqa: A new dataset for real-world visual reasoning and compositional question answering",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Drew A Hudson and Christopher D Manning"
+    },
+    {
+      "index": 3,
+      "title": "Don’t Just Assume; Look and Answer: Overcoming Priors for Visual Question Answering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Aishwarya Agrawal, Dhruv Batra, Devi Parikh, and Aniruddha Kembhavi",
+      "orig_title": "Don’t just assume; look and answer: Overcoming priors for visual question answering",
+      "paper_id": "1712.00377v2"
+    },
+    {
+      "index": 4,
+      "title": "Rubi: Reducing unimodal biases for visual question answering",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Remi Cadene, Corentin Dancette, Matthieu Cord, Devi Parikh, et al."
+    },
+    {
+      "index": 5,
+      "title": "Stacked Attention Networks for Image Question Answering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Zichao Yang, Xiaodong He, Jianfeng Gao, Li Deng, and Alex Smola",
+      "orig_title": "Stacked attention networks for image question answering",
+      "paper_id": "1511.02274v2"
+    },
+    {
+      "index": 6,
+      "title": "Bottom-Up and Top-Down Attention for Image Captioning and Visual Question Answering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Peter Anderson, Xiaodong He, Chris Buehler, Damien Teney, Mark Johnson, Stephen Gould, and Lei Zhang",
+      "orig_title": "Bottom-up and top-down attention for image captioning and visual question answering",
+      "paper_id": "1707.07998v3"
+    },
+    {
+      "index": 7,
+      "title": "Bilinear Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Jin-Hwa Kim, Jaehyun Jun, and Byoung-Tak Zhang",
+      "orig_title": "Bilinear attention networks",
+      "paper_id": "1805.07932v2"
+    },
+    {
+      "index": 8,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 9,
+      "title": "Deep Modular Co-Attention Networks for Visual Question Answering",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Zhou Yu, Jun Yu, Yuhao Cui, Dacheng Tao, and Qi Tian",
+      "orig_title": "Deep modular co-attention networks for visual question answering",
+      "paper_id": "1906.10770v1"
+    },
+    {
+      "index": 10,
+      "title": "Analyzing the behavior of visual question answering models",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Conference on Empirical Methods in Natural Language Processing",
+      "authors": "Aishwarya Agrawal, Dhruv Batra, and Devi Parikh"
+    },
+    {
+      "index": 11,
+      "title": "CLEVR: A Diagnostic Dataset for Compositional Language and Elementary Visual Reasoning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Justin Johnson, Bharath Hariharan, Laurens van der Maaten, Li Fei-Fei, C Lawrence Zitnick, and Ross Girshick",
+      "orig_title": "Clevr: A diagnostic dataset for compositional language and elementary visual reasoning",
+      "paper_id": "1612.06890v1"
+    },
+    {
+      "index": 12,
+      "title": "Human Attention in Visual Question Answering: Do Humans and Deep Networks Look at the Same Regions?",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+      "authors": "Abhishek Das, Harsh Agrawal, C. Lawrence Zitnick, Devi Parikh, and Dhruv Batra",
+      "orig_title": "Human Attention in Visual Question Answering: Do Humans and Deep Networks Look at the Same Regions?",
+      "paper_id": "1606.03556v2"
+    },
+    {
+      "index": 13,
+      "title": "Women also Snowboard: Overcoming Bias in Captioning Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Lisa Anne Hendricks, Kaylee Burns, Kate Saenko, Trevor Darrell, and Anna Rohrbach",
+      "orig_title": "Women also snowboard: Overcoming bias in captioning models",
+      "paper_id": "1803.09797v4"
+    },
+    {
+      "index": 14,
+      "title": "Overcoming Language Priors in Visual Question Answering with Adversarial Regularization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Sainandan Ramakrishnan, Aishwarya Agrawal, and Stefan Lee",
+      "orig_title": "Overcoming language priors in visual question answering with adversarial regularization",
+      "paper_id": "1810.03649v2"
+    },
+    {
+      "index": 15,
+      "title": "Taking a hint: Leveraging explanations to make vision and language models more grounded",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Ramprasaath R Selvaraju, Stefan Lee, Yilin Shen, Hongxia Jin, Shalini Ghosh, Larry Heck, Dhruv Batra, and Devi Parikh"
+    },
+    {
+      "index": 16,
+      "title": "Self-critical reasoning for robust visual question answering",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Jialin Wu and Raymond Mooney"
+    },
+    {
+      "index": 17,
+      "title": "Multimodal Explanations: Justifying Decisions and Pointing to the Evidence",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Dong Huk Park, Lisa Anne Hendricks, Zeynep Akata, Anna Rohrbach, Bernt Schiele, Trevor Darrell, and Marcus Rohrbach",
+      "orig_title": "Multimodal explanations: Justifying decisions and pointing to the evidence",
+      "paper_id": "1802.08129v1"
+    },
+    {
+      "index": 18,
+      "title": "Overcoming language priors in vqa via decomposed linguistic representations",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Chenchen Jing, Yuwei Wu, Xiaoxun Zhang, Yunde Jia, and Qi Wu"
+    },
+    {
+      "index": 19,
+      "title": "Facial age estimation by learning from label distributions",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "Xin Geng, Chao Yin, and Zhi-Hua Zhou"
+    },
+    {
+      "index": 20,
+      "title": "Label distribution learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "Xin Geng"
+    },
+    {
+      "index": 21,
+      "title": "A Multi-World Approach to Question Answering about Real-World Scenes based on Uncertain Input",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Mateusz Malinowski and Mario Fritz",
+      "orig_title": "A multi-world approach to question answering about real-world scenes based on uncertain input",
+      "paper_id": "1410.0210v4"
+    },
+    {
+      "index": 22,
+      "title": "Verbs semantics and lexical selection",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Association for Computational Linguistics",
+      "authors": "Zhibiao Wu and Martha Palmer"
+    },
+    {
+      "index": 23,
+      "title": "Glove: Global vectors for word representation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+      "authors": "Jeffrey Pennington, Richard Socher, and Christopher D Manning"
+    },
+    {
+      "index": 24,
+      "title": "Distributed representations of words and phrases and their compositionality",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg S Corrado, and Jeff Dean"
+    },
+    {
+      "index": 25,
+      "title": "Visualizing Data using GTSNE",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": "Laurens van der Maaten and Geoffrey Hinton",
+      "orig_title": "Visualizing data using t-sne",
+      "paper_id": "2108.01301v1"
+    },
+    {
+      "index": 26,
+      "title": "Representation Learning with Contrastive Predictive Coding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Yazhe Li Aaron van den Oord and Oriol Vinyals",
+      "orig_title": "Representation learning with contrastive predictive coding",
+      "paper_id": "1807.03748v2"
+    },
+    {
+      "index": 27,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun",
+      "orig_title": "Faster r-cnn: Towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 28,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Diederik P Kingma and Jimmy Ba"
+    },
+    {
+      "index": 29,
+      "title": "Learning by Abstraction: The Neural State Machine",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Drew Hudson and Christopher D Manning",
+      "orig_title": "Learning by abstraction: The neural state machine",
+      "paper_id": "1907.03950v4"
+    }
+  ]
+}

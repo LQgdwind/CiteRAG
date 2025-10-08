@@ -1,0 +1,2463 @@
+{
+  "paper_id": "2402.19080v2",
+  "title": "MIMDRAM: An End-to-End Processing-Using-DRAM System for High-Throughput, Energy-Efficient and Programmer-Transparent Multiple-Instruction Multiple-Data Processing",
+  "abstract": "Abstract\nProcessing-using-DRAM (PUD) is a processing-in-memory (PIM) approach that uses a DRAM array’s massive internal parallelism to execute very-wide (e.g., 16,384–262,144-bit-wide)  data-parallel operations, in a single-instruction multiple-data (SIMD) fashion. However, DRAM rows’ large and rigid granularity limit the effectiveness and applicability\nof PUD in three ways.\nFirst, since applications have varying degrees of SIMD parallelism (which is often smaller than the DRAM row granularity), PUD execution often leads\nto underutilization, throughput loss, and energy waste.\nSecond, due to the high area cost of implementing interconnects that connect columns in a wide DRAM row,\nmost PUD architectures are limited to the execution of parallel map operations, where a single operation is performed over equally-sized input and output arrays.\nThird, the need to feed the wide DRAM row with tens of thousands of data elements combined with the lack of adequate compiler support for PUD systems create a programmability barrier, since programmers need to manually extract SIMD parallelism from an application and map computation to the PUD hardware.\nOur goal is to design a flexible PUD system that overcomes the limitations caused by the large and rigid granularity of PUD. To this end, we propose MIMDRAM, a hardware/software co-designed PUD system that introduces new mechanisms to allocate and control only the necessary resources for a given PUD operation.\nThe key idea of MIMDRAM is to leverage fine-grained DRAM (i.e., the ability to independently access smaller segments of a large DRAM row) for PUD computation. disable,disable,todo: disable,#D1MIMDRAM exploits this key idea to enable a multiple-instruction multiple-data (MIMD) execution model in each DRAM subarray (and SIMD execution within each DRAM row segment).\nWe evaluate MIMDRAM using twelve real-world applications and 495 multi-programmed application mixes.\nOur evaluation shows that MIMDRAM provides 34×\\times the performance, 14.3×\\times the energy efficiency, 1.7×\\times the throughput, and 1.3×\\times the fairness of a state-of-the-art PUD framework, along with\n30.6×\\times and 6.8×\\times the energy efficiency of a high-end CPU and GPU, respectively. MIMDRAM adds small area cost to a DRAM chip (1.11%) and CPU die (0.6%). We hope and believe that MIMDRAM’s ideas and results will help to enable more efficient and easy-to-program PUD systems. To this end, we open source MIMDRAM at https://github.com/CMU-SAFARI/MIMDRAM.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Memory Scaling: A Systems Architecture Perspective",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IMW",
+      "authors": "O. Mutlu"
+    },
+    {
+      "index": 1,
+      "title": "Research Problems and Opportunities in Memory Systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "SUPERFRI",
+      "authors": "O. Mutlu and L. Subramanian"
+    },
+    {
+      "index": 2,
+      "title": "The Tail at Scale",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CACM",
+      "authors": "J. Dean and L. A. Barroso"
+    },
+    {
+      "index": 3,
+      "title": "Profiling a Warehouse-Scale Computer",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISCA",
+      "authors": "S. Kanev, J. P. Darago et al."
+    },
+    {
+      "index": 4,
+      "title": "Enabling Practical Processing in and near Memory for Data-Intensive Computing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "DAC",
+      "authors": "O. Mutlu, S. Ghose et al.",
+      "orig_title": "Enabling Practical Processing in and near Memory for Data-Intensive Computing",
+      "paper_id": "1905.04376v1"
+    },
+    {
+      "index": 5,
+      "title": "Processing Data Where It Makes Sense: Enabling In-Memory Computation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "MicPro",
+      "authors": "O. Mutlu, S. Ghose et al.",
+      "orig_title": "Processing Data Where It Makes Sense: Enabling In-Memory Computation",
+      "paper_id": "1903.03988v1"
+    },
+    {
+      "index": 6,
+      "title": "Intelligent Architectures for Intelligent Machines",
+      "abstract": "",
+      "year": "2020",
+      "venue": "VLSI-DAT",
+      "authors": "O. Mutlu"
+    },
+    {
+      "index": 7,
+      "title": "Processing-in-Memory: A Workload-Driven Perspective",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IBM JRD",
+      "authors": "S. Ghose, A. Boroumand et al."
+    },
+    {
+      "index": 8,
+      "title": "A Modern Primer on Processing in Memory",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Emerging Computing: From Devices to Systems — Looking Beyond Moore and Von Neumann. Springer",
+      "authors": "O. Mutlu, S. Ghose et al.",
+      "orig_title": "A Modern Primer on Processing in Memory",
+      "paper_id": "2012.03112v5"
+    },
+    {
+      "index": 9,
+      "title": "Google Workloads for Consumer Devices: Mitigating Data Movement Bottlenecks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ASPLOS",
+      "authors": "A. Boroumand, S. Ghose et al."
+    },
+    {
+      "index": 10,
+      "title": "Reducing Data Movement Energy via Online Data Clustering and Encoding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MICRO",
+      "authors": "S. Wang and E. Ipek"
+    },
+    {
+      "index": 11,
+      "title": "Reflections on the Memory Wall",
+      "abstract": "",
+      "year": "2004",
+      "venue": "CF",
+      "authors": "S. A. McKee"
+    },
+    {
+      "index": 12,
+      "title": "The Memory Gap and the Future of High Performance Memories",
+      "abstract": "",
+      "year": "2001",
+      "venue": "CAN",
+      "authors": "M. V. Wilkes"
+    },
+    {
+      "index": 13,
+      "title": "A Case for Exploiting Subarray-Level Parallelism (SALP) in DRAM",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ISCA",
+      "authors": "Y. Kim, V. Seshadri et al."
+    },
+    {
+      "index": 14,
+      "title": "Hitting the Memory Wall: Implications of the Obvious",
+      "abstract": "",
+      "year": "1995",
+      "venue": "CAN",
+      "authors": "W. A. Wulf and S. A. McKee"
+    },
+    {
+      "index": 15,
+      "title": "Demystifying Complex Workload–DRAM Interactions: An Experimental Study",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIGMETRICS",
+      "authors": "S. Ghose, T. Li et al."
+    },
+    {
+      "index": 16,
+      "title": "A Scalable Processing-in-Memory Accelerator for Parallel Graph Processing",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISCA",
+      "authors": "J. Ahn, S. Hong et al."
+    },
+    {
+      "index": 17,
+      "title": "PIM-Enabled Instructions: A Low-Overhead, Locality-Aware Processing-in-Memory Architecture",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISCA",
+      "authors": "J. Ahn, S. Yoo et al."
+    },
+    {
+      "index": 18,
+      "title": "It’s the Memory, Stupid!",
+      "abstract": "",
+      "year": "1996",
+      "venue": "MPR",
+      "authors": "R. Sites"
+    },
+    {
+      "index": 19,
+      "title": "DAMOV: A New Methodology and Benchmark Suite for Evaluating Data Movement Bottlenecks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Access",
+      "authors": "G. F. Oliveira, J. Gómez-Luna et al.",
+      "orig_title": "DAMOV: A New Methodology and Benchmark Suite for Evaluating Data Movement Bottlenecks",
+      "paper_id": "2105.03725v6"
+    },
+    {
+      "index": 20,
+      "title": "Compute Trends Across Three Eras of Machine Learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IJCNN",
+      "authors": "J. Sevilla, L. Heim et al."
+    },
+    {
+      "index": 21,
+      "title": "AI and Memory Wall",
+      "abstract": "",
+      "year": "2021",
+      "venue": "RiseLab Medium Post",
+      "authors": "A. Gholami, Z. Y. et al.",
+      "orig_title": "AI and Memory Wall",
+      "paper_id": "2403.14123v1"
+    },
+    {
+      "index": 22,
+      "title": "NDA: Near-DRAM Acceleration Architecture Leveraging Commodity DRAM Devices and Standard Memory Modules",
+      "abstract": "",
+      "year": "2015",
+      "venue": "HPCA",
+      "authors": "A. Farmahini-Farahani, J. H. Ahn et al."
+    },
+    {
+      "index": 23,
+      "title": "JAFAR: Near-Data Processing for Databases",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIGMOD",
+      "authors": "O. O. Babarinsa and S. Idreos"
+    },
+    {
+      "index": 24,
+      "title": "The True Processing in Memory Accelerator",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Hot Chips",
+      "authors": "F. Devaux"
+    },
+    {
+      "index": 25,
+      "title": "GenStore: A High-Performance and Energy-Efficient In-Storage Computing System for Genome Sequence Analysis",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ASPLOS",
+      "authors": "N. M. Ghiasi, J. Park et al.",
+      "orig_title": "GenStore: A High-Performance and Energy-Efficient In-Storage Computing System for Genome Sequence Analysis",
+      "paper_id": "2202.10400v2"
+    },
+    {
+      "index": 26,
+      "title": "Benchmarking Memory-Centric Computing Systems: Analysis of Real Processing-in-Memory Hardware",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CUT",
+      "authors": "J. Gómez-Luna, I. El Hajj et al.",
+      "orig_title": "Benchmarking Memory-Centric Computing Systems: Analysis of Real Processing-in-Memory Hardware",
+      "paper_id": "2110.01709v2"
+    },
+    {
+      "index": 27,
+      "title": "Benchmarking a New Paradigm: An Experimental Analysis of a Real Processing-in-Memory Architecture",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv:2105.03814 [cs.AR]",
+      "authors": "J. Gómez-Luna, I. E. Hajj et al.",
+      "orig_title": "Benchmarking a New Paradigm: An Experimental Analysis of a Real Processing-in-Memory Architecture",
+      "paper_id": "2105.03814v7"
+    },
+    {
+      "index": 28,
+      "title": "Benchmarking a New Paradigm: Experimental Analysis and Characterization of a Real Processing-in-Memory System",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Access",
+      "authors": "J. Gómez-Luna, I. El Hajj et al."
+    },
+    {
+      "index": 29,
+      "title": "SynCron: Efficient Synchronization Support for Near-Data-Processing Architectures",
+      "abstract": "",
+      "year": "2021",
+      "venue": "HPCA",
+      "authors": "C. Giannoula, N. Vijaykumar et al.",
+      "orig_title": "SynCron: Efficient Synchronization Support for Near-Data-Processing Architectures",
+      "paper_id": "2101.07557v3"
+    },
+    {
+      "index": 30,
+      "title": "NERO: A Near High-Bandwidth Memory Stencil Accelerator for Weather Prediction Modeling",
+      "abstract": "",
+      "year": "2020",
+      "venue": "FPL",
+      "authors": "G. Singh, D. Diamantopoulos et al.",
+      "orig_title": "NERO: A Near High-Bandwidth Memory Stencil Accelerator for Weather Prediction Modeling",
+      "paper_id": "2107.08716v2"
+    },
+    {
+      "index": 31,
+      "title": "A 1ynm 1.25V 8Gb, 16Gb/s/pin GDDR6-Based Accelerator-in-Memory Supporting 1TFLOPS MAC Operation and Various Activation Functions for Deep-Learning Applications",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ISSCC",
+      "authors": "S. Lee, K. Kim et al."
+    },
+    {
+      "index": 32,
+      "title": "Near-Memory Processing in Action: Accelerating Personalized Recommendation with AxDIMM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Micro",
+      "authors": "L. Ke, X. Zhang et al."
+    },
+    {
+      "index": 33,
+      "title": "SparseP: Towards Efficient Sparse Matrix Vector Multiplication on Real Processing-in-Memory Architectures",
+      "abstract": "",
+      "year": "2022",
+      "venue": "SIGMETRICS",
+      "authors": "C. Giannoula, I. Fernandez et al."
+    },
+    {
+      "index": 34,
+      "title": "McDRAM: Low Latency and Energy-Efficient Matrix Computations in DRAM",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE TCADICS",
+      "authors": "H. Shin, D. Kim et al."
+    },
+    {
+      "index": 35,
+      "title": "McDRAM v2: In-Dynamic Random Access Memory Systolic Array Accelerator to Address the Large Model Problem in Deep Neural Networks on the Edge",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Access",
+      "authors": "S. Cho, H. Choi et al."
+    },
+    {
+      "index": 36,
+      "title": "Casper: Accelerating Stencil Computations using Near-Cache Processing",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Access",
+      "authors": "A. Denzler, R. Bera et al.",
+      "orig_title": "Casper: Accelerating Stencil Computation using Near-Cache Processing",
+      "paper_id": "2112.14216v4"
+    },
+    {
+      "index": 37,
+      "title": "Chameleon: Versatile and Practical Near-DRAM Acceleration Architecture for Large Memory Systems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MICRO",
+      "authors": "H. Asghari-Moghaddam, Y. H. Son et al."
+    },
+    {
+      "index": 38,
+      "title": "A Case for Intelligent RAM",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE Micro",
+      "authors": "D. Patterson, T. Anderson et al."
+    },
+    {
+      "index": 39,
+      "title": "Computational RAM: Implementing Processors in Memory",
+      "abstract": "",
+      "year": "1999",
+      "venue": "D&T",
+      "authors": "D. G. Elliott, M. Stumm et al."
+    },
+    {
+      "index": 40,
+      "title": "Saving Memory Movements Through Vector Processing in the DRAM",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CASES",
+      "authors": "M. A. Z. Alves, P. C. Santos et al."
+    },
+    {
+      "index": 41,
+      "title": "Beyond the Wall: Near-Data Processing for Databases",
+      "abstract": "",
+      "year": "2015",
+      "venue": "DaMoN",
+      "authors": "S. L. Xi, O. Babarinsa et al."
+    },
+    {
+      "index": 42,
+      "title": "ABC-DIMM: Alleviating the Bottleneck of Communication in DIMM-Based Near-Memory Processing with Inter-DIMM Broadcast",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ISCA",
+      "authors": "W. Sun, Z. Li et al."
+    },
+    {
+      "index": 43,
+      "title": "GraphSSD: Graph Semantics Aware SSD",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ISCA",
+      "authors": "K. K. Matam, G. Koo et al."
+    },
+    {
+      "index": 44,
+      "title": "Processing in Memory: The Terasys Massively Parallel PIM Array",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Computer",
+      "authors": "M. Gokhale, B. Holmes, and K. Iobst"
+    },
+    {
+      "index": 45,
+      "title": "Mapping Irregular Applications to DIVA, a PIM-Based Data-Intensive Architecture",
+      "abstract": "",
+      "year": "1999",
+      "venue": "SC",
+      "authors": "M. Hall, P. Kogge et al."
+    },
+    {
+      "index": 46,
+      "title": "Opportunities and Challenges of Performing Vector Operations Inside the DRAM",
+      "abstract": "",
+      "year": "2015",
+      "venue": "MEMSYS",
+      "authors": "M. A. Z. Alves, P. C. Santos et al."
+    },
+    {
+      "index": 47,
+      "title": "Livia: Data-Centric Computing Throughout the Memory Hierarchy",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ASPLOS",
+      "authors": "E. Lockerman, A. Feldmann et al."
+    },
+    {
+      "index": 48,
+      "title": "GraphPIM: Enabling Instruction-Level PIM Offloading in Graph Computing Frameworks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "HPCA",
+      "authors": "L. Nai, R. Hadidi et al."
+    },
+    {
+      "index": 49,
+      "title": "LazyPIM: An Efficient Cache Coherence Mechanism for Processing-in-Memory",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CAL",
+      "authors": "A. Boroumand, S. Ghose et al."
+    },
+    {
+      "index": 50,
+      "title": "TOP-PIM: Throughput-Oriented Programmable Processing in Memory",
+      "abstract": "",
+      "year": "2014",
+      "venue": "HPDC",
+      "authors": "D. Zhang, N. Jayasena et al."
+    },
+    {
+      "index": 51,
+      "title": "“HRL: Efficient and Flexible Reconfigurable Logic for Near-Data Processing",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 52,
+      "title": "GRIM-Filter: Fast Seed Location Filtering in DNA Read Mapping Using Processing-in-Memory Technologies",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“GRIM-Filter: Fast Seed Location Filtering in DNA Read Mapping Using Processing-in-Memory Technologies",
+      "paper_id": "1711.01177v1"
+    },
+    {
+      "index": 53,
+      "title": "A. Daglis et al",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 54,
+      "title": "“Operand Size Reconfiguration for Big Data Processing in Memory",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 55,
+      "title": "“NIM: An HMC-Based Machine for Neuron Computation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 56,
+      "title": "“TETRIS: Scalable and Efficient Neural Network Acceleration with 3D Memory",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 57,
+      "title": "“Neurocube: A Programmable Digital Neuromorphic Architecture with High-Density 3D Memory",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 58,
+      "title": "“Leveraging 3D Technologies for Hardware Security: Opportunities and Challenges",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 59,
+      "title": "“CoNDA: Efficient Cache Coherence Support for Near-Data Accelerators",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 60,
+      "title": "E. Ebrahimi et al",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 61,
+      "title": "“GenASM: A High-Performance",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 62,
+      "title": "J. Jestes et al",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 63,
+      "title": "“Scheduling Techniques for GPU Architectures with Processing-in-Memory Capabilities",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 64,
+      "title": "“Data Reorganization in Memory Using 3D-Stacked DRAM",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 65,
+      "title": "“Accelerating Pointer Chasing in 3D-Stacked Memory: Challenges",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 66,
+      "title": "“BSSync: Processing Near Memory for Machine Learning Workloads with Bounded Staleness Consistency Models",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 67,
+      "title": "Mitigating Edge Machine Learning Inference Bottlenecks: An Empirical Study on Accelerating Google Edge Models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Mitigating Edge Machine Learning Inference Bottlenecks: An Empirical Study on Accelerating Google Edge Models",
+      "paper_id": "2103.00768v1"
+    },
+    {
+      "index": 68,
+      "title": "Google Neural Network Models for Edge Devices: Analyzing and Mitigating Machine Learning Inference Bottlenecks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Google Neural Network Models for Edge Devices: Analyzing and Mitigating Machine Learning Inference Bottlenecks",
+      "paper_id": "2109.14320v1"
+    },
+    {
+      "index": 69,
+      "title": "“Polynesia: Enabling High-Performance and Energy-Efficient Hybrid Transactional/Analytical Databases with Hardware/Software Co-Design",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 70,
+      "title": "“Polynesia: Enabling Effective Hybrid Transactional/Analytical Databases with Specialized Hardware/Software Co-Design",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 71,
+      "title": "“Practical Mechanisms for Reducing Processor-Memory Data Movement in Modern Workloads",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 72,
+      "title": "R. Kanakagiri et al",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 73,
+      "title": "R. Quislant et al",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 74,
+      "title": "“NAPEL: Near-Memory Computing Application Performance Prediction via Ensemble Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 75,
+      "title": "“A 20nm 6GB Function-in-Memory DRAM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 76,
+      "title": "S.-h. Kang et al",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 77,
+      "title": "“184QPS/W 64Mb/m​m2𝑚superscript𝑚2mm^{2} 3D Logic-to-DRAM Hybrid Bonding with Process-Near-Memory Engine for Recommendation System",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 78,
+      "title": "“Accelerating Sparse Matrix-Matrix Multiplication with 3D-Stacked Logic-in-Memory Hardware",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 79,
+      "title": "C. Pfister et al",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 80,
+      "title": "Neurostream: Scalable and Energy Efficient Deep Learning with Smart Memory Cubes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Neurostream: Scalable and Energy Efficient Deep Learning with Smart Memory Cubes",
+      "paper_id": "1701.06420v3"
+    },
+    {
+      "index": 81,
+      "title": "N. Alachiotis et al",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 82,
+      "title": "“Design Space Exploration for PIM Architectures in 3D-Stacked Memories",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 83,
+      "title": "“HAMLeT: Hardware Accelerated Memory Layout Transform within 3D-Stacked DRAM",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 84,
+      "title": "“A Heterogeneous PIM Hardware-Software Co-Design for Energy-Efficient Graph Processing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 85,
+      "title": "“GraphH: A Processing-in-Memory Architecture for Large-Scale Graph Processing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 86,
+      "title": "“Processing-in-Memory for Energy-Efficient Neural Network Training: A Heterogeneous Approach",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 87,
+      "title": "“Adaptive Scheduling for Systems with Asymmetric Memory Hierarchies",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 88,
+      "title": "“iPIM: Programmable In-Memory Image Processing Accelerator using Near-Bank Architecture",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 89,
+      "title": "“DRAMA: An Architecture for Accelerated Processing Near Memory",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 90,
+      "title": "A. Farmahini-Farahani et al",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 91,
+      "title": "“Active-Routing: Compute on the Way for Near-Data Processing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 92,
+      "title": "“Lightweight SIMT Core Designs for Intelligent 3D Stacked DRAM",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 93,
+      "title": "“PIMS: A Lightweight Processing-in-Memory Accelerator for Stencil Computations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 94,
+      "title": "“GRIM-Filter: Fast Seed Filtering in Read Mapping using Emerging Memory Technologies",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 95,
+      "title": "“LazyPIM: Efficient Support for Cache Coherence in Processing-in-Memory Architectures",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 96,
+      "title": "“GraphQ: Scalable PIM-Based Graph Processing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 97,
+      "title": "“GraphP: Reducing Communication for PIM-Based Graph Processing with Efficient Data Partition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 98,
+      "title": "“Triple Engine Processor (TEP): A Heterogeneous Near-Memory Processor for Diverse Kernel Operations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 99,
+      "title": "“A Case for Near Memory Computation Inside the Smart Memory Cube",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 100,
+      "title": "M. Diener et al",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 101,
+      "title": "“Charon: Specialized Near-Memory Processing Architecture for Clearing Dead Objects in Memory",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 102,
+      "title": "“Active Memory Cube: A Processing-in-Memory Architecture for Exascale Systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 103,
+      "title": "“CAIRO: A Compiler-Assisted Technique for Enabling Instruction-Level Offloading of Processing-in-Memory",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 104,
+      "title": "“Processing in 3D Memories to Speed Up Operations on Complex Data Structures",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 105,
+      "title": "“PRIME: A Novel Processing-in-Memory Architecture for Neural Network Computation in ReRAM-Based Main Memory",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 106,
+      "title": "“ISAAC: A Convolutional Neural Network Accelerator with In-Situ Analog Arithmetic in Crossbars",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 107,
+      "title": "“Ambit: In-Memory Accelerator for Bulk Bitwise Operations Using Commodity DRAM Technology",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 108,
+      "title": "“In-DRAM Bulk Bitwise Execution Engine",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 109,
+      "title": "“DRISA: A DRAM-Based Reconfigurable In-Situ Accelerator",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 110,
+      "title": "“RowClone: Fast and Energy-Efficient In-DRAM Bulk Data Copy and Initialization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 111,
+      "title": "“The Processing Using Memory Paradigm: In-DRAM Bulk Copy",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 112,
+      "title": "“DrAcc: A DRAM Based Accelerator for Accurate CNN Inference",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 113,
+      "title": "“ELP2IM: Efficient and Low Power Bitwise Operation Processing in DRAM",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 114,
+      "title": "GraphR: Accelerating Graph Processing Using ReRAM",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“GraphR: Accelerating Graph Processing Using ReRAM",
+      "paper_id": "1708.06248v4"
+    },
+    {
+      "index": 115,
+      "title": "“PipeLayer: A Pipelined ReRAM-Based Accelerator for Deep Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 116,
+      "title": "G. Tziantzioulis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 117,
+      "title": "Neural Cache: Bit-Serial In-Cache Acceleration of Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Neural Cache: Bit-Serial In-Cache Acceleration of Deep Neural Networks",
+      "paper_id": "1805.03718v1"
+    },
+    {
+      "index": 118,
+      "title": "S. Jeloka et al",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 119,
+      "title": "“Duality Cache for Data Parallel Acceleration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 120,
+      "title": "Buddy-RAM: Improving the Performance and Efficiency of Bulk Bitwise Operations Using DRAM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Buddy-RAM: Improving the Performance and Efficiency of Bulk Bitwise Operations Using DRAM",
+      "paper_id": "1611.09988v1"
+    },
+    {
+      "index": 121,
+      "title": "“Simple Operations in Memory to Reduce Data Movement",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 122,
+      "title": "RowClone: Accelerating Data Movement and Initialization Using DRAM",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“RowClone: Accelerating Data Movement and Initialization Using DRAM",
+      "paper_id": "1805.03502v1"
+    },
+    {
+      "index": 123,
+      "title": "“Fast Bulk Bitwise AND and OR in DRAM",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 124,
+      "title": "“Pinatubo: A Processing-in-Memory Architecture for Bulk Bitwise Operations in Emerging Non-Volatile Memories",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 125,
+      "title": "G. Falcao et al",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 126,
+      "title": "G. Falcao et al",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 127,
+      "title": "“FloatPIM: In-Memory Acceleration of Deep Neural Network Training with High Precision",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 128,
+      "title": "“Sparse BD-Net: A Multiplication-Less DNN with Sparse Binarized Depth-Wise Separable Convolution",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 129,
+      "title": "Flash-Cosmos: In-Flash Bulk Bitwise Operations Using Inherent Computation Capability of NAND Flash Memory",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Flash-Cosmos: In-Flash Bulk Bitwise Operations Using Inherent Computation Capability of NAND Flash Memory",
+      "paper_id": "2209.05566v1"
+    },
+    {
+      "index": 130,
+      "title": "“Adapting the RACER Architecture to Integrate Improved In-ReRAM Logic Primitives",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 131,
+      "title": "“RACER: Bit-Pipelined Processing Using Resistive Memory",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 132,
+      "title": "“QUAC-TRNG: High-Throughput True Random Number Generation Using Quadruple Row Activation in Commodity DRAMs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 133,
+      "title": "“D-RaNGe: Using Commodity DRAM Devices to Generate True Random Numbers With Low Latency and High Throughput",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 134,
+      "title": "“The DRAM Latency PUF: Quickly Evaluating Physical Unclonable Functions by Exploiting the Latency-Reliability Tradeoff in Modern Commodity DRAM Devices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 135,
+      "title": "DR-STRaNGe: End-to-End System Design for DRAM-based True Random Number Generators",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“DR-STRaNGe: End-to-End System Design for DRAM-Based True Random Number Generators",
+      "paper_id": "2201.01385v5"
+    },
+    {
+      "index": 136,
+      "title": "PiDRAM: A Holistic End-to-end FPGA-based Framework for Processing-in-DRAM",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“PiDRAM: A Holistic End-to-End FPGA-Based Framework for Processing-in-DRAM",
+      "paper_id": "2111.00082v6"
+    },
+    {
+      "index": 137,
+      "title": "“In-Memory Low-Cost Bit-Serial Addition Using Commodity DRAM Technology",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 138,
+      "title": "“GraphiDe: A Graph Processing Accelerator Leveraging In-DRAM-Computing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 139,
+      "title": "“SCOPE: A Stochastic Computing Engine for DRAM-Based In-Situ Accelerator",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 140,
+      "title": "“Parallel Automata Processor",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 141,
+      "title": "“Hyper-AP: Enhancing Associative Processing Through A Full-Stack Optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 142,
+      "title": "“In-Memory Data Parallel Processor",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 143,
+      "title": "CODIC: A Low-Cost Substrate for Enabling Custom In-DRAM Functionalities and Optimizations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“CODIC: A Low-Cost Substrate for Enabling Custom In-DRAM Functionalities and Optimizations",
+      "paper_id": "2106.05632v1"
+    },
+    {
+      "index": 144,
+      "title": "“Ultra Low Power Associative Computing with Spin Neurons and Resistive Crossbar Memory",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 145,
+      "title": "M. Modarressi et al",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 146,
+      "title": "“ParaBit: Processing Parallel Bitwise Operations in NAND Flash Memory Based SSDs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 147,
+      "title": "P.-F. Chiu et al",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 148,
+      "title": "“A Novel Convolution Computing Paradigm Based on NOR Flash Array with High Computing Speed and Energy Efficiency",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 149,
+      "title": "“High-Performance Mixed-Signal Neurocomputing with Nanoscale Floating-Gate Memory Cell Arrays",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 150,
+      "title": "“Three-Dimensional NAND Flash for Vector–Matrix Multiplication",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 151,
+      "title": "P.-K. Hsu et al",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 152,
+      "title": "“Behemoth: A Flash-Centric Training Accelerator for Extreme-Scale {{\\{DNNs}}\\}",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 153,
+      "title": "“MemCore: Computing-in-Flash Design for Deep Neural Network Acceleration",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 154,
+      "title": "“Flash Memory Array for Efficient Implementation of Deep Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 155,
+      "title": "“S-FLASH: A NAND Flash-Based Deep Neural Network Accelerator Exploiting Bit-Level Sparsity",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 156,
+      "title": "“Neuromorphic Computing Using NAND Flash Memory Architecture with Pulse Width Modulation Scheme",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 157,
+      "title": "“3D-FPIM: An Extreme Energy-Efficient DNN Acceleration System Using 3D NAND Flash-Based In-Situ PIM Unit",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 158,
+      "title": "W.-S. Khwa et al",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 159,
+      "title": "“BLADE: An In-Cache Computing Architecture for Edge Devices",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 160,
+      "title": "C. Ramachandra et al",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 161,
+      "title": "“Bit Prudent In-Cache Acceleration of Deep Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 162,
+      "title": "“Towards a Reconfigurable Bit-Serial/Bit-Parallel Vector Accelerator Using In-Situ Processing-in-SRAM",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 163,
+      "title": "M.-S. Keel et al",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 164,
+      "title": "“Colonnade: A Reconfigurable SRAM-Based Digital Bit-Serial Compute-in-Memory Macro for Processing Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 165,
+      "title": "“C3SRAM: An In-Memory-Computing SRAM Macro Based on Robust Capacitive Coupling Computing Mechanism",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 166,
+      "title": "“A 28 nm Configurable Memory (TCAM/BCAM/SRAM) Using Push-Rule 6T Bit Cell Enabling Logic-in-Memory",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 167,
+      "title": "“Infinity Stream: Portable and Programmer-Friendly In-/Near-Memory Fusion",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 168,
+      "title": "“Energy-Efficient and High Throughput Sparse Distributed Memory Architecture",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 169,
+      "title": "S. Pampana et al",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 170,
+      "title": "“Low-Cost Inter-Linked Subarrays (LISA): Enabling Fast Inter-Subarray Data Movement in DRAM",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 171,
+      "title": "“SIMDRAM: A Framework for Bit-Serial SIMD Processing Using DRAM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 172,
+      "title": "“LAcc: Exploiting Lookup Table-Based Fast and Accurate Vector Multiplication in DRAM-Based CNN Accelerator",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 173,
+      "title": "S. Bavikadi et al",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 174,
+      "title": "M. Connolly et al",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 175,
+      "title": "P. Gonzalez et al",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 176,
+      "title": "“CHOPPER: A Compiler Infrastructure for Programmable Bit-Serial SIMD Processing Using Memory In DRAM",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 177,
+      "title": "J. Gómez-Luna et al",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 178,
+      "title": "FPGA-Based Near-Memory Accelerationof Modern Data-Intensive Applications",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“FPGA-Based Near-Memory Acceleration of Modern Data-Intensive Applications",
+      "paper_id": "2106.06433v2"
+    },
+    {
+      "index": 179,
+      "title": "“DaPPA: A Data-Parallel Framework for Processing-in-Memory Architectures",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 180,
+      "title": "J. Gómez-Luna et al",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 181,
+      "title": "A. Boroumand et al",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 182,
+      "title": "“Swordfish: A Framework for Evaluating Deep Neural Network-Based Basecalling Using Computation-In-Memory with Non-Ideal Memristors",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 183,
+      "title": "J. Gómez-Luna et al",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 184,
+      "title": "Evaluating Homomorphic Operations on a Real-World Processing-In-Memory System",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Evaluating Homomorphic Operations on a Real-World Processing-In-Memory System",
+      "paper_id": "2309.06545v2"
+    },
+    {
+      "index": 185,
+      "title": "“Evaluating Machine LearningWorkloads on Memory-Centric Computing Systems",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 186,
+      "title": "J. Gómez-Luna et al",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 187,
+      "title": "A. Nassereldine et al",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 188,
+      "title": "GenPIP: In-Memory Acceleration of Genome Analysis via Tight Integration of Basecalling and Read Mapping",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“GenPIP: In-Memory Acceleration of Genome Analysis via Tight Integration of Basecalling and Read Mapping",
+      "paper_id": "2209.08600v2"
+    },
+    {
+      "index": 189,
+      "title": "D. Diamantopoulos et al",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 190,
+      "title": "“HMC Specification Rev. 2.0",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 191,
+      "title": "“A 1.2V 8Gb 8-Channel 128GB/s High-Bandwidth Memory (HBM) Stacked DRAM with Effective Microbump I/O Test Methods Using 29nm Process and TSV",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 192,
+      "title": "“Simultaneous Multi-Layer Access: Improving 3D-Stacked Memory Bandwidth at Low Cost",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 193,
+      "title": "x16 DDR4 SDRAM Features",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 194,
+      "title": "“Fine-Grained Activation for Power Reduction in DRAM",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 195,
+      "title": "N. Muralimanohar et al",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 196,
+      "title": "“Half-DRAM: A High-Bandwidth and Low-Power DRAM Architecture from the Rethinking of Fine-Grained Activation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 197,
+      "title": "A. Pedram et al",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 198,
+      "title": "“Partial Row Activation for Low-Power DRAM System",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 199,
+      "title": "F. Bostanci et al",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 200,
+      "title": "“Energy Efficient High Bandwidth DRAM for Throughput Processors",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 201,
+      "title": "N. Chatterjee et al",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 202,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 203,
+      "title": "M. Buxton et al",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 204,
+      "title": "Shared Resource MIMD Computer",
+      "abstract": "",
+      "year": "1978",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 205,
+      "title": "“Very High-Speed Computing Systems",
+      "abstract": "",
+      "year": "1966",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 206,
+      "title": "“Parallel Operation in the Control Data 6600",
+      "abstract": "",
+      "year": "1964",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 207,
+      "title": "“Phoenix Rebirth: Scalable MapReduce on a Large-Scale Shared-Memory System",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 208,
+      "title": "“PolyBench: The Polyhedral Benchmark Suite",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 209,
+      "title": "“Rodinia: A Benchmark Suite for Heterogeneous Computing",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 210,
+      "title": "” https://t.ly/_ibe2",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 211,
+      "title": "“Adaptive-Latency DRAM: Optimizing DRAM Timing for the Common-Case",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 212,
+      "title": "“Field-Effect Transistor Memory",
+      "abstract": "",
+      "year": "1968",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 213,
+      "title": "DRAM Circuit Design: Fundamental and High-Speed Topics. John Wiley & Sons",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 214,
+      "title": "HiRA: Hidden Row Activation for Reducing Refresh Latency of Off-the-Shelf DRAM Chips",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“HiRA: Hidden Row Activation for Reducing Refresh Latency of Off-the-Shelf DRAM Chips",
+      "paper_id": "2209.10198v1"
+    },
+    {
+      "index": 215,
+      "title": "RowPress: Amplifying Read Disturbance in Modern DRAM Chips",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“RowPress: Amplifying Read Disturbance in Modern DRAM Chips",
+      "paper_id": "2306.17061v5"
+    },
+    {
+      "index": 216,
+      "title": "DRAM Circuit Design: A Tutorial",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 217,
+      "title": "“Solar-DRAM: Reducing DRAM Access Latency by Exploiting the Variation in Local Bitlines",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 218,
+      "title": "“Design-Induced Latency Variation in Modern DRAM Chips: Characterization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 219,
+      "title": "Non-Uniform Cache Structure for Wire-Delay Dominated On-Chip Caches",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 220,
+      "title": "“Cost Modelling for Vectorization on ARM",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 221,
+      "title": "D. Nuzman et al",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 222,
+      "title": "S. R. dos Santos",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 223,
+      "title": "“LLVM and Clang: Next Generation Compiler Technology",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 224,
+      "title": "LLVM Essentials. Packt Publishing Ltd",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 225,
+      "title": "Getting Started with LLVM Core Libraries. Packt Publishing Ltd",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 226,
+      "title": "“LLVM for Grad Students",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 227,
+      "title": "” https://github.com/IITH-Compilers/LLVM-Loop-Profiler",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 228,
+      "title": "FIGARO: Improving System Performance via Fine-Grained In-DRAM Data Relocation and Caching",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“FIGARO: Improving System Performance via Fine-Grained In-DRAM Data Relocation and Caching",
+      "paper_id": "2009.08437v1"
+    },
+    {
+      "index": 229,
+      "title": "K.-D. Kang et al",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 230,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 231,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 232,
+      "title": "“Worst-Case Analysis of Memory Allocation Algorithms",
+      "abstract": "",
+      "year": "1972",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 233,
+      "title": "“Auto-Vectorization in LLVM",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 234,
+      "title": "“A Compiler for Automatic Selection of Suitable Processing-in-Memory Instructions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 235,
+      "title": "“To PIM or Not for Emerging General Purpose Processing in DDR Memory Systems",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 236,
+      "title": "Introduction to Algorithms. MIT Press",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 237,
+      "title": "“Edge-Disjoint Spanning Trees and Depth-First Search",
+      "abstract": "",
+      "year": "1976",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 238,
+      "title": "“OpenMP: An Industry Standard API for Shared-Memory Programming",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 239,
+      "title": "J. Nickolls et al",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 240,
+      "title": "“NVIDIA;s Next Generation CUDA Compute Architecture: Fermi",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 241,
+      "title": "“ISA Aging: A X86 Case Study",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 242,
+      "title": "“SHRINK: Reducing the ISA Complexity via Instruction Recycling",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 243,
+      "title": "O. Lostes-Cazorla et al",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 244,
+      "title": "“A High-Performance Microarchitecture with Hardware-Programmable Functional Units",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 245,
+      "title": "Intel® 64 and IA-32 Architectures Software Developer’s Manual",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 246,
+      "title": "Cortex-A8 Technical Reference Manual",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 247,
+      "title": "“Linux and the Devicetree — The Linux Kernel Documentation",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 248,
+      "title": "Revisiting RowHammer: An Experimental Analysis of Modern DRAM Devices and Mitigation Techniques",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Revisiting RowHammer: An Experimental Analysis of Modern DRAM Devices and Mitigation Techniques",
+      "paper_id": "2005.13121v2"
+    },
+    {
+      "index": 249,
+      "title": "A Deeper Look into RowHammer’s Sensitivities: Experimental Analysis of Real DRAM Chips and Implications on Future Attacks and Defenses",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“A Deeper Look into RowHammer’s Sensitivities: Experimental Analysis of Real DRAM Chips and Implications on Future Attacks and Defenses",
+      "paper_id": "2110.10291v1"
+    },
+    {
+      "index": 250,
+      "title": "Understanding RowHammer Under Reduced Wordline Voltage: An Experimental Study Using Real DRAM Devices",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Understanding RowHammer Under Reduced Wordline Voltage: An Experimental Study Using Real DRAM Devices",
+      "paper_id": "2206.09999v1"
+    },
+    {
+      "index": 251,
+      "title": "J. Rosenblum et al",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 252,
+      "title": "“Near-Optimal Bin Packing Algorithms",
+      "abstract": "",
+      "year": "1973",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 253,
+      "title": "“A Programmer’s Description of L6",
+      "abstract": "",
+      "year": "1966",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 254,
+      "title": "B. Beckmann et al",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 255,
+      "title": "“6th Generation Intel Core Processor Family Datasheet",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 256,
+      "title": "“NVIDIA A100 Tensor Core GPU Architecture",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 257,
+      "title": "“Measuring Energy Consumption for Short Code Paths Using RAPL",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 258,
+      "title": "“NVIDIA Management Library (NVML)",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 259,
+      "title": "“CACTI 3.0: An Integrated Cache Timing",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 260,
+      "title": "R. Balasubramonian",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 261,
+      "title": "“Stall-Time Fair Memory Access Scheduling for Chip Multiprocessors",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 262,
+      "title": "“Controller for a Synchronous DRAM That Maximizes Throughput by Allowing Memory Requests and Commands to Be Issued Out of Order",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 263,
+      "title": "“SPEC CPU2006 Benchmarks",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 264,
+      "title": "C. Rodrigues et al",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 265,
+      "title": "“The SPLASH-2 Programs: Characterization and Methodological Considerations",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 266,
+      "title": "“DAMOV Benchmark Suite and Simulation Framework",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 267,
+      "title": "L. Chelini et al",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 268,
+      "title": "“NDP-RANK: Prediction and Ranking of NDP Systems Performance using Machine Learning",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 269,
+      "title": "D. Mahajan et al",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 270,
+      "title": "E. Manogaran et al",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 271,
+      "title": "“Symbiotic Jobscheduling for a Simultaneous Multithreaded Processor",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 272,
+      "title": "“System-Level Performance Metrics for Multiprogram Workloads",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 273,
+      "title": "“Demystifying Multicore Throughput Metrics",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 274,
+      "title": "“Balancing Thoughput and Fairness in SMT Processors",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 275,
+      "title": "M. Papamichael et al",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 276,
+      "title": "“ATLAS: A Scalable and High-Performance Scheduling Algorithm for Multiple Memory Controllers",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 277,
+      "title": "“The Blacklisting Memory Scheduler: Achieving High Performance and Fairness at Low Cost",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 278,
+      "title": "“BLISS: Balancing Performance",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 279,
+      "title": "V. Seshadri et al",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 280,
+      "title": "V. Seshadri et al",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 281,
+      "title": "“Fairness via Source Throttling: A Configurable and High-Performance Fairness Substrate for Multi-Core Memory Systems",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 282,
+      "title": "“Prefetch-Aware Shared Resource Management for Multi-Core Systems",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 283,
+      "title": "“Application-Aware Prioritization Mechanisms for On-Chip Networks",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 284,
+      "title": "R. Ausavarungnirun et al",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 285,
+      "title": "“Parallelism-Aware Batch Scheduling: Enhancing Both Performance and Fairness of Shared DRAM Systems",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 286,
+      "title": "“Ramulator: A Fast and Extensible DRAM Simulator",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 287,
+      "title": "V. Narasiman et al",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 288,
+      "title": "“Improving System Throughput and Fairness Simultaneously in Shared Memory CMP Systems via Dynamic Bank Partitioning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 289,
+      "title": "“MIMDRAM: An End-to-End Processing-Using-DRAM System for High-Throughput",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 290,
+      "title": "D. Leitersdorf et al",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 291,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 292,
+      "title": "“Scaling Equations for the Accurate Prediction of CMOS Device Performance from 180 Nm to 7 Nm",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 293,
+      "title": "“DIMMining: Pruning-Efficient and Parallel Graph Mining on Near-Memory-Computing",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 294,
+      "title": "“SARA: Scaling a Reconfigurable Dataflow Accelerator",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 295,
+      "title": "“FlexiDRAM: A Flexible In-DRAM Framework to Enable Parallel General-Purpose Computation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 296,
+      "title": "Professional CUDA C Programming. John Wiley & Sons",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 297,
+      "title": "“The OpenACC® Application Programming Interface",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": ""
+    }
+  ]
+}

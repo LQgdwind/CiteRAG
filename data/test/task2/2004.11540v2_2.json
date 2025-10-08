@@ -1,0 +1,459 @@
+{
+  "paper_id": "2004.11540v2",
+  "title": "Deep Global Registration",
+  "sections": {
+    "introduction": "A variety of applications, including 3D reconstruction, tracking, pose estimation, and object detection, invoke 3D registration as part of their operation   . To maximize the accuracy and speed of 3D registration, researchers have developed geometric feature descriptors  [ref]11 [ref]41 , pose optimization algorithms  [ref]45  0, and end-to-end feature learning and registration pipelines [ref]41 . In particular, recent end-to-end registration networks have proven to be effective in relation to classical pipelines.\nHowever, these end-to-end approaches have some drawbacks that limit their accuracy and applicability.\nFor example, PointNetLK  uses globally pooled features to encode the entire geometry of a point cloud, which decreases spatial acuity and registration accuracy.\nDeep closest point [ref]41 makes strong assumptions on the distribution of points and correspondences, which do not hold for partially overlapping 3D scans. In this work, we propose three modules for robust and accurate registration that resolve these drawbacks: a 6-dimensional convolutional network for correspondence confidence estimation, a differentiable Weighted Procrustes method for scalable registration, and a robust SE​(3)SE3\\text{SE}(3) optimizer for fine-tuning the final alignment. The first component is a 6-dimensional convolutional network that analyzes the geometry of 3D correspondences and estimates their accuracy.\nOur approach is inspired by a number of learning-based methods for estimating the validity of correspondences in 2D   and 3D .\nThese methods stack coordinates of correspondence pairs, forming a vector [𝐱;𝐲]∈ℝ2×D𝐱𝐲superscriptℝ2𝐷[\\mathbf{x};\\mathbf{y}]\\in\\mathbb{R}^{2\\times D} for each correspondence 𝐱,𝐲∈ℝD𝐱𝐲superscriptℝ𝐷\\mathbf{x},\\mathbf{y}\\in\\mathbb{R}^{D}.\nPrior methods treat these 2×D2𝐷2\\times D-dimensional vectors as a set, and apply global set processing models for analysis. Such models largely disregard local geometric structure. Yet the correspondences are embedded in a metric space (ℝ2×Dsuperscriptℝ2𝐷\\mathbb{R}^{2\\times D}) that induces distances and neighborhood relationships.\nIn particular, 3D correspondences form a geometric structure in 6-dimensional space  and we use a high-dimensional convolutional network to analyze the 6D structure formed by correspondences and estimate the likelihood that a given correspondence is correct (i.e., an inlier). The second component we develop is a differentiable Weighted Procrustes solver. The Procrustes method  provides a closed-form solution for rigid registration in SE​(3)SE3\\text{SE}(3). A differentiable version of the Procrustes method by Wang et al. [ref]41 has been used for end-to-end registration.\nHowever, the differentiable Procrustes method passes gradients through coordinates, which requires O​(N2)𝑂superscript𝑁2O(N^{2}) time and memory for N𝑁N keypoints, limiting the number of keypoints that can be processed by the network.\nWe use the inlier probabilities predicted by our first module (the 6D convolutional network) to guide the Procrustes method, thus forming a differentiable Weighted Procrustes method. This method passes gradients through the weights associated with correspondences rather than correspondence coordinates.\nThe computational complexity of the Weighted Procrustes method is linear in the number of correspondences, allowing the registration pipeline to use dense correspondence sets rather than sparse keypoints. This substantially increases registration accuracy. Our third component is a robust optimization module that fine-tunes the alignment produced by the Weighted Procrustes solver.\nThis optimization module minimizes a differentiable loss via gradient descent on the continuous SE​(3)SE3\\text{SE}(3) representation space 2.\nThe optimization is fast since it does not require neighbor search in the inner loop . Experimentally,\nwe validate the presented modules on a real-world pairwise registration benchmark  and large-scale scene reconstruction datasets   .\nWe show that our modules are robust, accurate, and fast in comparison to both classical global registration algorithms 0  [ref]45 and recent end-to-end approaches  [ref]41 .\nAll training and experiment scripts are available at https://github.com/chrischoy/DeepGlobalRegistration."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "4-points congruent sets for robust pairwise surface registration",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ACM Transactions on Graphics",
+      "authors": "Dror Aiger, Niloy J Mitra, and Daniel Cohen-Or"
+    },
+    {
+      "index": 1,
+      "title": "PointNetLK: Robust & efficient point cloud registration using PointNet",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Yasuhiro Aoki, Hunter Goforth, Rangaprasad Arun Srivatsan, and Simon Lucey"
+    },
+    {
+      "index": 2,
+      "title": "A method for registration of 3-d shapes",
+      "abstract": "",
+      "year": "1992",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Paul J Bes, Neil D McKay, et al."
+    },
+    {
+      "index": 3,
+      "title": "Sparse iterative closest point",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Eurographics",
+      "authors": "Sofien Bouaziz, Andrea Tagliasacchi, and Mark Pauly"
+    },
+    {
+      "index": 4,
+      "title": "3D deformable face tracking with a commodity depth camera",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ECCV",
+      "authors": "Qin Cai, David Gallup, Cha Zhang, and Zhengyou Zhang"
+    },
+    {
+      "index": 5,
+      "title": "Robust reconstruction of indoor scenes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Sungjoon Choi, Qian-Yi Zhou, and Vladlen Koltun"
+    },
+    {
+      "index": 6,
+      "title": "4D spatio-temporal ConvNets: Minkowski convolutional neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Christopher Choy, JunYoung Gwak, and Silvio Savarese"
+    },
+    {
+      "index": 7,
+      "title": "High-dimensional Convolutional Networks for Geometric Pattern Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Christopher Choy, Junha Lee, René Ranftl, Jaesik Park, and Vladlen Koltun",
+      "orig_title": "High-dimensional convolutional networks for geometric pattern recognition",
+      "paper_id": "2005.08144v1"
+    },
+    {
+      "index": 8,
+      "title": "Fully convolutional geometric features",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Christopher Choy, Jaesik Park, and Vladlen Koltun"
+    },
+    {
+      "index": 9,
+      "title": "BundleFusion: Real-time globally consistent 3D reconstruction using on-the-fly surface re-integration",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Transactions on Graphics",
+      "authors": "Angela Dai, Matthias Nießner, Michael Zollöfer, Shahram Izadi, and Christian Theobalt"
+    },
+    {
+      "index": 10,
+      "title": "PPF-FoldNet: Unsupervised Learning of Rotation Invariant 3D Local Descriptors",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Haowen Deng, Tolga Birdal, and Slobodan Ilic",
+      "orig_title": "PPF-FoldNet: Unsupervised learning of rotation invariant 3D local descriptors",
+      "paper_id": "1808.10322v1"
+    },
+    {
+      "index": 11,
+      "title": "PPFNet: Global Context Aware Local Features for Robust 3D Point Matching",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Haowen Deng, Tolga Birdal, and Slobodan Ilic",
+      "orig_title": "PPFNet: Global context aware local features for robust 3D point matching",
+      "paper_id": "1802.02669v2"
+    },
+    {
+      "index": 12,
+      "title": "Are we ready for autonomous driving? the kitti vision benchmark suite",
+      "abstract": "",
+      "year": "2012",
+      "venue": "CVPR",
+      "authors": "Andreas Geiger, Philip Lenz, and Raquel Urtasun"
+    },
+    {
+      "index": 13,
+      "title": "The Perfect Match: 3D Point Cloud Matching with Smoothed Densities",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Zan Gojcic, Caifa Zhou, Jan Dirk Wegner, and Andreas Wieser",
+      "orig_title": "The perfect match: 3D point cloud matching with smoothed densities",
+      "paper_id": "1811.06879v3"
+    },
+    {
+      "index": 14,
+      "title": "Generalized procrustes analysis",
+      "abstract": "",
+      "year": "1975",
+      "venue": "Psychometrika",
+      "authors": "John C Gower"
+    },
+    {
+      "index": 15,
+      "title": "3D Semantic Segmentation with Submanifold Sparse Convolutional Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Benjamin Graham, Martin Engelcke, and Laurens van der Maaten",
+      "orig_title": "3D semantic segmentation with submanifold sparse convolutional networks",
+      "paper_id": "1711.10275v1"
+    },
+    {
+      "index": 16,
+      "title": "Fine-to-coarse global registration of RGB-D scans",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Maciej Halber and Thomas Funkhouser"
+    },
+    {
+      "index": 17,
+      "title": "A benchmark for RGB-D visual odometry, 3D reconstruction and SLAM",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICRA",
+      "authors": "Ankur Handa, Thomas Whelan, John McDonald, and Andrew J. Davison"
+    },
+    {
+      "index": 18,
+      "title": "Registration with the point cloud library: A modular framework for aligning in 3-D",
+      "abstract": "",
+      "year": "2015",
+      "venue": "RA-L",
+      "authors": "Dirk Holz, Alexandru E Ichim, Federico Tombari, Radu B Rusu, and Sven Behnke"
+    },
+    {
+      "index": 19,
+      "title": "Using spin images for efficient object recognition in cluttered 3D scenes",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Pattern Analysis and Machine Intelligence",
+      "authors": "Andrew E. Johnson and Martial Hebert"
+    },
+    {
+      "index": 20,
+      "title": "Real-time large-scale dense 3D reconstruction with loop closure",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "Olaf Kähler, V. A. Prisacariu, and David W. Murray"
+    },
+    {
+      "index": 21,
+      "title": "Learning Compact Geometric Features",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Marc Khoury, Qian-Yi Zhou, and Vladlen Koltun",
+      "orig_title": "Learning compact geometric features",
+      "paper_id": "1709.05056v1"
+    },
+    {
+      "index": 22,
+      "title": "g2o: A general framework for graph optimization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICRA",
+      "authors": "Rainer Kümmerle, Giorgio Grisetti, Hauke Strasdat, Kurt Konolige, and Wolfram Burgard"
+    },
+    {
+      "index": 23,
+      "title": "An iterative image registration technique with an application to stereo vision",
+      "abstract": "",
+      "year": "1981",
+      "venue": "DARPA Image Understanding Workshop",
+      "authors": "Bruce D Lucas and Takeo Kanade"
+    },
+    {
+      "index": 24,
+      "title": "A global solution to sparse correspondence problems",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Pattern Analysis and Machine Intelligence",
+      "authors": "João Maciel and Joao Paulo Costeira"
+    },
+    {
+      "index": 25,
+      "title": "Fully automatic registration of 3D point clouds",
+      "abstract": "",
+      "year": "2006",
+      "venue": "CVPR",
+      "authors": "Ameesh Makadia, Alexander Patterson, and Kostas Daniilidis"
+    },
+    {
+      "index": 26,
+      "title": "Speeding Up Iterative Closest Point Using Stochastic Gradient Descent",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICRA",
+      "authors": "Fahira Afzal Maken, Fabio Ramos, and Lionel Ott",
+      "orig_title": "Speeding up iterative closest point using stochastic gradient descent",
+      "paper_id": "1907.09133v1"
+    },
+    {
+      "index": 27,
+      "title": "Point registration via efficient convex relaxation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Transactions on Graphics",
+      "authors": "Haggai Maron, Nadav Dym, Itay Kezurer, Shahar Kovalsky, and Yaron Lipman"
+    },
+    {
+      "index": 28,
+      "title": "Super 4PCS fast global pointcloud registration via smart indexing",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computer Graphics Forum",
+      "authors": "Nicolas Mellado, Dror Aiger, and Niloy J Mitra"
+    },
+    {
+      "index": 29,
+      "title": "ORB-SLAM: a Versatile and Accurate Monocular SLAM System",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Transactions on Robotics",
+      "authors": "Montiel J. M. M. Mur-Artal, Raúl and Juan D. Tardós",
+      "orig_title": "ORB-SLAM: A versatile and accurate monocular SLAM system",
+      "paper_id": "1502.00956v2"
+    },
+    {
+      "index": 30,
+      "title": "3DRegNet: A Deep Neural Network for 3D Point Registration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv",
+      "authors": "G. Dias Pais, Pedro Miraldo, Srikumar Ramalingam, Jacinto C. Nascimento, Venu Madhav Govindu, and Rama Chellappa",
+      "orig_title": "3DRegNet: A deep neural network for 3D point registration",
+      "paper_id": "1904.01701v2"
+    },
+    {
+      "index": 31,
+      "title": "Colored point cloud registration revisited",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Jaesik Park, Qian-Yi Zhou, and Vladlen Koltun"
+    },
+    {
+      "index": 32,
+      "title": "Realtime and robust hand tracking from depth",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CVPR",
+      "authors": "Chen Qian, Xiao Sun, Yichen Wei, Xiaoou Tang, and Jian Sun"
+    },
+    {
+      "index": 33,
+      "title": "Deep fundamental matrix estimation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "René Ranftl and Vladlen Koltun"
+    },
+    {
+      "index": 34,
+      "title": "Fast point feature histograms (FPFH) for 3D registration",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ICRA",
+      "authors": "R. B. Rusu, N. Blodow, and M. Beetz"
+    },
+    {
+      "index": 35,
+      "title": "Aligning point cloud views using persistent feature histograms",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IROS",
+      "authors": "R. B. Rusu, N. Blodow, Z. C. Marton, and M. Beetz"
+    },
+    {
+      "index": 36,
+      "title": "SHOT: Unique signatures of histograms for surface and texture description",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CVIU",
+      "authors": "S. Salti, F. Tombari, and L. di Stefano"
+    },
+    {
+      "index": 37,
+      "title": "Efficient RANSAC for point-cloud shape detection",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Computer Graphics Forum",
+      "authors": "Ruwen Schnabel, Roland Wahl, and Reinhard Klein"
+    },
+    {
+      "index": 38,
+      "title": "BAD SLAM: Bundle adjusted direct RGB-D SLAM",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Thomas Schops, Torsten Sattler, and Marc Pollefeys"
+    },
+    {
+      "index": 39,
+      "title": "Unique shape context for 3D data description",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ACM Workshop on 3D Object Retrieval",
+      "authors": "F. Tombari, S. Salti, and L. Di Stefano"
+    },
+    {
+      "index": 40,
+      "title": "Deep Closest Point: Learning Representations for Point Cloud Registration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Yue Wang and Justin M. Solomon",
+      "orig_title": "Deep closest point: Learning representations for point cloud registration",
+      "paper_id": "1905.03304v1"
+    },
+    {
+      "index": 41,
+      "title": "PRNet: Self-Supervised Learning for Partial-to-Partial Registration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Yue Wang and Justin M. Solomon",
+      "orig_title": "PRNet: Self-supervised learning for partial-to-partial registration",
+      "paper_id": "1910.12240v2"
+    },
+    {
+      "index": 42,
+      "title": "ElasticFusion: Dense SLAM without a pose graph",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Robotics: Science and Systems",
+      "authors": "Thomas Whelan, Stefan Leutenegger, Renato F. Salas-Moreno, Ben Glocker, and Andrew J. Davison"
+    },
+    {
+      "index": 43,
+      "title": "A Polynomial-time Solution for Robust Registration with Extreme Outlier Rates",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Robotics: Science and Systems",
+      "authors": "Heng Yang and Luca Carlone",
+      "orig_title": "A polynomial-time solution for robust registration with extreme outlier rates",
+      "paper_id": "1903.08588v2"
+    },
+    {
+      "index": 44,
+      "title": "Go-ICP: A Globally Optimal Solution to 3D ICP Point-Set Registration",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Pattern Analysis and Machine Intelligence",
+      "authors": "Jiaolong Yang, Hongdong Li, Dylan Campbell, and Yunde Jia",
+      "orig_title": "Go-ICP: A globally optimal solution to 3D ICP point-set registration",
+      "paper_id": "1605.03344v1"
+    },
+    {
+      "index": 45,
+      "title": "Learning to Find Good Correspondences",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Kwang Moo Yi, Eduard Trulls, Yuki Ono, Vincent Lepetit, Mathieu Salzmann, and Pascal Fua",
+      "orig_title": "Learning to find good correspondences",
+      "paper_id": "1711.05971v2"
+    },
+    {
+      "index": 46,
+      "title": "3DMatch: Learning Local Geometric Descriptors from RGB-D Reconstructions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Andy Zeng, Shuran Song, Matthias Nießner, Matthew Fisher, Jianxiong Xiao, and Thomas Funkhouser",
+      "orig_title": "3DMatch: Learning local geometric descriptors from RGB-D reconstructions",
+      "paper_id": "1603.08182v3"
+    },
+    {
+      "index": 47,
+      "title": "Iterative point matching for registration of free-form curves and surfaces",
+      "abstract": "",
+      "year": "1994",
+      "venue": "IJCV",
+      "authors": "Zhengyou Zhang"
+    },
+    {
+      "index": 48,
+      "title": "NM-Net: Mining Reliable Neighbors for Robust Feature Correspondences",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Chen Zhao, Zhiguo Cao, Chi Li, Xin Li, and Jiaqi Yang",
+      "orig_title": "NM-Net: Mining reliable neighbors for robust feature correspondences",
+      "paper_id": "1904.00320v1"
+    },
+    {
+      "index": 49,
+      "title": "Fast global registration",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "Qian-Yi Zhou, Jaesik Park, and Vladlen Koltun"
+    },
+    {
+      "index": 50,
+      "title": "Open3D: A modern library for 3D data processing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv",
+      "authors": "Qian-Yi Zhou, Jaesik Park, and Vladlen Koltun"
+    },
+    {
+      "index": 51,
+      "title": "On the Continuity of Rotation Representations in Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Yi Zhou, Connelly Barnes, Jingwan Lu, Jimei Yang, and Hao Li",
+      "orig_title": "On the continuity of rotation representations in neural networks",
+      "paper_id": "1812.07035v4"
+    }
+  ]
+}

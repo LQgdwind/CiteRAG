@@ -1,0 +1,527 @@
+{
+  "paper_id": "2110.11721v2",
+  "title": "Projection-Free Stochastic Bi-level Optimization",
+  "sections": {
+    "i-a motivating example": "Matrix Completion with Denoising: Let us consider the matrix completion problem with the goal of recovering the missing entries from incomplete and noisy observation of a small and random subset of its entries. In general, for problems without noise, the data matrix can be modeled as a low-rank matrix motivating the use of the nuclear norm constraint . Low-rank matrix completion problem arises in a wide range of applications such as image processing , multi-task learning , and collaborative filtering . However, under noisy observations, directly solving the matrix completion problem with just the nuclear norm constraints can result in suboptimal performance [ref]33 . Further, noise is present in many vision applications  , and using only low-rank priors is not sufficient for recovery of the underlying matrix. A common approach to tackle the noise is to apply a denoising algorithm as a pre-processing step. In general however, it is necessary to apply some heuristics, since denoising algorithms requires access to the full matrix, which is not available in the pre-processing stage. Denoising is also impractical in online settings, where a random subset of the entries of the matrix are observed at every iteration. The bilevel optimization framework provides a way out, allowing the incorporation of denoisining step withing the inner-level subproblem. Mathematically, the bi-level matrix completion with denoising problem can be written as where 𝐌∈ℝn×m𝐌superscriptℝ𝑛𝑚{\\mathbf{M}}\\in\\mathbb{R}^{n\\times m} is the given incomplete noisy matrix, ‖𝐕‖1:=∑i,j|𝐕i,j|assignsubscriptnorm𝐕1subscript𝑖𝑗subscript𝐕𝑖𝑗\\left\\|{\\mathbf{V}}\\right\\|_{1}:=\\sum_{i,j}|{\\mathbf{V}}_{i,j}| is the sum-absolute-value (ℓ1subscriptℓ1\\ell_{1}) norm, and λ1subscript𝜆1\\lambda_{1} and λ2subscript𝜆2\\lambda_{2} are regularization parameters. Note that the regularization over the discrepancy between 𝐗𝐗{\\mathbf{X}} and denoised matrix 𝐘𝐘{\\mathbf{Y}} results in bilevel formulation (3). A similar technique in deterministic settings is utilized in various other applications in machine learning and signal processing problems  .\nObserve that (3) is in the form of bilevel formulation (1); however, when the entries are revealed in the form of randomly selected subsets Ω1t⊂Ω1superscriptsubscriptΩ1𝑡subscriptΩ1\\Omega_{1}^{t}\\subset\\Omega_{1} and Ω2t⊂Ω2superscriptsubscriptΩ2𝑡subscriptΩ2\\Omega_{2}^{t}\\subset\\Omega_{2} at every iteration, it becomes stochastic in nature (cf. Sec. II). The main challenge here is due to the nuclear norm constraint, which makes it quite computationally expensive (sometimes even impractical) to solve (3) using projection-based bilevel algorithms. In Sec. V-A, we will show experimentally that the proposed algorithm SBFW is best suited to address such challenges in large-scale bi-level stochastic optimization problems."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Meta-learning with implicit gradients",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1909.04630",
+      "authors": "A. Rajeswaran, C. Finn, S. Kakade, and S. Levine"
+    },
+    {
+      "index": 1,
+      "title": "Coresets via Bilevel Optimization for Continual Learning and Streaming",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.03875",
+      "authors": "Z. Borsos, M. Mutnỳ, and A. Krause",
+      "orig_title": "Coresets via bilevel optimization for continual learning and streaming",
+      "paper_id": "2006.03875v2"
+    },
+    {
+      "index": 2,
+      "title": "Bi-level actor-critic for multi-agent coordination",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "H. Zhang, W. Chen, Z. Huang, M. Li, Y. Yang, W. Zhang, and J. Wang"
+    },
+    {
+      "index": 3,
+      "title": "On the Iteration Complexity of Hypergradient Computation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "R. Grazzi, L. Franceschi, M. Pontil, and S. Salzo",
+      "orig_title": "On the iteration complexity of hypergradient computation",
+      "paper_id": "2006.16218v2"
+    },
+    {
+      "index": 4,
+      "title": "Bilevel Programming for Hyperparameter Optimization and Meta-Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "L. Franceschi, P. Frasconi, S. Salzo, R. Grazzi, and M. Pontil",
+      "orig_title": "Bilevel programming for hyperparameter optimization and meta-learning",
+      "paper_id": "1806.04910v2"
+    },
+    {
+      "index": 5,
+      "title": "Bilevel Optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Springer",
+      "authors": "S. Dempe and A. Zemkoho"
+    },
+    {
+      "index": 6,
+      "title": "Approximation methods for bilevel programming",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1802.02246",
+      "authors": "S. Ghadimi and M. Wang"
+    },
+    {
+      "index": 7,
+      "title": "Provably Faster Algorithms for Bilevel Optimization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.04692",
+      "authors": "J. Yang, K. Ji, and Y. Liang",
+      "orig_title": "Provably faster algorithms for bilevel optimization",
+      "paper_id": "2106.04692v2"
+    },
+    {
+      "index": 8,
+      "title": "A single-timescale stochastic bilevel optimization method",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2102.04671",
+      "authors": "T. Chen, Y. Sun, and W. Yin"
+    },
+    {
+      "index": 9,
+      "title": "Stochastic Conditional Gradient Methods: From Convex Minimization to Submodular Maximization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "A. Mokhtari, H. Hassani, and A. Karbasi",
+      "orig_title": "Stochastic conditional gradient methods: From convex minimization to submodular maximization",
+      "paper_id": "1804.09554v2"
+    },
+    {
+      "index": 10,
+      "title": "Efficient projection-free online methods with stochastic recursive gradient.",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "J. Xie, Z. Shen, C. Zhang, B. Wang, and H. Qian"
+    },
+    {
+      "index": 11,
+      "title": "One Sample Stochastic Frank-Wolfe",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Artificial Intelligence and Statistics",
+      "authors": "M. Zhang, Z. Shen, A. Mokhtari, H. Hassani, and A. Karbasi",
+      "orig_title": "One sample stochastic frank-wolfe",
+      "paper_id": "1910.04322v1"
+    },
+    {
+      "index": 12,
+      "title": "Stochastic compositional gradient descent: algorithms for minimizing compositions of expected-value functions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Mathematical Programming",
+      "authors": "M. Wang, E. X. Fang, and H. Liu"
+    },
+    {
+      "index": 13,
+      "title": "Accelerating stochastic composition optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "M. Wang, J. Liu, and E. X. Fang"
+    },
+    {
+      "index": 14,
+      "title": "A single timescale stochastic approximation method for nested stochastic optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIAM Journal on Optimization",
+      "authors": "S. Ghadimi, A. Ruszczynski, and M. Wang"
+    },
+    {
+      "index": 15,
+      "title": "Solving stochastic compositional optimization is nearly as easy as solving stochastic optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2008.10847",
+      "authors": "T. Chen, Y. Sun, and W. Yin"
+    },
+    {
+      "index": 16,
+      "title": "Bilevel optimization: Nonasymptotic analysis and faster algorithms",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2010.07962",
+      "authors": "K. Ji, J. Yang, and Y. Liang"
+    },
+    {
+      "index": 17,
+      "title": "A momentum-assisted single-timescale stochastic approximation algorithm for bilevel optimization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv e-prints",
+      "authors": "P. Khanduri, S. Zeng, M. Hong, H.-T. Wai, Z. Wang, and Z. Yang"
+    },
+    {
+      "index": 18,
+      "title": "A two-timescale framework for bilevel optimization: Complexity analysis and application to actor-critic",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2007.05170",
+      "authors": "M. Hong, H.-T. Wai, Z. Wang, and Z. Yang"
+    },
+    {
+      "index": 19,
+      "title": "A Near-Optimal Algorithm for Stochastic Bilevel Optimization via Double-Momentum",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2102.07367",
+      "authors": "P. Khanduri, S. Zeng, M. Hong, H.-T. Wai, Z. Wang, and Z. Yang",
+      "orig_title": "A near-optimal algorithm for stochastic bilevel optimization via double-momentum",
+      "paper_id": "2102.07367v3"
+    },
+    {
+      "index": 20,
+      "title": "Tighter Analysis of Alternating Stochastic Gradient Method for Stochastic Nested Problems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.13781",
+      "authors": "T. Chen, Y. Sun, and W. Yin",
+      "orig_title": "Tighter analysis of alternating stochastic gradient method for stochastic nested problems",
+      "paper_id": "2106.13781v1"
+    },
+    {
+      "index": 21,
+      "title": "Personalized federated learning with theoretical guarantees: A model-agnostic meta-learning approach",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Fallah, A. Mokhtari, and A. Ozdaglar"
+    },
+    {
+      "index": 22,
+      "title": "Revisiting frank-wolfe: Projection-free sparse convex optimization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "International Conference on Machine Learning",
+      "authors": "M. Jaggi"
+    },
+    {
+      "index": 23,
+      "title": "An algorithm for quadratic programming",
+      "abstract": "",
+      "year": "1956",
+      "venue": "Naval research logistics quarterly",
+      "authors": "M. Frank, P. Wolfe et al."
+    },
+    {
+      "index": 24,
+      "title": "Zeroth and First Order Stochastic Frank-Wolfe Algorithms for Constrained Optimization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Signal Processing",
+      "authors": "Z. Akhtar and K. Rajawat",
+      "orig_title": "Zeroth and first order stochastic frank-wolfe algorithms for constrained optimization",
+      "paper_id": "2107.06534v2"
+    },
+    {
+      "index": 25,
+      "title": "Enhanced Bilevel Optimization via Bregman Distance",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2107.12301",
+      "authors": "F. Huang and H. Huang",
+      "orig_title": "Enhanced bilevel optimization via bregman distance",
+      "paper_id": "2107.12301v3"
+    },
+    {
+      "index": 26,
+      "title": "Sparse model-agnostic meta-learning algorithm for few-shot learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 2nd China Symposium on Cognitive Computing and Hybrid Intelligence (CCHI)",
+      "authors": "S. Gai and D. Wang"
+    },
+    {
+      "index": 27,
+      "title": "Bilevel methods for image reconstruction",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2109.09610",
+      "authors": "C. Crockett and J. A. Fessler"
+    },
+    {
+      "index": 28,
+      "title": "Low-rank matrix completion using alternating minimization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM symposium on Theory of computing",
+      "authors": "P. Jain, P. Netrapalli, and S. Sanghavi"
+    },
+    {
+      "index": 29,
+      "title": "Low-rank quaternion approximation for color image processing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "Y. Chen, X. Xiao, and Y. Zhou"
+    },
+    {
+      "index": 30,
+      "title": "Multi-task feature learning",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Evgeniou and M. Pontil"
+    },
+    {
+      "index": 31,
+      "title": "Transfer learning for collaborative filtering via a rating-matrix generative model",
+      "abstract": "",
+      "year": "2009",
+      "venue": "26th annual international conference on machine learning",
+      "authors": "B. Li, Q. Yang, and X. Xue"
+    },
+    {
+      "index": 32,
+      "title": "Simultaneous visual data completion and denoising based on tensor rank and total variation minimization and its primal-dual splitting algorithm",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "T. Yokota and H. Hontani"
+    },
+    {
+      "index": 33,
+      "title": "Low-rank matrix completion and denoising under Poisson noise",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Information and Inference: A Journal of the IMA",
+      "authors": "A. D. McRae and M. A. Davenport",
+      "orig_title": "Low-rank matrix completion and denoising under poisson noise",
+      "paper_id": "1907.05325v2"
+    },
+    {
+      "index": 34,
+      "title": "Robust video denoising using low rank matrix completion",
+      "abstract": "",
+      "year": "2010",
+      "venue": "2010 IEEE Computer Society Conference on Computer Vision and Pattern Recognition",
+      "authors": "H. Ji, C. Liu, Z. Shen, and Y. Xu"
+    },
+    {
+      "index": 35,
+      "title": "Matrix completion from noisy entries",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Advances in neural information processing systems",
+      "authors": "R. Keshavan, A. Montanari, and S. Oh"
+    },
+    {
+      "index": 36,
+      "title": "Supervised learning of sparsity-promoting regularizers for denoising",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.05521",
+      "authors": "M. T. McCann and S. Ravishankar"
+    },
+    {
+      "index": 37,
+      "title": "Motivating bilevel approaches to filter learning: A case study",
+      "abstract": "",
+      "year": "2021",
+      "venue": "2021 IEEE International Conference on Image Processing (ICIP)",
+      "authors": "C. Crockett and J. A. Fessler"
+    },
+    {
+      "index": 38,
+      "title": "The theory of the market economy",
+      "abstract": "",
+      "year": "1952",
+      "venue": "Oxford University Press",
+      "authors": "H. Von Stackelberg and S. H. Von"
+    },
+    {
+      "index": 39,
+      "title": "Bilevel optimization and machine learning",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE World Congress on Computational Intelligence",
+      "authors": "K. P. Bennett, G. Kunapuli, J. Hu, and J.-S. Pang"
+    },
+    {
+      "index": 40,
+      "title": "BiAdam: Fast Adaptive Bilevel Optimization Methods",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2106.11396",
+      "authors": "F. Huang and H. Huang",
+      "orig_title": "Biadam: Fast adaptive bilevel optimization methods",
+      "paper_id": "2106.11396v4"
+    },
+    {
+      "index": 41,
+      "title": "Momentum-Based Variance Reduction in Non-Convex SGD",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1905.10018",
+      "authors": "A. Cutkosky and F. Orabona",
+      "orig_title": "Momentum-based variance reduction in non-convex sgd",
+      "paper_id": "1905.10018v3"
+    },
+    {
+      "index": 42,
+      "title": "Stochastic recursive variance reduction for efficient smooth non-convex compositional optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1912.13515",
+      "authors": "H. Yuan, X. Lian, and J. Liu"
+    },
+    {
+      "index": 43,
+      "title": "Stochastic recursive momentum method for non-convex compositional optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.01688",
+      "authors": "J. Yang and W. Hu"
+    },
+    {
+      "index": 44,
+      "title": "Stochastic Compositional Gradient Descent under Compositional Csonstraints",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2012.09400",
+      "authors": "S. T. Thomdapu, K. Rajawat et al.",
+      "orig_title": "Stochastic compositional gradient descent under compositional constraints",
+      "paper_id": "2012.09400v4"
+    },
+    {
+      "index": 45,
+      "title": "Variance reduced methods for non-convex composition optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.04416",
+      "authors": "L. Liu, J. Liu, and D. Tao"
+    },
+    {
+      "index": 46,
+      "title": "Accelerated Method for Stochastic Composition Optimization with Nonsmooth Regularization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Z. Huo, B. Gu, J. Liu, and H. Huang",
+      "orig_title": "Accelerated method for stochastic composition optimization with nonsmooth regularization",
+      "paper_id": "1711.03937v2"
+    },
+    {
+      "index": 47,
+      "title": "Efficient smooth non-convex stochastic compositional optimization via stochastic recursive gradient descent",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "H. Yuan, X. Lian, C. J. Li, and J. Liu"
+    },
+    {
+      "index": 48,
+      "title": "Robust stochastic approximation approach to stochastic programming",
+      "abstract": "",
+      "year": "2009",
+      "venue": "SIAM Journal on optimization",
+      "authors": "A. Nemirovski, A. Juditsky, G. Lan, and A. Shapiro"
+    },
+    {
+      "index": 49,
+      "title": "Stochastic proximal gradient descent with acceleration techniques",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Nitanda"
+    },
+    {
+      "index": 50,
+      "title": "An optimal method for stochastic composite optimization",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Mathematical Programming",
+      "authors": "G. Lan"
+    },
+    {
+      "index": 51,
+      "title": "Variance-Reduced and Projection-Free Stochastic Optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Machine Learning",
+      "authors": "E. Hazan and H. Luo",
+      "orig_title": "Variance-reduced and projection-free stochastic optimization",
+      "paper_id": "1602.02101v2"
+    },
+    {
+      "index": 52,
+      "title": "Stochastic frank-wolfe methods for nonconvex optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "54th Annual Allerton Conference on Communication, Control, and Computing (Allerton)",
+      "authors": "S. J. Reddi, S. Sra, B. Póczos, and A. Smola"
+    },
+    {
+      "index": 53,
+      "title": "Conservative Stochastic Optimization with Expectation Constraints",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Signal Processing",
+      "authors": "Z. Akhtar, A. S. Bedi, and K. Rajawat",
+      "orig_title": "Conservative stochastic optimization with expectation constraints",
+      "paper_id": "2008.05758v2"
+    },
+    {
+      "index": 54,
+      "title": "Stochastic conditional gradient++:(non) convex minimization and continuous submodular maximization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIAM Journal on Optimization",
+      "authors": "H. Hassani, A. Karbasi, A. Mokhtari, and Z. Shen"
+    },
+    {
+      "index": 55,
+      "title": "A stochastic compositional gradient method using markov samples",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 Winter Simulation Conference (WSC)",
+      "authors": "M. Wang and J. Liu"
+    },
+    {
+      "index": 56,
+      "title": "First-order methods in optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIAM",
+      "authors": "A. Beck"
+    },
+    {
+      "index": 57,
+      "title": "Convergence Rate of Frank-Wolfe for Non-Convex Objectives",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1607.00345",
+      "authors": "S. Lacoste-Julien",
+      "orig_title": "Convergence rate of frank-wolfe for non-convex objectives",
+      "paper_id": "1607.00345v1"
+    },
+    {
+      "index": 58,
+      "title": "A stochastic composite gradient method with incremental variance reduction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.10186",
+      "authors": "J. Zhang and L. Xiao"
+    },
+    {
+      "index": 59,
+      "title": "Investigating Practical Linear Temporal Difference Learning ​​​",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1602.08771",
+      "authors": "A. White and M. White",
+      "orig_title": "Investigating practical linear temporal difference learning",
+      "paper_id": "1602.08771v2"
+    }
+  ]
+}

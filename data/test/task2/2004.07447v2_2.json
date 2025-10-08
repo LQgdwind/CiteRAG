@@ -1,0 +1,419 @@
+{
+  "paper_id": "2004.07447v2",
+  "title": "Resolving the Optimal Metric Distortion Conjecture",
+  "sections": {
+    "introduction": "In the metric distortion problem, we are given two finite (potentially non-disjoint) sets V𝑉V and C𝐶C that lie in the same metric space. If we had access to the distance metric d𝑑d over V∪C𝑉𝐶V\\cup C, we could compute a point c∗∈Csuperscript𝑐𝐶c^{*}\\in C that minimizes its total distance to the points in V𝑉V, i.e., c∗∈arg​minc∈C​∑i∈Vd​(i,c)superscript𝑐subscriptargmin𝑐𝐶subscript𝑖𝑉𝑑𝑖𝑐c^{*}\\in\\operatorname*{arg\\,min}_{c\\in C}\\sum_{i\\in V}d(i,c). However, rather than having access to the exact distances, we are given, for each point i∈V𝑖𝑉i\\in V, a ranking σisubscript𝜎𝑖\\sigma_{i} over the points in C𝐶C by their distance to i𝑖i (with ties broken arbitrarily). Given only this collection of rankings σ=(σi)i∈V𝜎subscriptsubscript𝜎𝑖𝑖𝑉\\sigma=(\\sigma_{i})_{i\\in V}, we need to design an algorithm (a social choice rule) that picks a point c^∈C^𝑐𝐶\\widehat{c}\\in C (possibly in a randomized fashion), and we are interested in its worst-case approximation ratio 𝔼[∑i∈Vd​(i,c^)]/∑i∈Vd​(i,c∗)𝔼delimited-[]subscript𝑖𝑉𝑑𝑖^𝑐subscript𝑖𝑉𝑑𝑖superscript𝑐\\mathop{\\mathbb{E}}[\\sum_{i\\in V}d(i,\\widehat{c})]/\\sum_{i\\in V}d(i,c^{*}), where the expectation is over randomization of the algorithm. This worst-case approximation ratio is known as the distortion of the algorithm in this framework. Note that the need for approximation stems not from computational constraints, but from the lack of full information. Our main question is: To what extent can we minimize the total distance using only ordinal information regarding pairwise distances? An interesting motivating example for this question stems from voting theory, where V𝑉V is a set of voters, C𝐶C is a set of candidates, and the distance between voters and candidates corresponds to the distance of their ideologies with respect to different issues. This model, inspired by spatial models of voting from the political science literature, such as the Downsian proximity model [ref]26, has recently become popular in the computer science literature   [ref]44. An alternative, possibly more concrete, interpretation of these distances can also be derived through the well-studied problem of facility location [ref]21  . In this case V𝑉V corresponds to a set of customers and C𝐶C is the set of feasible locations for a new facility to be opened; the distance measure between customers and locations could correspond to the actual physical distance between them, or the time or cost required for a customer to reach each location. In both cases, the most common way to elicit the preferences of the voters, or customers, is in the form of a ranking of the available options (e.g., see [15, Part I] or ), and the goal is to pick an outcome that minimizes the total distance. Centuries of research on voting theory has produced a plethora of voting rules that choose an outcome using the ranked preferences of voters as input. In recent work, starting with Anshelevich et al. , researchers have analyzed the performance of these voting rules using the metric distortion framework described above, which enables a quantitative comparison among them.\nAnshelevich et al.  showed that no deterministic algorithm\ncan achieve a distortion better than 333, while a popular voting rule known as Copeland’s rule comes close, by achieving distortion 555. Informally, Copeland’s rule measures the strength of each candidate c𝑐c as the number of candidates c′superscript𝑐′c^{\\prime} defeated by c𝑐c in a pairwise election (i.e., the candidates c′superscript𝑐′c^{\\prime} that are ranked below c𝑐c by the majority of voters), and picks a candidate with the greatest strength. They also analyzed the distortion of other popular voting rules such as plurality, Borda count, k𝑘k-approval, and veto, and showed that their distortion increases linearly with the number of voters or candidates.\nSubsequently, Skowron and Elkind  analyzed another popular voting rule, known as single transferable vote (STV), and showed that its distortion grows logarithmically in the number of candidates. The first deterministic algorithm to break the bound of 555 was very recently proposed by Munagala and Wang [ref]44, who designed a novel deterministic algorithm that achieves a distortion of 2+5≈4.236254.2362+\\sqrt{5}\\approx 4.236. Their algorithm does not even require access to voters’ full ordinal preferences. It takes as input only the weighted tournament graph, which contains, for every pair of candidates, the number of voters that prefer one over another. They proved that 2+5252+\\sqrt{5} is the best distortion of any deterministic algorithm with this limited input, and they conjectured that with full ordinal preferences, the best possible distortion should be 333, outlining a sufficient condition for achieving distortion 333. However, they were unable to prove that there always exists a candidate satisfying their sufficient condition.\nIndependently, Kempe  derived the same bound of 2+5252+\\sqrt{5} using a linear programming duality framework, and provided several alternative formulations of the sufficient condition outlined by Munagala and Wang [ref]44. He used the linear programming duality framework to show that the distortion of two social choice rules, the ranked pairs and Schulze’s rule, grows as the square root of the number of candidates, thus disproving a conjecture by Anshelevich et al.  that ranked pairs might have distortion 333 (this conjecture was also earlier disproved by Goel et al. ).\nThe main result of our paper is a culmination of this line of work in the form of a novel deterministic algorithm that guarantees the optimal distortion of 3."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A truthful cardinal mechanism for one-sided matching",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM-SIAM Symposium on Discrete Algorithms (SODA)",
+      "authors": "R. Abebe, R. Cole, V. Gkatzelis, and J. D. Hartline"
+    },
+    {
+      "index": 1,
+      "title": "Utilitarians without utilities: Maximizing social welfare for graph problems using only ordinal preferences",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "B. Abramowitz and E. Anshelevich"
+    },
+    {
+      "index": 2,
+      "title": "Awareness of voter passion greatly improves the distortion of metric social choice",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Conference on Web and Internet Economics (WINE)",
+      "authors": "B. Abramowitz, E. Anshelevich, and W. Zhu"
+    },
+    {
+      "index": 3,
+      "title": "Sum of us: Strategyproof selection from the selectors",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Conference on Theoretical Aspects of Rationality and Knowledge (TARK)",
+      "authors": "N. Alon, F. Fischer, A. D. Procaccia, and M. Tennenholtz"
+    },
+    {
+      "index": 4,
+      "title": "Peeking behind the ordinal curtain: improving distortion via cardinal queries",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "G. Amanatidis, G. Birmpas, A. Filos-Ratsikas, and A. A. Voudouris"
+    },
+    {
+      "index": 5,
+      "title": "Randomized social choice functions under metric preferences",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Artificial Intelligence Research",
+      "authors": "E. Anshelevich and J. Postl"
+    },
+    {
+      "index": 6,
+      "title": "Blind, greedy, and random: Algorithms for matching and clustering using only ordinal information",
+      "abstract": "",
+      "year": "2016",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "E. Anshelevich and S. Sekar"
+    },
+    {
+      "index": 7,
+      "title": "Truthful mechanisms for matching and clustering in an ordinal world",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Conference on Web and Internet Economics (WINE)",
+      "authors": "E. Anshelevich and S. Sekar"
+    },
+    {
+      "index": 8,
+      "title": "Ordinal Approximation for Social Choice, Matching, and Facility Location Problems given Candidate Positions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conference on Web and Internet Economics (WINE)",
+      "authors": "E. Anshelevich and W. Zhu",
+      "orig_title": "Ordinal approximation for social choice, matching, and facility location problems given candidate positions",
+      "paper_id": "1805.03103v1"
+    },
+    {
+      "index": 9,
+      "title": "Tradeoffs between information and ordinal approximation for bipartite matching",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Theory of Computer Systems",
+      "authors": "E. Anshelevich and W. Zhu"
+    },
+    {
+      "index": 10,
+      "title": "Approximating optimal social choice under metric preferences",
+      "abstract": "",
+      "year": "2015",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "E. Anshelevich, O. Bhardwaj, and J. Postl"
+    },
+    {
+      "index": 11,
+      "title": "Approximating optimal social choice under metric preferences",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Artificial Intelligence",
+      "authors": "E. Anshelevich, O. Bhardwaj, E. Elkind, J. Postl, and P. Skowron"
+    },
+    {
+      "index": 12,
+      "title": "Primarily about primaries",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "A. Borodin, O. Lev, N. Shah, and T. Strangway"
+    },
+    {
+      "index": 13,
+      "title": "Optimal social choice functions: A utilitarian view",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Artificial Intelligence",
+      "authors": "C. Boutilier, I. Caragiannis, S. Haber, T. Lu, A. D. Procaccia, and O. Sheffet"
+    },
+    {
+      "index": 14,
+      "title": "Handbook of Computational Social Choice",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Cambridge University Press",
+      "authors": "F. Brandt, V. Conitzer, U. Endress, J. Lang, and A. D. Procaccia, editors"
+    },
+    {
+      "index": 15,
+      "title": "A characterization of the single-crossing domain",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Social Choice and Welfare",
+      "authors": "R. Bredereck, J. Chen, and G. J. Woeginger"
+    },
+    {
+      "index": 16,
+      "title": "Subset selection via implicit utilitarian voting",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Artificial Intelligence Research",
+      "authors": "I. Caragiannis, S. Nath, A. D. Procaccia, and N. Shah"
+    },
+    {
+      "index": 17,
+      "title": "Some results on approximate 1-median selection in metric spaces",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Theoretical Computer Science",
+      "authors": "C. L. Chang"
+    },
+    {
+      "index": 18,
+      "title": "A lower bound for metric 1-median selection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Computer and System Sciences",
+      "authors": "C. L. Chang"
+    },
+    {
+      "index": 19,
+      "title": "Metric 1-median selection: Query complexity vs. approximation ratio",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Transactions on Computation Theory (TOCT)",
+      "authors": "C. L. Chang",
+      "orig_title": "Metric 1-median selection: Query complexity vs. approximation ratio",
+      "paper_id": "1509.05662v1"
+    },
+    {
+      "index": 20,
+      "title": "Improved combinatorial algorithms for the facility location and k-median problems",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "M. Charikar and S. Guha"
+    },
+    {
+      "index": 21,
+      "title": "Favorite-Candidate Voting for Eliminating the Least Popular Candidate in Metric Spaces",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "X. Chen, M. Li, and C. Wang",
+      "orig_title": "Favorite-candidate voting for eliminating the least popular candidate in metric spaces",
+      "paper_id": "1911.12109v1"
+    },
+    {
+      "index": 22,
+      "title": "Of the People: Voting Is More Effective with Representative Candidates",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Conference on Economics and Computation (EC)",
+      "authors": "Y. Cheng, S. Dughmi, and D. Kempe",
+      "orig_title": "Of the people: voting is more effective with representative candidates",
+      "paper_id": "1705.01736v2"
+    },
+    {
+      "index": 23,
+      "title": "On the Distortion of Voting with Multiple Representative Candidates",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "Y. Cheng, S. Dughmi, and D. Kempe",
+      "orig_title": "On the distortion of voting with multiple representative candidates",
+      "paper_id": "1711.07600v1"
+    },
+    {
+      "index": 24,
+      "title": "A polynomial-time approximation scheme for facility location on planar graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "V. Cohen-Addad, M. Pilipczuk, and M. Pilipczuk"
+    },
+    {
+      "index": 25,
+      "title": "The spatial theory of voting: An introduction",
+      "abstract": "",
+      "year": "1984",
+      "venue": "CUP Archive",
+      "authors": "J. M. Enelow and M. J. Hinich"
+    },
+    {
+      "index": 26,
+      "title": "Fair Allocation of Indivisible Public Goods",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Conference on Economics and Computation (EC)",
+      "authors": "B. Fain, K. Munagala, and N. Shah",
+      "orig_title": "Fair allocation of indivisible public goods",
+      "paper_id": "1805.03164v2"
+    },
+    {
+      "index": 27,
+      "title": "Random Dictators with a Random Referee: Constant Sample Complexity Mechanisms for Social Choice",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "B. Fain, A. Goel, K. Munagala, and N. Prabhu",
+      "orig_title": "Random dictators with a random referee: constant sample complexity mechanisms for social choice",
+      "paper_id": "1811.04786v3"
+    },
+    {
+      "index": 28,
+      "title": "The distortion of distributed voting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Symposium on Algorithmic Game Theory (SAGT)",
+      "authors": "A. Filos-Ratsikas, E. Micha, and A. A. Voudouris"
+    },
+    {
+      "index": 29,
+      "title": "Majority voting with single-crossing preferences",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Journal of Public Economics",
+      "authors": "J. S. Gans and M. Smart"
+    },
+    {
+      "index": 30,
+      "title": "Metric Distortion of Social Choice Rules: Lower Bounds and Fairness Properties",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Conference on Economics and Computation (EC)",
+      "authors": "A. Goel, A. K. Krishnaswamy, and K. Munagala",
+      "orig_title": "Metric distortion of social choice rules: Lower bounds and fairness properties",
+      "paper_id": "1612.02912v2"
+    },
+    {
+      "index": 31,
+      "title": "Relating Metric Distortion and Fairness of Social Choice Rules",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv:1810.01092",
+      "authors": "A. Goel, R. Hulett, and A. K. Krishnaswamy",
+      "orig_title": "Relating metric distortion and fairness of social choice rules",
+      "paper_id": "1810.01092v1"
+    },
+    {
+      "index": 32,
+      "title": "Vote until two of you agree: Mechanisms with small distortion and sample complexity",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "S. Gross, E. Anshelevich, and L. Xia"
+    },
+    {
+      "index": 33,
+      "title": "Sublinear time algorithms for metric space problems",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ACM Symposium on Theory of Computing (STOC)",
+      "authors": "P. Indyk"
+    },
+    {
+      "index": 34,
+      "title": "High-dimensional computational geometry",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Citeseer",
+      "authors": "P. Indyk"
+    },
+    {
+      "index": 35,
+      "title": "Greedy facility location algorithms analyzed using dual fitting with factor-revealing LP",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Journal of the ACM",
+      "authors": "K. Jain, M. Mahdian, E. Markakis, A. Saberi, and V. V. Vazirani"
+    },
+    {
+      "index": 36,
+      "title": "Approximately Stable Committee Selection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Symposium on Theory of Computing (STOC)",
+      "authors": "Z. Jiang, K. Munagala, and K. Wang",
+      "orig_title": "Approximately stable committee selection",
+      "paper_id": "1910.14008v3"
+    },
+    {
+      "index": 37,
+      "title": "Communication, Distortion, and Randomness in Metric Voting",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "D. Kempe",
+      "orig_title": "Communication, distortion, and randomness in metric voting",
+      "paper_id": "1911.08129v2"
+    },
+    {
+      "index": 38,
+      "title": "An analysis framework for metric voting based on lp duality",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "D. Kempe"
+    },
+    {
+      "index": 39,
+      "title": "Efficient and thrifty voting by any means necessary",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Conference on Neural Information Processing Systems (NeurIPS)",
+      "authors": "D. Mandal, A. D. Procaccia, N. Shah, and D. Woodruff"
+    },
+    {
+      "index": 40,
+      "title": "Optimal communication-distortion tradeoff in voting",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Conference on Economics and Computation (EC)",
+      "authors": "D. Mandal, N. Shah, and D. P. Woodruff"
+    },
+    {
+      "index": 41,
+      "title": "Facility location for market capture when users rank facilities by shorter travel and waiting times",
+      "abstract": "",
+      "year": "2008",
+      "venue": "European Journal of Operational Research",
+      "authors": "V. Marianov, M. Ríos, and M. J. Icaza"
+    },
+    {
+      "index": 42,
+      "title": "On strategy-proofness and single-peakedness",
+      "abstract": "",
+      "year": "1980",
+      "venue": "Public Choice",
+      "authors": "H. Moulin"
+    },
+    {
+      "index": 43,
+      "title": "Improved Metric Distortion for Deterministic Social Choice Rules",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Conference on Economics and Computation (EC)",
+      "authors": "K. Munagala and K. Wang",
+      "orig_title": "Improved metric distortion for deterministic social choice rules",
+      "paper_id": "1905.01401v1"
+    },
+    {
+      "index": 44,
+      "title": "Approval-Based Elections and Distortion of Voting Rules",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Joint Conference on Artificial Intelligence (IJCAI)",
+      "authors": "G. Pierczynski and P. Skowron",
+      "orig_title": "Approval-based elections and distortion of voting rules",
+      "paper_id": "1901.06709v1"
+    },
+    {
+      "index": 45,
+      "title": "The distortion of cardinal preferences in voting",
+      "abstract": "",
+      "year": "2006",
+      "venue": "International Workshop on Cooperative Information Agents (CIA)",
+      "authors": "A. D. Procaccia and J. S. Rosenschein"
+    },
+    {
+      "index": 46,
+      "title": "Social choice under metric preferences: scoring rules and STV",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "P. Skowron and E. Elkind"
+    },
+    {
+      "index": 47,
+      "title": "Multi-dimensional single-peaked consistency and its approximations",
+      "abstract": "",
+      "year": "2013",
+      "venue": "International Joint Conference on Artificial Intelligence (IJCAI)",
+      "authors": "X. Sui, A. Francois-Nienaber, and C. Boutilier"
+    }
+  ]
+}

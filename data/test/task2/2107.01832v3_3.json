@@ -1,0 +1,493 @@
+{
+  "paper_id": "2107.01832v3",
+  "title": "Provable Convergence of Nesterov’s Accelerated Gradient Method for Over-Parameterized Neural Networks",
+  "sections": {
+    "convergence analysis": "By recursively using (22), it has Then applying Cauchy-Schwarz inequality on (24), we have In order to prove the convergence of NAG, it needs to separately derive bounds for the two terms on the right-hand side of (25).\nThe first term is the norm of the product between the matrix power 𝐌tsuperscript𝐌𝑡\\mathbf{M}^{t} and the vector 𝐳0subscript𝐳0\\mathbf{z}_{0}.\nWe provide its upper bound in the following lemma. Assume 𝐇∈ℝn×n𝐇superscriptℝ𝑛𝑛\\bm{H}\\in\\mathbb{R}^{n\\times n} is a symmetry positive definite matrix.\nLet 𝐌=[(1+β)​(𝐈n−η​𝐇)β​(−𝐈n+η​𝐇)𝐈n0n]∈ℝ2​n×2​n𝐌matrix1𝛽subscript𝐈𝑛𝜂𝐇𝛽subscript𝐈𝑛𝜂𝐇subscript𝐈𝑛subscript0𝑛superscriptℝ2𝑛2𝑛\\mathbf{M}=\\begin{bmatrix}(1\\!+\\!\\beta)(\\mathbf{I}_{n}\\!-\\!\\eta\\bm{H})&\\beta(-\\mathbf{I}_{n}\\!+\\!\\eta\\bm{H})\\\\\n\\mathbf{I}_{n}&\\textbf{0}_{n}\\end{bmatrix}\\in\\mathbb{R}^{2n\\times 2n}.\nSuppose a sequence of iterates {𝐯i}subscript𝐯𝑖\\{\\mathbf{v}_{i}\\} satisfy 𝐯t=𝐌𝐯t−1subscript𝐯𝑡subscript𝐌𝐯𝑡1\\mathbf{v}_{t}=\\mathbf{M}\\mathbf{v}_{t-1} for any t≤T𝑡𝑇t\\leq T.\nIf β𝛽\\beta and η𝜂\\eta are chosen that satisfy 1>β≥1−η​λm​i​n​(𝐇)1+η​λm​i​n​(𝐇)1𝛽1𝜂subscript𝜆𝑚𝑖𝑛𝐇1𝜂subscript𝜆𝑚𝑖𝑛𝐇1>\\beta\\geq\\frac{1-\\sqrt{\\eta\\lambda_{min}(\\bm{H})}}{1+\\sqrt{\\eta\\lambda_{min}(\\bm{H})}} and 0<η≤1/λm​a​x​(𝐇)0𝜂1subscript𝜆𝑚𝑎𝑥𝐇0<\\eta\\leq 1/\\lambda_{max}(\\bm{H}), then it has the bound at any iteration k≤T𝑘𝑇k\\leq T as where C=2​β​(1−η​λm​i​n​(𝐇))+2min⁡{g​(β,η​λm​i​n​(𝐇)),g​(β,η​λm​a​x​(𝐇))}𝐶2𝛽1𝜂subscript𝜆𝑚𝑖𝑛𝐇2𝑔𝛽𝜂subscript𝜆𝑚𝑖𝑛𝐇𝑔𝛽𝜂subscript𝜆𝑚𝑎𝑥𝐇C=\\frac{2\\beta(1-\\eta\\lambda_{min}(\\bm{H}))+2}{\\sqrt{\\min\\{g(\\beta,\\eta\\lambda_{min}(\\bm{H})),g(\\beta,\\eta\\lambda_{max}(\\bm{H}))\\}}} and the function g𝑔g is defined as g​(x,y)=4​x​(1−y)−[(1+x)​(1−y)]2𝑔𝑥𝑦4𝑥1𝑦superscriptdelimited-[]1𝑥1𝑦2g(x,y)=4x(1-y)-[(1+x)(1-y)]^{2}. The proof is provided in the B.\nGiven the ranges of the hyperparameters η𝜂\\eta and β𝛽\\beta, it is easy to observe that β​(1−η​λm​i​n​(H))<1𝛽1𝜂subscript𝜆𝑚𝑖𝑛𝐻1\\sqrt{\\beta(1-\\eta\\lambda_{min}(H))}<1, which ensures the decline of ‖𝐯k‖normsubscript𝐯𝑘\\|\\mathbf{v}_{k}\\| during evolution.\nFor further determining the upper bounds for C and the decay rate, we set η𝜂\\eta and β𝛽\\beta with the spectrum of 𝑯𝑯\\bm{H}. Assume 0<λ≤λm​i​n​(𝐇)≤λm​a​x​(𝐇)≤λm​a​x0𝜆subscript𝜆𝑚𝑖𝑛𝐇subscript𝜆𝑚𝑎𝑥𝐇subscript𝜆𝑚𝑎𝑥0<\\lambda\\leq\\lambda_{min}(\\bm{H})\\leq\\lambda_{max}(\\bm{H})\\leq\\lambda_{max}.\nDenote κ=λm​a​x/λ𝜅subscript𝜆𝑚𝑎𝑥𝜆{\\kappa}=\\lambda_{max}/\\lambda.\nWith η=1/2​λm​a​x𝜂12subscript𝜆𝑚𝑎𝑥\\eta=1/2\\lambda_{max} and β=3​κ−23​κ+2𝛽3𝜅23𝜅2\\beta=\\frac{3\\sqrt{{\\kappa}}-2}{3\\sqrt{{\\kappa}}+2}, it has Furthermore, it should be noted that 𝐌𝐌\\mathbf{M} in (25) is composed by 𝑯0subscript𝑯0\\bm{H}_{0}, which depends on the random initialization of 𝐖0subscript𝐖0\\mathbf{W}_{0}.\nFor an over-parameterized neural network, the eigenvalues of the random matrix 𝑯0subscript𝑯0\\bm{H}_{0} can be bounded by the spectrum of the deterministic NTK matrix 𝑯¯¯𝑯\\bar{\\bm{H}} [ref]23, thereby allowing us to determine the hyperparameters with specific values. (Lemma 13 in [ref]23)\n\nDenote λ=λm​i​n​(𝐇¯)𝜆subscript𝜆𝑚𝑖𝑛¯𝐇\\lambda=\\lambda_{min}(\\bar{\\bm{H}}). Set m=Ω​(λ−2​n2​log⁡(n/δ))𝑚Ωsuperscript𝜆2superscript𝑛2𝑛𝛿m=\\Omega(\\lambda^{-2}n^{2}\\log(n/\\delta)).\nAssume 𝐰0r∼𝒩​(0,Id)similar-tosuperscriptsubscript𝐰0𝑟𝒩0subscript𝐼𝑑\\mathbf{w}_{0}^{r}\\sim\\mathcal{N}(0,I_{d}) for all r∈[n]𝑟delimited-[]𝑛r\\in[n].\nWith probability at least 1−δ1𝛿1-\\delta, it holds that As a result, the condition number of 𝐇0subscript𝐇0\\bm{H}_{0} is bounded by Now we turn to analyzing the second term on the right-hand side of (25), which is also composed by the product of the matrix power 𝐌isuperscript𝐌𝑖\\mathbf{M}^{i} and a bounded vector.\nThen it only needs to bound the norm of 𝝁𝝁\\bm{\\mu}.\nUsing the Cauchy-Schwarz inequality, it has ‖𝝁t‖≤‖ϕt‖+‖𝝍t‖normsubscript𝝁𝑡normsubscriptbold-italic-ϕ𝑡normsubscript𝝍𝑡\\|\\bm{\\mu}_{t}\\|\\leq\\|\\bm{\\phi}_{t}\\|+\\|\\bm{\\psi}_{t}\\|. From (21), we observe that the bound of |ϕt​[i]|subscriptbold-italic-ϕ𝑡delimited-[]𝑖|\\bm{\\phi}_{t}[i]| mainly depends on the term |Si⟂|superscriptsubscript𝑆𝑖perpendicular-to|S_{i}^{\\perp}|, which describes how many neurons change their activation patterns on the i𝑖i-th instance during training.\nAccording to recent studies [ref]16 [ref]21,\n|Si⟂|superscriptsubscript𝑆𝑖perpendicular-to|S_{i}^{\\perp}| has an upper bound 4​m​R4𝑚𝑅4mR, which is determined by the distance R𝑅R between 𝐰trsubscriptsuperscript𝐰𝑟𝑡\\mathbf{w}^{r}_{t} and its initialization for any r∈[m]𝑟delimited-[]𝑚r\\in[m] and t∈[T]𝑡delimited-[]𝑇t\\in[T].\nIn D, Lemma 5 presents the details.\nWhen R𝑅R is small enough, it has |Si⟂|≪mmuch-less-thansuperscriptsubscript𝑆𝑖perpendicular-to𝑚|S_{i}^{\\perp}|\\ll m. On the other hand, the bound of ‖𝝍t‖normsubscript𝝍𝑡\\|\\bm{\\psi}_{t}\\| is closely related to the distance between 𝑯tsubscript𝑯𝑡\\bm{H}_{t} and 𝑯0subscript𝑯0\\bm{H}_{0}.\nPrevious works [ref]16 [ref]21 showed that the upper bound of ‖𝑯t−𝑯0‖normsubscript𝑯𝑡subscript𝑯0\\|\\bm{H}_{t}-\\bm{H}_{0}\\| is also determined by the distance R𝑅R,\nwhere Lemma 6 in D gives the details. In Theorem 1, we derive R=𝒪​(1/m)𝑅𝒪1𝑚R=\\mathcal{O}(1/\\sqrt{m}), which helps control the size of ‖ϕt‖normsubscriptbold-italic-ϕ𝑡\\|\\bm{\\phi}_{t}\\| and ‖𝝍t‖normsubscript𝝍𝑡\\|\\bm{\\psi}_{t}\\| with an appropriate m𝑚m.\nThe corresponding bounds for R𝑅R, ‖ϕ‖normbold-italic-ϕ\\|\\bm{\\phi}\\| and ‖𝝍‖norm𝝍\\|\\bm{\\psi}\\| are given in the proof of Theorem 1.\nFinally, we introduce our main result on the convergence of NAG. Define λ=3​λm​i​n​(𝐇¯)4𝜆3subscript𝜆𝑚𝑖𝑛¯𝐇4\\lambda=\\frac{3\\lambda_{min}(\\bar{\\bm{H}})}{4}, λm​a​x=λm​a​x​(𝐇¯)+λ4subscript𝜆𝑚𝑎𝑥subscript𝜆𝑚𝑎𝑥¯𝐇𝜆4\\lambda_{max}=\\lambda_{max}(\\bar{\\bm{H}})+\\frac{\\lambda}{4} and κ=43​κ​(𝐇¯)+13𝜅43𝜅¯𝐇13{\\kappa}=\\frac{4}{3}\\kappa(\\bar{\\bm{H}})+\\frac{1}{3}.\nAssume 𝐰0r∼N​(0,Id)similar-tosuperscriptsubscript𝐰0𝑟𝑁0subscript𝐼𝑑\\mathbf{w}_{0}^{r}\\sim N(0,I_{d}) and ar∼R​a​d​e​m​a​c​h​e​r​(1/2)similar-tosuperscript𝑎𝑟𝑅𝑎𝑑𝑒𝑚𝑎𝑐ℎ𝑒𝑟12a^{r}\\sim Rademacher(1/2) for all r∈[m]𝑟delimited-[]𝑚r\\in[m].\nSuppose the number of the nodes in the hidden layer is m=Ω​(λ−2​n4​κ2​l​o​g3​(n/δ))𝑚Ωsuperscript𝜆2superscript𝑛4superscript𝜅2𝑙𝑜superscript𝑔3𝑛𝛿m=\\Omega(\\lambda^{-2}n^{4}\\kappa^{2}log^{3}(n/\\delta)).\nIf the leaning rate η=1/(2​λm​a​x)𝜂12subscript𝜆𝑚𝑎𝑥\\eta=1/(2\\lambda_{max}) and the momentum parameter β=3​κ−23​κ+2𝛽3𝜅23𝜅2\\beta=\\frac{3\\sqrt{{\\kappa}}-2}{3\\sqrt{{\\kappa}}+2},\nwith probability at least 1−δ1𝛿1-\\delta over the random initialization, the residual error for NAG at any iteration t𝑡t satisfies where γ=12​κ𝛾12𝜅\\gamma=12\\sqrt{{\\kappa}}. For every r∈[m]𝑟delimited-[]𝑚r\\in[m], we have Remark 1. With the initialization 𝐖−1=𝐖0subscript𝐖1subscript𝐖0\\mathbf{W}_{-1}=\\mathbf{W}_{0}, it has 𝝃−1=𝝃0subscript𝝃1subscript𝝃0\\bm{\\xi}_{-1}=\\bm{\\xi}_{0}.\nThus, according to Theorem 1, the training error 𝝃tsubscript𝝃𝑡\\bm{\\xi}_{t} of NAG converges linearly to zero at a (1−12​κ)tsuperscript112𝜅𝑡(1-\\frac{1}{2\\sqrt{\\kappa}})^{t} rate after t𝑡t iteration, which indicates NAG is able to achieve the global minimum as GD and HB. Remark 2. As shown in [ref]16, GD converges at a rate (1−η​λ2)tsuperscript1𝜂𝜆2𝑡(1-{\\frac{\\eta\\lambda}{2}})^{t}, but with a small learning rate η=𝒪​(λn2)𝜂𝒪𝜆superscript𝑛2\\eta=\\mathcal{O}(\\frac{\\lambda}{n^{2}}).\n further improved the bound of the learning rate to 𝒪​(1‖𝑯¯‖)𝒪1norm¯𝑯\\mathcal{O}(\\frac{1}{\\|{\\bar{\\bm{H}}}\\|}), where ‖𝑯¯‖≤nnorm¯𝑯𝑛\\|{\\bar{\\bm{H}}}\\|\\leq n and provides an 𝒪​(λ/n)𝒪𝜆𝑛\\mathcal{O}(\\lambda/n) improvement.\nThis results in a faster convergence rate (1−Θ​(1/κ))tsuperscript1Θ1𝜅𝑡(1-\\Theta(1/\\kappa))^{t} for GD.\nAs shown in Theorem 1, NAG obtains a smaller convergence rate (1−Θ​(1/κ))tsuperscript1Θ1𝜅𝑡(1-\\Theta(1/\\sqrt{\\kappa}))^{t}, which validates its acceleration over GD.\nMoreover, compard to the convergence rate of HB as proved in [ref]23,\nour results show that NAG obtains a comparable convergence rate. Remark 3. The initial residual error satisfies ‖𝝃0‖2=𝒪​(n​l​o​g​(m/δ)​l​o​g2​(n/δ))superscriptnormsubscript𝝃02𝒪𝑛𝑙𝑜𝑔𝑚𝛿𝑙𝑜superscript𝑔2𝑛𝛿\\|\\bm{\\xi}_{0}\\|^{2}=\\mathcal{O}(nlog(m/\\delta)log^{2}(n/\\delta)) as shown in Lemma 7.\nTherefore, the upper bound R𝑅R of ‖𝐰tr−𝐰0r‖normsuperscriptsubscript𝐰𝑡𝑟superscriptsubscript𝐰0𝑟\\|\\mathbf{w}_{t}^{r}-\\mathbf{w}_{0}^{r}\\| scales as 𝒪​(1/m)𝒪1𝑚\\mathcal{O}(1/\\sqrt{m}) for any r∈[m]𝑟delimited-[]𝑚r\\in[m] according to (30).\nThis is consistent with the NTK regime that the parameter is hardly changed when the neural network is over-parameterized.\nMoreover, the number of the changed activation patterns is bounded by |Si⟂|=|∑r=1m𝕀{⟨𝐰tr,𝐱i⟩}≠𝕀{⟨𝐰0r,𝐱i⟩}|≤4mR|S_{i}^{\\perp}|=|\\sum_{r=1}^{m}\\mathbb{I}\\{\\langle\\mathbf{w}_{t}^{r},\\mathbf{x}_{i}\\rangle\\}\\neq\\mathbb{I}\\{\\langle\\mathbf{w}_{0}^{r},\\mathbf{x}_{i}\\rangle\\}|\\leq 4mR according to Lemma 5.\nAs a result, ∑i∈[n]|Si⟂|/(m​n)subscript𝑖delimited-[]𝑛superscriptsubscript𝑆𝑖perpendicular-to𝑚𝑛\\sum_{i\\in[n]}|S_{i}^{\\perp}|/(mn) can be upper bounded with 4​R4𝑅4R, which also scales with 𝒪​(1/m)𝒪1𝑚\\mathcal{O}(1/\\sqrt{m}).\nOn the other hand, GD has R=𝒪​(nλ​m​‖𝝃0‖)𝑅𝒪𝑛𝜆𝑚normsubscript𝝃0R=\\mathcal{O}(\\frac{\\sqrt{n}}{\\lambda\\sqrt{m}}\\|\\bm{\\xi}_{0}\\|) according to [ref]16, which is smaller than NAG due to κ>1𝜅1\\kappa>1.\nFurthermore, R𝑅R of HB scales as 𝒪​(n​κλ​m​‖𝝃0‖)𝒪𝑛𝜅𝜆𝑚normsubscript𝝃0\\mathcal{O}(\\frac{\\sqrt{n\\kappa}}{\\lambda\\sqrt{m}}\\|\\bm{\\xi}_{0}\\|) [ref]23, which is similar as NAG."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Accelerated optimization for machine learning: First-order algorithms",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Springer",
+      "authors": "Z. Lin, H. Li, C. Fang"
+    },
+    {
+      "index": 1,
+      "title": "A fast iterative shrinkage-thresholding algorithm for linear inverse problems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "SIAM Journal on Imaging Sciences",
+      "authors": "A. Beck, M. Teboulle"
+    },
+    {
+      "index": 2,
+      "title": "Accelerated distributed nesterov gradient descent",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Automatic Control",
+      "authors": "G. Qu, N. Li"
+    },
+    {
+      "index": 3,
+      "title": "Some methods of speeding up the convergence of iteration methods",
+      "abstract": "",
+      "year": "1964",
+      "venue": "USSR Computational Mathematics and Mathematical Physics",
+      "authors": "B. T. Polyak"
+    },
+    {
+      "index": 4,
+      "title": "A method for solving the convex programming problem with convergence rate o (1/k^ 2)",
+      "abstract": "",
+      "year": "1983",
+      "venue": "Dokl. akad. nauk Sssr",
+      "authors": "Y. E. Nesterov"
+    },
+    {
+      "index": 5,
+      "title": "On the importance of initialization and momentum in deep learning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "International Conference on Machine Learning",
+      "authors": "I. Sutskever, J. Martens, G. Dahl, G. Hinton"
+    },
+    {
+      "index": 6,
+      "title": "Incorporating nesterov momentum into adam",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "T. Dozat"
+    },
+    {
+      "index": 7,
+      "title": "Quasi-hyperbolic momentum and Adam for deep learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "J. Ma, D. Yarats",
+      "orig_title": "Quasi-hyperbolic momentum and adam for deep learning",
+      "paper_id": "1810.06801v4"
+    },
+    {
+      "index": 8,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations",
+      "authors": "D. P. Kingma, J. Ba"
+    },
+    {
+      "index": 9,
+      "title": "On the convergence of Adam and Beyond",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "S. J. Reddi, S. Kale, S. Kumar",
+      "orig_title": "On the convergence of adam and beyond",
+      "paper_id": "1904.09237v1"
+    },
+    {
+      "index": 10,
+      "title": "Adaptive Gradient Methods with Dynamic Bound of Learning Rate",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1902.09843",
+      "authors": "L. Luo, Y. Xiong, Y. Liu, X. Sun",
+      "orig_title": "Adaptive gradient methods with dynamic bound of learning rate",
+      "paper_id": "1902.09843v1"
+    },
+    {
+      "index": 11,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, T. Killeen, Z. Lin, N. Gimelshein, L. Antiga, A. Desmaison, A. Köpf, E. Z. Yang, Z. DeVito, M. Raison, A. Tejani, S. Chilamkurthy, B. Steiner, L. Fang, J. Bai, S. Chintala",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 12,
+      "title": "Deep learning with Keras",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Packt Publishing Ltd",
+      "authors": "A. Gulli, S. Pal"
+    },
+    {
+      "index": 13,
+      "title": "TensorFlow: A system for large-scale machine learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Symposium on Operating Systems Design and Implementation",
+      "authors": "M. Abadi, P. Barham, J. Chen, Z. Chen, A. Davis, J. Dean, M. Devin, S. Ghemawat, G. Irving, M. Isard, M. Kudlur, J. Levenberg, R. Monga, S. Moore, D. G. Murray, B. Steiner, P. A. Tucker, V. Vasudevan, P. Warden, M. Wicke, Y. Yu, X. Zheng",
+      "orig_title": "Tensorflow: A system for large-scale machine learning",
+      "paper_id": "1605.08695v2"
+    },
+    {
+      "index": 14,
+      "title": "Some np-complete problems in quadratic and nonlinear programming",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Mathematical Programming",
+      "authors": "K. G. Murty, S. N. Kabadi"
+    },
+    {
+      "index": 15,
+      "title": "Gradient Descent Provably Optimizes Over-parameterized Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "S. S. Du, X. Zhai, B. Poczos, A. Singh",
+      "orig_title": "Gradient descent provably optimizes over-parameterized neural networks",
+      "paper_id": "1810.02054v2"
+    },
+    {
+      "index": 16,
+      "title": "Learning Overparameterized Neural Networks via Stochastic Gradient Descent on Structured Data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Neural Information Processing Systems",
+      "authors": "Y. Li, Y. Liang",
+      "orig_title": "Learning overparameterized neural networks via stochastic gradient descent on structured data",
+      "paper_id": "1808.01204v3"
+    },
+    {
+      "index": 17,
+      "title": "Gradient Descent Finds Global Minima of Deep Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "S. S. Du, J. D. Lee, H. Li, L. Wang, X. Zhai",
+      "orig_title": "Gradient descent finds global minima of deep neural networks",
+      "paper_id": "1811.03804v4"
+    },
+    {
+      "index": 18,
+      "title": "A Convergence Theory for Deep Learning via Over-Parameterization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Z. Allen-Zhu, Y. Li, Z. Song",
+      "orig_title": "A convergence theory for deep learning via over-parameterization",
+      "paper_id": "1811.03962v5"
+    },
+    {
+      "index": 19,
+      "title": "Fine-Grained Analysis of Optimization and Generalization for Overparameterized Two-Layer Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "S. Arora, S. S. Du, W. Hu, Z. Li, R. Wang",
+      "orig_title": "Fine-grained analysis of optimization and generalization for overparameterized two-layer neural networks",
+      "paper_id": "1901.08584v2"
+    },
+    {
+      "index": 20,
+      "title": "Quadratic suffices for over-parametrization via matrix chernoff bound",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.03593",
+      "authors": "Z. Song, X. Yang"
+    },
+    {
+      "index": 21,
+      "title": "Neural Tangent Kernel: Convergence and Generalization in Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Jacot, F. Gabriel, C. Hongler",
+      "orig_title": "Neural tangent kernel: Convergence and generalization in neural networks",
+      "paper_id": "1806.07572v4"
+    },
+    {
+      "index": 22,
+      "title": "A Modular Analysis of Provable Acceleration via Polyak’s Momentum: Training a Wide ReLU Network and a Deep Linear Network",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "J. Wang, C. Lin, J. D. Abernethy",
+      "orig_title": "A modular analysis of provable acceleration via polyak’s momentum: Training a wide relu network and a deep linear network",
+      "paper_id": "2010.01618v6"
+    },
+    {
+      "index": 23,
+      "title": "A Dynamical View on Optimization Algorithms of Overparameterized Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Artificial Intelligence and Statistics",
+      "authors": "Z. Bu, S. Xu, K. Chen",
+      "orig_title": "A dynamical view on optimization algorithms of overparameterized neural networks",
+      "paper_id": "2010.13165v2"
+    },
+    {
+      "index": 24,
+      "title": "Global Convergence of Adaptive Gradient Methods for An Over-parameterized Neural Network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1902.07111",
+      "authors": "X. Wu, S. S. Du, R. Ward",
+      "orig_title": "Global convergence of adaptive gradient methods for an over-parameterized neural network",
+      "paper_id": "1902.07111v2"
+    },
+    {
+      "index": 25,
+      "title": "Descending through a crowded valley - benchmarking deep learning optimizers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "R. M. Schmidt, F. Schneider, P. Hennig"
+    },
+    {
+      "index": 26,
+      "title": "Introductory lectures on convex optimization: A basic course",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Springer Science & Business Media",
+      "authors": "Y. Nesterov"
+    },
+    {
+      "index": 27,
+      "title": "Normierte ringe",
+      "abstract": "",
+      "year": "1941",
+      "venue": "Recueil Mathématique",
+      "authors": "I. Gelfand"
+    },
+    {
+      "index": 28,
+      "title": "The strength of nesterov’s extrapolation in the individual convergence of nonsmooth optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "W. Tao, Z. Pan, G. Wu, Q. Tao"
+    },
+    {
+      "index": 29,
+      "title": "Analysis and Design of Optimization Algorithms via Integral Quadratic Constraints",
+      "abstract": "",
+      "year": "2016",
+      "venue": "SIAM Journal on Optimization",
+      "authors": "L. Lessard, B. Recht, A. Packard",
+      "orig_title": "Analysis and design of optimization algorithms via integral quadratic constraints",
+      "paper_id": "1408.3595v7"
+    },
+    {
+      "index": 30,
+      "title": "A differential equation for modeling nesterov’s accelerated gradient method: Theory and insights",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "W. Su, S. Boyd, E. J. Candès"
+    },
+    {
+      "index": 31,
+      "title": "Understanding the acceleration phenomenon via high-resolution differential equations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Mathematical Programming",
+      "authors": "B. Shi, S. Du, M. Jordan, W. Su"
+    },
+    {
+      "index": 32,
+      "title": "Lower bounds for finding stationary points I",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Mathematical Programming",
+      "authors": "Y. Carmon, J. C. Duchi, O. Hinder, A. Sidford"
+    },
+    {
+      "index": 33,
+      "title": "How to Escape Saddle Points Efficiently",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "C. Jin, R. Ge, P. Netrapalli, S. M. Kakade, M. I. Jordan",
+      "orig_title": "How to escape saddle points efficiently",
+      "paper_id": "1703.00887v1"
+    },
+    {
+      "index": 34,
+      "title": "Convex until proven guilty: Dimension-free acceleration of gradient descent on non-convex functions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Y. Carmon, J. C. Duchi, O. Hinder, A. Sidford"
+    },
+    {
+      "index": 35,
+      "title": "Generalized momentum-based methods: A hamiltonian perspective",
+      "abstract": "",
+      "year": "2021",
+      "venue": "SIAM Journal on Optimization",
+      "authors": "J. Diakonikolas, M. I. Jordan"
+    },
+    {
+      "index": 36,
+      "title": "On exact computation with an infinitely wide neural net",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "S. Arora, S. S. Du, W. Hu, Z. Li, R. Salakhutdinov, R. Wang"
+    },
+    {
+      "index": 37,
+      "title": "Why Do Deep Residual Networks Generalize Better than Deep Feedforward Networks? — A Neural Tangent Kernel Perspective",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "K. Huang, Y. Wang, M. Tao, T. Zhao",
+      "orig_title": "Why do deep residual networks generalize better than deep feedforward networks? - A neural tangent kernel perspective",
+      "paper_id": "2002.06262v2"
+    },
+    {
+      "index": 38,
+      "title": "Graph neural tangent kernel: Fusing graph neural networks with graph kernels",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "S. S. Du, K. Hou, R. Salakhutdinov, B. Póczos, R. Wang, K. Xu"
+    },
+    {
+      "index": 39,
+      "title": "A Mean Field View of the Landscape of Two-Layer Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "National Academy of Sciences",
+      "authors": "S. Mei, A. Montanari, P.-M. Nguyen",
+      "orig_title": "A mean field view of the landscape of two-layers neural networks",
+      "paper_id": "1804.06561v2"
+    },
+    {
+      "index": 40,
+      "title": "On the global convergence of gradient descent for over-parameterized models using optimal transport",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "L. Chizat, F. Bach"
+    },
+    {
+      "index": 41,
+      "title": "Acceleration via symplectic discretization of high-resolution differential equations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "B. Shi, S. S. Du, W. Su, M. I. Jordan"
+    },
+    {
+      "index": 42,
+      "title": "Optimization Landscape and Expressivity of Deep CNNs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Q. Nguyen, M. Hein",
+      "orig_title": "Optimization landscape and expressivity of deep cnns",
+      "paper_id": "1710.10928v2"
+    },
+    {
+      "index": 43,
+      "title": "On Lazy Training in Differentiable Programming",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "L. Chizat, E. Oyallon, F. Bach",
+      "orig_title": "On lazy training in differentiable programming",
+      "paper_id": "1812.07956v5"
+    },
+    {
+      "index": 44,
+      "title": "Wide neural networks of any depth evolve as linear models under gradient descent",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "J. Lee, L. Xiao, S. Schoenholz, Y. Bahri, R. Novak, J. Sohl-Dickstein, J. Pennington"
+    },
+    {
+      "index": 45,
+      "title": "From averaging to acceleration, there is only a step-size",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Conference on Learning Theory",
+      "authors": "N. Flammarion, F. Bach"
+    },
+    {
+      "index": 46,
+      "title": "Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning Algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1708.07747",
+      "authors": "H. Xiao, K. Rasul, R. Vollgraf",
+      "orig_title": "Fashion-mnist: A novel image dataset for benchmarking machine learning algorithms",
+      "paper_id": "1708.07747v2"
+    },
+    {
+      "index": 47,
+      "title": "Gradient-based learning applied to document recognition",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE",
+      "authors": "Y. LeCun, L. Bottou, Y. Bengio, P. Haffner"
+    },
+    {
+      "index": 48,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "A. Krizhevsky, G. Hinton, et al."
+    },
+    {
+      "index": 49,
+      "title": "Finite Versus Infinite Neural Networks: an Empirical Study",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systemsl",
+      "authors": "J. Lee, S. S. Schoenholz, J. Pennington, B. Adlam, L. Xiao, R. Novak, J. Sohl-Dickstein",
+      "orig_title": "Finite versus infinite neural networks: An empirical study",
+      "paper_id": "2007.15801v2"
+    },
+    {
+      "index": 50,
+      "title": "JAX: Composable transformations of Python+NumPy programs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "J. Bradbury, R. Frostig, P. Hawkins, M. J. Johnson, C. Leary, D. Maclaurin, G. Necula, A. Paszke, J. VanderPlas, S. Wanderman-Milne, Q. Zhang"
+    },
+    {
+      "index": 51,
+      "title": "Position-transitional particle swarm optimization-incorporated latent factor analysis",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "X. Luo, Y. Yuan, S. Chen, N. Zeng, Z. Wang"
+    },
+    {
+      "index": 52,
+      "title": "A data-characteristic-aware latent factor model for web services qos prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "D. Wu, X. Luo, M. Shang, Y. He, G. Wang, X. Wu"
+    },
+    {
+      "index": 53,
+      "title": "Fast and accurate non-negative latent factor analysis on high-dimensional and sparse matrices in recommender systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Knowledge & Data Engineering",
+      "authors": "X. Luo, Y. Zhou, Z. Liu, M. Zhou"
+    },
+    {
+      "index": 54,
+      "title": "A novel approach to large-scale dynamically weighted directed network representation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "X. Luo, H. Wu, Z. Wang, J. Wang, D. Meng"
+    }
+  ]
+}

@@ -1,0 +1,521 @@
+{
+  "paper_id": "2006.13713v1",
+  "title": "Coconut: A Scalable Bottom-Up Approach for Building Data Series Indexes",
+  "abstract": "Abstract\nMany modern applications produce massive amounts of data series that need to be analyzed, requiring efficient similarity search operations.\nHowever, the state-of-the-art data series indexes that are used for this purpose do not scale well for massive datasets in terms of performance, or storage costs.\nWe pinpoint the problem to the fact that existing summarizations of data series used for indexing cannot be sorted while keeping similar data series close to each other in the sorted order.\nThis leads to two design problems.\nFirst, traditional bulk-loading algorithms based on sorting cannot be used.\nInstead, index construction takes place through slow top-down insertions, which create a non-contiguous index that results in many random I/Os.\nSecond, data series cannot be sorted and split across nodes evenly based on their median value; thus, most leaf nodes are in practice nearly empty.\nThis further slows down query speed and amplifies storage costs.\nTo address these problems, we present Coconut.\nThe first innovation in Coconut is an inverted, sortable data series summarization that organizes data series based on a z-order curve, keeping similar series close to each other in the sorted order.\nAs a result, Coconut is able to use bulk-loading techniques that rely on sorting to quickly build a contiguous index using large sequential disk I/Os.\nWe then explore prefix-based and median-based splitting policies for bottom-up bulk-loading, showing that median-based splitting outperforms the state of the art, ensuring that all nodes are densely populated.\nOverall, we show analytically and empirically that Coconut dominates the state-of-the-art data series indexes in terms of construction speed, query speed, and storage costs.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Incorporated Research Institutions for Seismology – Seismic Data Access",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ds.iris.edu/data/access",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Adhd-200",
+      "abstract": "",
+      "year": "2017",
+      "venue": "fcon_1000.projects.nitrc.org/indi/adhd200",
+      "authors": ""
+    },
+    {
+      "index": 2,
+      "title": "Sloan digital sky survey",
+      "abstract": "",
+      "year": "2017",
+      "venue": "sdss3.org/dr10/data_access/volume.php",
+      "authors": ""
+    },
+    {
+      "index": 3,
+      "title": "The input/output complexity of sorting and related problems",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Commun. ACM",
+      "authors": "A. Aggarwal and J. S. Vitter"
+    },
+    {
+      "index": 4,
+      "title": "Efficient similarity search in sequence databases",
+      "abstract": "",
+      "year": "1993",
+      "venue": "FODO",
+      "authors": "R. Agrawal, C. Faloutsos, and A. N. Swami"
+    },
+    {
+      "index": 5,
+      "title": "The ts-tree: efficient time series search and retrieval",
+      "abstract": "",
+      "year": "2008",
+      "venue": "EDBT",
+      "authors": "I. Assent, R. Krieger, F. Afschari, and T. Seidl"
+    },
+    {
+      "index": 6,
+      "title": "isax 2.0: Indexing and mining one billion time series",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ICDM",
+      "authors": "A. Camerra, T. Palpanas, J. Shieh, and E. J. Keogh"
+    },
+    {
+      "index": 7,
+      "title": "Beyond One Billion Time Series: Indexing and Mining Very Large Time Series Collections with iSAX2+",
+      "abstract": "",
+      "year": "2014",
+      "venue": "KAIS",
+      "authors": "A. Camerra, J. Shieh, T. Palpanas, T. Rakthanmanon, and E. Keogh"
+    },
+    {
+      "index": 8,
+      "title": "Locally adaptive dimensionality reduction for indexing large time series databases",
+      "abstract": "",
+      "year": "2002",
+      "venue": "ACM Trans. Database Syst.",
+      "authors": "K. Chakrabarti, E. J. Keogh, S. Mehrotra, and M. J. Pazzani"
+    },
+    {
+      "index": 9,
+      "title": "Anomaly detection: A survey",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ACM computing surveys (CSUR)",
+      "authors": "V. Chandola, A. Banerjee, and V. Kumar"
+    },
+    {
+      "index": 10,
+      "title": "Monkey: Optimal navigable key-value store",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIGMOD",
+      "authors": "N. Dayan, M. Athanassoulis, and S. Idreos"
+    },
+    {
+      "index": 11,
+      "title": "Fast subsequence matching in time-series databases",
+      "abstract": "",
+      "year": "1994",
+      "venue": "SIGMOD",
+      "authors": "C. Faloutsos, M. Ranganathan, and Y. Manolopoulos"
+    },
+    {
+      "index": 12,
+      "title": "Latent time-series motifs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "TKDD",
+      "authors": "J. Grabocka, N. Schilling, and L. Schmidt-Thieme"
+    },
+    {
+      "index": 13,
+      "title": "R-trees: A dynamic index structure for spatial searching",
+      "abstract": "",
+      "year": "1984",
+      "venue": "SIGMOD",
+      "authors": "A. Guttman"
+    },
+    {
+      "index": 14,
+      "title": "Computational Intelligence Challenges and Applications on Large-Scale Astronomical Time Series Databases",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE CIM",
+      "authors": "P. Huijse, P. A. Estévez, P. Protopapas, J. C. Principe, and P. Zegers",
+      "orig_title": "Computational intelligence challenges and applications on large-scale astronomical time series databases",
+      "paper_id": "1509.07823v1"
+    },
+    {
+      "index": 15,
+      "title": "Database cracking",
+      "abstract": "",
+      "year": "2007",
+      "venue": "CIDR 2007",
+      "authors": "S. Idreos, M. L. Kersten, and S. Manegold"
+    },
+    {
+      "index": 16,
+      "title": "Time-series active search for quick retrieval of audio and video",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ICASSP",
+      "authors": "K. Kashino, G. Smith, and H. Murase"
+    },
+    {
+      "index": 17,
+      "title": "Scalable knn search on vertically stored time series",
+      "abstract": "",
+      "year": "2011",
+      "venue": "SIGKDD",
+      "authors": "S. Kashyap and P. Karras"
+    },
+    {
+      "index": 18,
+      "title": "Using dynamic time warping distances as features for improved time series classification",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Data Min. Knowl. Discov.",
+      "authors": "R. J. Kate"
+    },
+    {
+      "index": 19,
+      "title": "Fast similarity search in the presence of longitudinal scaling in time series databases",
+      "abstract": "",
+      "year": "1997",
+      "venue": "ICTAI",
+      "authors": "E. J. Keogh"
+    },
+    {
+      "index": 20,
+      "title": "Dimensionality reduction for fast similarity search in large time series databases",
+      "abstract": "",
+      "year": "2001",
+      "venue": "KAIS",
+      "authors": "E. J. Keogh, K. Chakrabarti, M. J. Pazzani, and S. Mehrotra"
+    },
+    {
+      "index": 21,
+      "title": "An enhanced representation of time series which allows fast and accurate classification, clustering and relevance feedback",
+      "abstract": "",
+      "year": "1998",
+      "venue": "KDD",
+      "authors": "E. J. Keogh and M. J. Pazzani"
+    },
+    {
+      "index": 22,
+      "title": "Efficiently supporting ad hoc queries in large datasets of time sequences",
+      "abstract": "",
+      "year": "1997",
+      "venue": "SIGMOD",
+      "authors": "F. Korn, H. V. Jagadish, and C. Faloutsos"
+    },
+    {
+      "index": 23,
+      "title": "STR: A simple and efficient algorithm for r-tree packing",
+      "abstract": "",
+      "year": "1997",
+      "venue": "ICDE",
+      "authors": "S. T. Leutenegger, J. M. Edgington, and M. A. López"
+    },
+    {
+      "index": 24,
+      "title": "Hierarchyscan: A hierarchical similarity search algorithm for databases of long sequences",
+      "abstract": "",
+      "year": "1996",
+      "venue": "ICDE",
+      "authors": "C. Li, P. S. Yu, and V. Castelli"
+    },
+    {
+      "index": 25,
+      "title": "Clustering of time series data - a survey",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Pattern Recognition",
+      "authors": "T. W. Liao"
+    },
+    {
+      "index": 26,
+      "title": "Clustering of streaming time series is meaningless",
+      "abstract": "",
+      "year": "2003",
+      "venue": "DMKD",
+      "authors": "J. Lin, E. J. Keogh, and W. Truppel"
+    },
+    {
+      "index": 27,
+      "title": "ULISSE: ULtra compact Index for Variable-Length Similarity SEarch in Data Series",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICDE",
+      "authors": "M. Linardi and T. Palpanas"
+    },
+    {
+      "index": 28,
+      "title": "Matrix profile X: Valmod - scalable discovery of variable-length motifs in data series",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGMOD",
+      "authors": "M. Linardi, Y. Zhu, T. Palpanas, and E. J. Keogh"
+    },
+    {
+      "index": 29,
+      "title": "Characterizing home device usage from wireless traffic time series",
+      "abstract": "",
+      "year": "2016",
+      "venue": "EDBT",
+      "authors": "K. Mirylenka, V. Christophides, T. Palpanas, I. Pefkianakis, and M. May"
+    },
+    {
+      "index": 30,
+      "title": "A computer oriented geodetic data base and a new technique in file sequencing",
+      "abstract": "",
+      "year": "1966",
+      "venue": "International Business Machines Company",
+      "authors": "G. M. Morton"
+    },
+    {
+      "index": 31,
+      "title": "Time series join on subsequence correlation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICDM",
+      "authors": "A. Mueen, H. Hamooni, and T. Estrada"
+    },
+    {
+      "index": 32,
+      "title": "A disk-aware algorithm for time series motif discovery",
+      "abstract": "",
+      "year": "2011",
+      "venue": "DAMI",
+      "authors": "A. Mueen, E. J. Keogh, Q. Zhu, S. Cash, M. B. Westover, and N. B. Shamlo"
+    },
+    {
+      "index": 33,
+      "title": "Fast approximate correlation for massive time-series data",
+      "abstract": "",
+      "year": "2010",
+      "venue": "SIGMOD",
+      "authors": "A. Mueen, S. Nath, and J. Liu"
+    },
+    {
+      "index": 34,
+      "title": "The log-structured merge-tree (lsm-tree)",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Acta Inf.",
+      "authors": "P. E. O’Neil, E. Cheng, D. Gawlick, and E. J. O’Neil"
+    },
+    {
+      "index": 35,
+      "title": "Data series management: The road to big sequence analytics",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIGMOD Record",
+      "authors": "T. Palpanas"
+    },
+    {
+      "index": 36,
+      "title": "Big sequence management: A glimpse of the past, the present, and the future",
+      "abstract": "",
+      "year": "2016",
+      "venue": "SOFSEM",
+      "authors": "T. Palpanas"
+    },
+    {
+      "index": 37,
+      "title": "The parallel and distributed future of data series mining",
+      "abstract": "",
+      "year": "2017",
+      "venue": "HPCS",
+      "authors": "T. Palpanas"
+    },
+    {
+      "index": 38,
+      "title": "Identification and characterization of human behavior patterns from mobile phone data",
+      "abstract": "",
+      "year": "2013",
+      "venue": "D4D Challenge session, NetMob",
+      "authors": "P. Paraskevopoulos, T.-C. Dinh, Z. Dashdorj, T. Palpanas, and L. Serafini"
+    },
+    {
+      "index": 39,
+      "title": "Gorilla: A fast, scalable, in-memory time series database",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PVLDB",
+      "authors": "T. Pelkonen, S. Franklin, P. Cavallaro, Q. Huang, J. Meza, J. Teller, and K. Veeraraghavan"
+    },
+    {
+      "index": 40,
+      "title": "Efficient time series matching by wavelets",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ICDE",
+      "authors": "K. pong Chan and A. W. Fu"
+    },
+    {
+      "index": 41,
+      "title": "On similarity-based queries for time series data",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ICDE",
+      "authors": "D. Rafiei"
+    },
+    {
+      "index": 42,
+      "title": "Similarity-based queries for time series data",
+      "abstract": "",
+      "year": "1997",
+      "venue": "SIGMOD",
+      "authors": "D. Rafiei and A. O. Mendelzon"
+    },
+    {
+      "index": 43,
+      "title": "Searching and mining trillions of time series subsequences under dynamic time warping",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGKDD",
+      "authors": "T. Rakthanmanon, B. J. L. Campana, A. Mueen, G. E. A. P. A. Batista, M. B. Westover, Q. Zhu, J. Zakaria, and E. J. Keogh"
+    },
+    {
+      "index": 44,
+      "title": "Time series epenthesis: Clustering time series streams requires ignoring some data",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICDM",
+      "authors": "T. Rakthanmanon, E. J. Keogh, S. Lonardi, and S. Evans"
+    },
+    {
+      "index": 45,
+      "title": "Database management systems (3. ed.)",
+      "abstract": "",
+      "year": "2003",
+      "venue": "McGraw-Hill",
+      "authors": "R. Ramakrishnan and J. Gehrke"
+    },
+    {
+      "index": 46,
+      "title": "Making b++{}^{\\mbox{+}}-trees cache conscious in main memory",
+      "abstract": "",
+      "year": "2000",
+      "venue": "SIGMOD",
+      "authors": "J. Rao and K. A. Ross"
+    },
+    {
+      "index": 47,
+      "title": "Three myths about dynamic time warping data mining",
+      "abstract": "",
+      "year": "2005",
+      "venue": "SIAM",
+      "authors": "C. A. Ratanamahatana and E. J. Keogh"
+    },
+    {
+      "index": 48,
+      "title": "Dimensionality reduction for similarity searching in dynamic databases",
+      "abstract": "",
+      "year": "1998",
+      "venue": "SIGMOD",
+      "authors": "K. V. Ravi Kanth, D. Agrawal, and A. Singh"
+    },
+    {
+      "index": 49,
+      "title": "Practical data prediction for real-world wireless sensor networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Trans. Knowl. Data Eng.",
+      "authors": "U. Raza, A. Camerra, A. L. Murphy, T. Palpanas, and G. P. Picco"
+    },
+    {
+      "index": 50,
+      "title": "Hierarchical clustering of time-series data streams",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Trans. Knowl. Data Eng.",
+      "authors": "P. P. Rodrigues, J. Gama, and J. P. Pedroso"
+    },
+    {
+      "index": 51,
+      "title": "Tuning time series queries in finance: Case studies and recommendations",
+      "abstract": "",
+      "year": "1999",
+      "venue": "IEEE Data Eng. Bull.",
+      "authors": "D. Shasha"
+    },
+    {
+      "index": 52,
+      "title": "iSAX: disk-aware mining and indexing of massive time series datasets",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Data Mining and Knowledge Discovery",
+      "authors": "J. Shieh and E. Keogh"
+    },
+    {
+      "index": 53,
+      "title": "isax: indexing and mining terabyte sized time series",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ACM SIGKDD",
+      "authors": "J. Shieh and E. J. Keogh"
+    },
+    {
+      "index": 54,
+      "title": "Long-term variability of agn at hard x-rays",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Astronomy & Astrophysics",
+      "authors": "S. Soldi, V. Beckmann, W. Baumgartner, G. Ponti, C. Shrader, P. Lubinski, H. Krimm, F. Mattana, and J. Tueller"
+    },
+    {
+      "index": 55,
+      "title": "A data-adaptive and dynamic segmentation index for whole matching on time series",
+      "abstract": "",
+      "year": "2013",
+      "venue": "PVLDB",
+      "authors": "Y. Wang, P. Wang, J. Pei, W. Wang, and S. Huang"
+    },
+    {
+      "index": 56,
+      "title": "Fast time series classification using numerosity reduction",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ICML",
+      "authors": "X. Xi, E. J. Keogh, C. R. Shelton, L. Wei, and C. A. Ratanamahatana"
+    },
+    {
+      "index": 57,
+      "title": "Dpisax: Massively distributed partitioned isax",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICDM",
+      "authors": "D. E. Yagoubi, R. Akbarinia, F. Masseglia, and T. Palpanas"
+    },
+    {
+      "index": 58,
+      "title": "Time series shapelets: a new primitive for data mining",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ACM SIGKDD",
+      "authors": "L. Ye and E. J. Keogh"
+    },
+    {
+      "index": 59,
+      "title": "Indexing for interactive exploration of big data series",
+      "abstract": "",
+      "year": "2014",
+      "venue": "SIGMOD",
+      "authors": "K. Zoumpatianos, S. Idreos, and T. Palpanas"
+    },
+    {
+      "index": 60,
+      "title": "RINSE: interactive data series exploration with ADS+",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PVLDB",
+      "authors": "K. Zoumpatianos, S. Idreos, and T. Palpanas"
+    },
+    {
+      "index": 61,
+      "title": "ADS: the adaptive data series index",
+      "abstract": "",
+      "year": "2016",
+      "venue": "VLDB J.",
+      "authors": "K. Zoumpatianos, S. Idreos, and T. Palpanas"
+    },
+    {
+      "index": 62,
+      "title": "Query workloads for data series indexes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM SIGKDD",
+      "authors": "K. Zoumpatianos, Y. Lou, T. Palpanas, and J. Gehrke"
+    },
+    {
+      "index": 63,
+      "title": "Data series management: Fulfilling the need for big sequence analytics",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICDE",
+      "authors": "K. Zoumpatianos and T. Palpanas"
+    }
+  ]
+}

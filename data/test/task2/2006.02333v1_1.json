@@ -1,0 +1,305 @@
+{
+  "paper_id": "2006.02333v1",
+  "title": "Scene relighting with illumination estimation in the latent space on an encoder-decoder scheme",
+  "sections": {
+    "introduction": "In general terms, the relighting problem consists of taking two different scenes, with possibly different illuminations, and transferring the illumination from one scene to another. In the dataset there are 300300300 different scenes, each rendered with 555 different color temperatures and 888 different light directions, for a total of 12 0001200012\\,000 images . Some scenes are rendered from the same location (same objects) but with a different camera view. The solution to the described problem can be valuable for a few reasons. Firstly, it would be a useful tool to make our photos more beautiful by changing the lightning in already captured photographs. It is known that that professional photography may require advanced equipment to provide desired lighting conditions for shooting and that casual users are usually left with the illumination in a particular environment that they cannot affect . This method could also be used to perform data augmentation before training a particular network, allowing to achieve a wider variety in the dataset and potentially resulting in a model that is more stable under light modifications, i.e. less biased to specific conditions. Some related works are considering intrinsic image decomposition  , photography enhancement , style transfer 3 [ref]5, depth estimation 2 and shading annotation [ref]14. In , interesting relations are shown between some tasks, such as depth estimation, that can be performed on images. On one hand, intrinsic image decomposition consists of separating image reflectance from shadings. Roughly speaking, reflectance are the “real” colors of the objects, independent from illumination, and shading is how illumination affects the reflectance to produce the final image. While it is useful for some application such as enhancing photography exposure, it does not modify the illumination. However, it is possible for neural networks to learn scene geometry elements and lighting, for instance to perform depth estimation and shading annotation 2 [ref]14. On the other hand, style transfer has shown really good results in modifying the style of an image in real-time, transforming for instance a video of horses into the same video where horses are replaced by zebras, performing the same actions . Ideally, we would like to be able to change the illumination – shading – of an input image to fit the one of a target image, while keeping the scene – objects, reflectance – of the input image. Image relighting is currently performed either with several input images of the same scene 6, or for specific tasks such as portrait relighting  1 or daytime translation . Also note that not all those works extract the target illumination from a target image. The training dataset collection is often a bottleneck to train such networks if one wants to apply the image relighting to real sceneries – it is particularly time consuming and technically difficult to collect photographs of multiple locations under different lighting conditions. However, there exist innovative ways of acquiring real-life datasets  . The alternative is to use artificially produced datasets, such as the VIDIT dataset  in this project. The image relighting networks trained in the papers above follow a similar schema. The input image is passed through an encoder to extract portrayed scene content information 6  1 and/or illumination information – environment map, lighting feature 1 . Some operations occur in the encoded – latent – space, to add the target illumination – target style, target lighting feature, target light. The modified latent space is then passed through a decoder to output the relit image with the input image’s scene. In addition to the relit-image-generator (encoder-decoder) the papers 1  also have a discriminator as the ones from style transfer 3 [ref]5 to improve relit image quality and assure their realism. One limitation of those networks is that they are too task specific – e.g. only work well on a portraits, a daytime change, 5 inputs of the same scene. We want to have something more general that would work for every scene and illumination. We also want it to extract the target illumination automatically from the target image. We present algorithms constituting minor modifications to  that take as input an image to be relit and a target image. By processing each of them, we aim to separate the illumination information from the scene information, either in the latent space only, or in the latent space and in the skip links. Then, the scene information from the input image and the illumination information from the target image are combined and decoded to produce a relit image. We would like for our methods not to be specific to a particular content – we hope that VIDIT dataset  containing scenes with various objects would allow achieving that goal. Our solution does not require the target illumination to be explicitly given. Indeed, the target illumination information is extracted automatically from the target image. It also extracts the scene and illumination information from only one sample of each image – input and target. The two images are processed though the same convolutional encoder to extract the scene and illumination information. We then concatenate the scene information from the input image and the illumination information from the target image and process them through a convolutional decoder to output a relit image. As we know in advance the scene and illumination, we also have at our disposal the ground-truth image this method is expected to output. We optimize the similarity between the relit image and the ground-truth image by iteratively updating the parameters of the encoder and the decoder. In the VIDIT dataset  we used to train our models, color temperatures and light directions are discrete. We assume it would be possible to generalize our method to continuous values. In this dataset, only the main source of light is changing direction and not the other light sources – e.g. light from windows, subway train headlights, bonfire – as the ones depicted in the figure 2. Therefore, those other light sources are not considered as illumination information by our method. In the following parts of the report, we present our literature review followed by the explanation of the architectures of the networks we tried. We describe different variations we have been experimenting with, together with the losses used for training."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "TensorFlow: Large-scale machine learning on heterogeneous systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Abadi, M., Agarwal, A., Barham, P., Brevdo, E., Chen, Z., Citro, C., Corrado, G.S., Davis, A., Dean, J., Devin, M., Ghemawat, S., Goodfellow, I., Harp, A., Irving, G., Isard, M., Jia, Y., Jozefowicz, R., Kaiser, L., Kudlur, M., Levenberg, J., Mané, D., Monga, R., Moore, S., Murray, D., Olah, C., Schuster, M., Shlens, J., Steiner, B., Sutskever, I., Talwar, K., Tucker, P., Vanhoucke, V., Vasudevan, V., Viégas, F., Vinyals, O., Warden, P., Wattenberg, M., Wicke, M., Yu, Y., Zheng, X."
+    },
+    {
+      "index": 1,
+      "title": "High-Resolution Daytime Translation Without Domain Labels",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.08791",
+      "authors": "Anokhin, I., Solovev, P., Korzhenkov, D., Kharlamov, A., Khakhulin, T., Sterkin, G., Silvestrov, A., Nikolenko, S., Lempitsky, V.",
+      "orig_title": "High-resolution daytime translation without domain labels",
+      "paper_id": "2003.08791v2"
+    },
+    {
+      "index": 2,
+      "title": "Intrinsic images in the wild",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Bell, S., Bala, K., Snavely, N."
+    },
+    {
+      "index": 3,
+      "title": "Signature verification using a “siamese” time delay neural network",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Bromley, J., Guyon, I., LeCun, Y., Säckinger, E., Shah, R."
+    },
+    {
+      "index": 4,
+      "title": "StarGAN: Unified Generative Adversarial Networks for Multi-Domain Image-to-Image Translation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Choi, Y., Choi, M., Kim, M., Ha, J.W., Kim, S., Choo, J.",
+      "orig_title": "Stargan: Unified generative adversarial networks for multi-domain image-to-image translation",
+      "paper_id": "1711.09020v3"
+    },
+    {
+      "index": 5,
+      "title": "VIDIT: Virtual Image Dataset for Illumination Transfer",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2005.05460",
+      "authors": "El Helou, M., Zhou, R., Barthas, J., Süsstrunk, S.",
+      "orig_title": "Vidit: Virtual image dataset for illumination transfer",
+      "paper_id": "2005.05460v2"
+    },
+    {
+      "index": 6,
+      "title": "Transposed convolutions. deep learning lecture handout for ee-559 at epfl.",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Fleuret, F."
+    },
+    {
+      "index": 7,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Goodfellow, I., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D., Ozair, S., Courville, A., Bengio, Y."
+    },
+    {
+      "index": 8,
+      "title": "Image quality metrics: Psnr vs. ssim",
+      "abstract": "",
+      "year": "2010",
+      "venue": "2010 20th International Conference on Pattern Recognition. IEEE",
+      "authors": "Hore, A., Ziou, D."
+    },
+    {
+      "index": 9,
+      "title": "Fc4: Fully convolutional color constancy with confidence-weighted pooling",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Hu, Y., Wang, B., Lin, S."
+    },
+    {
+      "index": 10,
+      "title": "Image-to-Image Translation with Conditional Adversarial Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Isola, P., Zhu, J.Y., Zhou, T., Efros, A.",
+      "orig_title": "Image-to-image translation with conditional adversarial networks",
+      "paper_id": "1611.07004v3"
+    },
+    {
+      "index": 11,
+      "title": "Image-to-Image Translation with Conditional Adversarial Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Isola, P., Zhu, J.Y., Zhou, T., Efros, A.A.",
+      "orig_title": "Image-to-image translation with conditional adversarial networks",
+      "paper_id": "1611.07004v3"
+    },
+    {
+      "index": 12,
+      "title": "The relativistic discriminator: a key element missing from standard GAN",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1807.00734",
+      "authors": "Jolicoeur-Martineau, A.",
+      "orig_title": "The relativistic discriminator: a key element missing from standard gan",
+      "paper_id": "1807.00734v3"
+    },
+    {
+      "index": 13,
+      "title": "Shading Annotations in the Wild",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Kovacs, B., Bell, S., Snavely, N., Bala, K.",
+      "orig_title": "Shading annotations in the wild",
+      "paper_id": "1705.01156v1"
+    },
+    {
+      "index": 14,
+      "title": "Learning Intrinsic Image Decomposition from Watching the World",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Li, Z., Snavely, N.",
+      "orig_title": "Learning intrinsic image decomposition from watching the world",
+      "paper_id": "1804.00582v1"
+    },
+    {
+      "index": 15,
+      "title": "Colour 0.3.15",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Mansencal, T., Mauderer, M., Parsons, M., Shaw, N., Wheatley, K., Cooper, S., Vandenberg, J.D., Canavan, L., Crowson, K., Lev, O., Leinweber, K., Sharma, S., Sobotka, T.J., Moritz, D., Pppp, M., Rane, C., Eswaramoorthy, P., Mertic, J., Pearlstine, B., Leonhardt, M., Niemitalo, O., Szymanski, M., Schambach, M."
+    },
+    {
+      "index": 16,
+      "title": "Conditional Generative Adversarial Nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Mirza, M., Osindero, S.",
+      "orig_title": "Conditional generative adversarial nets",
+      "paper_id": "1411.1784v1"
+    },
+    {
+      "index": 17,
+      "title": "A dataset of multi-illumination images in the wild",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Murmann, L., Gharbi, M., Aittala, M., Durand, F."
+    },
+    {
+      "index": 18,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems 32. Curran Associates, Inc.",
+      "authors": "Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga, L., Desmaison, A., Kopf, A., Yang, E., DeVito, Z., Raison, M., Tejani, A., Chilamkurthy, S., Steiner, B., Fang, L., Bai, J., Chintala, S.",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 19,
+      "title": "Kornia: an Open Source Differentiable Computer Vision Library for PyTorch",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Riba, E., Mishkin, D., Ponsa, D., Rublee, E., Bradski, G.",
+      "orig_title": "Kornia: an open source differentiable computer vision library for pytorch",
+      "paper_id": "1910.02190v2"
+    },
+    {
+      "index": 20,
+      "title": "Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Shi, W., Caballero, J., Huszár, F., Totz, J., Aitken, A.P., Bishop, R., Rueckert, D., Wang, Z.",
+      "orig_title": "Real-time single image and video super-resolution using an efficient sub-pixel convolutional neural network",
+      "paper_id": "1609.05158v2"
+    },
+    {
+      "index": 21,
+      "title": "Single Image Portrait Relighting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Transactions on Graphics (Proceedings SIGGRAPH)",
+      "authors": "Sun, T., Barron, J.T., Tsai, Y.T., Xu, Z., Yu, X., Fyffe, G., Rhemann, C., Busch, J., Debevec, P., Ramamoorthi, R.",
+      "orig_title": "Single image portrait relighting",
+      "paper_id": "1905.00824v1"
+    },
+    {
+      "index": 22,
+      "title": "Lpips implementation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Uchida, S."
+    },
+    {
+      "index": 23,
+      "title": "Underexposed photo enhancement using deep illumination estimation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Wang, R., Zhang, Q., Fu, C.W., Shen, X., Zheng, W.S., Jia, J."
+    },
+    {
+      "index": 24,
+      "title": "Image quality assessment: from error visibility to structural similarity",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE transactions on image processing",
+      "authors": "Wang, Z., Bovik, A.C., Sheikh, H.R., Simoncelli, E.P."
+    },
+    {
+      "index": 25,
+      "title": "Deep image-based relighting from optimal sparse samples",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Transactions on Graphics (TOG)",
+      "authors": "Xu, Z., Sunkavalli, K., Hadap, S., Ramamoorthi, R."
+    },
+    {
+      "index": 26,
+      "title": "Semantic Hierarchy Emerges in Deep Generative Representations for Scene Synthesis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.09267",
+      "authors": "Yang, C., Shen, Y., Zhou, B.",
+      "orig_title": "Semantic hierarchy emerges in deep generative representations for scene synthesis",
+      "paper_id": "1911.09267v3"
+    },
+    {
+      "index": 27,
+      "title": "Taskonomy: Disentangling Task Transfer Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Zamir, A.R., Sax, A., Shen, W., Guibas, L.J., Malik, J., Savarese, S.",
+      "orig_title": "Taskonomy: Disentangling task transfer learning",
+      "paper_id": "1804.08328v1"
+    },
+    {
+      "index": 28,
+      "title": "Generating Digital Painting Lighting Effects via RGB-space Geometry",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Transactions on Graphics (Presented at SIGGRAPH)",
+      "authors": "Zhang, L., Simo-Serra, E., Ji, Y., Liu, C."
+    },
+    {
+      "index": 29,
+      "title": "The Unreasonable Effectiveness of Deep Features as a Perceptual Metric",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Zhang, R., Isola, P., Efros, A.A., Shechtman, E., Wang, O.",
+      "orig_title": "The unreasonable effectiveness of deep features as a perceptual metric",
+      "paper_id": "1801.03924v2"
+    },
+    {
+      "index": 30,
+      "title": "Deep single-image portrait relighting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Zhou, H., Hadap, S., Sunkavalli, K., Jacobs, D.W."
+    },
+    {
+      "index": 31,
+      "title": "Unsupervised learning of depth and ego-motion from video",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Zhou, T., Brown, M., Snavely, N., Lowe, D.G."
+    },
+    {
+      "index": 32,
+      "title": "Unpaired image-to-image translation using cycle-consistent adversarial networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "Zhu, J.Y., Park, T., Isola, P., Efros, A.A."
+    }
+  ]
+}

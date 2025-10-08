@@ -1,0 +1,409 @@
+{
+  "paper_id": "2007.10457v1",
+  "title": "Multi-agent Reinforcement Learning in Bayesian Stackelberg Markov Games for Adaptive Moving Target Defense",
+  "sections": {
+    "bayesian stackelberg markov games (bsmgs)": "Markov Games (MGs)  are used to model multi-agent interactions in sequential planning problems. Under this framework, a player can reason about the behavior of other agents (co-operative or adversarial) and come up with policies that adhere to some notion of equilibrium (where no agent can gain by deviating away from the action or strategy profile). While MGs have been widely used to model adversarial scenarios, they suffer from two major shortcomings– (1) they do not consider incomplete information about the adversary     and/or (2) they consider weak threat models where the attacker has no information about the defender’s policy  . On the other hand, Bayesian Stackelberg Games   is a single-stage game-theoretic formalism that addresses both of these concerns but cannot be trivially generalized to sequential settings. To overcome these challenges of expressiveness required for Moving Target Defenses (MTDs) while ensuring scalability, we introduce the formalism of Bayesian Stackelberg Markov Games (BSMGs). BSMGs extends Bayesian Stackelberg Games (BSGs) to multi-stage sequential games. While one can consider using existing formalism in Markov Games that capture incomplete information, they face severe scalability issues and have thus been unpopular in cyber-security domains (we discuss how BSMG is situated in this landscape of works in section 5). In the context of Moving Target Defense (MTD), BSMG acts as a unifying framework helping us characterize optimal movement policies against strategic adversaries, capture transition dynamics and costs of the underlying cyber-system, aid in reasoning about stronger threat models, and consider incomplete information about strategic adversaries. Formally, a BSMG can be represented by the tuple (P,S,Θ,A,τ,U,γ𝒟,γ𝒜)𝑃𝑆Θ𝐴𝜏𝑈superscript𝛾𝒟superscript𝛾𝒜(P,S,\\Theta,A,\\tau,U,\\gamma^{\\mathcal{D}},\\gamma^{\\mathcal{A}}) where, P={𝒟,𝒜={𝒜1,𝒜2,…​𝒜t}}𝑃𝒟𝒜subscript𝒜1subscript𝒜2…subscript𝒜𝑡P=\\{\\mathcal{D},\\mathcal{A}=\\{\\mathcal{A}_{1},\\mathcal{A}_{2},\\dots\\mathcal{A}_{t}\\}\\} where 𝒟𝒟\\mathcal{D} denotes the leader (defender) and 𝒜𝒜\\mathcal{A} denotes the follower (attacker). In our model, only the second player has t𝑡t types. S={s1,s2,…,sk}𝑆subscript𝑠1subscript𝑠2…subscript𝑠𝑘S=\\{s_{1},s_{2},\\dots,s_{k}\\} are k𝑘k (finite) states of the game, Θ={θ1,θ2,…​θk}Θsubscript𝜃1subscript𝜃2…subscript𝜃𝑘\\Theta=\\{\\theta_{1},\\theta_{2},\\dots\\theta_{k}\\} denotes k𝑘k probability distributions (for k𝑘k states) over the t𝑡t attackers and θi​(s)subscript𝜃𝑖𝑠\\theta_{i}(s) denotes the probability of i𝑖i-th attacker type in state s𝑠s A={A𝒟,A𝒜1,…​A𝒜t}𝐴superscript𝐴𝒟superscript𝐴subscript𝒜1…superscript𝐴subscript𝒜𝑡A=\\{A^{\\mathcal{D}},A^{\\mathcal{A}_{1}},\\dots A^{\\mathcal{A}_{t}}\\} denotes the action set of the player and Ai​(s)superscript𝐴𝑖𝑠A^{i}(s) represents the set of actions/pure strategies available to player i𝑖i in state s𝑠s. τi​(s,a𝒟,a𝒜i,s′)superscript𝜏𝑖𝑠superscript𝑎𝒟superscript𝑎subscript𝒜𝑖superscript𝑠′\\tau^{i}(s,a^{\\mathcal{D}},a^{\\mathcal{A}_{i}},s^{\\prime}) represents the probability of reaching a state s′∈Ssuperscript𝑠′𝑆s^{\\prime}\\in S from the state s∈S𝑠𝑆s\\in S when the 𝒟𝒟\\mathcal{D} chooses a𝒟superscript𝑎𝒟a^{\\mathcal{D}} and attacker type i𝑖i choose the action a𝒜isuperscript𝑎subscript𝒜𝑖a^{\\mathcal{A}_{i}}, U={U𝒟,U𝒜1,…,U𝒜t}𝑈superscript𝑈𝒟superscript𝑈subscript𝒜1…superscript𝑈subscript𝒜𝑡U=\\{U^{\\mathcal{D}},U^{\\mathcal{A}_{1}},\\dots,U^{\\mathcal{A}_{t}}\\} where U𝒟​(s,a𝒟,a𝒜i)superscript𝑈𝒟𝑠superscript𝑎𝒟superscript𝑎subscript𝒜𝑖U^{\\mathcal{D}}(s,a^{\\mathcal{D}},a^{\\mathcal{A}_{i}}) and Ui​(s,a𝒟,a𝒜i)superscript𝑈𝑖𝑠superscript𝑎𝒟superscript𝑎subscript𝒜𝑖U^{i}(s,a^{\\mathcal{D}},a^{\\mathcal{A}_{i}}) represents the reward/utility of 𝒟𝒟\\mathcal{D} and an attacker type 𝒜isubscript𝒜𝑖\\mathcal{A}_{i} respectively if, in state s𝑠s, actions a𝒟superscript𝑎𝒟a^{\\mathcal{D}} and a𝒜isuperscript𝑎subscript𝒜𝑖a^{\\mathcal{A}_{i}} are chosen by the players, γi↦[0,1)maps-tosuperscript𝛾𝑖01\\gamma^{i}\\mapsto[0,1) is the discount factor for player i𝑖i. We will assume that γ𝒟=γ𝒜𝒾=γsuperscript𝛾𝒟superscript𝛾subscript𝒜𝒾𝛾\\gamma^{\\mathcal{D}}=\\gamma^{\\mathcal{A_{i}}}=\\gamma. In BSMGs the individual stage games constitute normal-form Bayesian games with a distribution over attacker types; this is in contrast to the unit probability over a single adversary type in MGs. Both in physical  and cyber-security , defenders are known to have knowledge about follower types, a classic case of known-unknowns. BSMGs provide the expressive power to represent this information; precisely θssubscript𝜃𝑠\\theta_{s} represents the probability estimate with which a defender believes a certain kind of adversary is encountered in a particular state s𝑠s of the game. Note that a defender 𝒟𝒟\\mathcal{D} is expected to deploy a system first. Thus, a strong threat model assumes that all the attacker types 𝒜isubscript𝒜𝑖\\mathcal{A}_{i} know the defender’s policy, making the Bayesian notion of Stackelberg Equilibrium an appropriate solution concept for such games.\nFor a normal-form game, let a defender’s mixed policy be denoted as x𝑥x and let us denote an attacker type 𝒜isubscript𝒜𝑖\\mathcal{A}_{i}’s response set (i.e. a set of best responses to x𝑥x) as Ri​(x)superscript𝑅𝑖𝑥R^{i}(x). If the response set for all adversary types is singleton, then the action profile (x,R1​(x),…​Rt​(x))𝑥superscript𝑅1𝑥…superscript𝑅𝑡𝑥(x,R^{1}(x),\\dots R^{t}(x)) constitutes a Stackelberg Equilibrium of the normal-form game . When the response set contains more than one action, the final response chosen can yield different rewards for 𝒟𝒟\\mathcal{D}. In such cases, a popular assumption made in general-sum games is to consider the response that results in the optimal rewards for 𝒟𝒟\\mathcal{D}; this is termed as the Strong Stackelberg Equilibrium (SSE)   [ref]4 . In contrast to the notion of Weak Stackelberg Equilibrium, which considers the pessimistic case, an SSE is guaranteed to exist and yields a unique game value to the defender regardless of the particular SSE chosen  . Thus, we consider SSEs as the solution concept in BSMGs and highlight a few properties about player strategies at equilibrium for BSMGs (the proofs are deferred to the supplementary material). Lemma 1. For a given policy of the leader/defender in BSMG, every follower/attacker type will have a deterministic policy in all states s∈S𝑠𝑆s\\in S that is an optimal response. Corollary 1. For an SSE policy of the defender, denoted as x𝑥x, each attacker type Aisubscript𝐴𝑖A_{i} has a deterministic best policy qisubscript𝑞𝑖q_{i}. The action profile (x,q1,…​qt)𝑥subscript𝑞1…subscript𝑞𝑡(x,q_{1},\\dots q_{t}) denotes the SSE of the BSMG. Lemma 2. If an action profile (x,q1,…,qt)𝑥subscript𝑞1…subscript𝑞𝑡(x,q_{1},\\dots,q_{t}) yields the equilibrium values Vx,q𝒟subscriptsuperscript𝑉𝒟𝑥𝑞V^{\\mathcal{D}}_{x,q} and Vx,q𝒜isubscriptsuperscript𝑉subscript𝒜𝑖𝑥𝑞V^{\\mathcal{A}_{i}}_{x,q} to the players and is an SSE of BSMG, then ∀s∈Sfor-all𝑠𝑆\\forall s\\in S (x​(s),q1​(s),…,qt​(s))𝑥𝑠subscript𝑞1𝑠…subscript𝑞𝑡𝑠(x(s),q_{1}(s),\\dots,q_{t}(s)) is an SSE of the bi-matrix Bayesian game represented by the Q-values Qx,qi𝒟,i​(s),Qx,qi𝒜i​(s)​∀i∈{1,…,t}subscriptsuperscript𝑄𝒟𝑖𝑥subscript𝑞𝑖𝑠subscriptsuperscript𝑄subscript𝒜𝑖𝑥subscript𝑞𝑖𝑠for-all𝑖1…𝑡Q^{\\mathcal{D},i}_{x,q_{i}}(s),Q^{\\mathcal{A}_{i}}_{x,q_{i}}(s)~{}\\forall i\\in\\{1,\\dots,t\\}. When the parameters of a game are provided up-front, an approach similar to calculating Strong Stackelberg Equilibrium in Bayesian Games  alongside Mixed-Integer Non-Linear Programming approaches  or Bellman-style approaches for Markov Games  can be leveraged to find the defender’s policy. In contrast, when game-parameters are difficult to provide upfront but interaction with an environment is considered possible, we can resort to reinforcement learning techniques.\nBefore proposing our model-free multi-agent reinforcement learning method in the next section, we briefly discuss how the various MTDs, used later in the experiments, are modeled as BSMGs."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Moving target defense: creating asymmetric uncertainty for cyber threats, volume 54",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Springer Science & Business Media",
+      "authors": "Sushil Jajodia, Anup K Ghosh, Vipin Swarup, Cliff Wang, and X Sean Wang"
+    },
+    {
+      "index": 1,
+      "title": "Moving target defense: a symbiotic framework for ai & security",
+      "abstract": "",
+      "year": "2017",
+      "venue": "16th Conference on Autonomous Agents and MultiAgent Systems",
+      "authors": "Sailik Sengupta"
+    },
+    {
+      "index": 2,
+      "title": "A Survey of Moving Target Defenses for Network Security",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Communications Surveys & Tutorials",
+      "authors": "Sailik Sengupta, Ankur Chowdhary, Abdulhakim Sabur, Adel Alshamrani, Dijiang Huang, and Subbarao Kambhampati",
+      "orig_title": "A survey of moving target defenses for network security",
+      "paper_id": "1905.00964v2"
+    },
+    {
+      "index": 3,
+      "title": "From physical security to cybersecurity",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Journal of Cybersecurity",
+      "authors": "Arunesh Sinha, Thanh H Nguyen, Debarun Kar, Matthew Brown, Milind Tambe, and Albert Xin Jiang"
+    },
+    {
+      "index": 4,
+      "title": "Moving Target Defense for Web Applications using Bayesian Stackelberg Games",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 International Conference on Autonomous Agents & Multiagent Systems",
+      "authors": "Satya Gautam Vadlamudi, Sailik Sengupta, Marthony Taguinod, Ziming Zhao, Adam Doupé, Gail-Joon Ahn, and Subbarao Kambhampati",
+      "orig_title": "Moving target defense for web applications using bayesian stackelberg games",
+      "paper_id": "1602.07024v3"
+    },
+    {
+      "index": 5,
+      "title": "A game theoretic approach to strategy generation for moving target defense in web applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "16th Conference on Autonomous Agents and MultiAgent Systems",
+      "authors": "Sailik Sengupta, Satya Gautam Vadlamudi, Subbarao Kambhampati, Adam Doupé, Ziming Zhao, Marthony Taguinod, and Gail-Joon Ahn"
+    },
+    {
+      "index": 6,
+      "title": "Computing stackelberg equilibria in discounted stochastic games",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Twenty-Sixth AAAI Conference on Artificial Intelligence",
+      "authors": "Yevgeniy Vorobeychik and Satinder Singh"
+    },
+    {
+      "index": 7,
+      "title": "Markov game modeling of moving target defense for strategic detection of threats in cloud networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1812.09660",
+      "authors": "Ankur Chowdhary, Sailik Sengupta, Dijiang Huang, and Subbarao Kambhampati"
+    },
+    {
+      "index": 8,
+      "title": "Markov modeling of moving target defense games",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 ACM Workshop on Moving Target Defense",
+      "authors": "Hoda Maleki, Saeed Valizadeh, William Koch, Azer Bestavros, and Marten van Dijk"
+    },
+    {
+      "index": 9,
+      "title": "Game-theoretic approach to feedback-driven multi-stage moving target defense",
+      "abstract": "",
+      "year": "2013",
+      "venue": "International conference on decision and game theory for security",
+      "authors": "Quanyan Zhu and Tamer Başar"
+    },
+    {
+      "index": 10,
+      "title": "Spatial-Temporal Moving Target Defense: A Markov Stackelberg Game Model",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2002.10390",
+      "authors": "Henger Li, Wen Shen, and Zizhan Zheng",
+      "orig_title": "Spatial-temporal moving target defense: A markov stackelberg game model",
+      "paper_id": "2002.10390v1"
+    },
+    {
+      "index": 11,
+      "title": "Playing games for security: An efficient exact algorithm for solving bayesian stackelberg games",
+      "abstract": "",
+      "year": "2008",
+      "venue": "7th international joint conference on Autonomous agents and multiagent systems-Volume 2",
+      "authors": "Praveen Paruchuri, Jonathan P Pearce, Janusz Marecki, Milind Tambe, Fernando Ordonez, and Sarit Kraus"
+    },
+    {
+      "index": 12,
+      "title": "Markov security games: Learning in spatial security problems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NIPS Workshop on Learning, Inference and Control of Multi-Agent Systems (2016)",
+      "authors": "Richard Klima, Karl Tuyls, and Frans Oliehoek"
+    },
+    {
+      "index": 13,
+      "title": "Dynamic ids configuration in the presence of intruder type uncertainty",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 IEEE Global Communications Conference (GLOBECOM)",
+      "authors": "Xiaofan He, Huaiyu Dai, Peng Ning, and Rudra Dutta"
+    },
+    {
+      "index": 14,
+      "title": "Playing adaptively against stealthy opponents: A reinforcement learning strategy for the flipit security game",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.11938",
+      "authors": "Lisa Oakley and Alina Oprea"
+    },
+    {
+      "index": 15,
+      "title": "Deep reinforcement learning based adaptive moving target defense",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.11972",
+      "authors": "Taha Eghtesad, Yevgeniy Vorobeychik, and Aron Laszka"
+    },
+    {
+      "index": 16,
+      "title": "Openai gym",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.01540",
+      "authors": "Greg Brockman, Vicki Cheung, Ludwig Pettersson, Jonas Schneider, John Schulman, Jie Tang, and Wojciech Zaremba"
+    },
+    {
+      "index": 17,
+      "title": "Stochastic games",
+      "abstract": "",
+      "year": "1953",
+      "venue": "Proceedings of the national academy of sciences",
+      "authors": "Lloyd S Shapley"
+    },
+    {
+      "index": 18,
+      "title": "Solving security games on graphs via marginal probabilities",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Twenty-Seventh AAAI Conference on Artificial Intelligence",
+      "authors": "Joshua Letchford and Vincent Conitzer"
+    },
+    {
+      "index": 19,
+      "title": "General sum markov games for strategic detection of advanced persistent threats using moving target defense in cloud networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Decision and Game Theory for Security",
+      "authors": "Sailik Sengupta, Ankur Chowdhary, Dijiang Huang, and Subbarao Kambhampati"
+    },
+    {
+      "index": 20,
+      "title": "Dynamic policy-based ids configuration",
+      "abstract": "",
+      "year": "2009",
+      "venue": "48h IEEE Conference on Decision and Control (CDC) held jointly with 2009 28th Chinese Control Conference",
+      "authors": "Quanyan Zhu and Tamer Başar"
+    },
+    {
+      "index": 21,
+      "title": "Playing games for security: An efficient exact algorithm for solving bayesian stackelberg games",
+      "abstract": "",
+      "year": "2008",
+      "venue": "AAMAS",
+      "authors": "Praveen Paruchuri, Jonathan P Pearce, Janusz Marecki, Milind Tambe, Fernando Ordonez, and Sarit Kraus"
+    },
+    {
+      "index": 22,
+      "title": "On generalized stackelberg strategies",
+      "abstract": "",
+      "year": "1978",
+      "venue": "Journal of Optimization Theory and Applications",
+      "authors": "George Leitmann"
+    },
+    {
+      "index": 23,
+      "title": "Computing the optimal strategy to commit to",
+      "abstract": "",
+      "year": "2006",
+      "venue": "7th ACM Conference on Electronic Commerce, EC ’06",
+      "authors": "Vincent Conitzer and Tuomas Sandholm"
+    },
+    {
+      "index": 24,
+      "title": "Leadership with commitment to mixed strategies",
+      "abstract": "",
+      "year": "2004",
+      "venue": "CDAM Research Report LSE-CDAM-2004-01",
+      "authors": "BV Stengel and S Zamir"
+    },
+    {
+      "index": 25,
+      "title": "Lecture notes on non-cooperative game theory",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Game Theory Module of the Graduate Program in Network Mathematics",
+      "authors": "Tamer Basar et al."
+    },
+    {
+      "index": 26,
+      "title": "National vulnerability database",
+      "abstract": "",
+      "year": "",
+      "venue": "https://nvd.nist.gov",
+      "authors": ""
+    },
+    {
+      "index": 27,
+      "title": "An initial study of targeted personality models in the flipit game",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Decision and Game Theory for Security",
+      "authors": "Anjon Basak, Jakub Černỳ, Marcus Gutierrez, Shelby Curtis, Charles Kamhoua, Daniel Jones, Branislav Bošanskỳ, and Christopher Kiekintveld"
+    },
+    {
+      "index": 28,
+      "title": "Automated generation and analysis of attack graphs",
+      "abstract": "",
+      "year": "2002",
+      "venue": "2002 IEEE Symposium on Security and Privacy",
+      "authors": "Oleg Sheyner, Joshua Haines, Somesh Jha, Richard Lippmann, and Jeannette M Wing"
+    },
+    {
+      "index": 29,
+      "title": "A game theoretic approach to strategy determination for dynamic platform defenses",
+      "abstract": "",
+      "year": "2014",
+      "venue": "First ACM Workshop on Moving Target Defense",
+      "authors": "Kevin M Carter, James F Riordan, and Hamed Okhravi"
+    },
+    {
+      "index": 30,
+      "title": "Deceiving cyber adversaries: A game theoretic approach",
+      "abstract": "",
+      "year": "2018",
+      "venue": "17th International Conference on Autonomous Agents and MultiAgent Systems",
+      "authors": "Aaron Schlenker, Omkar Thakoor, Haifeng Xu, Fei Fang, Milind Tambe, Long Tran-Thanh, Phebe Vayanos, and Yevgeniy Vorobeychik"
+    },
+    {
+      "index": 31,
+      "title": "Asymmetric multiagent reinforcement learning",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Web Intelligence and Agent Systems: An international journal",
+      "authors": "Ville Könönen"
+    },
+    {
+      "index": 32,
+      "title": "Towards a theory of moving target defense",
+      "abstract": "",
+      "year": "2014",
+      "venue": "First ACM Workshop on Moving Target Defense",
+      "authors": "Rui Zhuang, Scott A DeLoach, and Xinming Ou"
+    },
+    {
+      "index": 33,
+      "title": "Multiagent reinforcement learning: theoretical framework and an algorithm",
+      "abstract": "",
+      "year": "1998",
+      "venue": "ICML",
+      "authors": "Junling Hu, Michael P Wellman, et al."
+    },
+    {
+      "index": 34,
+      "title": "Multi-agent reinforcement learning: a critical survey",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Web manuscript",
+      "authors": "Yoav Shoham, Rob Powers, and Trond Grenager"
+    },
+    {
+      "index": 35,
+      "title": "Markov games as a framework for multi-agent reinforcement learning",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Machine learning proceedings 1994",
+      "authors": "Michael L Littman"
+    },
+    {
+      "index": 36,
+      "title": "Friend-or-foe q-learning in general-sum games",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ICML",
+      "authors": "Michael L Littman"
+    },
+    {
+      "index": 37,
+      "title": "Correlated q-learning",
+      "abstract": "",
+      "year": "2003",
+      "venue": "ICML",
+      "authors": "Amy Greenwald, Keith Hall, and Roberto Serrano"
+    },
+    {
+      "index": 38,
+      "title": "Finite depth of reasoning and equilibrium play in games with incomplete information",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Discussion Paper, Center for Mathematical Studies in Economics and ...",
+      "authors": "Willemien Kets"
+    },
+    {
+      "index": 39,
+      "title": "On markov games played by bayesian and boundedly-rational players",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Thirty-First AAAI Conference on Artificial Intelligence",
+      "authors": "Muthukumaran Chandrasekaran, Yingke Chen, and Prashant Doshi"
+    },
+    {
+      "index": 40,
+      "title": "Contributions to the Theory of Games, volume 2",
+      "abstract": "",
+      "year": "1953",
+      "venue": "Princeton University Press",
+      "authors": "Harold William Kuhn and Albert William Tucker"
+    },
+    {
+      "index": 41,
+      "title": "Markov games of incomplete information for multi-agent reinforcement learning",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Workshops at the Twenty-Fifth AAAI Conference on Artificial Intelligence",
+      "authors": "Liam MacDermed, Charles Isbell, and Lora Weiss"
+    },
+    {
+      "index": 42,
+      "title": "Leader-follower semi-markov decision problems: theoretical framework and approximate solution",
+      "abstract": "",
+      "year": "2007",
+      "venue": "2007 IEEE International Symposium on Approximate Dynamic Programming and Reinforcement Learning",
+      "authors": "Kurian Tharakunnel and Siddhartha Bhattacharyya"
+    },
+    {
+      "index": 43,
+      "title": "A multi-agent reinforcement learning algorithm based on stackelberg game",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 6th Data Driven Control and Learning Systems (DDCLS)",
+      "authors": "Chi Cheng, Zhangqing Zhu, Bo Xin, and Chunlin Chen"
+    },
+    {
+      "index": 44,
+      "title": "Leader-follower mdp models with factored state space and many followers-followers abstraction, structured dynamics and state aggregation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Twenty-second European Conference on Artificial Intelligence",
+      "authors": "Régis Sabbadin and Anne-France Viet"
+    },
+    {
+      "index": 45,
+      "title": "M3RL: Mind-aware Multi-agent Management Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.00147",
+      "authors": "Tianmin Shu and Yuandong Tian",
+      "orig_title": "M3rl: Mind-aware multi-agent management reinforcement learning",
+      "paper_id": "1810.00147v3"
+    },
+    {
+      "index": 46,
+      "title": "Learning expensive coordination: An event-based deep rl approach",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Zhenyu Shi, Runsheng Yu, Xinrun Wang, Rundong Wang, Youzhi Zhang, Hanjiang Lai, and Bo An"
+    },
+    {
+      "index": 47,
+      "title": "A unified analysis of value-function-based reinforcement-learning algorithms",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Neural computation",
+      "authors": "Csaba Szepesvári and Michael L Littman"
+    },
+    {
+      "index": 48,
+      "title": "Bayesian games for threat prediction and situation analysis",
+      "abstract": "",
+      "year": "2004",
+      "venue": "International Conference on Information Fusion",
+      "authors": "Joel Brynielsson and Stefan Arnborg"
+    }
+  ]
+}

@@ -1,0 +1,511 @@
+{
+  "paper_id": "2008.09004v4",
+  "title": "Solving Problems on Generalized Convex Graphs via Mim-WidthBrettell and Paulusma received support from the Leverhulme Trust (RPG-2016-258). Bonomo received support from CONICET (PIP 11220200100084CO) and UBACyT (20020170100495BA and 20020160100095BA). Brettell was also supported by a Rutherford Foundation Postdoctoral Fellowship, administered by the Royal Society Te Apārangi. An extended abstract of the paper appeared in the proceedings of WADS 2021 [7].",
+  "sections": {
+    "introduction": "Many computationally hard graph problems can be solved efficiently if we place constraints on the input.\nInstead of solving individual problems in an ad hoc way we may try to decompose the vertex set of the input graph into large sets of “similarly behaving” vertices and to exploit this decomposition for an algorithmic speed up that works for many problems simultaneously. This requires some notion of an “optimal” vertex decomposition, which depends on the type of vertex decomposition used and which may relate to the minimum number of sets or the maximum size of a set in a vertex decomposition. An optimal vertex decomposition gives us the “width” of the graph. A graph class has bounded width if every graph in the class has width at most some constant c𝑐c. Boundedness of width is often the underlying reason why a graph-class-specific algorithm runs efficiently: in this case, the proof that the algorithm is efficient for some special graph class reduces to a proof showing that the width of the class is bounded by some constant. We will give examples, but also refer to the\nsurveys 4    \nfor further details and examples. Width parameters differ in strength. A width parameter p𝑝p dominates a width parameter q𝑞q if there is a function f𝑓f such that p​(G)𝑝𝐺p(G) is at most f​(q​(G))𝑓𝑞𝐺f(q(G)) for every graph G𝐺G. If p𝑝p dominates q𝑞q but q𝑞q does not dominate p𝑝p, then we say that p𝑝p is more powerful than q𝑞q. If both p𝑝p and q𝑞q dominate each other, then p𝑝p and q𝑞q are equivalent.\nIf neither p𝑝p is more powerful than q𝑞q nor q𝑞q is more powerful than p𝑝p, then p𝑝p and q𝑞q are incomparable.\nIf p𝑝p is more powerful than q𝑞q, then\nthe class of graphs for which p𝑝p is bounded is larger than the class of graphs for which q𝑞q is bounded and so efficient algorithms for bounded p𝑝p have greater applicability with respect to the graphs under consideration.\nThe trade-off is that fewer problems exhibit an efficient algorithm for the parameter p𝑝p, compared to the parameter q𝑞q. This notion of powerfulness leads to a large hierarchy of width parameters, in which new width parameters continue to be defined,\nfor example, graph functionality  in 2019 and twin-width  in 2020.\nThe well-known parameters boolean-width, clique-width, module-width and rank-width are equivalent to each other 6 0 4. They are more powerful than the equivalent parameters branch-width and treewidth  5  but less powerful than mim-width , which is less powerful than sim-width . To give another example, thinness is more powerful than path-width , but less powerful than mim-width and incomparable to clique-width or treewidth . For each group of equivalent width parameters, a growing set of NP-complete problems is known to be tractable on graph classes of bounded width. Proving the latter for some graph class often immediately tells us that many problems are tractable for that class without the need for constructing algorithms for each problem.\nHowever, there are still large families of graph classes, and many width parameters, for which it is not known whether the class has bounded width. Our Focus.\nWe consider the relatively new width parameter mim-width, which we define below.\nRecently, we showed in 3 4 that boundedness of mim-width is the underlying reason why\nsome specific hereditary graph classes, characterized by two forbidden induced subgraphs,\nadmit polynomial-time algorithms for a range of problems including k𝑘k-Colouring and its generalization List k𝑘k-Colouring (the algorithms are\ngiven in   ).\nHere we prove that the same holds for certain superclasses of convex graphs known in the literature.\nEssentially all the known polynomial-time algorithms for such classes are obtained by reducing to the class of convex graphs. We show that our new approach\nvia mim-width simplifies the analysis, unifies the sporadic approaches\nand explains the reductions to convex graphs. Mim-width.\nA set of edges M𝑀M in a graph G𝐺G is a matching if no two edges of M𝑀M share an endpoint. A matching M𝑀M is induced if there is no edge in G𝐺G between vertices of different edges of M𝑀M. Let (A,A¯)𝐴¯𝐴(A,\\overline{A}) be a partition of the vertex set of a graph G𝐺G. Then G​[A,A¯]𝐺𝐴¯𝐴G[A,\\overline{A}] denotes the bipartite subgraph of G𝐺G induced by the edges with one endpoint in A𝐴A and the other in A¯¯𝐴\\overline{A}.\nVatshelle  introduced the notion of maximum induced matching width, also called mim-width. Mim-width measures\nthe extent to which it is possible to decompose a graph G𝐺G along certain vertex partitions (A,A¯)𝐴¯𝐴(A,\\overline{A}) such that the size of a maximum induced matching in G​[A,A¯]𝐺𝐴¯𝐴G[A,\\overline{A}] is small. The kind of vertex partitions permitted stems from classical branch decompositions,\nas we explain below. A branch decomposition for a graph G𝐺G is a pair (T,δ)𝑇𝛿(T,\\delta), where T𝑇T is a subcubic tree and δ𝛿\\delta is a bijection from V​(G)𝑉𝐺V(G) to the leaves of T𝑇T.\nEvery edge e∈E​(T)𝑒𝐸𝑇e\\in E(T) partitions the leaves of T𝑇T into two classes, Lesubscript𝐿𝑒L_{e} and Le¯¯subscript𝐿𝑒\\overline{L_{e}}, depending on which component of T−e𝑇𝑒T-e they belong to.\nHence, e𝑒e induces a partition (Ae,Ae¯)subscript𝐴𝑒¯subscript𝐴𝑒(A_{e},\\overline{A_{e}}) of V​(G)𝑉𝐺V(G), where δ​(Ae)=Le𝛿subscript𝐴𝑒subscript𝐿𝑒\\delta(A_{e})=L_{e} and δ​(Ae¯)=Le¯𝛿¯subscript𝐴𝑒¯subscript𝐿𝑒\\delta(\\overline{A_{e}})=\\overline{L_{e}}.\nLet cutmimG​(Ae,Ae¯)subscriptcutmim𝐺subscript𝐴𝑒¯subscript𝐴𝑒\\mathrm{cutmim}_{G}(A_{e},\\overline{A_{e}}) be the size of a maximum induced matching in G​[Ae,Ae¯]𝐺subscript𝐴𝑒¯subscript𝐴𝑒G[A_{e},\\overline{A_{e}}].\nThen the mim-width mimwG​(T,δ)subscriptmimw𝐺𝑇𝛿\\mathrm{mimw}_{G}(T,\\delta) of (T,δ)𝑇𝛿(T,\\delta) is the maximum value of cutmimG​(Ae,Ae¯)subscriptcutmim𝐺subscript𝐴𝑒¯subscript𝐴𝑒\\mathrm{cutmim}_{G}(A_{e},\\overline{A_{e}}) over all edges e∈E​(T)𝑒𝐸𝑇e\\in E(T). The mim-width mimw​(G)mimw𝐺\\mathrm{mimw}(G) of G𝐺G is the minimum value of mimwG​(T,δ)subscriptmimw𝐺𝑇𝛿\\mathrm{mimw}_{G}(T,\\delta) over all branch decompositions (T,δ)𝑇𝛿(T,\\delta) for G𝐺G.\nSee Figure 1 for an example of a branch decomposition for a graph. A caterpillar is a tree T𝑇T that contains a path P𝑃P, the backbone of T𝑇T, such that every vertex not on P𝑃P has a neighbour on P𝑃P (the tree in Figure 1 (b) is an example of a caterpillar).\nA linear branch decomposition for a graph G𝐺G is a pair (T,δ)𝑇𝛿(T,\\delta), where T𝑇T is a caterpillar and δ𝛿\\delta is a bijection from V​(G)𝑉𝐺V(G) to the leaves\nof T𝑇T. The linear mim-width of G𝐺G is the minimum value of mimwG​(T,δ)subscriptmimw𝐺𝑇𝛿\\mathrm{mimw}_{G}(T,\\delta) over all linear branch decompositions (T,δ)𝑇𝛿(T,\\delta) for G𝐺G. Note that Figure 1 is in fact an example of a linear branch decomposition. The problems of computing the mim-width and linear mim-width of a graph are NP-hard 6. Moreover, approximating the mim-width in polynomial time within a constant factor of the optimal is not possible unless 𝖭𝖯=𝖹𝖯𝖯𝖭𝖯𝖹𝖯𝖯\\mathsf{NP}=\\mathsf{ZPP} 6.\nIt is not known how to compute in polynomial time a branch decomposition for a graph G𝐺G whose mim-width is bounded by some function in\nmimw​(G)mimw𝐺\\mathrm{mimw}(G).\nNevertheless, if G𝐺G is from some graph class 𝒢𝒢{\\cal G} of bounded mim-width, then this is often possible. In that case,\nthe mim-width of 𝒢𝒢{\\cal G} is said to be quickly computable. One can then try to develop a polynomial-time algorithm for the graph problem under consideration via dynamic programming over the computed branch decomposition. We\ngive examples of such problems later. Convex Graphs and Generalizations.\nA bipartite graph G=(A,B,E)𝐺𝐴𝐵𝐸G=(A,B,E) is convex if there exists a path P𝑃P with V​(P)=A𝑉𝑃𝐴V(P)=A such that the neighbours in A𝐴A of each b∈B𝑏𝐵b\\in B induce a connected subpath of P𝑃P. Convex graphs generalize bipartite permutation graphs\n(see, e.g., 0)\nand form a well-studied graph class.\nThey were introduced in the sixties, by Glover , to solve a special type of matching problem arising in some industrial application. Another early paper solving matching problems on convex graphs is by Lipski and Preparata . Belmonte and Vatshelle  proved that the mim-width of convex graphs is bounded and quickly computable.\nWe consider superclasses of convex graphs and research to what extent mim-width can play a role in obtaining polynomial-time algorithms for problems on these classes. Let ℋℋ{\\cal H} be a family of graphs.\nA bipartite graph G=(A,B,E)𝐺𝐴𝐵𝐸G=(A,B,E) is ℋℋ{\\cal H}-convex if there exists a graph H∈ℋ𝐻ℋH\\in{\\cal H} with V​(H)=A𝑉𝐻𝐴V(H)=A such that the set of neighbours in A𝐴A of each b∈B𝑏𝐵b\\in B induces a connected subgraph of H𝐻H.\nIf ℋℋ{\\cal H} consists of all paths, we obtain the class of convex graphs.\nRecall that a caterpillar is a tree T𝑇T that contains a\npath P𝑃P (the backbone), such that every vertex not on P𝑃P has a neighbour on P𝑃P. A caterpillar with a backbone consisting of one vertex is a star.\nA comb is a caterpillar such that every backbone vertex has exactly one neighbour outside the backbone.\nThe subdivision of an edge u​v𝑢𝑣uv replaces u​v𝑢𝑣uv by a new vertex w𝑤w and edges u​w𝑢𝑤uw and w​u𝑤𝑢wu. A triad is a tree that can be obtained from a 444-vertex star after a sequence of subdivisions.\nFor t,Δ≥0𝑡Δ0t,\\Delta\\geq 0, a (t,Δ)𝑡Δ(t,\\Delta)-tree is a tree with maximum degree at most ΔΔ\\Delta and containing at most t𝑡t vertices of degree at least 333; note that, for example, a triad is a (1,3)13(1,3)-tree.\nIf ℋℋ{\\cal H} consists of all cycles, all trees, all stars, all triads, all combs or all (t,Δ)𝑡Δ(t,\\Delta)-trees, then we obtain the class of circular convex graphs, tree convex graphs, star convex graphs, triad convex graphs, comb convex graphs or (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs, respectively. See Figure 1 for an example of a circular convex graph (this class was introduced by Liang and Blum  to model certain scheduling problems). To show the relationships between the above graph classes we need some extra terminology.\nLet 𝒞t,Δsubscript𝒞𝑡Δ\\mathcal{C}_{t,\\Delta} be the class of (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs. For fixed t𝑡t or ΔΔ\\Delta, we have increasing sequences 𝒞t,0⊆𝒞t,1⊆⋯subscript𝒞𝑡0subscript𝒞𝑡1⋯\\mathcal{C}_{t,0}\\subseteq\\mathcal{C}_{t,1}\\subseteq\\cdots and 𝒞0,Δ⊆𝒞1,Δ⊆⋯subscript𝒞0Δsubscript𝒞1Δ⋯\\mathcal{C}_{0,\\Delta}\\subseteq\\mathcal{C}_{1,\\Delta}\\subseteq\\cdots. For t∈ℕ𝑡ℕt\\in\\mathbb{N}, the class of (t,∞)𝑡(t,\\infty)-tree convex graphs is ⋃Δ∈ℕ𝒞t,ΔsubscriptΔℕsubscript𝒞𝑡Δ\\bigcup_{\\Delta\\in\\mathbb{N}}\\mathcal{C}_{t,\\Delta}, denoted by 𝒞t,∞subscript𝒞𝑡\\mathcal{C}_{t,\\infty}. Similarly, for Δ∈ℕΔℕ\\Delta\\in\\mathbb{N}, the class of (∞,Δ)Δ(\\infty,\\Delta)-tree convex graphs is ⋃t∈ℕ𝒞t,Δsubscript𝑡ℕsubscript𝒞𝑡Δ\\bigcup_{t\\in\\mathbb{N}}\\mathcal{C}_{t,\\Delta}, denoted by 𝒞∞,Δsubscript𝒞Δ\\mathcal{C}_{\\infty,\\Delta}.\nHence,\n𝒞t,∞subscript𝒞𝑡\\mathcal{C}_{t,\\infty} and 𝒞∞,Δsubscript𝒞Δ\\mathcal{C}_{\\infty,\\Delta} are the set-theoretic limits of the increasing sequences {𝒞t,Δ}Δ∈ℕsubscriptsubscript𝒞𝑡ΔΔℕ\\{\\mathcal{C}_{t,\\Delta}\\}_{\\Delta\\in\\mathbb{N}} and {𝒞t,Δ}t∈ℕsubscriptsubscript𝒞𝑡Δ𝑡ℕ\\{\\mathcal{C}_{t,\\Delta}\\}_{t\\in\\mathbb{N}}, respectively. The class of (∞,∞)(\\infty,\\infty)-tree convex graphs is ⋃t,Δ∈ℕ𝒞t,Δsubscript𝑡Δℕsubscript𝒞𝑡Δ\\bigcup_{t,\\Delta\\in\\mathbb{N}}\\mathcal{C}_{t,\\Delta}, which coincides with the class of tree convex graphs. Notice that the class of convex graphs coincides with 𝒞t,2subscript𝒞𝑡2\\mathcal{C}_{t,2}, for any t∈ℕ∪{∞}𝑡ℕt\\in\\mathbb{N}\\cup\\{\\infty\\}, and with 𝒞0,Δsubscript𝒞0Δ\\mathcal{C}_{0,\\Delta}, for any Δ∈ℕ∪{∞}Δℕ\\Delta\\in\\mathbb{N}\\cup\\{\\infty\\}. The class of star convex graphs coincides with 𝒞1,∞subscript𝒞1\\mathcal{C}_{1,\\infty}. Moreover, each triad convex graph belongs to 𝒞1,3subscript𝒞13\\mathcal{C}_{1,3} and each comb convex graph belongs to 𝒞∞,3subscript𝒞3\\mathcal{C}_{\\infty,3}. A bipartite graph is chordal bipartite if every induced cycle in it has exactly four vertices.\nEvery convex graph is chordal bipartite (see, e.g., 0) and every chordal bipartite graph is tree convex (see  ).\nIn Figure 2 we display the relationships between these classes. Brault-Baron et al. 2 proved that chordal bipartite graphs have unbounded mim-width. Hence, the result of  for convex graphs cannot be generalized to chordal bipartite graphs. We determine the mim-width of the other classes in Figure 2 but first discuss known algorithmic results for these classes. Known Results.\nBelmonte and Vatshelle  and Bui-Xuan et al. 7 proved that so-called Locally Checkable Vertex Subset and Vertex Partitioning (LC-VSVP) problems, first defined in 8,\nare polynomial-time solvable on graph classes whose mim-width is bounded and quickly computable.\nThis result was extended by Bergougnoux and Kanté [ref]3 to variants of such problems with additional constraints on connectivity or acyclicity.\nEach of the problems mentioned below is a special case of a Locally Checkable Vertex Subset (LCVS) problem\npossibly with one of the two extra constraints.\nWe refer to the listed papers for the definitions of the problems, as we do not need them here. Panda et al. 2 proved that Induced Matching is polynomial-time solvable for\ncircular convex and triad convex graphs, but NP-complete for star convex and comb convex graphs. Pandey and Panda 3 proved that Dominating Set is polynomial-time solvable for circular convex, triad convex and\n(1,Δ)1Δ(1,\\Delta)-tree convex graphs for every Δ≥1Δ1\\Delta\\geq 1. Liu et al.  proved that Connected Dominating Set is polynomial-time solvable for circular convex and triad convex graphs. Chen et al. 8 showed that Dominating Set, Connected Dominating Set\nand Total Dominating Set are\nNP-complete for star convex and comb convex graphs. Lu et al.  proved that Independent Dominating Set is polynomial-time solvable for circular convex and triad convex graphs. The latter result was previously shown in 7 using a dynamic programming approach instead of a reduction to convex graphs . Song et al. 7 showed in fact a stronger result, namely that Independent Dominating Set\nis polynomial-time solvable for (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs for every t≥1𝑡1t\\geq 1 and Δ≥3Δ3\\Delta\\geq 3. They also showed that Independent Dominating Set is NP-complete for star convex and comb convex graphs 7. Hence, they obtained a dichotomy: Independent Dominating Set is polynomial-time solvable for (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs for every t≥1𝑡1t\\geq 1 and Δ≥3Δ3\\Delta\\geq 3 but NP-complete for (∞,3)3(\\infty,3)-tree convex graphs and (1,∞)1(1,\\infty)-tree convex graphs. The same dichotomy (explicitly formulated in 1)\nholds for Feedback Vertex Set and is obtained similarly. Namely, Jiang et al.  proved that this problem is polynomial-time solvable for triad convex graphs and mentioned that their algorithm can be generalized to (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs for every t≥1𝑡1t\\geq 1 and Δ≥3Δ3\\Delta\\geq 3.\nJiang et al.  proved that Feedback Vertex Set is NP-complete for star convex and comb convex graphs.\nIn addition, Liu et al.  proved that Feedback Vertex Set is polynomial-time solvable for circular convex graphs, whereas Jiang et al.  proved that the Weighted Feedback Vertex Set problem is polynomial-time solvable for triad convex graphs. It turns out that the above problems are polynomial-time solvable on circular convex graphs and subclasses of (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs, but NP-complete for star convex graphs and comb convex graphs.\nIn contrast, Panda and Chaudhary 1 proved that Dominating Induced Matching is not only polynomial-time solvable on circular convex and triad convex graphs, but also on star convex graphs.\nNevertheless, we notice a common pattern: many dominating set, induced matching and graph transversal type of problems are polynomial-time solvable for (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs, for every t≥1𝑡1t\\geq 1 and Δ≥3Δ3\\Delta\\geq 3, and NP-complete for comb convex graphs, and thus for (∞,3)3(\\infty,3)-tree convex graphs, and star convex graphs, or equivalently, (1,∞)1(1,\\infty)-tree convex graphs. Moreover, essentially all the polynomial-time algorithms reduce the input to a convex graph. Our Results.\nWe simplify the analysis, unify the above approaches and explain the reductions to convex graphs, using mim-width. We prove three results that, together with the fact that chordal bipartite graphs have unbounded mim-width 2, explain the dotted line in Figure 2. The first two results generalize the result of  for convex graphs. The third result gives two new reasons why tree convex graphs (that is, (∞,∞)(\\infty,\\infty)-tree convex graphs) have unbounded mim-width. The mim-width of the class of circular convex graphs is bounded and quickly computable. For every t,Δ∈ℕ𝑡Δℕt,\\Delta\\in\\mathbb{N} with t≥1𝑡1t\\geq 1 and Δ≥3Δ3\\Delta\\geq 3,\nthe mim-width of the class of (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs is bounded and quickly computable. The class of star convex graphs and the class of comb convex graphs have unbounded mim-width. Hence, we obtain a structural dichotomy (recall that star convex graphs are the (1,∞)1(1,\\infty)-tree convex graphs and that\ncomb convex graphs are (∞,3)3(\\infty,3)-tree convex): Let t,Δ∈ℕ∪{∞}𝑡Δℕt,\\Delta\\in\\mathbb{N}\\cup\\{\\infty\\} with t≥1𝑡1t\\geq 1 and Δ≥3Δ3\\Delta\\geq 3.\nThe class of (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs has bounded mim-width if and only if {t,Δ}∩{∞}=∅𝑡Δ\\{t,\\Delta\\}\\cap\\{\\infty\\}=\\varnothing. Algorithmic Consequences.\nAs discussed, the following six problems were shown to be 𝖭𝖯𝖭𝖯\\mathsf{NP}-complete for star convex and comb convex graphs, and thus for (1,∞)1(1,\\infty)-tree convex graphs and (∞,3)3(\\infty,3)-tree convex graphs:\nFeedback Vertex Set [ref]3 ;\nDominating Set, Connected Dominating Set, Total Dominating Set 8;\nIndependent Dominating Set 7;\nInduced Matching 2.\nThese problems are examples of LCVS problems,\npossibly with connectivity or acyclicity constraints. Hence, they are polynomial-time solvable for every graph class whose mim-width is bounded and quickly\ncomputable  [ref]3 7.\nRecall that the same holds for Weighted Feedback Vertex Set  and (Weighted) Subset Feedback Vertex Set ; these three problems generalize Feedback Vertex Set and are thus NP-complete for\nstar convex graphs and comb convex graphs.\nCombining these results with Corollary 1 yields the following complexity dichotomy. Let t,Δ∈ℕ∪{∞}𝑡Δℕt,\\Delta\\in\\mathbb{N}\\cup\\{\\infty\\} with\nt≥1𝑡1t\\geq 1, Δ≥3Δ3\\Delta\\geq 3 and ΠΠ\\Pi be one of the nine problems mentioned above,\nrestricted to (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs.\nIf {t,Δ}∩{∞}=∅𝑡Δ\\{t,\\Delta\\}\\cap\\{\\infty\\}=\\varnothing, then ΠΠ\\Pi is polynomial-time solvable; otherwise, ΠΠ\\Pi is NP-complete. It is worth noting that this complexity dichotomy does not hold for all LCVS problems; recall that Dominating Induced Matching is polynomial-time solvable on star convex graphs 1. Theorems 1.1 and 1.2, combined with the result of 7, imply that this problem is also polynomial-time solvable on circular convex graphs and (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs for every t≥1𝑡1t\\geq 1 and Δ≥3Δ3\\Delta\\geq 3. Our results have further algorithmic consequences.\nFor every fixed integer k≥1𝑘1k\\geq 1, the k𝑘k-Colouring problem is an example of an LC-VSVP problem. Kwon 2 observed that\neven its generalization List k𝑘k-Colouring is polynomial-time solvable on graph classes whose mim-width is bounded and quickly computable (see 4 for details). Hence, Theorems 1.1 and 1.2, combined with Kwon’s observation 2,\nalso generalize a result of Díaz et al. 5 for List k𝑘k-Colouring on convex graphs to\ncircular convex and (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs (for any fixed t≥1𝑡1t\\geq 1, Δ≥3Δ3\\Delta\\geq 3).\nWe prove the following result (note that the complexity of List 333-Colouring for comb convex graphs is still unresolved). For k≥4𝑘4k\\geq 4, List k𝑘k-Colouring is NP-complete for star convex graphs and comb convex graphs,\nwhile List 333-Colouring is polynomial-time solvable for star convex graphs. Thus, in addition to Corollary 2, we obtain the following corollary for yet another problem. For k≥4𝑘4k\\geq 4 and t,Δ∈ℕ∪{∞}𝑡Δℕt,\\Delta\\in\\mathbb{N}\\cup\\{\\infty\\} with\nt≥1𝑡1t\\geq 1, Δ≥3Δ3\\Delta\\geq 3, List k𝑘k-Colouring,\nrestricted to (t,Δ)𝑡Δ(t,\\Delta)-tree convex graphs, is polynomial-time solvable\nif {t,Δ}∩{∞}=∅𝑡Δ\\{t,\\Delta\\}\\cap\\{\\infty\\}=\\varnothing, and NP-complete otherwise. Outline.\nWe prove Theorems 1.1–1.3 in Sections 2–4, respectively, by showing additional structural results.\nFirst, in Section 2, we prove Theorem 1.1 by showing a similar but stronger result for linear mim-width of circular convex graphs.\nNext, in Section 3, we prove a stronger version of Theorem 1.2; namely we prove the result for thinness, a relatively recent graph width parameter introduced in .\nThis replaces the more direct proof given in .\nFinally, in Section 4, we prove that Theorem 1.3 follows from a stronger result as well: we prove that star convex graphs and comb convex graphs have unbounded sim-width. Recall that the latter width parameter is more powerful than mim-width . The above additional results naturally beg the question for a more refined analysis on width parameters for generalized convex classes.\nWe perform this analysis in Section 5. There, we consider a hierarchy of width parameters, which include mim-width and thinness. We determine exactly which of the generalized convex classes considered in the previous sections have bounded width for each of these parameters.\nWe are not yet aware of any new algorithmic results arising from this analysis,\nbut in Section 7 we give some directions for future research, after proving Theorem 1.4 in Section 6. Preliminaries.\nWe consider only finite graphs G=(V,E)𝐺𝑉𝐸G=(V,E) with no loops and no multiple edges.\nFor v∈V𝑣𝑉v\\in V, the neighbourhood NG​(v)subscript𝑁𝐺𝑣N_{G}(v) is the set of vertices adjacent to v𝑣v. The degree d​(v)𝑑𝑣d(v) of a vertex v∈V𝑣𝑉v\\in V is the size |NG​(v)|subscript𝑁𝐺𝑣|N_{G}(v)|. A vertex of degree k𝑘k is a k𝑘k-vertex. A graph is subcubic if every vertex has degree at most 333. We let Δ​(G)=max⁡{d​(v):v∈V}Δ𝐺:𝑑𝑣𝑣𝑉\\Delta(G)=\\max\\{d(v):v\\in V\\}.\nFor disjoint S,T⊆V𝑆𝑇𝑉S,T\\subseteq V, we say that S𝑆S is complete to T𝑇T if every vertex of S𝑆S is adjacent to every vertex of T𝑇T. For S⊆V𝑆𝑉S\\subseteq V, G​[S]=(S,{u​v:u,v∈S,u​v∈E})𝐺delimited-[]𝑆𝑆conditional-set𝑢𝑣formulae-sequence𝑢𝑣𝑆𝑢𝑣𝐸G[S]=(S,\\{uv\\;:\\;u,v\\in S,uv\\in E\\})\nis the subgraph of G𝐺G induced by S𝑆S. The disjoint union G+H𝐺𝐻G+H of graphs G𝐺G and H𝐻H has vertex set V​(G)∪V​(H)𝑉𝐺𝑉𝐻V(G)\\cup V(H) and edge set E​(G)∪E​(H)𝐸𝐺𝐸𝐻E(G)\\cup E(H). A graph is r𝑟r-partite, for r≥2𝑟2r\\geq 2, if its vertex set admits a partition into r𝑟r classes such that every edge has its endpoints in different classes. A 222-partite graph is also called bipartite. A graph G𝐺G is a support for a hypergraph H=(V,𝒮)𝐻𝑉𝒮H=(V,\\mathcal{S}) if the vertices of G𝐺G correspond to the vertices of H𝐻H and, for each hyperedge S∈𝒮𝑆𝒮S\\in\\mathcal{S}, the subgraph of G𝐺G induced by S𝑆S is connected.\nWhen a bipartite graph G=(A,B,E)𝐺𝐴𝐵𝐸G=(A,B,E) is viewed as a hypergraph H=(A,{N​(b):b∈B})𝐻𝐴conditional-set𝑁𝑏𝑏𝐵H=(A,\\{N(b):b\\in B\\}), then a support T𝑇T for H𝐻H with T∈ℋ𝑇ℋT\\in\\mathcal{H} is a witness that G𝐺G is ℋℋ\\mathcal{H}-convex."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Graph functionality",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Journal of Combinatorial Theory, Series B",
+      "authors": "Alecu, B., Atminas, A., Lozin, V.V."
+    },
+    {
+      "index": 1,
+      "title": "Graph classes with structured neighborhoods and algorithmic applications",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Theoretical Computer Science",
+      "authors": "Belmonte, R., Vatshelle, M."
+    },
+    {
+      "index": 2,
+      "title": "More applications of the d-neighbor equivalence: Connectivity and acyclicity constraints",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ESA 2019, LIPIcs",
+      "authors": "Bergougnoux, B., Kanté, M.M."
+    },
+    {
+      "index": 3,
+      "title": "Node Multiway Cut and Subset Feedback Vertex Set on Graphs of Bounded Mim-width",
+      "abstract": "",
+      "year": "2020",
+      "venue": "WG 2020, LNCS",
+      "authors": "Bergougnoux, B., Papadopoulos, C., Telle, J.A.",
+      "orig_title": "Node multiway cut and subset feedback vertex set on graphs of bounded mim-width",
+      "paper_id": "1910.00887v8"
+    },
+    {
+      "index": 4,
+      "title": "Twin-width I: tractable FO model checking",
+      "abstract": "",
+      "year": "2020",
+      "venue": "FOCS 2020",
+      "authors": "Bonnet, É., Kim, E.J., Thomassé, S., Watrigant, R.",
+      "orig_title": "Twin-width I: tractable FO model checking",
+      "paper_id": "2004.14789v3"
+    },
+    {
+      "index": 5,
+      "title": "On the thinness and proper thinness of a graph",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "Bonomo, F., de Estrada, D."
+    },
+    {
+      "index": 6,
+      "title": "Solving problems on generalized convex graphs via mim-width",
+      "abstract": "",
+      "year": "2021",
+      "venue": "WADS 2021, LNCS",
+      "authors": "Bonomo-Braberman, F., Brettell, N., Munaro, A., Paulusma, D."
+    },
+    {
+      "index": 7,
+      "title": "Thinness of product graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "Bonomo-Braberman, F., Gonzalez, C.L., de S. Oliveira, F., Jr., M.S.S., Szwarcfiter, J.L."
+    },
+    {
+      "index": 8,
+      "title": "Fair Division of a Graph",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCAI 2017",
+      "authors": "Bouveret, S., Cechlárová, K., Elkind, E., Igarashi, A., Peters, D.",
+      "orig_title": "Fair division of a graph",
+      "paper_id": "1705.10239v2"
+    },
+    {
+      "index": 9,
+      "title": "Graph Classes: A Survey",
+      "abstract": "",
+      "year": "1999",
+      "venue": "SIAM Monographs on Discrete Mathematics and Applications",
+      "authors": "Brandstädt, A., Le, V.B., Spinrad, J.P."
+    },
+    {
+      "index": 10,
+      "title": "On the linear structure and clique-width of bipartite permutation graphs",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Ars Combinatoria",
+      "authors": "Brandstädt, A., Lozin, V.V."
+    },
+    {
+      "index": 11,
+      "title": "Understanding model counting for beta-acyclic CNF-formulas",
+      "abstract": "",
+      "year": "2015",
+      "venue": "STACS 2015, LIPIcs",
+      "authors": "Brault-Baron, J., Capelli, F., Mengel, S."
+    },
+    {
+      "index": 12,
+      "title": "Bounding the Mim-Width of Hereditary Graph Classes",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Journal of Graph Theory",
+      "authors": "Brettell, N., Horsfield, J., Munaro, A., Paesani, G., Paulusma, D.",
+      "orig_title": "Bounding the mim-width of hereditary graph classes",
+      "paper_id": "2004.05018v3"
+    },
+    {
+      "index": 13,
+      "title": "List k𝑘k-colouring Ptsubscript𝑃𝑡{P}_{t}-free graphs: a mim-width perspective",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Information Processing Letters",
+      "authors": "Brettell, N., Horsfield, J., Munaro, A., Paulusma, D."
+    },
+    {
+      "index": 14,
+      "title": "On planar supports for hypergraphs",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of Graph Algorithms and Applications",
+      "authors": "Buchin, K., van Kreveld, M., Meijer, H., Speckmann, B., Verbeek, K."
+    },
+    {
+      "index": 15,
+      "title": "Boolean-width of graphs",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Theoretical Computer Science",
+      "authors": "Bui-Xuan, B.M., Telle, J.A., Vatshelle, M."
+    },
+    {
+      "index": 16,
+      "title": "Fast dynamic programming for locally checkable vertex subset and vertex partitioning problems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Theoretical Computer Science",
+      "authors": "Bui-Xuan, B.M., Telle, J.A., Vatshelle, M."
+    },
+    {
+      "index": 17,
+      "title": "Complexity of domination, hamiltonicity and treewidth for tree convex bipartite graphs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Journal of Combinatorial Optimization",
+      "authors": "Chen, H., Lei, Z., Liu, T., Tang, Z., Wang, C., Xu, K."
+    },
+    {
+      "index": 18,
+      "title": "Polynomial-time data reduction for the Subset Interconnection Design problem",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIAM Journal on Discrete Mathematics",
+      "authors": "Chen, J., Komusiewicz, C., Niedermeier, R., Sorge, M., Suchý, O., Weller, M."
+    },
+    {
+      "index": 19,
+      "title": "Hard coloring problems in low degree planar bipartite graphs",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "Chlebík, M., Chlebíková, J."
+    },
+    {
+      "index": 20,
+      "title": "List 333-coloring Ptsubscript𝑃𝑡{P}_{t}-free graphs with no induced 111-subdivision of K1,ssubscript𝐾1𝑠{K}_{1,s}",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Discrete Mathematics",
+      "authors": "Chudnovsky, M., Spirkl, S., Zhong, M."
+    },
+    {
+      "index": 21,
+      "title": "Upper bounds to the clique width of graphs",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "Courcelle, B., Olariu, S."
+    },
+    {
+      "index": 22,
+      "title": "List coloring in the absence of a linear forest",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Algorithmica",
+      "authors": "Couturier, J.F., Golovach, P.A., Kratsch, D., Paulusma, D."
+    },
+    {
+      "index": 23,
+      "title": "Clique-width for hereditary graph classes",
+      "abstract": "",
+      "year": "2019",
+      "venue": "London Mathematical Society Lecture Note Series",
+      "authors": "Dabrowski, K.K., Johnson, M., Paulusma, D."
+    },
+    {
+      "index": 24,
+      "title": "On List 𝑘-Coloring Convex Bipartite Graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CTW 2020, AIRO Springer Series",
+      "authors": "Díaz, J., Diner, Ö.Y., Serna, M.J., Serra, O.",
+      "orig_title": "On list k𝑘k-coloring convex bipartite graphs",
+      "paper_id": "2002.02729v1"
+    },
+    {
+      "index": 25,
+      "title": "The complexity of colouring problems on dense graphs",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Theoretical Computer Science",
+      "authors": "Edwards, K."
+    },
+    {
+      "index": 26,
+      "title": "Maximum matching in a convex bipartite graph",
+      "abstract": "",
+      "year": "1967",
+      "venue": "Naval Research Logistics Quarterly",
+      "authors": "Glover, F."
+    },
+    {
+      "index": 27,
+      "title": "On the clique-width of some perfect graph classes",
+      "abstract": "",
+      "year": "2000",
+      "venue": "International Journal of Foundations of Computer Science",
+      "authors": "Golumbic, M.C., Rotics, U."
+    },
+    {
+      "index": 28,
+      "title": "On the complexity of combinatorial auctions: Structured item graphs and hypertree decomposition",
+      "abstract": "",
+      "year": "2007",
+      "venue": "EC 2007",
+      "authors": "Gottlob, G., Greco, G."
+    },
+    {
+      "index": 29,
+      "title": "Width parameters beyond tree-width and their applications",
+      "abstract": "",
+      "year": "2008",
+      "venue": "The Computer Journal",
+      "authors": "Hliněný, P., Oum, S., Seese, D., Gottlob, G."
+    },
+    {
+      "index": 30,
+      "title": "Deciding k𝑘k-colorability of P5subscript𝑃5{P}_{5}-free graphs in polynomial time",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Algorithmica",
+      "authors": "Hoàng, C.T., Kamiński, M., Lozin, V.V., Sawada, J., Shu, X."
+    },
+    {
+      "index": 31,
+      "title": "Linear mim-width of trees",
+      "abstract": "",
+      "year": "2019",
+      "venue": "WG 2019, LNCS",
+      "authors": "Høgemo, S., Telle, J.A., Vågset, E.R."
+    },
+    {
+      "index": 32,
+      "title": "Narrowing the complexity gap for colouring (Cs,Pt)subscript𝐶𝑠subscript𝑃𝑡({C}_{s},{P}_{t})-free graphs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Computer Journal",
+      "authors": "Huang, S., Johnson, M., Paulusma, D."
+    },
+    {
+      "index": 33,
+      "title": "Precoloring extension 3: Classes of perfect graphs",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Combinatorics, Probability and Computing",
+      "authors": "Hujter, M., Tuza, Z."
+    },
+    {
+      "index": 34,
+      "title": "Bounded Width Graph Classes in Parameterized Algorithms",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Jaffke, L."
+    },
+    {
+      "index": 35,
+      "title": "Mim-width II. The Feedback Vertex Set problem",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Algorithmica",
+      "authors": "Jaffke, L., Kwon, O., Telle, J.A."
+    },
+    {
+      "index": 36,
+      "title": "Classes of intersection digraphs with good algorithmic properties",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "Jaffke, L., Kwon, O., Telle, J.A.",
+      "orig_title": "Classes of intersection digraphs with good algorithmic properties",
+      "paper_id": "2105.01413v1"
+    },
+    {
+      "index": 37,
+      "title": "Feedback vertex sets on restricted bipartite graphs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Theoretical Computer Science",
+      "authors": "Jiang, W., Liu, T., Wang, C., Xu, K."
+    },
+    {
+      "index": 38,
+      "title": "Tractable feedback vertex sets in restricted bipartite graphs",
+      "abstract": "",
+      "year": "2011",
+      "venue": "COCOA 2011, LNCS",
+      "authors": "Jiang, W., Liu, T., Xu, K."
+    },
+    {
+      "index": 39,
+      "title": "Recent developments on graphs of bounded clique-width",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "Kamiński, M., Lozin, V.V., Milanič, M."
+    },
+    {
+      "index": 40,
+      "title": "A width parameter useful for chordal and co-comparability graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Theoretical Computer Science",
+      "authors": "Kang, D.Y., Kwon, O., Strømme, T.J.F., Telle, J.A.",
+      "orig_title": "A width parameter useful for chordal and co-comparability graphs",
+      "paper_id": "1606.08087v3"
+    },
+    {
+      "index": 41,
+      "title": "Personal communication",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Kwon, O."
+    },
+    {
+      "index": 42,
+      "title": "Circular convex bipartite graphs: Maximum matching and hamiltonian circuits",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Information Processing Letters",
+      "authors": "Liang, Y.D., Blum, N."
+    },
+    {
+      "index": 43,
+      "title": "Efficient algorithms for finding maximum matchings in convex bipartite graphs and related problems",
+      "abstract": "",
+      "year": "1981",
+      "venue": "Acta Informatica",
+      "authors": "Lipski, W., Preparata, F.P."
+    },
+    {
+      "index": 44,
+      "title": "Restricted bipartite graphs: Comparison and hardness results",
+      "abstract": "",
+      "year": "2014",
+      "venue": "AAIM 2014, LNCS",
+      "authors": "Liu, T."
+    },
+    {
+      "index": 45,
+      "title": "Circular convex bipartite graphs: Feedback vertex sets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Theoretical Computer Science",
+      "authors": "Liu, T., Lu, M., Lu, Z., Xu, K."
+    },
+    {
+      "index": 46,
+      "title": "Tractable connected domination for restricted bipartite graphs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Journal of Combinatorial Optimization",
+      "authors": "Liu, T., Lu, Z., Xu, K."
+    },
+    {
+      "index": 47,
+      "title": "Independent domination: Reductions from circular- and triad-convex bipartite graphs to convex bipartite graphs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "FAW-AAIM 2013, LNCS",
+      "authors": "Lu, M., Liu, T., Xu, K."
+    },
+    {
+      "index": 48,
+      "title": "The stable set problem and the thinness of a graph",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Operations Research Letters",
+      "authors": "Mannino, C., Oriolo, G., Ricci, F., Chandran, S."
+    },
+    {
+      "index": 49,
+      "title": "Approximating clique-width and branch-width",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Journal of Combinatorial Theory, Series B",
+      "authors": "Oum, S., Seymour, P.D."
+    },
+    {
+      "index": 50,
+      "title": "Dominating induced matching in some subclasses of bipartite graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CALDAM 2019, LNCS",
+      "authors": "Panda, B.S., Chaudhary, J."
+    },
+    {
+      "index": 51,
+      "title": "Maximum weight induced matching in some subclasses of bipartite graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Combinatorial Optimization",
+      "authors": "Panda, B.S., Pandey, A., Chaudhary, J., Dane, P., Kashyap, M."
+    },
+    {
+      "index": 52,
+      "title": "Domination in some subclasses of bipartite graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "Pandey, A., Panda, B."
+    },
+    {
+      "index": 53,
+      "title": "Clique-width of graphs defined by one-vertex extensions",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Discrete Mathematics",
+      "authors": "Rao, M."
+    },
+    {
+      "index": 54,
+      "title": "Graph minors. X. Obstructions to tree-decomposition",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Journal of Combinatorial Theory, Series B",
+      "authors": "Robertson, N., Seymour, P.D."
+    },
+    {
+      "index": 55,
+      "title": "Hardness of computing width parameters based on branch decompositions over the vertex set",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Theoretical Computer Science",
+      "authors": "Sæther, S.H., Vatshelle, M."
+    },
+    {
+      "index": 56,
+      "title": "Independent domination on tree convex bipartite graphs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "FAW-AAIM 2012, LNCS",
+      "authors": "Song, Y., Liu, T., Xu, K."
+    },
+    {
+      "index": 57,
+      "title": "Algorithms for vertex partitioning problems on partial k-trees",
+      "abstract": "",
+      "year": "1997",
+      "venue": "SIAM Journal on Discrete Mathematics",
+      "authors": "Telle, J.A., Proskurowski, A."
+    },
+    {
+      "index": 58,
+      "title": "New Width Parameters of Graphs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": "Vatshelle, M."
+    },
+    {
+      "index": 59,
+      "title": "Tree convex bipartite graphs: NP-complete domination, hamiltonicity and treewidth",
+      "abstract": "",
+      "year": "2014",
+      "venue": "FAW 2014, LNCS",
+      "authors": "Wang, C., Chen, H., Lei, Z., Tang, Z., Liu, T., Xu, K."
+    },
+    {
+      "index": 60,
+      "title": "Feedback vertex sets on tree convex bipartite graphs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "COCOA 2012, LNCS",
+      "authors": "Wang, C., Liu, T., Jiang, W., Xu, K."
+    }
+  ]
+}

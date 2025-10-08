@@ -1,0 +1,449 @@
+{
+  "paper_id": "2402.03119v2",
+  "title": "Good Teachers Explain: Explanation-Enhanced Knowledge Distillation",
+  "sections": {
+    "related work": "Knowledge Distillation (KD) has been introduced to compress larger models into smaller, more efficient models for cost-effective deployment . Various approaches for KD have since been proposed, which we group into three types for the following discussion:\nlogit-   , feature- [ref]34 5  , and explanation-based KD 9 . Logit-based KD , which optimizes the logit distributions of teacher and student to be similar, can suffice to match their accuracies, as long as the models are trained for long enough (‘patient teaching’) and the models’ logits are based on the same images (‘consistent teaching’), see .\nHowever,\n0 showed that despite such a careful setup, the function learnt by the student can still significantly differ from the teacher’s by comparing the agreement between the two. We expand on 0 and\nintroduce additional evaluation settings\nto better evaluate KD fidelity, and show that it can be significantly improved by\na surprisingly simple explanation-matching approach. While  reports that\nKD does seem to transfer additional properties to the student, by showing that GradCAM explanations of the students are more similar to the teacher’s than those of an independently trained model, we show that explicitly optimizing for explanation similarity not only significantly improves this w.r.t. vanilla KD, but also yields important additional benefits such as a higher robustness to distribution shifts. Feature-based KD approaches [ref]34 5   provide additional information to the students by optimizing some of the students’ intermediate activation maps to be similar to those of the teacher. For this, specific choices regarding which layers of teachers and students to match need to be made and these approaches are thus architecture-dependent. In contrast, our proposed e2KD is architecture-agnostic as it matches only the explanations of the models’ predictions. Explanation-based KD approaches have only recently begun to emerge 9  and these are conceptually most related to our work. In CAT-KD 9, the authors match class activation maps (CAM 8) of students and teachers. As such, CAT-KD can also be considered an ‘explanation-enhanced’ KD (e2KD) approach. However, the explanation aspect of the CAMs plays only a secondary role in 9, as the authors even reduce the resolution of the CAMs to 2×\\times2 and fidelity is not considered. In contrast, we explicitly introduce e2KD to improve distillation fidelity and evaluate fidelity across multiple settings. Further, similar to our work,  argues that explanations can form part of the model functionality and should be considered in KD. To do so, the authors train an additional autoencoder to mimic the explanations of the teacher model; explanations and predictions are thus produced by separate models. In contrast, we optimize the students directly to yield similar explanations as the teachers in a simple and parameter-free manner. Fixed Teaching.\n4  5 explore pre-computing the logits at the start of training to limit the computational costs due to the teacher.\nIn addition to pre-computing logits, we pre-compute explanations and show how they can nonetheless be used to guide the student model during distillation. Explanation Methods.\nTo better understand the decision making process of DNNs, many explanation methods have been proposed in recent years    .\nFor our e2KD experiments, we take advantage of the differentiability of attribution-based explanations and train the student models to yield similar explanations as the teachers. In particular, we evaluate both a popular post-hoc explanation method (GradCAM ) as well as the model-inherent explanations of the recently proposed B-cos models  . Model Guidance. e2KD is inspired by recent advances in\nmodel guidance  8 7  ,\nwhere models are guided to focus on desired input features via human annotations. Analogously, we also guide the focus of student models, but using knowledge (explanations) of a teacher model instead of a human annotator. As such, no explicit guidance annotations are required in our approach. Further, in contrast to the discrete annotations typically used in model guidance (e.g. bounding boxes or segmentation masks), we use the real-valued explanations as given by the teacher model.\nOur approach thus shares additional similarities with , in which a model is guided via the attention maps of a vision-language model. Similar to our work, the authors show that this can guide the students to focus on the ‘right’ input features. We extend such guidance to KD and discuss the benefits that this yields for KD fidelity."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Learning Interpretation with Explainable Knowledge Distillation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE International Conference on Big Data",
+      "authors": "R. Alharbi, M. N. Vu, and M. T. Thai",
+      "orig_title": "Learning Interpretation with Explainable Knowledge Distillation",
+      "paper_id": "2111.06945v1"
+    },
+    {
+      "index": 1,
+      "title": "On Pixel-wise Explanations for Non-linear Classifier Decisions by Layer-wise Relevance Propagation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PloS one",
+      "authors": "Sebastian Bach, Alexander Binder, Grégoire Montavon, Frederick Klauschen, Klaus-Robert Müller, and Wojciech Samek"
+    },
+    {
+      "index": 2,
+      "title": "Updates in Human-AI Teams: Understanding and Addressing the Performance/Compatibility Tradeoff",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "Gagan Bansal, Besmira Nushi, Ece Kamar, Daniel S Weld, Walter S Lasecki, and Eric Horvitz"
+    },
+    {
+      "index": 3,
+      "title": "Knowledge distillation: A good teacher is patient and consistent",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Lucas Beyer, Xiaohua Zhai, Amélie Royer, Larisa Markeeva, Rohan Anil, and Alexander Kolesnikov",
+      "orig_title": "Knowledge Distillation: A Good Teacher Is Patient and Consistent",
+      "paper_id": "2106.05237v2"
+    },
+    {
+      "index": 4,
+      "title": "B-cos Networks: Alignment Is All We Need for Interpretability",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Moritz Böhle, Mario Fritz, and Bernt Schiele"
+    },
+    {
+      "index": 5,
+      "title": "B-cos Alignment for Inherently Interpretable CNNs and Vision Transformers",
+      "abstract": "",
+      "year": "2024",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Moritz Böhle, Navdeeppal Singh, Mario Fritz, and Bernt Schiele",
+      "orig_title": "B-cos Alignment for Inherently Interpretable CNNs and Vision Transformers",
+      "paper_id": "2306.10898v2"
+    },
+    {
+      "index": 6,
+      "title": "High-Performance Large-Scale Image Recognition Without Normalization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Andy Brock, Soham De, Samuel L Smith, and Karen Simonyan"
+    },
+    {
+      "index": 7,
+      "title": "Emerging Properties in Self-Supervised Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Mathilde Caron, Hugo Touvron, Ishan Misra, Hervé Jégou, Julien Mairal, Piotr Bojanowski, and Armand Joulin"
+    },
+    {
+      "index": 8,
+      "title": "Distilling Knowledge via Knowledge Review",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Pengguang Chen, Shu Liu, Hengshuang Zhao, and Jiaya Jia",
+      "orig_title": "Distilling Knowledge via Knowledge Review",
+      "paper_id": "2104.09044v1"
+    },
+    {
+      "index": 9,
+      "title": "Proposal for a Regulation of the European Parliament and of the Council Laying Down Harmonised Rules on Artificial Intelligence (Artificial Intelligence Act) and Amending Certain Union Legislative Acts",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Council of the European Union"
+    },
+    {
+      "index": 10,
+      "title": "RandAugment: Practical Automated Data Augmentation with a Reduced Search Space",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Ekin Dogus Cubuk, Barret Zoph, Jon Shlens, and Quoc Le"
+    },
+    {
+      "index": 11,
+      "title": "ImageNet: A Large-Scale Hierarchical Image Database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR",
+      "authors": "Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei"
+    },
+    {
+      "index": 12,
+      "title": "The Pascal Visual Object Classes (VOC) Challenge",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IJCV",
+      "authors": "Mark Everingham, Luc Van Gool, Christopher KI Williams, John Winn, and Andrew Zisserman"
+    },
+    {
+      "index": 13,
+      "title": "The PASCAL Visual Object Classes Challenge 2012 (VOC2012) Results",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": "M. Everingham, L. Van Gool, C. K. I. Williams, J. Winn, and A. Zisserman"
+    },
+    {
+      "index": 14,
+      "title": "Reinforce Data, Multiply Impact: Improved Model Accuracy and Robustness with Dataset Reinforcement",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICCV",
+      "authors": "Fartash Faghri, Hadi Pouransari, Sachin Mehta, Mehrdad Farajtabar, Ali Farhadi, Mohammad Rastegari, and Oncel Tuzel",
+      "orig_title": "Reinforce Data, Multiply Impact: Improved Model Accuracy and Robustness with Dataset Reinforcement",
+      "paper_id": "2303.08983v3"
+    },
+    {
+      "index": 15,
+      "title": "PyTorch Lightning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "William Falcon and The PyTorch Lightning team"
+    },
+    {
+      "index": 16,
+      "title": "RES: A Robust Framework for Guiding Visual Explanation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "KDD",
+      "authors": "Yuyang Gao, Tong Steven Sun, Guangji Bai, Siyi Gu, Sungsoo Ray Hong, and Zhao Liang",
+      "orig_title": "RES: A Robust Framework for Guiding Visual Explanation",
+      "paper_id": "2206.13413v1"
+    },
+    {
+      "index": 17,
+      "title": "Aligning Eyes between Humans and Deep Neural Network through Interactive Attention Alignment",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM on Human-Computer Interaction",
+      "authors": "Yuyang Gao, Tong Steven Sun, Liang Zhao, and Sungsoo Ray Hong",
+      "orig_title": "Aligning Eyes between Humans and Deep Neural Network through Interactive Attention Alignment",
+      "paper_id": "2202.02838v1"
+    },
+    {
+      "index": 18,
+      "title": "Class Attention Transfer Based Knowledge Distillation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "CVPR",
+      "authors": "Ziyao Guo, Haonan Yan, Hui Li, and Xiaodong Lin",
+      "orig_title": "Class Attention Transfer Based Knowledge Distillation",
+      "paper_id": "2304.12777v1"
+    },
+    {
+      "index": 19,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep Residual Learning for Image Recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 20,
+      "title": "Distilling the Knowledge in a Neural Network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NeurIPSW",
+      "authors": "Geoffrey Hinton, Oriol Vinyals, and Jeffrey Dean",
+      "orig_title": "Distilling the Knowledge in a Neural Network",
+      "paper_id": "1503.02531v1"
+    },
+    {
+      "index": 21,
+      "title": "Densely Connected Convolutional Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Gao Huang, Zhuang Liu, Laurens Van Der Maaten, and Kilian Q Weinberger"
+    },
+    {
+      "index": 22,
+      "title": "Adam: A Method for Stochastic Optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Diederik P Kingma and Jimmy Ba"
+    },
+    {
+      "index": 23,
+      "title": "SGDR: Stochastic Gradient Descent with Warm Restarts",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Ilya Loshchilov and Frank Hutter",
+      "orig_title": "SGDR: Stochastic gradient descent with warm restarts",
+      "paper_id": "1608.03983v5"
+    },
+    {
+      "index": 24,
+      "title": "Decoupled Weight Decay Regularization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Ilya Loshchilov and Frank Hutter",
+      "orig_title": "Decoupled Weight Decay Regularization",
+      "paper_id": "1711.05101v3"
+    },
+    {
+      "index": 25,
+      "title": "TorchVision: PyTorch’s Computer Vision library",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "TorchVision maintainers and contributors"
+    },
+    {
+      "index": 26,
+      "title": "torchdistill: A Modular, Configuration-Driven Framework for Knowledge Distillation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Workshop on Reproducible Research in Pattern Recognition",
+      "authors": "Yoshitomo Matsubara"
+    },
+    {
+      "index": 27,
+      "title": "What Knowledge Gets Distilled in Knowledge Distillation?",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2205.16004",
+      "authors": "Utkarsh Ojha, Yuheng Li, and Yong Jae Lee",
+      "orig_title": "What Knowledge gets Distilled in Knowledge Distillation?",
+      "paper_id": "2205.16004v3"
+    },
+    {
+      "index": 28,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala",
+      "orig_title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 29,
+      "title": "On Guiding Visual Attention with Language Specification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Suzanne Petryk, Lisa Dunlap, Keyan Nasseri, Joseph Gonzalez, Trevor Darrell, and Anna Rohrbach",
+      "orig_title": "On Guiding Visual Attention with Language Specification",
+      "paper_id": "2202.08926v1"
+    },
+    {
+      "index": 30,
+      "title": "Learning Transferable Visual Models From Natural Language Supervision",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever",
+      "orig_title": "Learning Transferable Visual Models from Natural Language Supervision",
+      "paper_id": "2103.00020v1"
+    },
+    {
+      "index": 31,
+      "title": "Studying How to Efficiently and Effectively Guide Models with Explanations",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICCV",
+      "authors": "Sukrut Rao, Moritz Böhle, Amin Parchami-Araghi, and Bernt Schiele"
+    },
+    {
+      "index": 32,
+      "title": "“Why Should I Trust You?” Explaining the Predictions of Any Classifier",
+      "abstract": "",
+      "year": "2016",
+      "venue": "KDD",
+      "authors": "Marco Tulio Ribeiro, Sameer Singh, and Carlos Guestrin",
+      "orig_title": "”Why Should I Trust You?” Explaining the Predictions of Any Classifier",
+      "paper_id": "1602.04938v3"
+    },
+    {
+      "index": 33,
+      "title": "FitNets: Hints for Thin Deep Nets",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Adriana Romero, Nicolas Ballas, Samira Ebrahimi Kahou, Antoine Chassang, Carlo Gatta, and Yoshua Bengio",
+      "orig_title": "FitNets: Hints for Thin Deep Nets",
+      "paper_id": "1412.6550v4"
+    },
+    {
+      "index": 34,
+      "title": "Right for the Right Reasons: Training Differentiable Models by Constraining their Explanations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCAI",
+      "authors": "Andrew Slavin Ross, Michael C Hughes, and Finale Doshi-Velez",
+      "orig_title": "Right for the Right Reasons: Training Differentiable Models by Constraining their Explanations",
+      "paper_id": "1703.03717v2"
+    },
+    {
+      "index": 35,
+      "title": "Distributionally Robust Neural Networks for Group Shifts: On the Importance of Regularization for Worst-Case Generalization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Shiori Sagawa, Pang Wei Koh, Tatsunori B Hashimoto, and Percy Liang",
+      "orig_title": "Distributionally Robust Neural Networks for Group Shifts: On the Importance of Regularization for Worst-Case Generalization",
+      "paper_id": "1911.08731v2"
+    },
+    {
+      "index": 36,
+      "title": "Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Ramprasaath R. Selvaraju, Michael Cogswell, Abhishek Das, Ramakrishna Vedantam, Devi Parikh, and Dhruv Batra",
+      "orig_title": "Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization",
+      "paper_id": "1610.02391v4"
+    },
+    {
+      "index": 37,
+      "title": "A Fast Knowledge Distillation Framework for Visual Recognition",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ECCV",
+      "authors": "Zhiqiang Shen and Eric Xing"
+    },
+    {
+      "index": 38,
+      "title": "Knowledge Transfer with Jacobian Matching",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Suraj Srinivas and François Fleuret",
+      "orig_title": "Knowledge Transfer with Jacobian Matching",
+      "paper_id": "1803.00443v1"
+    },
+    {
+      "index": 39,
+      "title": "Does Knowledge Distillation Really Work?",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Samuel Stanton, Pavel Izmailov, Polina Kirichenko, Alexander A Alemi, and Andrew G Wilson"
+    },
+    {
+      "index": 40,
+      "title": "SUN database: Large-Scale Scene Recognition from Abbey to Zoo",
+      "abstract": "",
+      "year": "2010",
+      "venue": "CVPR",
+      "authors": "J. Xiao, J. Hays, K. A. Ehinger, A. Oliva, and A. Torralba"
+    },
+    {
+      "index": 41,
+      "title": "Positive-Congruent Training: Towards Regression-Free Model Updates",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Sijie Yan, Yuanjun Xiong, Kaustav Kundu, Shuo Yang, Siqi Deng, Meng Wang, Wei Xia, and Stefano Soatto",
+      "orig_title": "Positive-congruent Training: Towards Regression-free Model Updates",
+      "paper_id": "2011.09161v3"
+    },
+    {
+      "index": 42,
+      "title": "Multi-Label Knowledge Distillation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICCV",
+      "authors": "Penghui Yang, Ming-Kun Xie, Chen-Chen Zong, Lei Feng, Gang Niu, Masashi Sugiyama, and Sheng-Jun Huang"
+    },
+    {
+      "index": 43,
+      "title": "Re-labeling ImageNet: from Single to Multi-Labels, from Global to Localized Labels",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Sangdoo Yun, Seong Joon Oh, Byeongho Heo, Dongyoon Han, Junsuk Choe, and Sanghyuk Chun",
+      "orig_title": "Re-Labeling ImageNet: From Single to Multi-Labels, From Global to Localized Labels",
+      "paper_id": "2101.05022v2"
+    },
+    {
+      "index": 44,
+      "title": "Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via Attention Transfer",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Sergey Zagoruyko and Nikos Komodakis",
+      "orig_title": "Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via Attention Transfer",
+      "paper_id": "1612.03928v3"
+    },
+    {
+      "index": 45,
+      "title": "mixup: Beyond Empirical Risk Minimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Hongyi Zhang, Moustapha Cisse, Yann N. Dauphin, and David Lopez-Paz",
+      "orig_title": "mixup: Beyond Empirical Risk Minimization",
+      "paper_id": "1710.09412v2"
+    },
+    {
+      "index": 46,
+      "title": "Decoupled Knowledge Distillation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Borui Zhao, Quan Cui, Renjie Song, Yiyu Qiu, and Jiajun Liang",
+      "orig_title": "Decoupled knowledge distillation",
+      "paper_id": "2203.08679v2"
+    },
+    {
+      "index": 47,
+      "title": "Learning Deep Features for Discriminative Localization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "B. Zhou, A. Khosla, A. Lapedriza, A. Oliva, and A. Torralba",
+      "orig_title": "Learning Deep Features for Discriminative Localization",
+      "paper_id": "1512.04150v1"
+    }
+  ]
+}

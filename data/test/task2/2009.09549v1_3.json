@@ -1,0 +1,499 @@
+{
+  "paper_id": "2009.09549v1",
+  "title": "Resilient Composition of Drone Services for Delivery",
+  "sections": {
+    "resilient drone service composition using adaptive lookahead": "The underlying initial DaaS composition approach is formulated as a multi-armed bandit problem . Multi-armed bandits are a special type of sequential decision problems which demonstrate exploration and exploitation trade-offs and produce maximum rewards under uncertainty . The exploration refers to trying each possible action to find an optimal reward. In contrast, exploitation refers to trying the actions that are believed to provide higher payoffs in the future. We focus on the constraints at recharging stations and dynamic weather conditions. However, multi-arm bandits are generally proposed for tree-based search exploration in the context of combinatorial optimization . An exact approach such as MILP does not naturally fit to solve such exploratory optimization . MILP approaches are usually applied in solving deterministic linear optimization problems . While heuristic-based lookahead , genetic algorithm , and tabu search  are usually used for exploratory optimization problems. We focus on the adaptive lookahead heuristic-based approach which is typically used to solve combinatorial multi-armed bandit problems . The heuristics are widely used in multi-armed bandit literature and provide substantially more efficient solutions than traditional optimization approaches [ref]52. Therefore, we focus on exploring a heuristic-based solution for the composition of drone services. The stochastic arrival of other drone services at intermediate stations and the changes in wind pattern influence the initial composition plan. As a result, the established composition plan may become non-optimal and fail. Such failures may impact on the initial composition in two ways: (1) local impact (2) global impact. The term local impact means the effect of failure propagates to a certain number of recharging stations. The rest of the plan is still recoverable. The term global impact refers to the propagation of failure effect till the destination. We propose a resilient drone service composition using adaptive lookahead heuristic-based approach. The resilient means that the delivery operation is successfully carried out even the established composition plan adapts to the failures. We require a lookahead algorithm to handle time-varying constraints and weather conditions. The adaptive lookahead performs lookahead according to the type of failure occurred rather than a fixed number of lookaheads. There is only one difference between an adaptive lookahead and a standard lookahead algorithm: the distance in adaptive lookahead is no longer a fixed length but varies with the propagation effect of the failures. Once the adaptive lookahead finds the distance of failures, we locally recompose the drone services from the current station to the next failure-free station. The state selection using adaptive lookahead approach is shown in Fig. 6. The selective states of initial composition plan are represented by green colour. Failure occurs at node 3 which requires the recomposition of services. We recompose the services until the next state where no change is observed. Fig. 7 presents an example of initial service composition, failed service, and its impact on other services. We first compute an initial offline composition plan from source to destination, denoted by a sequence of solid line arrows connecting green colour nodes. The initial composition plan avoids the congested recharging stations (yellow colour nodes) for faster delivery services. A failed service is represented by a red colour node and its impact on the next services in the initial plan is shown by orange colour nodes. The formal definitions of failure, service failure, and resilient service composition are given as follows. Definition 6: Failure. A failure is defined as the deviation from expected (specified) behaviour. In some cases, the failure may result in the termination of the ability to perform the required function. Definition 7: Service Failure. Service failure is defined as an event that occurs when the delivered service deviates from the correct service. For example, a drone service D​a​a​Si𝐷𝑎𝑎subscript𝑆𝑖DaaS_{i} is specified to reach a station S​t​a​t​i​o​nj𝑆𝑡𝑎𝑡𝑖𝑜subscript𝑛𝑗Station_{j} at 04:00:040004:00 pm. If D​a​a​Si𝐷𝑎𝑎subscript𝑆𝑖DaaS_{i} reaches at S​t​a​t​i​o​nj𝑆𝑡𝑎𝑡𝑖𝑜subscript𝑛𝑗Station_{j} before or after 04:00:040004:00 pm, we say that the service is failed. Definition 8: Resilient Service Composition. Resilience refers to the ability or capacity of a system to adapt to dynamic changes (failures) without deviating from the expected behaviour. Resilient service composition is a mechanism for handling the failures occurred at runtime. When one or more services fail at runtime, the resilient service composition approach locally or partially recomposes the failed services to deliver the expected behaviour. Fig 2 illustrates the process of resilient drone service composition. We first execute the initial offline composition plan. The failure detection module periodically checks for any failures at each station. Each drone service has a certain deadline for each station defined in the initial offline plan. We compare the current arrival time of a drone service with an expected arrival time given by the established plan. In the case of the early or late arrival of a drone service, the failure is detected. The failure analysis module finds the number of services affected due to failure. The failure may affect the execution of a couple of next drone services. The adaptive lookahead tree exploration module guarantees the exploration of all possible alternatives to the failed service. Finally, we locally recompose the explored alternatives to mitigate the effect of failure. The recomposition of drone services at the intermediate station obtains an optimal composite service in minimal computational time. Algorithm 1 provides the details of the proposed approach as follows. The algorithm generates a resilient composition of drone services using an initial composition plan as input. The first and last component services in the initial plan are the source and destination locations (Lines 2-3). We execute the initial plan and monitor periodically for any failure at runtime (Lines 4-6). The initial plan is executed smoothly until a failure is detected (Line 7). The actual arrival time at each station is compared with the expected arrival in the initial plan. If a failure is detected, the failure analysis algorithm computes the affected (i.e., failed) drone services (Line 9). Algorithm 2 presents the details of the failure analysis algorithm. We find the first congested node in the initial plan from the failed service until the destination. If a congested node is found, we simply compute the number of services from the current failed service to the congested node. Moreover, we find the first unaffected service from the failed service until the destination. We calculate the difference between the first failed service and unaffected service in the initial plan. The minimum of distance (i.e., nodes) is selected from the congested node and unaffected service. We consider the congested node for failure analysis because the delay of service failure results in less waiting time at a congested node. For example, a service failure causes 15 minutes delay to the initial composition plan. Let’s assume that there is a congestion node in the initial plan ahead of failed service. The waiting time on the congested node is 25 minutes for the availability of recharging pad. In such a case, the waiting time will be reduced to 10 minutes because of 15 minutes delay from failed service. The adaptive lookahead distance is equivalent to the number of affected drone services for exploration of all possible alternatives. We recompose the services from the failed position to next unaffected drone service using recompose algorithm (Line 10). The details of recompose algorithm are given in Algorithm 3. The recompose algorithm composes the services locally by calling the f​i​n​d​_​o​p​t​i​m​a​l​_​c​o​m​p𝑓𝑖𝑛𝑑_𝑜𝑝𝑡𝑖𝑚𝑎𝑙_𝑐𝑜𝑚𝑝find\\_optimal\\_comp function which is same as our drone service selection and composition algorithm in . Finally, the new locally composed drone services update the inconsistent affected services in our initial composition plan. This process continues until the package is delivered to the destination. An alternative to the use of local recomposition is to replicate the delay in the initial service composition till the destination. This alternative approach may result in longer delays, and in some cases, the package may not be delivered."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Minimizing the total completion time of an urban delivery problem with uncertain assembly time",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Transp. Res. E Logist. Transp. Rev.",
+      "authors": "B. Liu, X. Guo, Y. Yu, Q. Zhou"
+    },
+    {
+      "index": 1,
+      "title": "Unmanned aerial vehicles (uavs): A survey on civil applications and key research challenges",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "H. Shakhatreh, A. H. Sawalmeh, A. Al-Fuqaha, Z. Dou, E. Almaita, I. Khalil, N. S. Othman, A. Khreishah, M. Guizani"
+    },
+    {
+      "index": 2,
+      "title": "Distributed processing applications for uav/drones: A survey",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Progress in Systems Engineering",
+      "authors": "G. Chmaj, H. Selvaraj"
+    },
+    {
+      "index": 3,
+      "title": "Drones: Designed for product delivery",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Design Management Review",
+      "authors": "D. Bamburry"
+    },
+    {
+      "index": 4,
+      "title": "Guest editorial can drones deliver?",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Trans. Autom. Sci. Eng.",
+      "authors": "R. D’Andrea"
+    },
+    {
+      "index": 5,
+      "title": "A service computing manifesto: The next 10 years",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Commun. ACM",
+      "authors": "A. Bouguettaya, et al."
+    },
+    {
+      "index": 6,
+      "title": "Composing drone-as-a-service (daas) for delivery",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Web Services",
+      "authors": "B. Shahzaad, A. Bouguettaya, S. Mistry, A. G. Neiat"
+    },
+    {
+      "index": 7,
+      "title": "Evolution of the second-story city: The minneapolis skyway system",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Environ. Plan. B Plan. Des.",
+      "authors": "M. J. Corbett, F. Xie, D. Levinson"
+    },
+    {
+      "index": 8,
+      "title": "Design space exploration of drone infrastructure for large-scale delivery services",
+      "abstract": "",
+      "year": "2016",
+      "venue": "35th International Conference on Computer-Aided Design",
+      "authors": "S. Park, L. Zhang, S. Chakraborty"
+    },
+    {
+      "index": 9,
+      "title": "Cbdn: Cloud-based drone navigation for efficient battery charging in drone networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Trans. Intell. Transp. Syst.",
+      "authors": "J. Kim, S. Kim, J. Jeong, H. Kim, J. Park, T. Kim"
+    },
+    {
+      "index": 10,
+      "title": "Vehicle routing problems for drone delivery",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Trans. Syst., Man, Cybern.",
+      "authors": "K. Dorling, J. Heinrichs, G. G. Messier, S. Magierowski"
+    },
+    {
+      "index": 11,
+      "title": "Traveling salesman problem with a drone station",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Syst. Man Cybern. Syst.",
+      "authors": "S. Kim, I. Moon"
+    },
+    {
+      "index": 12,
+      "title": "Algorithms for routing an unmanned aerial vehicle in the presence of refueling depots",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Trans. Autom. Sci. Eng.",
+      "authors": "K. Sundar, S. Rathinam"
+    },
+    {
+      "index": 13,
+      "title": "A two-stage approach for routing multiple unmanned aerial vehicles with stochastic fuel consumption",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Sensors",
+      "authors": "S. Venkatachalam, K. Sundar, S. Rathinam"
+    },
+    {
+      "index": 14,
+      "title": "Constraint-aware drone-as-a-service composition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Service-Oriented Computing",
+      "authors": "B. Shahzaad, A. Bouguettaya, S. Mistry, A. G. Neiat"
+    },
+    {
+      "index": 15,
+      "title": "Failure-proof spatio-temporal composition of sensor cloud services",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conference on Service-Oriented Computing",
+      "authors": "A. G. Neiat, A. Bouguettaya, T. Sellis, H. Dong"
+    },
+    {
+      "index": 16,
+      "title": "Adaptive composition in dynamic service environments",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Future Gener. Comput. Syst.",
+      "authors": "L. Barakat, S. Miles, M. Luck"
+    },
+    {
+      "index": 17,
+      "title": "Qos-aware service composition in dynamic service oriented environments",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Middleware 2009",
+      "authors": "N. B. Mabrouk, S. Beauche, E. Kuznetsova, N. Georgantas, V. Issarny"
+    },
+    {
+      "index": 18,
+      "title": "The flying sidekick traveling salesman problem: Optimization of drone-assisted parcel delivery",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Transp. Res. Part C Emerg. Technol.",
+      "authors": "C. C. Murray, A. G. Chu"
+    },
+    {
+      "index": 19,
+      "title": "Optimization of multi-package drone deliveries considering battery capacity",
+      "abstract": "",
+      "year": "2017",
+      "venue": "96th Annual Meeting of the Transportation Research Board",
+      "authors": "Y. Choi, P. M. Schonfeld"
+    },
+    {
+      "index": 20,
+      "title": "Persistent uav delivery logistics: Milp formulation and efficient heuristic",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Comput. Ind. Eng.",
+      "authors": "B. D. Song, K. Park, J. Kim"
+    },
+    {
+      "index": 21,
+      "title": "Failure recovery of composite semantic web services using subgraph replacement",
+      "abstract": "",
+      "year": "2008",
+      "venue": "International Conference on Computer and Communication Engineering",
+      "authors": "H. Saboohi, A. Amini, H. Abolhassani"
+    },
+    {
+      "index": 22,
+      "title": "Qos-aware replanning of composite web services",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE International Conference on Web Services",
+      "authors": "G. Canfora, M. Di Penta, R. Esposito, M. L. Villani"
+    },
+    {
+      "index": 23,
+      "title": "Repair vs. recomposition for broken service compositions",
+      "abstract": "",
+      "year": "2010",
+      "venue": "International Conference on Service-Oriented Computing",
+      "authors": "Y. Yan, P. Poizat, L. Zhao"
+    },
+    {
+      "index": 24,
+      "title": "Soa middleware support for service process reconfiguration with end-to-end qos constraints",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE International Conference on Web Services",
+      "authors": "Y. Zhai, J. Zhang, K. Lin"
+    },
+    {
+      "index": 25,
+      "title": "Failure recovery of world-altering composite semantic services - a two phase approach",
+      "abstract": "",
+      "year": "2012",
+      "venue": "14th International Conference on Information Integration and Web-based Applications & Services",
+      "authors": "H. Saboohi, S. A. Kareem"
+    },
+    {
+      "index": 26,
+      "title": "Adaptive algorithms for finding replacement services in autonomic distributed business processes",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Autonomous Decentralized Systems",
+      "authors": "T. Yu, K. J. Lin"
+    },
+    {
+      "index": 27,
+      "title": "An automatic failure recovery method for world-altering composite semantic web services",
+      "abstract": "",
+      "year": "2013",
+      "venue": "University of Malaya",
+      "authors": "H. Saboohi"
+    },
+    {
+      "index": 28,
+      "title": "Resilient composition of web services through nondeterministic planning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Symposium on Computers and Communication",
+      "authors": "J. Alves, J. Marchi, R. Fileto, M. A. R. Dantas"
+    },
+    {
+      "index": 29,
+      "title": "Constraint verification failure recovery in web service composition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Future Gener. Comput. Syst.",
+      "authors": "T. Laleh, J. Paquet, S. Mokhov, Y. Yan"
+    },
+    {
+      "index": 30,
+      "title": "Spatio-temporal composition of sensor cloud services",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE International Conference on Web Services",
+      "authors": "A. G. Neiat, A. Bouguettaya, T. Sellis, Z. Ye"
+    },
+    {
+      "index": 31,
+      "title": "Crowdsourced coverage as a service: Two-level composition of sensor cloud services",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Trans. Knowl. Data Eng.",
+      "authors": "A. G. Neiat, A. Bouguettaya, T. Sellis, S. Mistry"
+    },
+    {
+      "index": 32,
+      "title": "Energy consumption in unmanned aerial vehicles: A review of energy consumption models and their relation to the uav routing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "39th International Conference on Information Systems Architecture and Technology",
+      "authors": "A. Thibbotuwawa, P. Nielsen, B. Zbigniew, G. Bocewicz"
+    },
+    {
+      "index": 33,
+      "title": "Wind corrections in flight path planning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Int. J. Adv. Robot. Syst.",
+      "authors": "M. Seleckỳ, P. Váňa, M. Rollo, T. Meiser"
+    },
+    {
+      "index": 34,
+      "title": "Low-energy routing for deadline-constrained delivery drones under windy conditions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "BNCSS",
+      "authors": "K. Takegami, S. Negoro, Y. Funabashi, I. Taniguchi, H. Tomiyama"
+    },
+    {
+      "index": 35,
+      "title": "Waypoint guidance for small uavs in wind",
+      "abstract": "",
+      "year": "2005",
+      "venue": "AIAA Infotech@Aerospace",
+      "authors": "J. Osborne, R. Rysdyk"
+    },
+    {
+      "index": 36,
+      "title": "Stochastic analysis of fuel consumption in aircraft cruise subject to along-track wind uncertainty",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Aerosp. Sci. Technol.",
+      "authors": "R. Vazquez, D. Rivas, A. Franco"
+    },
+    {
+      "index": 37,
+      "title": "Dynamic routing of unmanned aerial vehicles using reactive tabu search",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Mil. Oper. Res.",
+      "authors": "K. P. O’Rourke, W. B. Carlton, T. G. Bailey, R. R. Hill"
+    },
+    {
+      "index": 38,
+      "title": "The skyline operator",
+      "abstract": "",
+      "year": "2001",
+      "venue": "17th International Conference on Data Engineering",
+      "authors": "S. Borzsony, D. Kossmann, K. Stocker"
+    },
+    {
+      "index": 39,
+      "title": "Computing service skylines over sets of services",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE International Conference on Web Services",
+      "authors": "Q. Yu, A. Bouguettaya"
+    },
+    {
+      "index": 40,
+      "title": "An optimal and progressive algorithm for skyline queries",
+      "abstract": "",
+      "year": "2003",
+      "venue": "2003 ACM SIGMOD International Conference on Management of Data",
+      "authors": "D. Papadias, Y. Tao, G. Fu, B. Seeger"
+    },
+    {
+      "index": 41,
+      "title": "Multi-attribute optimization in service selection",
+      "abstract": "",
+      "year": "2012",
+      "venue": "World Wide Web",
+      "authors": "Q. Yu, A. Bouguettaya"
+    },
+    {
+      "index": 42,
+      "title": "Bandit algorithms for tree search",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Twenty-Third Conference on Uncertainty in Artificial Intelligence",
+      "authors": "P. A. Coquelin, R. Munos"
+    },
+    {
+      "index": 43,
+      "title": "Multi-armed bandit models for the optimal design of clinical trials: benefits and challenges",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Statist. Sci.",
+      "authors": "S. S. Villar, J. Bowden, J. Wason"
+    },
+    {
+      "index": 44,
+      "title": "A multi-armed bandit selection strategy for hyper-heuristics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Congress on Evolutionary Computation",
+      "authors": "A. S. Ferreira, R. A. Gonçalves, A. Pozo"
+    },
+    {
+      "index": 45,
+      "title": "Flight formation of uavs in presence of moving obstacles using fast-dynamic mixed integer linear programming",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Aerosp. Sci. Technol.",
+      "authors": "M. Radmanesh, M. Kumar"
+    },
+    {
+      "index": 46,
+      "title": "A review of deterministic optimization methods in engineering and management",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Math. Probl. Eng.",
+      "authors": "M. H. Lin, J. F. Tsai, C. S. Yu"
+    },
+    {
+      "index": 47,
+      "title": "Lookahead bayesian optimization with inequality constraints",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems 30",
+      "authors": "R. R. Lam, K. E. Willcox"
+    },
+    {
+      "index": 48,
+      "title": "Genetic algorithms and particle swarm optimization for exploratory projection pursuit",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Ann. Math. Artif. Intell.",
+      "authors": "A. Berro, S. L. M. Sainte, A. R. Gazen"
+    },
+    {
+      "index": 49,
+      "title": "A hybrid tabu/scatter search algorithm for simulation-based optimization of multi-objective runway operations scheduling",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Old Dominion University",
+      "authors": "B. Soykan"
+    },
+    {
+      "index": 50,
+      "title": "Multi-armed bandit problems with dependent arms",
+      "abstract": "",
+      "year": "2007",
+      "venue": "24th International Conference on Machine Learning",
+      "authors": "S. Pandey, D. Chakrabarti, D. Agarwal"
+    },
+    {
+      "index": 51,
+      "title": "Non-asymptotic pure exploration by solving games",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems 32 (NIPS 2019)",
+      "authors": "R. Degenne, W. M. Koolen, P. Ménard"
+    },
+    {
+      "index": 52,
+      "title": "AirSim: High-Fidelity Visual and Physical Simulation for Autonomous Vehicles",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Field and Service Robotics",
+      "authors": "S. Shah, D. Dey, C. Lovett, A. Kapoor",
+      "orig_title": "Airsim: High-fidelity visual and physical simulation for autonomous vehicles",
+      "paper_id": "1705.05065v2"
+    },
+    {
+      "index": 53,
+      "title": "Design and use paradigms for gazebo, an open-source multi-robot simulator",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems",
+      "authors": "N. Koenig, A. Howard"
+    },
+    {
+      "index": 54,
+      "title": "Jmavsim",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "A. Babushkin"
+    },
+    {
+      "index": 55,
+      "title": "Air learning: An AI research platform for algorithm-hardware benchmarking of autonomous aerial robots",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "S. Krishnan, B. Boroujerdian, W. Fu, A. Faust, V. J. Reddi"
+    },
+    {
+      "index": 56,
+      "title": "Downside up: Rethinking parcel position for aerial delivery",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Robot. Autom. Lett.",
+      "authors": "P. M. Kornatowski, M. Feroskhan, W. Stewart, D. Floreano"
+    },
+    {
+      "index": 57,
+      "title": "Windrose: A python matplotlib, numpy library to manage wind and pollution data, draw windrose",
+      "abstract": "",
+      "year": "2018",
+      "venue": "J. Open Source Softw.",
+      "authors": "L. Roubeyrie, S. Celles"
+    },
+    {
+      "index": 58,
+      "title": "Rhodium: Python library for many-objective robust decision making and exploratory modeling",
+      "abstract": "",
+      "year": "2020",
+      "venue": "J. Open Res. Softw.",
+      "authors": "A. Hadjimichael, D. Gold, D. Hadka, P. Reed"
+    },
+    {
+      "index": 59,
+      "title": "Exploring network structure, dynamics, and function using networkx",
+      "abstract": "",
+      "year": "2008",
+      "venue": "7th Python in Science Conference",
+      "authors": "A. A. Hagberg, D. A. Schult, P. J. Swart"
+    },
+    {
+      "index": 60,
+      "title": "Flight logs of drone swarms",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "G. Vásárhelyi, C. Virágh, G. Somorjai, T. Nepusz, A. E. Eiben, T. Vicsek"
+    }
+  ]
+}

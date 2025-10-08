@@ -1,0 +1,399 @@
+{
+  "paper_id": "2006.10219v3",
+  "title": "Sequential Graph Convolutional Network for Active Learning",
+  "sections": {
+    "introduction": "Deep learning has shown great advancements in several computer vision tasks such as\nimage classification   and 3D Hand Pose Estimation (HPE)   1 .\nThis has been possible due to the availability of both the powerful computing infrastructure and the\nlarge-scale datasets.\nData annotation is a time-consuming task, needs experts and is also expensive.\nThis gets even more challenging to some of the specific domains such as robotics or medical image analysis. Moreover, while optimizing deep neural network architectures, a gap is present concerning the representativeness of the data . To overcome these issues, active learning   has been successfully deployed to efficiently select the most meaningful samples. Essentially, there are three distinct components in any Active Learning (AL) framework.\nThese components are learner, sampler, and annotator. In brief, a learner is a model\ntrained to minimize the objective of the target task. The sampler is designed to select\nthe representative unlabelled examples within a fixed budget to deliver the highest performance.\nFinally, an annotator labels the queried data for learner re-training. Based on\nthe relationship between learner and sampler, AL frameworks can be categorised into\ntwo major groups: task-dependent and task-agnostic. Task-dependents are the ones where\nthe sampler is specially designed for a specific task of the learner.\nMajority of the previous works in active learning    [ref]38 [ref]6 1 are task-dependent in nature.\nIn other words, the sampling function is dependent on the objective of the learner.\nThis design limits the model to become optimal for a specific type of task while suffering from its scalability problem.\nSome of the recent works such as\nVAAL  and Learning\nLoss 2 tackle such a problem.\nVAAL trains a variational auto-encoder (VAE) that learns a latent space for better discrimination\nbetween labelled and unlabelled images in an adversarial manner.\nSimilarly, Learning Loss introduces a separate loss-prediction module to\nbe trained together with the learner.\nThe major drawback of these approaches is the lack of a mechanism that exploits the\ncorrelation between the labelled and the unlabelled images. Moreover, VAAL has\nno way to communicate between the learner and the sampler.\nGraph Convolutional Networks(GCNs) 8  are capable\nof sharing information between the nodes via message-passing operations.\nIn the AL domain, the application of GCNs [ref]6 1  [ref]38\nis also slowly getting priority. However, these methods are applied only to\nspecific kind of datasets i.e. graph-structured data such as Cora, CiteSeer,\nand PubMed 0. In this work, we are exploring\nthe image domain beyond graph-structured data. To address the above-mentioned issues, we propose a sequential GCN for Active Learning in a task-agnostic manner.\nFigure 1 shows the pipeline of the proposed method.\nIn the Figure, Phase I implements the learner. This is a model trained to minimize the\nobjective of the downstream task. Phase II, III and IV compose our sampler where\nwe deploy the GCN and apply the sampling techniques on\ngraph-induced node embeddings and their confidence scores. Finally, in Phase V, the\nselected unlabelled examples are sent for annotation.\nAt the initial stage, the learner is trained with a small number of seed labelled examples.\nWe extract the features of both labelled and unlabelled images from the learner parameters.\nDuring Phase II, we construct a graph where features are used to initialise the nodes of the graph\nand similarities represent the edges. Unlike VAAL, the initialisation of the nodes\nby the features extracted from the learner creates an opportunity to inherit\nuncertainties to the sampler. This graph is passed through GCN layers (Phase III)\nand the parameters of the graph are learned to\nidentify the nodes of labelled vs unlabelled example. This objective of the sampler is\nindependent of the one from the learner. We convolve on the graph which does message-passing operations between the nodes to\ninduce the higher-order representations. The graph embedding of any image depends primarily\nupon the initial representation and the associated neighbourhood nodes. Thus, the images\nbearing similar semantic and neighbourhood\nstructure end up inducing close representations which will play a key\nrole in identifying the sufficiently different\nunlabelled examples from the labelled ones. The nodes after convolutions are classified\nas labelled or unlabelled. We sort the examples based on the confidence score, apply an uncertainty sampling\napproach (Phase IV), and send the selected examples to query their labels(Phase V). We called this sampling\nmethod as UncertainGCN. Figure 2 simulates the\nUncertainGCN sampling technique.\nFurthermore, we adapt the higher-order graph node information under the CoreSet \nfor a new sampling technique by introducing latent space distancing. In principle, CoreSet   uses risk minimisation between core-sets on the learner feature space while we\nemploy this operation over GCN features. We called this sampling technique as CoreGCN.\nOur method has a clear advantage due to the aforementioned strengths of the GCN which is demonstrated by both\nthe quantitative and qualitative experiments (see Section 4).\nTraversing from Phase I to Phase V as shown in Figure 1\ncompletes a cycle. In the next iteration, we flip the label of annotated\nexamples from unlabelled to labelled and re-train the whole framework. We evaluated our sampler on four challenging real domain image classification benchmarks, one depth-based dataset for 3D HPE and a synthetic\nimage classification benchmark. We compared with several competitive sampling baselines and existing state-of-the-arts methods including CoreSet, VAAL and Learning Loss. From both the quantitative and the qualitative comparisons, our proposed framework is more accurate than existing methods."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Regional based query in graph active learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Roy Abel and Yoram Louzoun",
+      "orig_title": "Regional based query in graph active learning",
+      "paper_id": "1906.08541v1"
+    },
+    {
+      "index": 1,
+      "title": "The power of ensembles for active learning in image classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "William H Beluch Bcai, Andreas Nürnberger, and Jan M Köhler Bcai"
+    },
+    {
+      "index": 2,
+      "title": "Sampling Strategies for GAN Synthetic Data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICASSP",
+      "authors": "Binod Bhattarai, Seungryul Baek, Rumeysa Bodur, and Tae-Kyun Kim",
+      "orig_title": "Sampling strategies for gan synthetic data",
+      "paper_id": "1909.04689v1"
+    },
+    {
+      "index": 3,
+      "title": "Semantic Redundancies in Image-Classification Datasets: The 10% You Don’t Need",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Vighnesh Birodkar, Hossein Mobahi, and Samy Bengio",
+      "orig_title": "Semantic redundancies in image-classification datasets: The 10% you don’t need",
+      "paper_id": "1901.11409v1"
+    },
+    {
+      "index": 4,
+      "title": "Geometric deep learning: going beyond euclidean data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Signal Processing Magazine",
+      "authors": "Michael M Bronstein, Joan Bruna, Yann LeCun, Arthur Szlam, and Pierre Vandergheynst"
+    },
+    {
+      "index": 5,
+      "title": "Active Learning for Graph Embedding",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Hongyun Cai, Vincent W Zheng, and Kevin Chen-Chuan Chang",
+      "orig_title": "Active Learning for Graph Embedding",
+      "paper_id": "1705.05085v1"
+    },
+    {
+      "index": 6,
+      "title": "StarGAN: Unified Generative Adversarial Networks for Multi-Domain Image-to-Image Translation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Yunjey Choi, Minje Choi, Munyoung Kim, Jung-Woo Ha, Sunghun Kim, and Jaegul Choo",
+      "orig_title": "Stargan: Unified generative adversarial networks for multi-domain image-to-image translation",
+      "paper_id": "1711.09020v3"
+    },
+    {
+      "index": 7,
+      "title": "Support-vector networks",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Machine learning",
+      "authors": "Corinna Cortes and Vladimir Vapnik"
+    },
+    {
+      "index": 8,
+      "title": "Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML",
+      "authors": "Yarin Gal and Zoubin Ghahramani",
+      "orig_title": "Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning",
+      "paper_id": "1506.02142v6"
+    },
+    {
+      "index": 9,
+      "title": "Deep Bayesian Active Learning with Image Data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "Yarin Gal, Riashat Islam, and Zoubin Ghahramani",
+      "orig_title": "Deep Bayesian Active Learning with Image Data",
+      "paper_id": "1703.02910v1"
+    },
+    {
+      "index": 10,
+      "title": "Active discriminative network representation learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IJCAI",
+      "authors": "Li Gao, Hong Yang, Chuan Zhou, Jia Wu, Shirui Pan, and Yue Hu"
+    },
+    {
+      "index": 11,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NeurIPS",
+      "authors": "Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio"
+    },
+    {
+      "index": 12,
+      "title": "Multi-digit Number Recognition from Street View Imagery using Deep Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Ian J Goodfellow, Yaroslav Bulatov, Julian Ibarz, Sacha Arnoud, and Vinay Shet"
+    },
+    {
+      "index": 13,
+      "title": "Smaller coresets for k-median and k-means clustering",
+      "abstract": "",
+      "year": "2005",
+      "venue": "SCG",
+      "authors": "Sariel Har-Peled and Akash Kushal"
+    },
+    {
+      "index": 14,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 15,
+      "title": "Bayesian Active Learning for Classification and Preference Learning",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": "Neil Houlsby, Ferenc Huszár, Zoubin Ghahramani, and Máté Lengyel"
+    },
+    {
+      "index": 16,
+      "title": "ADAM: A Method for Stochastic Optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Diederik P Kingma and Jimmy Lei Ba"
+    },
+    {
+      "index": 17,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Thomas N Kipf and Max Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 18,
+      "title": "BatchBALD: Efficient and Diverse Batch Acquisition for Deep Bayesian Active Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Andreas Kirsch, Joost Van Amersfoort, and Yarin Gal",
+      "orig_title": "BatchBALD: Efficient and Diverse Batch Acquisition for Deep Bayesian Active Learning",
+      "paper_id": "1906.08158v2"
+    },
+    {
+      "index": 19,
+      "title": "Active Nearest-Neighbor Learning in Metric Spaces",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NeurIPS",
+      "authors": "Aryeh Kontorovich, Sivan Sabato, and Ruth Urner",
+      "orig_title": "Active nearest-neighbor learning in metric spaces",
+      "paper_id": "1605.06792v3"
+    },
+    {
+      "index": 20,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2012",
+      "venue": "University of Toronto",
+      "authors": "Alex Krizhevsky"
+    },
+    {
+      "index": 21,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "NeurIPS",
+      "authors": "Alex Krizhevsky, Ilya Sutskever, and Geoffrey E Hinton"
+    },
+    {
+      "index": 22,
+      "title": "Presentation and validation of the radboud faces database",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Cognition and emotion",
+      "authors": "Oliver Langner, Ron Dotsch, Gijsbert Bijlstra, Daniel HJ Wigboldus, Skyler T Hawk, and AD Van Knippenberg"
+    },
+    {
+      "index": 23,
+      "title": "Rectified linear units improve restricted boltzmann machines",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ICML",
+      "authors": "Vinod Nair and Geoffrey E. Hinton"
+    },
+    {
+      "index": 24,
+      "title": "Deepprior++: Improving fast and accurate 3d hand pose estimation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Markus Oberweger and Vincent Lepetit"
+    },
+    {
+      "index": 25,
+      "title": "Hands Deep in Deep Learning for Hand Pose Estimation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVWW",
+      "authors": "Markus Oberweger, Paul Wohlhart, and Vincent Lepetit",
+      "orig_title": "Hands deep in deep learning for hand pose estimation",
+      "paper_id": "1502.06807v2"
+    },
+    {
+      "index": 26,
+      "title": "The pagerank citation ranking: Bringing order to the web",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Stanford InfoLab",
+      "authors": "Lawrence Page, Sergey Brin, Rajeev Motwani, and Terry Winograd"
+    },
+    {
+      "index": 27,
+      "title": "Bayesian Batch Active Learning as Sparse Subset Approximation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Robert Pinsler, Jonathan Gordon, Eric Nalisnick, and José Miguel Hernandez-Lobato",
+      "orig_title": "Bayesian Batch Active Learning as Sparse Subset Approximation",
+      "paper_id": "1908.02144v4"
+    },
+    {
+      "index": 28,
+      "title": "Seeing is not necessarily believing: Limitations of biggans for data augmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Suman Ravuri and Oriol Vinyals"
+    },
+    {
+      "index": 29,
+      "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "MICCAI",
+      "authors": "Olaf Ronneberger, Philipp Fischer, and Thomas Brox",
+      "orig_title": "U-net: Convolutional networks for biomedical image segmentation",
+      "paper_id": "1505.04597v1"
+    },
+    {
+      "index": 30,
+      "title": "Active Learning for Convolutional Neural Networks: A Core-Set Approach",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Ozan Sener and Silvio Savarese",
+      "orig_title": "Active Learning for Convolutional Neural Networks: A Core-set approach",
+      "paper_id": "1708.00489v4"
+    },
+    {
+      "index": 31,
+      "title": "Very Deep Convolutional Network for Large-scale image recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Karen Simonyan and Andrew Zisserman"
+    },
+    {
+      "index": 32,
+      "title": "Variational Adversarial Active Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Samarth Sinha, Sayna Ebrahimi, and Trevor Darrell",
+      "orig_title": "Variational Adversarial Active Learning",
+      "paper_id": "1904.00370v3"
+    },
+    {
+      "index": 33,
+      "title": "Latent regression forest: Structured estimation of 3d articulated hand posture",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CVPR",
+      "authors": "Danhang Tang, Hyung Jin Chang, Alykhan Tejani, and Tae-Kyun Kim"
+    },
+    {
+      "index": 34,
+      "title": "Core vector machines: Fast svm training on very large data sets",
+      "abstract": "",
+      "year": "2005",
+      "venue": "JMLR.",
+      "authors": "Ivor W. Tsang, James T. Kwok, and Pak-Ming Cheung"
+    },
+    {
+      "index": 35,
+      "title": "Visualizing Data using GTSNE",
+      "abstract": "",
+      "year": "2008",
+      "venue": "JMLR",
+      "authors": "Laurens van der Maaten and Geoffrey Hinton",
+      "orig_title": "Visualizing data using t-sne",
+      "paper_id": "2108.01301v1"
+    },
+    {
+      "index": 36,
+      "title": "Facility location: concepts, models, algorithms and case studies",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Contributions to Management Science",
+      "authors": "Gert Wolf"
+    },
+    {
+      "index": 37,
+      "title": "Active Learning for Graph Neural Networks via Node Feature Propagation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Yuexin Wu, Yichong Xu, Aarti Singh, Yiming Yang, and Artur Dubrawski",
+      "orig_title": "Active Learning for Graph Neural Networks via Node Feature Propagation",
+      "paper_id": "1910.07567v2"
+    },
+    {
+      "index": 38,
+      "title": "Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning Algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Han Xiao, Kashif Rasul, and Roland Vollgraf",
+      "orig_title": "Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning Algorithms",
+      "paper_id": "1708.07747v2"
+    },
+    {
+      "index": 39,
+      "title": "Revisiting Semi-Supervised Learning with Graph Embeddings",
+      "abstract": "",
+      "year": "2016",
+      "venue": "PMLR",
+      "authors": "Zhilin Yang, William Cohen, and Ruslan Salakhudinov",
+      "orig_title": "Revisiting semi-supervised learning with graph embeddings",
+      "paper_id": "1603.08861v2"
+    },
+    {
+      "index": 40,
+      "title": "Spatial Attention Deep Net with Partial PSO for Hierarchical Hybrid Hand Pose Estimation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "Qi Ye, Shanxin Yuan, and Tae-kyun Kim",
+      "orig_title": "Spatial Attention Deep Net with Partial PSO for Hierarchical Hybrid Hand Pose Estimation",
+      "paper_id": "1604.03334v2"
+    },
+    {
+      "index": 41,
+      "title": "Learning Loss for Active Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Donggeun Yoo and In So Kweon",
+      "orig_title": "Learning Loss for Active Learning",
+      "paper_id": "1905.03677v1"
+    },
+    {
+      "index": 42,
+      "title": "PairNorm: Tackling Oversmoothing in GNNs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Lingxiao Zhao and Leman Akoglu",
+      "orig_title": "Pairnorm: Tackling oversmoothing in gnns",
+      "paper_id": "1909.12223v2"
+    }
+  ]
+}

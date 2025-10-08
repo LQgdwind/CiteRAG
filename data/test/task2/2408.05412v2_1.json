@@ -1,0 +1,465 @@
+{
+  "paper_id": "2408.05412v2",
+  "title": "Style-Preserving Lip Sync via Audio-Aware Style Reference",
+  "sections": {
+    "iv-a4 comparison methods": "In this work, we compare the proposed method with several representative state-of-the-art (SOTA) subject-generic approaches in audio-driven talking face video generation, including StyleTalk [ref]6, DiffTalk [ref]10, PD-FGC , IP-LAP [ref]8, PC-AVS , and Wav2Lip .\nStyleTalk [ref]6 is a representative subject-generic method capable of modeling speaking style.\nHowever, the code released for StyleTalk is incomplete and unable to generate results, lacking the phoneme label extraction and training code.\nConsequently, we made some minor modifications to its code for comparison purposes. The modified version utilizes DeepSpeech  audio features instead of phoneme labels and is trained using the same objectives as ours. Additionally, StyleTalk’s image rendering network can only accept a reference facial image to provide subject appearance information, whereas other comparison methods input more conditions, such as the upper-half face at the current time step. For a fair comparison, we replaced StyleTalk’s image renderer with our diffusion rendering model to generate results. We only compare with StyleTalk in terms of lip sync quality.\nThe methods including DiffTalk[ref]10, IP-LAP [ref]8, Wav2Lip, and Ours all synthesize talking face videos through inpainting the lower half of the face influenced by the input audio and reference facial image.\nTherefore, for quantitative comparison, the lower half of the face in the input video is masked and then these methods reconstruct the masked area.\nThe input video before masking serves as the ground truth for metric computation.\nWe train DiffTalk [ref]10 using the released official code until convergence, but it generates temporally unstable lip motion.\nIt relies on additional frame-interpolation techniques to smooth the results, affecting the comparison fairness. Therefore, the frame-interpolation post-processing was not utilized for a fair comparison.\nPC-AVS  utilizes a pose source video, an audio input, and a reference facial image to synthesize a talking face video. For a fair comparison, we replace its pose source video with the ground-truth video.\nPD-FGC   inputs a pose source video, an expression source video, an eye blink source video, audio, and a reference facial image to synthesize a talking face video. For a fair comparison, we replace its pose source, expression source, and eye blink source videos with the ground-truth video."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Towards Automatic Face-to-Face Translation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM international conference on multimedia",
+      "authors": "P. KR, R. Mukhopadhyay, J. Philip, A. Jha, V. Namboodiri, and C. Jawahar",
+      "orig_title": "Towards automatic face-to-face translation",
+      "paper_id": "2003.00418v1"
+    },
+    {
+      "index": 1,
+      "title": "Towards Realistic Visual Dubbing with Heterogeneous Sources",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM International Conference on Multimedia",
+      "authors": "T. Xie, L. Liao, C. Bi, B. Tang, X. Yin, J. Yang, M. Wang, J. Yao, Y. Zhang, and Z. Ma",
+      "orig_title": "Towards realistic visual dubbing with heterogeneous sources",
+      "paper_id": "2201.06260v1"
+    },
+    {
+      "index": 2,
+      "title": "DialogueNeRF: Towards Realistic Avatar Face-to-Face Conversation Video Generation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2203.07931",
+      "authors": "Z. Zhou, Z. Wang, S. Yao, Y. Yan, C. Yang, G. Zhai, J. Yan, and X. Yang",
+      "orig_title": "Dialoguenerf: Towards realistic avatar face-to-face conversation video generation",
+      "paper_id": "2203.07931v2"
+    },
+    {
+      "index": 3,
+      "title": "Neural Voice Puppetry: Audio-driven Facial Reenactment",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Computer Vision–ECCV",
+      "authors": "J. Thies, M. Elgharib, A. Tewari, C. Theobalt, and M. Nießner",
+      "orig_title": "Neural voice puppetry: Audio-driven facial reenactment",
+      "paper_id": "1912.05566v2"
+    },
+    {
+      "index": 4,
+      "title": "StyleTalk++: A Unified Framework for Controlling the Speaking Styles of Talking Heads",
+      "abstract": "",
+      "year": "2024",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "S. Wang, Y. Ma, Y. Ding, Z. Hu, C. Fan, T. Lv, Z. Deng, and X. Yu",
+      "orig_title": "Styletalk++: A unified framework for controlling the speaking styles of talking heads",
+      "paper_id": "2409.09292v1"
+    },
+    {
+      "index": 5,
+      "title": "StyleTalk: One-shot Talking Head Generation with Controllable Speaking Styles",
+      "abstract": "",
+      "year": "2023",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Y. Ma, S. Wang, Z. Hu, C. Fan, T. Lv, Y. Ding, Z. Deng, and X. Yu",
+      "orig_title": "Styletalk: One-shot talking head generation with controllable speaking styles",
+      "paper_id": "2301.01081v2"
+    },
+    {
+      "index": 6,
+      "title": "A Lip Sync Expert Is All You Need for Speech to Lip Generation In The Wild",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM international conference on multimedia",
+      "authors": "K. Prajwal, R. Mukhopadhyay, V. P. Namboodiri, and C. Jawahar",
+      "orig_title": "A lip sync expert is all you need for speech to lip generation in the wild",
+      "paper_id": "2008.10010v1"
+    },
+    {
+      "index": 7,
+      "title": "Identity-Preserving Talking Face Generation with Landmark and Appearance Priors",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "W. Zhong, C. Fang, Y. Cai, P. Wei, G. Zhao, L. Lin, and G. Li",
+      "orig_title": "Identity-preserving talking face generation with landmark and appearance priors",
+      "paper_id": "2305.08293v1"
+    },
+    {
+      "index": 8,
+      "title": "Pose-Controllable Talking Face Generation by Implicitly Modularized Audio-Visual Representation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "H. Zhou, Y. Sun, W. Wu, C. C. Loy, X. Wang, and Z. Liu",
+      "orig_title": "Pose-controllable talking face generation by implicitly modularized audio-visual representation",
+      "paper_id": "2104.11116v1"
+    },
+    {
+      "index": 9,
+      "title": "DiffTalk: Crafting Diffusion Models for Generalized Audio-Driven Portraits Animation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "S. Shen, W. Zhao, Z. Meng, W. Li, Z. Zhu, J. Zhou, and J. Lu",
+      "orig_title": "Difftalk: Crafting diffusion models for generalized audio-driven portraits animation",
+      "paper_id": "2301.03786v2"
+    },
+    {
+      "index": 10,
+      "title": "Mimic: Speaking Style Disentanglement for Speech-Driven 3D Facial Animation",
+      "abstract": "",
+      "year": "2024",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "H. Fu, Z. Wang, K. Gong, K. Wang, T. Chen, H. Li, H. Zeng, and W. Kang",
+      "orig_title": "Mimic: Speaking style disentanglement for speech-driven 3d facial animation",
+      "paper_id": "2312.10877v1"
+    },
+    {
+      "index": 11,
+      "title": "Say Anything with Any Style",
+      "abstract": "",
+      "year": "2024",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "S. Tan, B. Ji, Y. Ding, and Y. Pan",
+      "orig_title": "Say anything with any style",
+      "paper_id": "2403.06363v2"
+    },
+    {
+      "index": 12,
+      "title": "Imitating Arbitrary Talking Style for Realistic Audio-Driven Talking Face Synthesis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM International Conference on Multimedia",
+      "authors": "H. Wu, J. Jia, H. Wang, Y. Dou, C. Duan, and Q. Deng",
+      "orig_title": "Imitating arbitrary talking style for realistic audio-driven talking face synthesis",
+      "paper_id": "2111.00203v1"
+    },
+    {
+      "index": 13,
+      "title": "Flow-guided one-shot talking face generation with a high-resolution audio-visual dataset",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Z. Zhang, L. Li, Y. Ding, and C. Fan"
+    },
+    {
+      "index": 14,
+      "title": "VAST: Vivify Your Talking Avatar via Zero-Shot Expressive Facial Style Transfer",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "L. Chen, Z. Wu, R. Li, W. Bao, J. Ling, X. Tan, and S. Zhao",
+      "orig_title": "Vast: Vivify your talking avatar via zero-shot expressive facial style transfer",
+      "paper_id": "2308.04830v3"
+    },
+    {
+      "index": 15,
+      "title": "Progressive Disentangled Representation Learning for Fine-Grained Controllable Talking Head Synthesis",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "D. Wang, Y. Deng, Z. Yin, H.-Y. Shum, and B. Wang",
+      "orig_title": "Progressive disentangled representation learning for fine-grained controllable talking head synthesis",
+      "paper_id": "2211.14506v1"
+    },
+    {
+      "index": 16,
+      "title": "Talkclip: Talking head generation with text-guided expressive speaking styles",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2304.00334",
+      "authors": "Y. Ma, S. Wang, Y. Ding, B. Ma, T. Lv, C. Fan, Z. Hu, Z. Deng, and X. Yu"
+    },
+    {
+      "index": 17,
+      "title": "AE-NeRF: Audio Enhanced Neural Radiance Field for Few Shot Talking Head Synthesis",
+      "abstract": "",
+      "year": "2024",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "D. Li, K. Zhao, W. Wang, B. Peng, Y. Zhang, J. Dong, and T. Tan",
+      "orig_title": "Ae-nerf: Audio enhanced neural radiance field for few shot talking head synthesis",
+      "paper_id": "2312.10921v1"
+    },
+    {
+      "index": 18,
+      "title": "A morphable model for the synthesis of 3d faces",
+      "abstract": "",
+      "year": "1999",
+      "venue": "annual conference on Computer graphics and interactive techniques",
+      "authors": "V. Blanz and T. Vetter"
+    },
+    {
+      "index": 19,
+      "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "R. Rombach, A. Blattmann, D. Lorenz, P. Esser, and B. Ommer",
+      "orig_title": "High-resolution image synthesis with latent diffusion models",
+      "paper_id": "2112.10752v2"
+    },
+    {
+      "index": 20,
+      "title": "Synthesizing obama: learning lip sync from audio",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Transactions on Graphics (ToG)",
+      "authors": "S. Suwajanakorn, S. M. Seitz, and I. Kemelmacher-Shlizerman"
+    },
+    {
+      "index": 21,
+      "title": "AD-NeRF: Audio Driven Neural Radiance Fields for Talking Head Synthesis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Y. Guo, K. Chen, S. Liang, Y.-J. Liu, H. Bao, and J. Zhang",
+      "orig_title": "Ad-nerf: Audio driven neural radiance fields for talking head synthesis",
+      "paper_id": "2103.11078v3"
+    },
+    {
+      "index": 22,
+      "title": "Parametric implicit face representation for audio-driven facial reenactment",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "R. Huang, P. Lai, Y. Qin, and G. Li"
+    },
+    {
+      "index": 23,
+      "title": "DAE-Talker: High Fidelity Speech-Driven Talking Face Generation with Diffusion Autoencoder",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM International Conference on Multimedia",
+      "authors": "C. Du, Q. Chen, T. He, X. Tan, X. Chen, K. Yu, S. Zhao, and J. Bian",
+      "orig_title": "Dae-talker: High fidelity speech-driven talking face generation with diffusion autoencoder",
+      "paper_id": "2303.17550v7"
+    },
+    {
+      "index": 24,
+      "title": "GeneFace: Generalized and High-Fidelity Audio-Driven 3D Talking Face Synthesis",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Z. Ye, Z. Jiang, Y. Ren, J. Liu, J. He, and Z. Zhao",
+      "orig_title": "Geneface: Generalized and high-fidelity audio-driven 3d talking face synthesis",
+      "paper_id": "2301.13430v1"
+    },
+    {
+      "index": 25,
+      "title": "NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Communications of the ACM",
+      "authors": "B. Mildenhall, P. P. Srinivasan, M. Tancik, J. T. Barron, R. Ramamoorthi, and R. Ng",
+      "orig_title": "Nerf: Representing scenes as neural radiance fields for view synthesis",
+      "paper_id": "2003.08934v2"
+    },
+    {
+      "index": 26,
+      "title": "Denoising Diffusion Probabilistic Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in neural information processing systems",
+      "authors": "J. Ho, A. Jain, and P. Abbeel",
+      "orig_title": "Denoising diffusion probabilistic models",
+      "paper_id": "2006.11239v2"
+    },
+    {
+      "index": 27,
+      "title": "Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Communications of the ACM",
+      "authors": "I. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. Courville, and Y. Bengio",
+      "orig_title": "Generative adversarial networks",
+      "paper_id": "2203.00667v1"
+    },
+    {
+      "index": 28,
+      "title": "Denoising diffusion implicit models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "J. Song, C. Meng, and S. Ermon"
+    },
+    {
+      "index": 29,
+      "title": "Deep Speech: Scaling up end-to-end speech recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.5567",
+      "authors": "A. Hannun, C. Case, J. Casper, B. Catanzaro, G. Diamos, E. Elsen, R. Prenger, S. Satheesh, S. Sengupta, A. Coates et al.",
+      "orig_title": "Deep speech: Scaling up end-to-end speech recognition",
+      "paper_id": "1412.5567v2"
+    },
+    {
+      "index": 30,
+      "title": "Accurate 3D Face Reconstruction with Weakly-Supervised Learning: From Single Image to Image Set",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition workshops",
+      "authors": "Y. Deng, J. Yang, S. Xu, D. Chen, Y. Jia, and X. Tong",
+      "orig_title": "Accurate 3d face reconstruction with weakly-supervised learning: From single image to image set",
+      "paper_id": "1903.08527v2"
+    },
+    {
+      "index": 31,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 32,
+      "title": "Dreamtalk: When expressive talking head generation meets diffusion probabilistic models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2312.09767",
+      "authors": "Y. Ma, S. Zhang, J. Wang, X. Wang, Y. Zhang, and Z. Deng"
+    },
+    {
+      "index": 33,
+      "title": "One-shot Talking Face Generation from Single-speaker Audio-Visual Correlation Learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "S. Wang, L. Li, Y. Ding, and X. Yu",
+      "orig_title": "One-shot talking face generation from single-speaker audio-visual correlation learning",
+      "paper_id": "2112.02749v1"
+    },
+    {
+      "index": 34,
+      "title": "How far are we from solving the 2D & 3D Face Alignment problem? (and a dataset of 230,000 3D facial landmarks)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Computer Vision",
+      "authors": "A. Bulat and G. Tzimiropoulos",
+      "orig_title": "How far are we from solving the 2d & 3d face alignment problem? (and a dataset of 230,000 3d facial landmarks)",
+      "paper_id": "1703.07332v3"
+    },
+    {
+      "index": 35,
+      "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Medical Image Computing and Computer-Assisted Intervention–MICCAI",
+      "authors": "O. Ronneberger, P. Fischer, and T. Brox",
+      "orig_title": "U-net: Convolutional networks for biomedical image segmentation",
+      "paper_id": "1505.04597v1"
+    },
+    {
+      "index": 36,
+      "title": "Analyzing and Improving the Image Quality of StyleGAN",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "T. Karras, S. Laine, M. Aittala, J. Hellsten, J. Lehtinen, and T. Aila",
+      "orig_title": "Analyzing and improving the image quality of stylegan",
+      "paper_id": "1912.04958v2"
+    },
+    {
+      "index": 37,
+      "title": "Animate Anyone: Consistent and Controllable Image-to-Video Synthesis for Character Animation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2311.17117",
+      "authors": "L. Hu, X. Gao, P. Zhang, K. Sun, B. Zhang, and L. Bo",
+      "orig_title": "Animate anyone: Consistent and controllable image-to-video synthesis for character animation",
+      "paper_id": "2311.17117v3"
+    },
+    {
+      "index": 38,
+      "title": "Person Image Synthesis via Denoising Diffusion Model",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "A. K. Bhunia, S. Khan, H. Cholakkal, R. M. Anwer, J. Laaksonen, M. Shah, and F. S. Khan",
+      "orig_title": "Person image synthesis via denoising diffusion model",
+      "paper_id": "2211.12500v2"
+    },
+    {
+      "index": 39,
+      "title": "VoxCeleb: a large-scale speaker identification dataset",
+      "abstract": "",
+      "year": "2017",
+      "venue": "INTERSPEECH",
+      "authors": "A. Nagrani, J. S. Chung, and A. Zisserman",
+      "orig_title": "Voxceleb: a large-scale speaker identification dataset",
+      "paper_id": "1706.08612v2"
+    },
+    {
+      "index": 40,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 41,
+      "title": "latent-diffusion",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "R. Rombach, A. Blattmann, D. Lorenz, P. Esser, and B. Ommer"
+    },
+    {
+      "index": 42,
+      "title": "Lip Movements Generation at a Glance",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European conference on computer vision (ECCV)",
+      "authors": "L. Chen, Z. Li, R. K. Maddox, Z. Duan, and C. Xu",
+      "orig_title": "Lip movements generation at a glance",
+      "paper_id": "1803.10404v3"
+    },
+    {
+      "index": 43,
+      "title": "Out of time: automated lip sync in the wild",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Asian conference on computer vision",
+      "authors": "J. S. Chung and A. Zisserman"
+    },
+    {
+      "index": 44,
+      "title": "Image quality assessment: from error visibility to structural similarity",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE transactions on image processing",
+      "authors": "Z. Wang, A. C. Bovik, H. R. Sheikh, and E. P. Simoncelli"
+    },
+    {
+      "index": 45,
+      "title": "The Unreasonable Effectiveness of Deep Features as a Perceptual Metric",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang",
+      "orig_title": "The unreasonable effectiveness of deep features as a perceptual metric",
+      "paper_id": "1801.03924v2"
+    },
+    {
+      "index": 46,
+      "title": "GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "M. Heusel, H. Ramsauer, T. Unterthiner, B. Nessler, and S. Hochreiter",
+      "orig_title": "Gans trained by a two time-scale update rule converge to a local nash equilibrium",
+      "paper_id": "1706.08500v6"
+    },
+    {
+      "index": 47,
+      "title": "Human-computer interaction system: A survey of talking-head generation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Electronics",
+      "authors": "R. Zhen, W. Song, Q. He, J. Cao, L. Shi, and J. Luo"
+    }
+  ]
+}

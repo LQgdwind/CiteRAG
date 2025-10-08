@@ -1,0 +1,497 @@
+{
+  "paper_id": "2101.04506v4",
+  "title": "UFA-FUSE: A novel deep supervised and hybrid model for multi-focus image fusion",
+  "sections": {
+    "iii-c training dataset": "As is well-known, the models based on CNN are data-driven. Therefore, a well-generated large-scale image dataset plays an important role in the process of network training for deep learning-based models. In terms of training datasets, many works have tried different solutions. In , Liu et al. assumed that two states exist per pair of multi-focus image patches: the first state is that if one patch is focused and another patch is blurred, the second state is opposite to the first state. Based on this assumption, they created a huge image dataset which randomly cropped from the ImageNet dataset. The generated dataset contains approximately 2,000,000 pairs of image patches with sizes 16×\\times16. Besides, all the blurred patches in the generated dataset are obtained by blurring the focused patches with different levels of Gaussian filter. Similar to CNN, Tang et al. formulated multi-focus image fusion as a classification task in p-CNN , they broadly divided the image patches into three categories: focused, blurred, or unknown. Therefore, they generated a large-scale image dataset which was rendered with 12 handcrafted blurring masks. This generated dataset has a total of 1450000 image patches with sizes 32×\\times32, specifically, it contains 650000 focused patches, 700000 blurred patches and 100000 unknown types of patches. Lacking large-scale dataset is not unique in other image fusion fields as well. For instance, the training dataset in DeepFuse 3 is obtained by randomly cropped image patches from another small scale multi-exposure dataset. What’s more, the dataset applied in DenseFuse  is the MS-COCO dataset  which is generated for object detection. But the dataset is not specific and deliberate to train the infrared and visible image fusion model, which will absolutely limit the performance of the network.\nAs we have learned in , the dataset for training fusion model proposed in CNN only contains one type of image patch pairs (i.e., if one patch is blurred and another patch in the same image patch pair is focused). In addition, the same question exists in p-CNN, the training image patches have been classified into focused, unknown and defocused these three types to train the fusion model. We knew that these two datasets applied on CNN and p-CNN are essentially used to train classification tasks. Therefore, these two datasets are not appropriate for training the end-to-end image fusion network with supervised learning strategy. Compared to the two datasets mentioned above, the datasets in DeepFuse and DenseFuse are suitable for training an end-to-end fusion framework. However, the dataset applied in DeepFuse is obtained by randomly cropped on a small-scale multi-exposure image set, and the generated dataset lacks ground-truth fusion images. The DeepFuse fusion model has to be trained with the unsupervised learning strategy. Similar to DeepFuse, the training dataset in DenseFuse also lacks the ground-truth fusion image. DenseFuse trained on the MS-COCO dataset with the unsupervised SSIM  loss function. It is no doubt that no ground-truth fusion image will absolutely restrict the performance of the trained fusion models. Besides, most datasets have been cropped with the small sizes 16×\\times16, 32×\\times32 and 64×\\times64 in the pretreatment processing according to previous works. Due to the small size of training image patches, it will lose some texture and contextual information in the training process of fusion model. This is not suitable for image fusion, since image fusion tasks need discriminative image features. \nAs shown in the previous Refs.  3 , a befitting dataset is important for image fusion models. To our minds, a qualified multi-focus image dataset should have at least two basic points: one point is that the ground-truth fusion images of the multi-focus images should be obtained from the generated dataset. Another point is that the number and the size of composite multi-focus images cannot be small and the composite should simulate real multi-focus images as much as possible. Inspired by previous works 3 , we proposed a new way to generate a multi-focus image dataset based on the DUTS dataset reasonably and intuitively. DUTS  dataset is proposed for salient object detection at first, which consists of 15572 labeled images. Specifically, our multi-focus image dataset is generated from the DUTS dataset as the following steps: (i) The source image Issubscript𝐼𝑠I_{s} from the DUTS dataset is blurred by the mean filter, and then the complete blurry image Ibsubscript𝐼𝑏I_{b} is obtained. Besides, when we use the mean filter with different sizes, we can obtain the images with varying degrees of blur. (ii) Finding the focus map is an important procedure for the dataset generation method. The focus map is obtained from the image label, but the image label is not a binary map. Therefore, we choose a threshold function to normalize the image label into a binary map (i.e., focus map Ifsubscript𝐼𝑓I_{f}). (iii) Then a pair of multi-focus images could be generated according to source image Issubscript𝐼𝑠I_{s}, blurry image Ibsubscript𝐼𝑏I_{b} and focus map Ifsubscript𝐼𝑓I_{f}, as formulated below where In​e​a​rsubscript𝐼𝑛𝑒𝑎𝑟I_{near} denotes the near focused image, and If​a​rsubscript𝐼𝑓𝑎𝑟I_{far} denotes the far focused image, they are a pair of multi-focus images, ⊙direct-product\\odot means dot product operation. 1 stands for an all one matrix and it has the same size with Issubscript𝐼𝑠I_{s} and Ifsubscript𝐼𝑓I_{f}. The multi-focus image dataset can be obtained according to these generation procedures. What’s more, as illustrated in step (i), we adopted the mean filter with different sizes to blur the image to make the generated dataset more natural. We set the size of the mean filter to four different intervals, which are  ,  [ref]5, [ref]5  and  , respectively. So, the generated dataset consists of four groups of images with different levels of blur. In addition, the number of our multi-focus image pairs is theoretically infinite according to this generation method. Overall, the dataset based on our generation method is more diverse and closer to reality than the previous works. Our dataset generation method shows in Fig. 4, which visualizes the state of the image after each generation procedure. Fig. 4 (a) is the source image and it is also taken as the ground-truth fusion image in the generated dataset. The blurred image shown in Fig. 4 (b) is generated through step (i), and the image label shown in Fig. 4 (c) is obtained from the original DUTS dataset. Then the focus map shown in Fig. 4 (d) is generated by step (ii) and the difference focus map, as expressed in Fig. 4 (e), is obtained by all one matrix subtracting the focus map. Finally, according to the step (iii), we would further obtain the near-focused multi-focus image and far focused multi-focus image. In general, our generated multi-focus image dataset has three advantages compared to the previous dataset, for instance: (I) It is easy to implement when finding a salient objects detection dataset with image labels. (II) It can generate a sufficient number of multi-focus image pairs according to the training needs. (III) It owns ground-truth fusion images for each generated multi-focus image pairs. Based on these characteristics, we can train an end-to-end image fusion network based on our generated dataset."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Image fusion using adjustable non-subsampled shearlet transform",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Instrumentation and Measurement",
+      "authors": "A. Vishwakarma and M. K. Bhuyan"
+    },
+    {
+      "index": 1,
+      "title": "Drf: Disentangled representation for visible and infrared image fusion",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Instrumentation and Measurement",
+      "authors": "H. Xu, X. Wang, and J. Ma"
+    },
+    {
+      "index": 2,
+      "title": "Sedrfuse: A symmetric encoder–decoder with residual block network for infrared and visible image fusion",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Instrumentation and Measurement",
+      "authors": "L. Jian, X. Yang, Z. Liu, G. Jeon, M. Gao, and D. Chisholm"
+    },
+    {
+      "index": 3,
+      "title": "Multimodal medical image fusion based on weighted local energy matching measurement and improved spatial frequency",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Instrumentation and Measurement",
+      "authors": "Y. Yang, S. Cao, S. Huang, and W. Wan"
+    },
+    {
+      "index": 4,
+      "title": "Medical image fusion with parameter-adaptive pulse coupled neural network in nonsubsampled shearlet transform domain",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Instrumentation and Measurement",
+      "authors": "M. Yin, X. Liu, Y. Liu, and X. Chen"
+    },
+    {
+      "index": 5,
+      "title": "Efficient Misalignment-Robust Multi-Focus Microscopical Images Fusion",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Signal Processing",
+      "authors": "Y. Liang, Y. Mao, Z. Tang, M. Yan, Y. Zhao, and J. Liu",
+      "orig_title": "Efficient misalignment-robust multi-focus microscopical images fusion",
+      "paper_id": "1812.08915v1"
+    },
+    {
+      "index": 6,
+      "title": "Structural characterization and measurement of nonwoven fabrics based on multi-focus image fusion",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Measurement",
+      "authors": "Yang, Chen, Na, Deng, Bin-Jie, Xin, Wen-Yu, Xing, and Zheng-Ye"
+    },
+    {
+      "index": 7,
+      "title": "Region-based multifocus image fusion for the precise acquisition of pap smear images",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of Biomedical Optics",
+      "authors": "S. Tello-Mijares and J. Bescós"
+    },
+    {
+      "index": 8,
+      "title": "Image fusion: algorithms and applications",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Elsevier",
+      "authors": "T. Stathaki"
+    },
+    {
+      "index": 9,
+      "title": "A morphological pyramidal image decomposition",
+      "abstract": "",
+      "year": "1989",
+      "venue": "Pattern Recognition Letters",
+      "authors": "A. Toet"
+    },
+    {
+      "index": 10,
+      "title": "Multisensor image fusion using the wavelet transform",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Graphical Models and Image Processing",
+      "authors": "H. Li, B. Manjunath, and S. K. Mitra"
+    },
+    {
+      "index": 11,
+      "title": "A novel image decomposition-based hybrid technique with super-resolution method for multi-focus image fusion",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Information Fusion",
+      "authors": "S. Aymaz and C. Kse"
+    },
+    {
+      "index": 12,
+      "title": "Pixel- and region-based image fusion with complex wavelets",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Information Fusion",
+      "authors": "J. J. Lewis, R. J. O’Callaghan, S. G. Nikolov, D. R. Bull, and N. Canagarajah"
+    },
+    {
+      "index": 13,
+      "title": "Multifocus image fusion using the nonsubsampled contourlet transform",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Signal Processing",
+      "authors": "Q. Zhang and B.-l. Guo"
+    },
+    {
+      "index": 14,
+      "title": "Quadtree-based multi-focus image fusion using a weighted focus-measure",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Information Fusion",
+      "authors": "X. Bai, Y. Zhang, F. Zhou, and B. Xue"
+    },
+    {
+      "index": 15,
+      "title": "Image fusion with guided filtering",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Transactions on Image processing",
+      "authors": "S. Li, X. Kang, and J. Hu"
+    },
+    {
+      "index": 16,
+      "title": "Multifocus image fusion using region segmentation and spatial frequency",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Image and Vision Computing",
+      "authors": "S. Li and B. Yang"
+    },
+    {
+      "index": 17,
+      "title": "Multi-scale weighted gradient-based fusion for multi-focus images",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Information Fusion",
+      "authors": "Z. Zhou, S. Li, and B. Wang"
+    },
+    {
+      "index": 18,
+      "title": "Multi-focus image fusion with dense sift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Information Fusion",
+      "authors": "Y. Liu, S. Liu, and Z. Wang"
+    },
+    {
+      "index": 19,
+      "title": "Multi-focus image fusion with a deep convolutional neural network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Information Fusion",
+      "authors": "Y. Liu, X. Chen, H. Peng, and Z. Wang"
+    },
+    {
+      "index": 20,
+      "title": "Pixel convolutional neural network for multi-focus image fusion",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Information Sciences",
+      "authors": "H. Tang, B. Xiao, W. Li, and G. Wang"
+    },
+    {
+      "index": 21,
+      "title": "Sesf-fuse: An unsupervised deep model for multi-focus image fusion",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Neural Computing and Applications",
+      "authors": "B. Ma, Y. Zhu, X. Yin, X. Ban, H. Huang, and M. Mukeshimana"
+    },
+    {
+      "index": 22,
+      "title": "DeepFuse: A Deep Unsupervised Approach for Exposure Fusion with Extreme Exposure Image Pairs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE International Conference on Computer Vision (ICCV)",
+      "authors": "K. R. Prabhakar, V. S. Srikar, and R. V. Babu",
+      "orig_title": "Deepfuse: A deep unsupervised approach for exposure fusion with extreme exposure image pairs",
+      "paper_id": "1712.07384v1"
+    },
+    {
+      "index": 23,
+      "title": "DenseFuse: A Fusion Approach to Infrared and Visible Images",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "H. Li and X. Wu",
+      "orig_title": "Densefuse: A fusion approach to infrared and visible images",
+      "paper_id": "1804.08361v9"
+    },
+    {
+      "index": 24,
+      "title": "Ifcnn: A general image fusion framework based on convolutional neural network",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Information Fusion",
+      "authors": "Y. Zhang, Y. Liu, P. Sun, H. Yan, X. Zhao, and L. Zhang"
+    },
+    {
+      "index": 25,
+      "title": "Remote sensing image fusion using the curvelet transform",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Information Fusion",
+      "authors": "F. Nencini, A. Garzelli, S. Baronti, and L. Alparone"
+    },
+    {
+      "index": 26,
+      "title": "Robust multi-focus image fusion using edge model and multi-matting",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "Y. Chen, J. Guan, and W.-K. Cham"
+    },
+    {
+      "index": 27,
+      "title": "Drpl: Deep regression pair learning for multi-focus image fusion",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "J. Li, X. Guo, G. Lu, B. Zhang, and D. Zhang"
+    },
+    {
+      "index": 28,
+      "title": "Mff-gan: An unsupervised generative adversarial network with adaptive and gradient joint constraints for multi-focus image fusion",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Information Fusion",
+      "authors": "H. Zhang, Z. Le, Z. Shao, H. Xu, and J. Ma"
+    },
+    {
+      "index": 29,
+      "title": "Brain medical image fusion based on dual-branch cnns in nsst domain",
+      "abstract": "",
+      "year": "2020",
+      "venue": "BioMed Research International",
+      "authors": "Z. Ding, D. Zhou, R. Nie, R. Hou, and Y. Liu"
+    },
+    {
+      "index": 30,
+      "title": "Deepanf: A deep attentive neural framework with distributed representation for chromatin accessibility prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Neurocomputing",
+      "authors": "Y. Guo, D. Zhou, R. Nie, X. Ruan, and W. Li"
+    },
+    {
+      "index": 31,
+      "title": "Squeeze-and-Excitation Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "J. Hu, L. Shen, and G. Sun",
+      "orig_title": "Squeeze-and-excitation networks",
+      "paper_id": "1709.01507v4"
+    },
+    {
+      "index": 32,
+      "title": "Multigrained attention network for infrared and visible image fusion",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Instrumentation and Measurement",
+      "authors": "J. Li, H. Huo, C. Li, R. Wang, C. Sui, and Z. Liu"
+    },
+    {
+      "index": 33,
+      "title": "NestFuse: An Infrared and Visible Image Fusion Architecture based on Nest Connection and Spatial/Channel Attention Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Instrumentation and Measurement",
+      "authors": "H. Li, X. J. Wu, and T. Durrani",
+      "orig_title": "Nestfuse: An infrared and visible image fusion architecture based on nest connection and spatial/channel attention models",
+      "paper_id": "2007.00328v2"
+    },
+    {
+      "index": 34,
+      "title": "Global-feature encoding u-net (geu-net) for multi-focus image fusion",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "B. Xiao, B. Xu, X. Bi, and W. Li"
+    },
+    {
+      "index": 35,
+      "title": "CBAM: Convolutional Block Attention Module",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "S. Woo, J. Park, J. Lee, and I. So Kweon",
+      "orig_title": "Cbam: Convolutional block attention module",
+      "paper_id": "1807.06521v2"
+    },
+    {
+      "index": 36,
+      "title": "Loss Functions for Image Restoration with Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Computational Imaging",
+      "authors": "H. Zhao, O. Gallo, I. Frosio, and J. Kautz",
+      "orig_title": "Loss functions for image restoration with neural networks",
+      "paper_id": "1511.08861v3"
+    },
+    {
+      "index": 37,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "European Conference on Computer Vision",
+      "authors": "T. Lin, M. Maire, S. Belongie, J. Hays, P. Perona, D. Ramanan, P. Dollár, and C. L. Zitnick",
+      "orig_title": "Microsoft coco: Common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 38,
+      "title": "Image quality assessment: from error visibility to structural similarity",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE Transactions on Image Processing",
+      "authors": "Z. Wang, A. C. Bovik, H. R. Sheikh, and E. P. Simoncelli"
+    },
+    {
+      "index": 39,
+      "title": "Learning to detect salient objects with image-level supervision",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "L. Wang, H. Lu, Y. Wang, M. Feng, D. Wang, B. Yin, and X. Ruan"
+    },
+    {
+      "index": 40,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 41,
+      "title": "Multifocus image fusion and restoration with sparse representation",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Transactions on Instrumentation and Measurement",
+      "authors": "B. Yang and S. Li"
+    },
+    {
+      "index": 42,
+      "title": "A new image fusion performance metric based on visual information fidelity",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Information Fusion",
+      "authors": "Y. Han, Y. Cai, Y. Cao, and X. Xu"
+    },
+    {
+      "index": 43,
+      "title": "An image fusion method based on directional contrast and area-based standard deviation",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Electronic Imaging and Multimedia Technology IV",
+      "authors": "G. Liu, W. Chen, and W. Ling"
+    },
+    {
+      "index": 44,
+      "title": "Fusion of multispectral and panchromatic satellite images based on contourlet transform and local average gradient",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Optical Engineering",
+      "authors": "H. Song, S. Yu, L. Song, and X. Yang"
+    },
+    {
+      "index": 45,
+      "title": "Gradient-based/evolutionary relay hybrid for computing pareto front approximations maximizing the s-metric",
+      "abstract": "",
+      "year": "2007",
+      "venue": "International Workshop on Hybrid Metaheuristics",
+      "authors": "M. Emmerich, A. Deutz, and N. Beume"
+    },
+    {
+      "index": 46,
+      "title": "Improved bounds on the local mean-square error and the bias of parameter estimators (corresp.)",
+      "abstract": "",
+      "year": "1977",
+      "venue": "IEEE Transactions on Information Theory",
+      "authors": "M. Wax and J. Ziv"
+    },
+    {
+      "index": 47,
+      "title": "A new automated quality assessment algorithm for image fusion",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Image and Vision Computing",
+      "authors": "Y. Chen and R. S. Blum"
+    },
+    {
+      "index": 48,
+      "title": "A novel image fusion metric based on multi-scale analysis",
+      "abstract": "",
+      "year": "2008",
+      "venue": "2008 9th International Conference on Signal Processing",
+      "authors": "P. Wang and B. Liu"
+    },
+    {
+      "index": 49,
+      "title": "Multi-focus image fusion using dictionary-based sparse representation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Information Fusion",
+      "authors": "M. Nejati, S. Samavi, and S. Shirani"
+    },
+    {
+      "index": 50,
+      "title": "Infrared and visible image fusion via gradient transfer and total variation minimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Information Fusion",
+      "authors": "J. Ma, C. Chen, C. Li, and J. Huang"
+    },
+    {
+      "index": 51,
+      "title": "Perceptual fusion of infrared and visible images through a hybrid multi-scale decomposition with gaussian and bilateral filters",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Information Fusion",
+      "authors": "Z. Zhou, B. Wang, S. Li, and M. Dong"
+    },
+    {
+      "index": 52,
+      "title": "Vif-net: an unsupervised framework for infrared and visible image fusion",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Computational Imaging",
+      "authors": "R. Hou, D. Zhou, R. Nie, D. Liu, L. Xiong, Y. Guo, and C. Yu"
+    },
+    {
+      "index": 53,
+      "title": "A medical image fusion method based on convolutional neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 20th International Conference on Information Fusion (Fusion)",
+      "authors": "Y. Liu, X. Chen, J. Cheng, and H. Peng"
+    },
+    {
+      "index": 54,
+      "title": "Multimodal medical image fusion using hybrid layer decomposition with cnn-based feature mapping and structural clustering",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Instrumentation and Measurement",
+      "authors": "S. Singh and R. Anand"
+    },
+    {
+      "index": 55,
+      "title": "Laplacian re-decomposition for multimodal medical image fusion",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Instrumentation and Measurement",
+      "authors": "X. Li, X. Guo, P. Han, X. Wang, H. Li, and T. Luo"
+    },
+    {
+      "index": 56,
+      "title": "On the use of a joint spatial-frequency representation for the fusion of multi-focus images",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Pattern Recognition Letters",
+      "authors": "S. Gabarda and G. Cristobal"
+    },
+    {
+      "index": 57,
+      "title": "Multifocus image fusion using the log-gabor transform and a multisize windows technique",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Information Fusion",
+      "authors": "R. Redondo, F. Sroubek, S. Fischer, and G. Cristóbal"
+    },
+    {
+      "index": 58,
+      "title": "Multi-focus- ing algorithm for microscopy imagery in assembly line using low-cost camera",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Journal of Biomedical Optics",
+      "authors": "V. R. L. Juocas, R. D. R. Maskeliunas, and M. Wozniak"
+    }
+  ]
+}

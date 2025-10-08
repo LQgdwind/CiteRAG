@@ -1,0 +1,447 @@
+{
+  "paper_id": "2103.09735v1",
+  "title": "On Guillotine Separable Packings for the Two-dimensional Geometric Knapsack Problem",
+  "sections": {
+    "introduction": "Geometric packing problems have many important\napplications in cutting stock , VLSI\ndesign , logistics , smart-grids\n9, etc. Two-dimensional geometric knapsack (2GK),\na multidimensional generalization of the classical knapsack problem,\nis one of the central problems in this area. We are given a set of\nn𝑛n axis-aligned (open) rectangles (also called items) I:={1,2,…,n}assign𝐼12…𝑛I:=\\{1,2,\\dots,n\\},\nwhere rectangle i𝑖i has integral width 0​p​t​(i)0𝑝𝑡𝑖0pt(i), integral height 0​p​t​(i)0𝑝𝑡𝑖0pt(i) and an associated integral profit p​(i)𝑝𝑖p(i). We\nare also given an axis-aligned square knapsack K:=[0,N]×[0,N]assign𝐾0𝑁0𝑁K:=[0,N]\\times[0,N],\nwhere N∈ℕ𝑁ℕN\\in\\mathbb{N}. The goal is to select a subset of items I′⊆Isuperscript𝐼′𝐼I^{\\prime}\\subseteq I\nof maximum total profit p​(I′):=∑i∈I′p​(i)assign𝑝superscript𝐼′subscript𝑖superscript𝐼′𝑝𝑖p(I^{\\prime}):=\\sum_{i\\in I^{\\prime}}p(i) so\nthat they can be packed in the knapsack. The packing needs to be axis-parallel and non-overlapping, i.e., such packing maps\neach rectangle i∈I′𝑖superscript𝐼′i\\in I^{\\prime} to a new translated open rectangle R​(i):=(l​e​f​t​(i),r​i​g​h​t​(i))×(b​o​t​t​o​m​(i),t​o​p​(i))assign𝑅𝑖𝑙𝑒𝑓𝑡𝑖𝑟𝑖𝑔ℎ𝑡𝑖𝑏𝑜𝑡𝑡𝑜𝑚𝑖𝑡𝑜𝑝𝑖R(i):=(left(i),right(i))\\times(bottom(i),top(i))\nwhere r​i​g​h​t​(i)=l​e​f​t​(i)+0​p​t​(i)𝑟𝑖𝑔ℎ𝑡𝑖𝑙𝑒𝑓𝑡𝑖0𝑝𝑡𝑖right(i)=left(i)+0pt(i), t​o​p​(i)=b​o​t​t​o​m​(i)+0​p​t​(i)𝑡𝑜𝑝𝑖𝑏𝑜𝑡𝑡𝑜𝑚𝑖0𝑝𝑡𝑖top(i)=bottom(i)+0pt(i),\nl​e​f​t​(i)≥0,b​o​t​t​o​m​(i)≥0formulae-sequence𝑙𝑒𝑓𝑡𝑖0𝑏𝑜𝑡𝑡𝑜𝑚𝑖0left(i)\\geq 0,bottom(i)\\geq 0, r​i​g​h​t​(i)≤N,t​o​p​(i)≤Nformulae-sequence𝑟𝑖𝑔ℎ𝑡𝑖𝑁𝑡𝑜𝑝𝑖𝑁right(i)\\leq N,top(i)\\leq N\nand for any i,j∈I′𝑖𝑗superscript𝐼′i,j\\in I^{\\prime}, we must have R​(i)∩R​(j)=∅𝑅𝑖𝑅𝑗R(i)\\cap R(j)=\\emptyset.\nIn 2GK, items are not allowed to be rotated. There is another variant\nwith rotations that we denote by 2GK(R), where items are allowed to be rotated by 909090\ndegrees. 2GK has rich connections with many important problems, such as\nmaximum independent set of rectangles (MISR) , 2-D bin packing\n, strip packing  7, storage\nallocation , unsplittable flow , mixed packing , fair resource allocation , etc.\nLeung et al.  showed that the problem is\nstrongly NP-hard. Jansen and Zhang  gave (2+ε)2𝜀(2+\\varepsilon)-approximation\nalgorithms for both 2GK and 2GK(R), where ε>0𝜀0\\varepsilon>0 is an arbitrarily small constant.\nFinally, Gálvez et al. 8\nbroke the barrier of 222 by giving a 1.891.891.89-approximation algorithm\nfor 2GK and (3/2+ε)32𝜀(3/2+\\varepsilon)-approximation algorithm for 2GK(R).\nFurthermore, if the input data is quasi-polynomially\nbounded (i.e., N≤n(log⁡n)c𝑁superscript𝑛superscript𝑛𝑐N\\leq n^{(\\log n)^{c}} for some c>0𝑐0c>0 ) then there exists a quasi-polynomial\ntime approximation scheme (QPTAS) for both problems . Polynomial\ntime approximation schemes (PTASs) are known for many special cases:\nif all items are small 4, if all items are squares\n8 5, if the profit of each item equals\nits area , and if we allow resource augmentation\n(i.e., the size of the knapsack can be slightly increased) 5 7.\nHowever, it is an open problem to construct a PTAS, even with pseudo-polynomial running time. One can view geometric packing as a cutting problem where we are given\na large sheet or stock unit (maybe metal, glass, wood, rubber, or\ncloth), which should be cut into pieces out of the given input set.\nCutting technology often only allows axis-parallel end-to-end\ncuts called guillotine cuts. See  \nfor practical applications and software related to guillotine packing.\nIn this setting, we seek for solutions in which we can cut out\nthe individual objects by a recursive sequence of guillotine cuts that\ndo not intersect any item of the solution.\nThe related notion of k𝑘k-stage packing was originally introduced\nby Gilmore and Gomory . Here each stage\nconsists of either vertical or horizontal guillotine cuts (but not\nboth). On each stage, each of the sub-regions obtained on the previous\nstage is considered separately and can be cut again by using horizontal\nor vertical guillotine cuts. In k𝑘k-stage packing, the number of\ncuts to obtain each rectangle from the initial packing is at most\nk𝑘k, plus an additional cut to trim (i.e., separate the rectangles\nitself from a waste area). Intuitively, this means that in the\ncutting process we change the orientation of the cuts k−1𝑘1k-1 times.\nThe case where k=2𝑘2k=2, usually referred to as shelf packing, has\nbeen studied extensively. [subfigure]justification=centering       \n{subfigure}[t].23 \n\n {subfigure}[t].23\n\n\n {subfigure}[t].2\n\n\n {subfigure}[t].23\n\n\n In this paper, we study the two-dimensional knapsack problem under\nguillotine cuts (2GGK). The input is the same as for 2GK,\nbut we require additionally that the items in the solution can be\nseparated by a sequence of guillotine cuts, and we say that then they\nare guillotine separable. NP-hardness of 2GGK follows from a reduction from the (one-dimensional) knapsack problem.\nChristofides et al.  studied the\nproblem in 1970s. Since then many heuristics have been developed to\nefficiently solve benchmark instances, based on tree-search ,\nbranch-and-bound 3, dynamic optimization\n, tabu search , genetic\nalgorithms [ref]47, etc. Despite a staggering number\nof recent experimental papers 2 4   1  6 ,\nthere was little theoretical progress for 2GGK, due to limitations\nof past techniques. Since 2004, the (3+ε)3𝜀(3+\\varepsilon)-approximation for\n2GK by Jansen and Zhang  has been the best-known\napproximation algorithm for 2GGK. Recently, Abed et al. \nhave studied approximation algorithms for the cardinality cases of 2GGK and 2GGK(R) and have given a QPTASs, assuming the input data to be quasi-polynomially\nbounded.\n Most algorithms for 2GK utilize a container packing (see\nSection 2) which arranges the items in the knapsack\nsuch that they are packed inside a constant number of axis-aligned\nboxes (containers). The best sizes and locations of these containers\ncan be guessed efficiently since there are only a constant number\nof them. Then inside each container the items are packed either\nin one-stage packings or in two-stage packings  (if items are small). However, Gálvez\net al. 8 show that one cannot obtain a better approximation\nratio than 222 with container-based\npackings with only O​(1)𝑂1O(1) many containers, due to interaction between horizontal (wide and thin)\nand vertical (tall and narrow) items. To break this barrier,\nthey use a corridor-decomposition where the knapsack is divided\ninto axis-parallel polygonal regions called corridors with\nconstant number of regions called subcorridors.\nVertical (resp. horizontal) items are packed in only vertical (resp.\nhorizontal) subcorridors. After simplifying the interaction between\nvertical and horizontal items, they define two types of packings.\nIn one packing, they process the subcorridors to obtain a\ncontainer-based packing. In the other, a profitable subset of long\nhorizontal and long vertical items are packed in an \\boldsymbol​𝖫\\boldsymbol𝖫\\boldsymbol{\\mathsf{L}}-shaped\nregion. They prove that the best of these two packings achieves\na better approximation ratio than 222. However, it is not clear how\nto use this approach for 2GGK: even if we start with an optimal\nguillotine packing, the rearrangements of items may not preserve guillotine\nseparability, and hence they might not lead to a feasible solution\nto 2GGK."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "On guillotine cutting sequences",
+      "abstract": "",
+      "year": "2015",
+      "venue": "APPROX",
+      "authors": "Fidaa Abed, Parinya Chalermsook, José R. Correa, Andreas Karrenbauer, Pablo Pérez-Lantero, José A. Soto, and Andreas Wiese"
+    },
+    {
+      "index": 1,
+      "title": "Approximation schemes for maximum weight independent set of rectangles",
+      "abstract": "",
+      "year": "2013",
+      "venue": "FOCS",
+      "authors": "Anna Adamaszek and Andreas Wiese"
+    },
+    {
+      "index": 2,
+      "title": "A quasi-PTAS for the two-dimensional geometric knapsack problem",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SODA",
+      "authors": "Anna Adamaszek and Andreas Wiese"
+    },
+    {
+      "index": 3,
+      "title": "Color-coding",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Journal of the ACM (JACM)",
+      "authors": "Noga Alon, Raphael Yuster, and Uri Zwick"
+    },
+    {
+      "index": 4,
+      "title": "A tabu search algorithm for large-scale guillotine (un) constrained two-dimensional cutting problems",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Computers & Operations Research",
+      "authors": "Ramón Alvarez-Valdés, Antonio Parajón, and Jose’e Manuel Tamarita"
+    },
+    {
+      "index": 5,
+      "title": "A structural lemma in 2-dimensional packing, and its implications on approximability",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ISAAC",
+      "authors": "Nikhil Bansal, Alberto Caprara, Klaus Jansen, Lars Prädel, and Maxim Sviridenko"
+    },
+    {
+      "index": 6,
+      "title": "Bin packing in multiple dimensions: inapproximability results and approximation schemes",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Mathematics of Operations Research",
+      "authors": "Nikhil Bansal, Jose R Correa, Claire Kenyon, and Maxim Sviridenko"
+    },
+    {
+      "index": 7,
+      "title": "Improved approximation algorithm for two-dimensional bin packing",
+      "abstract": "",
+      "year": "2014",
+      "venue": "SODA",
+      "authors": "Nikhil Bansal and Arindam Khan"
+    },
+    {
+      "index": 8,
+      "title": "A tale of two dimensional bin packing",
+      "abstract": "",
+      "year": "2005",
+      "venue": "FOCS",
+      "authors": "Nikhil Bansal, Andrea Lodi, and Maxim Sviridenko"
+    },
+    {
+      "index": 9,
+      "title": "An exact two-dimensional non-guillotine cutting tree search procedure",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Operations Research",
+      "authors": "J. E. Beasley"
+    },
+    {
+      "index": 10,
+      "title": "An eda for the 2d knapsack problem with guillotine constraint",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Central European Journal of Operations Research",
+      "authors": "István Borgulya"
+    },
+    {
+      "index": 11,
+      "title": "Packing 2-dimensional bins in harmony",
+      "abstract": "",
+      "year": "2002",
+      "venue": "FOCS",
+      "authors": "Alberto Caprara"
+    },
+    {
+      "index": 12,
+      "title": "Fast approximation schemes for two-stage, two-dimensional bin packing",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Mathematics of Operations Research",
+      "authors": "Alberto Caprara, Andrea Lodi, and Michele Monaci"
+    },
+    {
+      "index": 13,
+      "title": "A polynomial time approximation scheme for the multiple knapsack problem",
+      "abstract": "",
+      "year": "2005",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Chandra Chekuri and Sanjeev Khanna"
+    },
+    {
+      "index": 14,
+      "title": "Approximation and online algorithms for multidimensional bin packing: A survey",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Computer Science Review",
+      "authors": "Henrik I. Christensen, Arindam Khan, Sebastian Pokutta, and Prasad Tetali"
+    },
+    {
+      "index": 15,
+      "title": "An algorithm for two-dimensional cutting problems",
+      "abstract": "",
+      "year": "1977",
+      "venue": "Operations Research",
+      "authors": "Nicos Christofides and Charles Whitlock"
+    },
+    {
+      "index": 16,
+      "title": "Combining dynamic programming with filtering to solve a four-stage two-dimensional guillotine-cut bounded knapsack problem",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Discrete Optimization",
+      "authors": "François Clautiaux, Ruslan Sadykov, François Vanderbeck, and Quentin Viaud"
+    },
+    {
+      "index": 17,
+      "title": "Pattern-based diving heuristics for a two-dimensional guillotine cutting-stock problem with leftovers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "EURO Journal on Computational Optimization",
+      "authors": "François Clautiaux, Ruslan Sadykov, François Vanderbeck, and Quentin Viaud"
+    },
+    {
+      "index": 18,
+      "title": "Performance bounds for level-oriented two-dimensional packing algorithms",
+      "abstract": "",
+      "year": "1980",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Edward G. Coffman, Jr, Michael R. Garey, David S. Johnson, and Robert E. Tarjan"
+    },
+    {
+      "index": 19,
+      "title": "Parameterized algorithms",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer",
+      "authors": "Marek Cygan, Fedor V Fomin, Łukasz Kowalik, Daniel Lokshtanov, Dániel Marx, Marcin Pilipczuk, Michał Pilipczuk, and Saket Saurabh"
+    },
+    {
+      "index": 20,
+      "title": "Algorithms for two-dimensional guillotine packing problems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Alessandro Di Pieri"
+    },
+    {
+      "index": 21,
+      "title": "Exact algorithms for the two-dimensional guillotine knapsack",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Computers & Operations Research",
+      "authors": "Mohammad Dolatabadi, Andrea Lodi, and Michele Monaci"
+    },
+    {
+      "index": 22,
+      "title": "Bin packing can be solved within 1+ε1𝜀1+\\varepsilon in linear time",
+      "abstract": "",
+      "year": "1981",
+      "venue": "Combinatorica",
+      "authors": "Wenceslas Fernandez de la Vega and George S. Lueker"
+    },
+    {
+      "index": 23,
+      "title": "On efficient weighted rectangle packing with large resources",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ISAAC",
+      "authors": "Aleksei V. Fishkin, Olga Gerber, and Klaus Jansen"
+    },
+    {
+      "index": 24,
+      "title": "Packing weighted rectangles into a square",
+      "abstract": "",
+      "year": "2005",
+      "venue": "MFCS",
+      "authors": "Aleksei V. Fishkin, Olga Gerber, Klaus Jansen, and Roberto Solis-Oba"
+    },
+    {
+      "index": 25,
+      "title": "Modeling two-dimensional guillotine cutting problems via integer programming",
+      "abstract": "",
+      "year": "2016",
+      "venue": "INFORMS Journal on Computing",
+      "authors": "Fabio Furini, Enrico Malaguti, and Dimitri Thomopulos"
+    },
+    {
+      "index": 26,
+      "title": "A tight (3/2+ϵitalic-ϵ\\epsilon) approximation for skewed strip packing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "APPROX/RANDOM",
+      "authors": "Waldo Gálvez, Fabrizio Grandoni, Afrouz Jabal Ameli, Klaus Jansen, Arindam Khan, and Malin Rau"
+    },
+    {
+      "index": 27,
+      "title": "Approximating geometric knapsack via l-packings",
+      "abstract": "",
+      "year": "2017",
+      "venue": "FOCS",
+      "authors": "Waldo Gálvez, Fabrizio Grandoni, Sandy Heydrich, Salvatore Ingala, Arindam Khan, and Andreas Wiese"
+    },
+    {
+      "index": 28,
+      "title": "Improved pseudo-polynomial-time approximation for strip packing",
+      "abstract": "",
+      "year": "2016",
+      "venue": "FSTTCS",
+      "authors": "Waldo Gálvez, Fabrizio Grandoni, Salvatore Ingala, and Arindam Khan"
+    },
+    {
+      "index": 29,
+      "title": "Improved Approximation Algorithms for 2-Dimensional Knapsack: Packing into Multiple L-Shapes, Spirals, and More",
+      "abstract": "",
+      "year": "2021",
+      "venue": "SoCG",
+      "authors": "Waldo Gálvez, Fabrizio Grandoni, Arindam Khan, Diego Ramirez-Romero, and Andreas Wiese",
+      "orig_title": "Improved approximation algorithms for 2-dimensional knapsack: Packing into multiple l-shapes, spirals and more",
+      "paper_id": "2103.10406v1"
+    },
+    {
+      "index": 30,
+      "title": "Multistage cutting stock problems of two and more dimensions",
+      "abstract": "",
+      "year": "1965",
+      "venue": "Operations research",
+      "authors": "P. C. Gilmore and Ralph E. Gomory"
+    },
+    {
+      "index": 31,
+      "title": "A (5/3 + ε𝜀\\varepsilon)-approximation for unsplittable flow on a path: placing small tasks into boxes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "STOC",
+      "authors": "Fabrizio Grandoni, Tobias Mömke, Andreas Wiese, and Hang Zhou"
+    },
+    {
+      "index": 32,
+      "title": "An exact algorithm for general, orthogonal, two-dimensional knapsack problems",
+      "abstract": "",
+      "year": "1995",
+      "venue": "European Journal of OR",
+      "authors": "Eleni Hadjiconstantinou and Nicos Christofides"
+    },
+    {
+      "index": 33,
+      "title": "A (5/3 + ϵitalic-ϵ\\epsilon)-approximation for strip packing",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computational Geometry",
+      "authors": "Rolf Harren, Klaus Jansen, Lars Prädel, and Rob van Stee"
+    },
+    {
+      "index": 34,
+      "title": "Faster approximation schemes for the two-dimensional knapsack problem",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SODA",
+      "authors": "Sandy Heydrich and Andreas Wiese"
+    },
+    {
+      "index": 35,
+      "title": "Approximation schemes for covering and packing problems in image processing and VLSI",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Journal of the ACM",
+      "authors": "Dorit S. Hochbaum and Wolfgang Maass"
+    },
+    {
+      "index": 36,
+      "title": "New approximability results for 2-dimensional packing problems",
+      "abstract": "",
+      "year": "2007",
+      "venue": "MFCS",
+      "authors": "Klaus Jansen and Roberto Solis-Oba"
+    },
+    {
+      "index": 37,
+      "title": "A polynomial time approximation scheme for the square packing problem",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IPCO",
+      "authors": "Klaus Jansen and Roberto Solis-Oba"
+    },
+    {
+      "index": 38,
+      "title": "On rectangle packing: maximizing benefits",
+      "abstract": "",
+      "year": "2004",
+      "venue": "SODA",
+      "authors": "Klaus Jansen and Guochuan Zhang"
+    },
+    {
+      "index": 39,
+      "title": "A near-optimal solution to a two-dimensional cutting stock problem",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Mathematics of Operations Research",
+      "authors": "Claire Kenyon and Eric Rémila"
+    },
+    {
+      "index": 40,
+      "title": "On guillotine separability of squares and rectangles",
+      "abstract": "",
+      "year": "2020",
+      "venue": "APPROX/RANDOM",
+      "authors": "Arindam Khan and Madhusudhan Reddy Pittu"
+    },
+    {
+      "index": 41,
+      "title": "Approximation Algorithms for Generalized Multidimensional Knapsack",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "Arindam Khan, Eklavya Sharma, and K. V. N. Sreenivas",
+      "orig_title": "Approximation algorithms for generalized multidimensional knapsack",
+      "paper_id": "2102.05854v1"
+    },
+    {
+      "index": 42,
+      "title": "Packing squares into a square",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Journal of Parallel and Distributed Computing",
+      "authors": "Joseph Y. T. Leung, Tommy W. Tam, C. S. Wong, Gilbert H. Young, and Francis Y. L. Chin"
+    },
+    {
+      "index": 43,
+      "title": "Partial enumeration algorithms for two-dimensional bin packing problem with guillotine constraints",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "Andrea Lodi, Michele Monaci, and Enrico Pietrobuoni"
+    },
+    {
+      "index": 44,
+      "title": "Breaking the barrier of 2 for the storage allocation problem",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICALP",
+      "authors": "Tobias Mömke and Andreas Wiese"
+    },
+    {
+      "index": 45,
+      "title": "Cutting glass",
+      "abstract": "",
+      "year": "2000",
+      "venue": "SoCG",
+      "authors": "János Pach and Gábor Tardos"
+    },
+    {
+      "index": 46,
+      "title": "A hybrid genetic algorithm for the two-dimensional cutting problem",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Evolutionary algorithms in management applications. Springer, Berlin",
+      "authors": "V. Parada, R. Munoz, and A. Gomes"
+    },
+    {
+      "index": 47,
+      "title": "Group Fairness for Knapsack Problems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAMAS",
+      "authors": "Deval Patel, Arindam Khan, and Anand Louis",
+      "orig_title": "Group fairness for knapsack problems",
+      "paper_id": "2006.07832v3"
+    },
+    {
+      "index": 48,
+      "title": "Two-dimensional bin packing problem with guillotine restrictions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Enrico Pietrobuoni"
+    },
+    {
+      "index": 49,
+      "title": "The two-dimensional cutting stock problem revisited",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Mathematical Programming",
+      "authors": "Steven S. Seiden and Gerhard J. Woeginger"
+    },
+    {
+      "index": 50,
+      "title": "A strip-packing algorithm with absolute performance bound 2",
+      "abstract": "",
+      "year": "1997",
+      "venue": "SIAM Journal on Computing",
+      "authors": "A. Steinberg"
+    },
+    {
+      "index": 51,
+      "title": "Cutting and packing problems: a categorized, application-orientated research bibliography",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Journal of the Operational Research Society",
+      "authors": "Paul E. Sweeney and Elizabeth Ridenour Paternoster"
+    },
+    {
+      "index": 52,
+      "title": "An exact best-first search procedure for the constrained rectangular guillotine knapsack problem",
+      "abstract": "",
+      "year": "1988",
+      "venue": "AAAI",
+      "authors": "K. V. Viswanathan and A. Bagchi"
+    },
+    {
+      "index": 53,
+      "title": "A bidirectional building approach for the 2d constrained guillotine knapsack packing problem",
+      "abstract": "",
+      "year": "2015",
+      "venue": "European Journal of Operational Research",
+      "authors": "Lijun Wei and Andrew Lim"
+    }
+  ]
+}

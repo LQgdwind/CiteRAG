@@ -1,0 +1,391 @@
+{
+  "paper_id": "2008.11804v2",
+  "title": "Deep Inverse Reinforcement Learning for Structural Evolution of Small Molecules",
+  "sections": {
+    "introduction": "Identifying promising leads is crucial to the early stages of drug discovery. Combinatorial organic synthesis and High-throughput Screening (HTS) are well-known methods used to generate new compounds in the domain (drug and compound are used interchangeably in this study). This generation process is typically followed by expert analysis, which focuses on desired properties such as solubility, activity, pharmacokinetic profile, toxicity, and synthetic accessibility, to ascertain the desirability of a generated compound. Compound generation and modification methods are useful for enriching chemical databases and scaffold hopping . A review of the structural and analog entity evolution patent landscape estimates that the pharmaceutical industry constitutes 70%percent7070\\% of the domain [ref]2. Indeed, the compound generation task is noted to be hard and complicated  considering that there exist 1030−1060superscript1030superscript106010^{30}-10^{60} synthetically feasible drug-like compounds . With about 96%percent9696\\% [ref]5 of drug development projects failing due to unforeseen reasons, it is significant to ensure diversity in compounds that are desirable to avoid a fatal collapse of the drug discovery process. As a result of these challenges in the domain, there is a need for improved de novo compound generation methods. In recent times, the proliferation of data, advances in computer hardware, novel algorithms for studying complex problems, and other related factors have contributed significantly to the steady growth of data-driven methods such as Deep Learning (DL). DL-based approaches have been applied to several domains, such as Natural Language Processing (NLP)  , Computer Vision , ProteoChemometric Modeling , compound and target representation learning 0 1, and reaction analysis 2. Consequently, there has been a growing interest in the literature to use data-driven methods to study the compound generation problem. Deep Reinforcement Learning (DRL), Generative Adversarial Networks (GAN), and Transfer Learning (TL) are some of the approaches that have been used to generate compounds represented using the Simplified Molecular Input Line Entry System (SMILES) 3. The DRL-based methods model the compound generation task as a sequential decision-making process and use Reinforcement Learning (RL) algorithms to design generators (agents) that estimate the statistical relationship between actions and outcomes. This statistical knowledge is then leveraged to maximize the outcome, thereby biasing the generator according to the desired chemical space. Motivated by the work in 4, the GAN-based methods also model the compound generation task as a sequential decision-making problem but with a discriminator parameterizing the reward function. TL methods train a generator on a large dataset to increase the proportion of valid SMILES strings sampled from the generator before performing a fine-tuning training to bias the generator to the target chemical space. Regarding DRL-based methods,   proposed a Recurrent Neural Network (RNN)-based approach to train generative models for producing analogs of a query compound and compounds that satisfy certain chemical properties, such as activity to the Dopamine Receptor D2 (DRD2) target. The generator takes as input one-hot encoded representations of the canonical SMILES of a compound, and for each experiment, a corresponding reward function is specified. Also, 5 proposed a stack-augmented RNN generative model using the REINFORCE 6 algorithm where, unlike , the canonical SMILES encoding of a compound is learned using backpropagation. The reward functions in 5 are parameterized by a prediction model that is trained separately from the generator. In both the studies of  and 5, the generator was pretrained on a large SMILES dataset using a supervised learning approach before applying RL to bias the generator. Similarly, 7 proposed a SMILES- and Graph-based compound generation model that adopts the supervised pretraining and subsequent RL biasing approach. Unlike  and 5, 7 assign intermediate rewards to valid incomplete SMILES strings. We posit that since an incomplete SMILES string could, in some cases, have meaning (e.g., moieties), assigning intermediate rewards could facilitate learning. While the DRL-based generative models can generate biased compounds, an accurate specification of the reward function is challenging and time-consuming in complex domains. In most interesting de novo compound generation scenarios, compounds meeting multiple objectives may be required, and specifying such multi-objective reward functions leads to the generator (agent) exploiting the straightforward objective and generating compounds with low variety. In another vein,  trained an RNN model on a large dataset using supervised learning and then performed TL to the domain of interest to generate focused compounds. Since the supervised approach used to train the generator is different from the autoregressive sampling technique adopted at test time, such methods are not well suited for multi-step SMILES sampling 8. This discrepancy is referred to as exposure bias. Additionally, methods such as  that maximize the likelihood of the underlying data are susceptible to learning distributions that place masses in low-density areas of the multivariate distribution giving rise to the underlying data. On the other hand, 9 based on the work of  to propose a GAN-based generator that produces compounds matching some desirable metrics. The authors adopted an alternating approach to enable multi-objective RL optimization. As pointed out by , the challenges with training GAN cause a high rate of invalid SMILES strings, low diversity, and reward function exploitation. In , a memory-based generator replaced the generator proposed by 9 in order to mitigate the problems in 9. In these GAN-based methods, the authors adopted a Monte-Carlo Tree Search (MCTS) method to assign intermediate rewards. However, GAN training could be unstable and the generator could get worse as a result of early saturation . Additionally, the discriminator in the GAN-based models is typically discarded after training. In this paper, we propose a novel framework for training a compound generator and learning a reward function from data using a sample-based Deep Inverse Reinforcement Learning (DIRL) objective . We observe that while it may be daunting or impossible to accurately specify the reward function of some complex drug discovery campaigns to leverage DRL algorithms, sample of compounds that satisfy the desired behavior may be readily available or collated. Therefore, our proposed method offers a solution to developing in-silico generators and recovering reward function from compound samples. As pointed out by , the DIRL objective could lead to stability in training and producing effective generators. Also, unlike the typical GAN case where the discriminator is discarded, the sample-based DIRL objective is capable of training a generator and a reward function. Since the learned reward function succinctly represents the agent’s objective, it could be transferred to related domains (with a possible fine-tuning step). Moreover, since the Binary Cross Entropy (BCE) loss usually applied to train a discriminator does not apply in the case of the sampled-based DIRL objective, this eliminates saturation problems in training the generator. The DIRL approach also mitigates the challenge of imbalance between different RL objectives. The outline of our study is as follows: Section 2 presents the RL and IRL background of this study, Section 3 discusses the research problem of this study and our proposed approach, we discuss the results of our experiments in Section 4, and draw the conclusions of this study in Section 5."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Molecular De-Novo Design through Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Cheminformatics",
+      "authors": "Marcus Olivecrona, Thomas Blaschke, Ola Engkvist, and Hongming Chen",
+      "orig_title": "Molecular de-novo design through deep reinforcement learning",
+      "paper_id": "1704.07555v2"
+    },
+    {
+      "index": 1,
+      "title": "Small-molecule inhibitors of hepatitis c virus (hcv) non-structural protein 5a (ns5a): a patent review (2010-2015)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Expert Opinion on Therapeutic Patents",
+      "authors": "Yan A. Ivanenkov, Vladimir A. Aladinskiy, Nikolay A. Bushkov, Andrey A. Ayginin, Alexander G. Majouga, and Alexandre V. Ivachtchenko"
+    },
+    {
+      "index": 2,
+      "title": "Generating Focussed Molecule Libraries for Drug Discovery with Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACS Central Science",
+      "authors": "Marwin H. S. Segler, Thierry Kogej, Christian Tyrchan, and Mark P. Waller",
+      "orig_title": "Generating focused molecule libraries for drug discovery with recurrent neural networks",
+      "paper_id": "1701.01329v1"
+    },
+    {
+      "index": 3,
+      "title": "Estimation of the size of drug-like chemical space based on GDB-17 data",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Journal of Computer-Aided Molecular Design",
+      "authors": "P. G. Polishchuk, T. I. Madzhidov, and A. Varnek"
+    },
+    {
+      "index": 4,
+      "title": "Improving the odds of drug development success through human genomics: modelling study",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Scientific Reports",
+      "authors": "Aroon D Hingorani, Valerie Kuan, Chris Finan, Felix A Kruger, Anna Gaulton, Sandesh Chopade, Reecha Sofat, Raymond J. MacAllister, John P Overington, Harry Hemingway, Spiros Denaxas, David Prieto, and Juan Pablo Casas"
+    },
+    {
+      "index": 5,
+      "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arxiv e-prints",
+      "authors": "Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio",
+      "orig_title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+      "paper_id": "1409.0473v7"
+    },
+    {
+      "index": 6,
+      "title": "Language models are unsupervised multitask learners",
+      "abstract": "",
+      "year": "2018",
+      "venue": "OpenAI Technical Report",
+      "authors": "Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever"
+    },
+    {
+      "index": 7,
+      "title": "Show, attend and tell: Neural image caption generation with visual attention",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Kelvin Xu, Jimmy Ba, Ryan Kiros, Kyunghyun Cho, Aaron Courville, Ruslan Salakhudinov, Rich Zemel, and Yoshua Bengio"
+    },
+    {
+      "index": 8,
+      "title": "Protein-Ligand Scoring with Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Chemical Information and Modeling",
+      "authors": "Matthew Ragoza, Joshua Hochuli, Elisa Idrobo, Jocelyn Sunseri, and David Ryan Koes"
+    },
+    {
+      "index": 9,
+      "title": "Multi-View Self-Attention for Interpretable Drug-Target Interaction Prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Biomedical Informatics",
+      "authors": "Brighter Agyemang, Wei-Ping Wu, Michael Yelpengne Kpiebaareh, Zhihua Lei, Ebenezer Nanor, and Lei Chen",
+      "orig_title": "Multi-view self-attention for interpretable drug–target interaction prediction",
+      "paper_id": "2005.00397v2"
+    },
+    {
+      "index": 10,
+      "title": "Compound-protein interaction prediction with end-to-end learning of neural networks for graphs and sequences",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Bioinformatics",
+      "authors": "Masashi Tsubaki, Kentaro Tomii, and Jun Sese"
+    },
+    {
+      "index": 11,
+      "title": "Modelling Chemical Reasoning to Predict and Invent Reactions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Chemistry - A European Journal",
+      "authors": "Marwin H.S. Segler and Mark P. Waller"
+    },
+    {
+      "index": 12,
+      "title": "SMILES, a Chemical Language and Information System: 1: Introduction to Methodology and Encoding Rules",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Journal of Chemical Information and Computer Sciences",
+      "authors": "David Weininger"
+    },
+    {
+      "index": 13,
+      "title": "Seqgan: Sequence generative adversarial nets with policy gradient",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "Lantao Yu, Weinan Zhang, Jun Wang, and Yong Yu"
+    },
+    {
+      "index": 14,
+      "title": "Deep reinforcement learning for de novo drug design",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Science Advances",
+      "authors": "Mariya Popova, Olexandr Isayev, and Alexander Tropsha"
+    },
+    {
+      "index": 15,
+      "title": "Simple statistical gradient-following methods for connectionist reinforcement learning",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Machine Learning",
+      "authors": "R J Williams"
+    },
+    {
+      "index": 16,
+      "title": "Reinforced molecule generation with heterogeneous states",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Data Mining (ICDM)",
+      "authors": "Fangzhou Shi, Shan You, and Chang Xu"
+    },
+    {
+      "index": 17,
+      "title": "Generalization in Generation: A closer look at Exposure Bias",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Florian Schmidt"
+    },
+    {
+      "index": 18,
+      "title": "Optimizing distributions over molecular space. An Objective-Reinforced Generative Adversarial Network for Inverse-design Chemistry (ORGANIC)",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ChemRxiv",
+      "authors": "Benjamin Sanchez-Lengeling, Carlos Outeiral, Gabriel L Guimaraes, and Alán Aspuru-Guzik"
+    },
+    {
+      "index": 19,
+      "title": "Objective-Reinforced Generative Adversarial Networks (ORGAN) for Sequence Generation Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Gabriel Lima Guimaraes, Benjamin Sanchez-Lengeling, Pedro Luis Cunha Farias, and Alán Aspuru-Guzik",
+      "orig_title": "Objective-reinforced generative adversarial networks (ORGAN) for sequence generation models",
+      "paper_id": "1705.10843v3"
+    },
+    {
+      "index": 20,
+      "title": "ChemGAN challenge for drug discovery: can AI reproduce natural chemical diversity?",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv e-prints",
+      "authors": "Mostapha Benhenda",
+      "orig_title": "ChemGAN challenge for drug discovery: can AI reproduce natural chemical diversity?",
+      "paper_id": "1708.08227v3"
+    },
+    {
+      "index": 21,
+      "title": "Reinforced Adversarial Neural Computer for de Novo Molecular Design",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of Chemical Information and Modeling",
+      "authors": "Evgeny Putin, Arip Asadulaev, Yan Ivanenkov, Vladimir Aladinskiy, Benjamin Sanchez-Lengeling, Alán Aspuru-Guzik, and Alex Zhavoronkov"
+    },
+    {
+      "index": 22,
+      "title": "Towards Principled Methods for Training Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Martín Arjovsky and Léon Bottou",
+      "orig_title": "Towards principled methods for training generative adversarial networks",
+      "paper_id": "1701.04862v1"
+    },
+    {
+      "index": 23,
+      "title": "Guided Cost Learning: Deep Inverse Optimal Control via Policy Optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "Chelsea Finn, Sergey Levine, and Pieter Abbeel",
+      "orig_title": "Guided cost learning: Deep inverse optimal control via policy optimization",
+      "paper_id": "1603.00448v3"
+    },
+    {
+      "index": 24,
+      "title": "A Connection Between Generative Adversarial Networks, Inverse Reinforcement Learning, and Energy-Based Models",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "Chelsea Finn, Paul F. Christiano, Pieter Abbeel, and Sergey Levine",
+      "orig_title": "A connection between generative adversarial networks, inverse reinforcement learning, and energy-based models",
+      "paper_id": "1611.03852v3"
+    },
+    {
+      "index": 25,
+      "title": "High-Dimensional Continuous Control Using Generalized Advantage Estimation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "John Schulman, Philipp Moritz, Sergey Levine, Michael Jordan, and Pieter Abbeel",
+      "orig_title": "High-dimensional continuous control using generalized advantage estimation",
+      "paper_id": "1506.02438v6"
+    },
+    {
+      "index": 26,
+      "title": "A Brief Survey of Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv e-prints",
+      "authors": "Kai Arulkumaran, Marc Peter Deisenroth, Miles Brundage, and Anil Anthony Bharath"
+    },
+    {
+      "index": 27,
+      "title": "Proximal policy optimization algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov"
+    },
+    {
+      "index": 28,
+      "title": "Human-level control through deep reinforcement learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature",
+      "authors": "Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei a Rusu, Joel Veness, Marc G Bellemare, Alex Graves, Martin Riedmiller, Andreas K Fidjeland, Georg Ostrovski, Stig Petersen, Charles Beattie, Amir Sadik, Ioannis Antonoglou, Helen King, Dharshan Kumaran, Daan Wierstra, Shane Legg, and Demis Hassabis"
+    },
+    {
+      "index": 29,
+      "title": "Trust Region Policy Optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "John Schulman, Sergey Levine, Philipp Moritz, Michael I. Jordan, and Pieter Abbeel",
+      "orig_title": "Trust Region Policy Optimization",
+      "paper_id": "1502.05477v5"
+    },
+    {
+      "index": 30,
+      "title": "A Survey of Inverse Reinforcement Learning: Challenges, Methods and Progress",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv e-prints",
+      "authors": "Saurabh Arora and Prashant Doshi",
+      "orig_title": "A Survey of Inverse Reinforcement Learning: Challenges, Methods and Progress",
+      "paper_id": "1806.06877v3"
+    },
+    {
+      "index": 31,
+      "title": "Algorithms for inverse reinforcement learning",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Seventeenth International Conference on Machine Learning",
+      "authors": "Andrew Ng and Stuart Russell"
+    },
+    {
+      "index": 32,
+      "title": "Maximum Entropy Inverse Reinforcement Learning",
+      "abstract": "",
+      "year": "2008",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Brian D Ziebart, Andrew Maas, J Andrew Bagnell, and Anind K Dey"
+    },
+    {
+      "index": 33,
+      "title": "Maximum Entropy Deep Inverse Reinforcement Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv e-prints",
+      "authors": "Markus Wulfmeier and Peter Ondr",
+      "orig_title": "Maximum Entropy Deep Inverse Reinforcement Learning",
+      "paper_id": "1507.04888v3"
+    },
+    {
+      "index": 34,
+      "title": "Generative adversarial imitation learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Jonathan Ho and Stefano Ermon"
+    },
+    {
+      "index": 35,
+      "title": "DrugBank 3.0: A comprehensive resource for ’Omics’ research on drugs",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Nucleic Acids Research",
+      "authors": "Craig Knox, Vivian Law, Timothy Jewison, Philip Liu, Son Ly, Alex Frolkis, Allison Pon, Kelly Banco, Christine Mak, Vanessa Neveu, Yannick Djoumbou, Roman Eisner, An Chi Guo, and David S. Wishart"
+    },
+    {
+      "index": 36,
+      "title": "KEGG for integration and interpretation of large-scale molecular data sets",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Nucleic Acids Research",
+      "authors": "Minoru Kanehisa, Susumu Goto, Yoko Sato, Miho Furumichi, and Mao Tanabe"
+    },
+    {
+      "index": 37,
+      "title": "STITCH 5: Augmenting protein-chemical interaction networks with tissue and affinity data",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Nucleic Acids Research",
+      "authors": "Damian Szklarczyk, Alberto Santos, Christian Von Mering, Lars Juhl Jensen, Peer Bork, and Michael Kuhn"
+    },
+    {
+      "index": 38,
+      "title": "The ChEMBL bioactivity database: An update",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Nucleic Acids Research",
+      "authors": "A. Patrícia Bento, Anna Gaulton, Anne Hersey, Louisa J. Bellis, Jon Chambers, Mark Davies, Felix A. Krüger, Yvonne Light, Lora Mak, Shaun McGlinchey, Michal Nowotka, George Papadatos, Rita Santos, and John P. Overington"
+    },
+    {
+      "index": 39,
+      "title": "Inferring Algorithmic Patterns with Stack-Augmented Recurrent Nets",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Armand Joulin and Tomas Mikolov",
+      "orig_title": "Inferring algorithmic patterns with stack-augmented recurrent nets",
+      "paper_id": "1503.01007v4"
+    },
+    {
+      "index": 40,
+      "title": "ExCAPE-DB: An integrated large scale dataset facilitating Big Data analysis in chemogenomics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Cheminformatics",
+      "authors": "Jiangming Sun, Nina Jeliazkova, Vladimir Chupakin, Jose Felipe Golib-Dzib, Ola Engkvist, Lars Carlsson, Jörg Wegner, Hugo Ceulemans, Ivan Georgiev, Vedrin Jeliazkov, Nikolay Kochev, Thomas J. Ashby, and Hongming Chen"
+    },
+    {
+      "index": 41,
+      "title": "Naples: A natural products likeness scorer—web application and database",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Journal of Cheminformatics",
+      "authors": "Maria Sorokina and Christoph Steinbeck"
+    },
+    {
+      "index": 42,
+      "title": "Estimation of synthetic accessibility score of drug-like molecules based on molecular complexity and fragment contributions",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Journal of Cheminformatics",
+      "authors": "Peter Ertl and Ansgar Schuffenhauer"
+    },
+    {
+      "index": 43,
+      "title": "Stabilizing Transformers for Reinforcement Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Emilio Parisotto, H. Francis Song, Jack W. Rae, Razvan Pascanu, Caglar Gulcehre, Siddhant M. Jayakumar, Max Jaderberg, Raphael Lopez Kaufman, Aidan Clark, Seb Noury, Matthew M. Botvinick, Nicolas Heess, and Raia Hadsell",
+      "orig_title": "Stabilizing Transformers for Reinforcement Learning",
+      "paper_id": "1910.06764v1"
+    }
+  ]
+}

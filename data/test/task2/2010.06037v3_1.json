@@ -1,0 +1,461 @@
+{
+  "paper_id": "2010.06037v3",
+  "title": "Streaming enumeration on nested documents",
+  "sections": {
+    "introduction": "Streaming query evaluation   is the task of processing queries over data streams in one pass and with a limited amount of resources. This approach is especially useful on the web, where servers share data, and they have to extract the relevant content as they receive it. For structuring the data, the de facto structure on the web are nested documents, like XML or JSON. For querying, servers use languages designed for these purposes, like XPath, XQuery, or JSON query languages.\nAs an illustrative example, suppose our data server (e.g. Web API) is continuously receiving XML documents of the form: <doc> <a> <b/> <c/> <b/> </a> <c> <b/> <b/> </c> </doc> ... and for each document it has to evaluate the query Q=//a/b\\pazocal{Q}=//a/b (i.e., to extract all b𝑏b-tags that are surrounded by an a𝑎a-tag). The streaming query evaluation problem consists on reading these documents and finding all b𝑏b-tags without storing the entire document on memory, i.e., by making one pass over the data and spending constant time per tag. In our example, we need to retrieve the 3rd and 5th tag as soon as the last tag </doc> is received. One could consider here that the server has to read an infinite stream and perform the query evaluation continuously, where it must enumerate partial outputs as one of the XML documents ends. Researchers have studied the streaming query evaluation problem in the past, focusing on reducing the processing time or memory usage (see, e.g. ). Hence, they spent less effort on understanding the enumeration time of such a problem, regarding delay guarantees between outputs.\nConstant-delay enumeration is a new notion of efficiency for retrieving outputs  .\nGiven an instance of the problem, an algorithm with constant-delay enumeration performs a preprocessing phase over the instance to build some indices and then continues with an enumeration phase. It retrieves each output, one-by-one, taking a delay that is constant between any two consecutive outcomes. These algorithms provide a strong guarantee of efficiency since a user knows that, after the preprocessing phase, she will access the output as if the algorithm had already computed it. These techniques have attracted researchers’ attention, finding sophisticated solutions to several query evaluation problems      . In this work, we investigate the streaming query evaluation problem over nested documents by including enumeration guarantees, like constant-delay. We study the evaluation of queries given by Visibly Pushdown Transducers (VPT) over nested documents. These machines are the natural “output extension” of visibly pushdown automata, and have the same expressive power as MSO over nested documents.\nIn particular, VPT can define queries like QQ\\pazocal{Q} above or any fragment of query languages for XML or JSON included in MSO.\nTherefore, VPT allow considering the streaming query evaluation from a more general perspective, without getting married to a specific language (e.g., XPath). We study the evaluation of over a nested document in a streaming fashion. Specifically, we want to find a streaming algorithm that reads the document sequentially and spends constant time per input symbol.\nFurthermore, whenever needed, the algorithm can enumerate all outputs with output-linear delay. The main contribution of the paper is an algorithm with such characteristics for the class of I/O-unambiguous VPT. We can extend this algorithm by determinization to all VPT (i.e., in data complexity).\nRegarding memory consumption, we bound the amount of memory used in terms of the nesting of the document and the output weight. We show that our algorithm is worst-case optimal in the sense that there are instances where the maximum amount of memory required by any streaming algorithm is at least one of these two measures. Our main result applies to the streaming evaluation of XML and JSON query languages.\nIn the appendix, we also show an application in the context of document spanners . Related work. The problem of streaming query evaluation has been extensively studied in the last decades. Some work considered streaming verification, like schema validation  or type-checking , where the output is true or false. Other proposals   [ref]40 5  provided streaming algorithms for XPath or XQuery’s fragments; however, extending them for reaching constant-delay enumeration seems unlikely. Furthermore, most of these works  4 3 assumed outputs of fixed size (i.e., tuples). People have also considered other aspects of streaming evaluation with outputs like earliest query answering 3 or bounded delay 2 (i.e., given the first visit of a node, find the earliest event that permits its selection). These aspects are orthogonal to the problem studied here.\nAnother line of research is  , which presents space lower bounds for evaluating fragments of XPath or XQuery over streams. These works do not consider restrictions on the delay to give outputs. Visibly pushdown automata  are a model usually used for streaming evaluation of boolean queries . In  [ref]4, authors studied the evaluation of in a streaming fashion, but none of them saw enumeration problems. Other extensions 1 for streaming evaluation have been analyzed but restricted to fixed-size outputs, and constant-delay was not included. Constant-delay algorithms have been studied for several classes of query languages and structures , as we already discussed. In  , researchers considered query evaluation over trees (i.e., a different representation for nested documents), but their algorithms are for offline evaluation and it is not clear how to extend this algorithm for the online setting.\nThis research is extended with updates in , which can encode streams by inserting new data items to the left. However, their update-time is logarithmic, and our proposal can do it with constant time (i.e., in data complexity).\nFurthermore, to the best of our knowledge it is unclear how to modify the work in  to get constant update-time in our scenario.\nStreaming evaluation with constant-delay enumeration was included in the context of dynamic query evaluation 8    or complex event processing 7 6. In both cases, the input cannot encode nested documents, and their results do not apply."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "The Design and Analysis of Computer Algorithms",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Addison-Wesley",
+      "authors": "Alfred V. Aho, John E. Hopcroft, and Jeffrey D. Ullman"
+    },
+    {
+      "index": 1,
+      "title": "Compilers, principles, techniques",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Addison wesley",
+      "authors": "Alfred V Aho, Ravi Sethi, and Jeffrey D Ullman"
+    },
+    {
+      "index": 2,
+      "title": "Efficient filtering of XML documents for selective dissemination of information",
+      "abstract": "",
+      "year": "2000",
+      "venue": "VLDB",
+      "authors": "Mehmet Altınel and Michael J Franklin"
+    },
+    {
+      "index": 3,
+      "title": "Streamable regular transductions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "Rajeev Alur, Dana Fisman, Konstantinos Mamouras, Mukund Raghothaman, and Caleb Stanford"
+    },
+    {
+      "index": 4,
+      "title": "Invisible pushdown languages",
+      "abstract": "",
+      "year": "2004",
+      "venue": "STOC",
+      "authors": "Rajeev Alur and P. Madhusudan",
+      "orig_title": "Visibly pushdown languages",
+      "paper_id": "1511.00289v1"
+    },
+    {
+      "index": 5,
+      "title": "A circuit-based approach to efficient enumeration",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICALP",
+      "authors": "Antoine Amarilli, Pierre Bourhis, Louis Jachiet, and Stefan Mengel"
+    },
+    {
+      "index": 6,
+      "title": "Constant-delay enumeration for nondeterministic document spanners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICDT",
+      "authors": "Antoine Amarilli, Pierre Bourhis, Stefan Mengel, and Matthias Niewerth"
+    },
+    {
+      "index": 7,
+      "title": "Enumeration on trees with tractable combined complexity and efficient updates",
+      "abstract": "",
+      "year": "2019",
+      "venue": "PODS",
+      "authors": "Antoine Amarilli, Pierre Bourhis, Stefan Mengel, and Matthias Niewerth"
+    },
+    {
+      "index": 8,
+      "title": "Efficient logspace classes for enumeration, counting, and uniform generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "PODS",
+      "authors": "Marcelo Arenas, Luis Alberto Croquevielle, Rajesh Jayaram, and Cristian Riveros"
+    },
+    {
+      "index": 9,
+      "title": "Models and issues in data stream systems",
+      "abstract": "",
+      "year": "2002",
+      "venue": "SIGMOD",
+      "authors": "Brian Babcock, Shivnath Babu, Mayur Datar, Rajeev Motwani, and Jennifer Widom"
+    },
+    {
+      "index": 10,
+      "title": "MSO queries on tree decomposable structures are computable with linear delay",
+      "abstract": "",
+      "year": "2006",
+      "venue": "CSL",
+      "authors": "Guillaume Bagan"
+    },
+    {
+      "index": 11,
+      "title": "On acyclic conjunctive queries and constant delay enumeration",
+      "abstract": "",
+      "year": "2007",
+      "venue": "CSL",
+      "authors": "Guillaume Bagan, Arnaud Durand, and Etienne Grandjean"
+    },
+    {
+      "index": 12,
+      "title": "Buffering in query evaluation over XML streams",
+      "abstract": "",
+      "year": "2005",
+      "venue": "PODS",
+      "authors": "Ziv Bar-Yossef, Marcus Fontoura, and Vanja Josifovski"
+    },
+    {
+      "index": 13,
+      "title": "On the memory requirements of XPath evaluation over XML streams",
+      "abstract": "",
+      "year": "2007",
+      "venue": "J. Comput. Syst. Sci.",
+      "authors": "Ziv Bar-Yossef, Marcus Fontoura, and Vanja Josifovski"
+    },
+    {
+      "index": 14,
+      "title": "Stackless processing of streamed trees",
+      "abstract": "",
+      "year": "2021",
+      "venue": "PODS",
+      "authors": "Corentin Barloy, Filip Murlak, and Charles Paperman"
+    },
+    {
+      "index": 15,
+      "title": "Constant delay enumeration for conjunctive queries: a tutorial",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM SIGLOG News",
+      "authors": "Christoph Berkholz, Fabian Gerhardt, and Nicole Schweikardt"
+    },
+    {
+      "index": 16,
+      "title": "Answering conjunctive queries under updates",
+      "abstract": "",
+      "year": "2017",
+      "venue": "PODS",
+      "authors": "Christoph Berkholz, Jens Keppeler, and Nicole Schweikardt"
+    },
+    {
+      "index": 17,
+      "title": "JSON: Data model and query languages",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Inf. Syst.",
+      "authors": "Pierre Bourhis, Juan L. Reutter, and Domagoj Vrgoc"
+    },
+    {
+      "index": 18,
+      "title": "Trimming visibly pushdown automata",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "Mathieu Caralp, Pierre-Alain Reynier, and Jean-Marc Talbot"
+    },
+    {
+      "index": 19,
+      "title": "An efficient XPath query processor for XML streams",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ICDE",
+      "authors": "Yi Chen, Susan B. Davidson, and Yifeng Zheng"
+    },
+    {
+      "index": 20,
+      "title": "Materialized views",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Found. Trends Databases",
+      "authors": "Rada Chirkova and Jun Yang"
+    },
+    {
+      "index": 21,
+      "title": "Linear delay enumeration and monadic second-order logic",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Discret. Appl. Math.",
+      "authors": "Bruno Courcelle"
+    },
+    {
+      "index": 22,
+      "title": "Making data structures persistent",
+      "abstract": "",
+      "year": "1986",
+      "venue": "STOC",
+      "authors": "James R Driscoll, Neil Sarnak, Daniel Dominic Sleator, and Robert Endre Tarjan"
+    },
+    {
+      "index": 23,
+      "title": "First-order queries on structures of bounded degree are computable with constant delay",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM Trans. Comput. Log.",
+      "authors": "Arnaud Durand and Etienne Grandjean"
+    },
+    {
+      "index": 24,
+      "title": "Document spanners: A formal approach to information extraction",
+      "abstract": "",
+      "year": "2015",
+      "venue": "J. ACM",
+      "authors": "Ronald Fagin, Benny Kimelfeld, Frederick Reiss, and Stijn Vansummeren"
+    },
+    {
+      "index": 25,
+      "title": "Streamability of nested word transductions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "LMCS",
+      "authors": "Emmanuel Filiot, Olivier Gauwin, Pierre-Alain Reynier, and Frédéric Servais"
+    },
+    {
+      "index": 26,
+      "title": "Visibly pushdown transducers",
+      "abstract": "",
+      "year": "2018",
+      "venue": "JCSS",
+      "authors": "Emmanuel Filiot, Jean-François Raskin, Pierre-Alain Reynier, Frédéric Servais, and Jean-Marc Talbot"
+    },
+    {
+      "index": 27,
+      "title": "Efficient enumeration algorithms for regular document spanners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "TODS",
+      "authors": "Fernando Florenzano, Cristian Riveros, Martín Ugarte, Stijn Vansummeren, and Domagoj Vrgoc"
+    },
+    {
+      "index": 28,
+      "title": "A logic for document spanners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Theory Comput. Syst.",
+      "authors": "Dominik D. Freydenberger"
+    },
+    {
+      "index": 29,
+      "title": "Joining Extractions of Regular Expressions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "PODS",
+      "authors": "Dominik D. Freydenberger, Benny Kimelfeld, and Liat Peterfreund",
+      "orig_title": "Joining extractions of regular expressions",
+      "paper_id": "1703.10350v1"
+    },
+    {
+      "index": 30,
+      "title": "Streaming tree automata",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Inf. Process. Lett.",
+      "authors": "Olivier Gauwin, Joachim Niehren, and Yves Roos"
+    },
+    {
+      "index": 31,
+      "title": "Bounded delay and concurrency for earliest query answering",
+      "abstract": "",
+      "year": "2009",
+      "venue": "LATA",
+      "authors": "Olivier Gauwin, Joachim Niehren, and Sophie Tison"
+    },
+    {
+      "index": 32,
+      "title": "Earliest query answering for deterministic nested word automata",
+      "abstract": "",
+      "year": "2009",
+      "venue": "FCT",
+      "authors": "Olivier Gauwin, Joachim Niehren, and Sophie Tison"
+    },
+    {
+      "index": 33,
+      "title": "Efficient algorithms for evaluating XPath over streams",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIGMOD",
+      "authors": "Gang Gou and Rada Chirkova"
+    },
+    {
+      "index": 34,
+      "title": "Processing XML streams with deterministic automata and stream indexes",
+      "abstract": "",
+      "year": "2004",
+      "venue": "ACM Trans. Database Syst.",
+      "authors": "Todd J. Green, Ashish Gupta, Gerome Miklau, Makoto Onizuka, and Dan Suciu"
+    },
+    {
+      "index": 35,
+      "title": "Towards streaming evaluation of queries with correlation in complex event processing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICDT",
+      "authors": "Alejandro Grez and Cristian Riveros"
+    },
+    {
+      "index": 36,
+      "title": "A formal framework for complex event processing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICDT",
+      "authors": "Alejandro Grez, Cristian Riveros, and Martín Ugarte"
+    },
+    {
+      "index": 37,
+      "title": "The dynamic Yannakakis algorithm: Compact and efficient query processing under updates",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIGMOD",
+      "authors": "Muhammad Idris, Martín Ugarte, and Stijn Vansummeren"
+    },
+    {
+      "index": 38,
+      "title": "Random generation of combinatorial structures from a uniform distribution",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "Mark Jerrum, Leslie G. Valiant, and Vijay V. Vazirani"
+    },
+    {
+      "index": 39,
+      "title": "Querying XML streams",
+      "abstract": "",
+      "year": "2005",
+      "venue": "VLDB J.",
+      "authors": "Vanja Josifovski, Marcus Fontoura, and Attila Barta"
+    },
+    {
+      "index": 40,
+      "title": "Trade-offs in Static and Dynamic Evaluation of Hierarchical Queries",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PODS",
+      "authors": "Ahmet Kara, Milos Nikolic, Dan Olteanu, and Haozhe Zhang",
+      "orig_title": "Trade-offs in static and dynamic evaluation of hierarchical queries",
+      "paper_id": "1907.01988v7"
+    },
+    {
+      "index": 41,
+      "title": "Visibly pushdown automata for streaming XML",
+      "abstract": "",
+      "year": "2007",
+      "venue": "WWW",
+      "authors": "Viraj Kumar, P. Madhusudan, and Mahesh Viswanathan"
+    },
+    {
+      "index": 42,
+      "title": "Elements of finite model theory, volume 41",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Springer",
+      "authors": "Leonid Libkin"
+    },
+    {
+      "index": 43,
+      "title": "Document Spanners for Extracting Incomplete Information: Expressiveness and Complexity",
+      "abstract": "",
+      "year": "2018",
+      "venue": "PODS",
+      "authors": "Francisco Maturana, Cristian Riveros, and Domagoj Vrgoc",
+      "orig_title": "Document spanners for extracting incomplete information: Expressiveness and complexity",
+      "paper_id": "1707.00827v2"
+    },
+    {
+      "index": 44,
+      "title": "Incremental view maintenance with triple lock factorization benefits",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGMOD",
+      "authors": "Milos Nikolic and Dan Olteanu"
+    },
+    {
+      "index": 45,
+      "title": "SPEX: Streamed and progressive evaluation of XPath",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE Trans. Knowl. Data Eng.",
+      "authors": "Dan Olteanu"
+    },
+    {
+      "index": 46,
+      "title": "An efficient single-pass query evaluator for XML data streams",
+      "abstract": "",
+      "year": "2004",
+      "venue": "SAC",
+      "authors": "Dan Olteanu, Tim Furche, and François Bry"
+    },
+    {
+      "index": 47,
+      "title": "Size bounds for factorised representations of query results",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM TODS",
+      "authors": "Dan Olteanu and Jakub Závodný"
+    },
+    {
+      "index": 48,
+      "title": "Grammars for document spanners",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICDT",
+      "authors": "Liat Peterfreund"
+    },
+    {
+      "index": 49,
+      "title": "Recursive Programs for Document Spanners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICDT",
+      "authors": "Liat Peterfreund, Balder ten Cate, Ronald Fagin, and Benny Kimelfeld",
+      "orig_title": "Recursive programs for document spanners",
+      "paper_id": "1712.08198v3"
+    },
+    {
+      "index": 50,
+      "title": "Enumerating with constant delay the answers to a query",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ICDT",
+      "authors": "Luc Segoufin"
+    },
+    {
+      "index": 51,
+      "title": "Validating streaming XML documents",
+      "abstract": "",
+      "year": "2002",
+      "venue": "PODS",
+      "authors": "Luc Segoufin and Victor Vianu"
+    },
+    {
+      "index": 52,
+      "title": "The space complexity of processing XML twig queries over indexed documents",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ICDE",
+      "authors": "Mirit Shalem and Ziv Bar-Yossef"
+    },
+    {
+      "index": 53,
+      "title": "Navigational XPath: calculus and algebra",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIGMOD Record",
+      "authors": "Balder ten Cate and Maarten Marx"
+    },
+    {
+      "index": 54,
+      "title": "Aggregate Queries on Sparse Databases",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PODS",
+      "authors": "Szymon Torunczyk",
+      "orig_title": "Aggregate queries on sparse databases",
+      "paper_id": "1912.12338v1"
+    }
+  ]
+}

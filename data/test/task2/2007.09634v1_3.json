@@ -1,0 +1,411 @@
+{
+  "paper_id": "2007.09634v1",
+  "title": "GRMR: Generalized Regret-Minimizing Representatives",
+  "sections": {
+    "introduction": "Nowadays, a database usually contains millions of tuples and is beyond any user’s\ncapability to explore it entirely. Hence, it is an important task to extract a small subset\nof representative tuples from a large database.\nIn multi-criteria decision making, a common method for identifying representatives\nis the top-k𝑘k query ,\nwhich selects k𝑘k tuples with the highest scores in a database based on\na utility (ranking) function to model user preferences. For databases with multiple\nnumeric attributes, the ranking function is often expressed in the form of\na linear combination of attributes w.r.t. a utility vector.\nFinding players with the best (or poorest) performance based on a linear\ncombination of their statistics  [ref]3\nand evaluating credit risks according to\na linear combination of criteria such as income and credit history 6 \nare a few examples. However, the ranking function could be unknown a-priori in many cases as the preference may vary from user to user,\nand it is impossible to design a unified ranking function to model a variety of user preferences.\nIn the absence of explicit ranking functions, the\nmaxima representation    \nis used for representative discovery from a large database.\nSpecifically, the maxima representation is\na subset that consists of the maxima (i.e., tuple with the highest score) of the database\nfor any possible ranking function. If tuples are viewed as points in Euclidean space,\nthe convex hull [ref]32  of\nthe point set is a maxima representation for all linear functions.\nAs another example, the skyline  of the database\ncontaining all Pareto-optimal tuples is a maxima representation for all nonnegative monotonic\nranking functions. A large body of work has been done in these areas\n(see   for extensive surveys).\nHowever, a major issue with maxima representations\nis that they can contain a large portion of tuples in the database. For example,\nthe number of vertices of the convex hull is O​(n1/3)𝑂superscript𝑛13O(n^{1/3}) for a set of n𝑛n random points\ninside a unit circle .\nThe problem would become worse in higher dimensions.\nThe convex hull often contains O​(n)𝑂𝑛O(n) vertices even for five-dimensional\ndatabases [ref]3 . Consequently, it is necessary to find a smaller subset to approximate maxima representations.\nOne such method that has attracted much attention recently is the\nRegret-Minimizing Set\n(RMS) problem   [ref]3  1  .\nIn the setting of RMS, we define the regret ratio as the relative score difference\nbetween the top-ranked tuple in a subset and the top-ranked tuple in the whole database\nfor a specific ranking function. Then, we use the maximum regret ratio, i.e.,\nthe maximum of the regret ratios of a subset over all possible ranking functions,\nto measure how well the subset approximates the maxima representation of the database.\nGiven an error parameter ε∈(0,1)𝜀01\\varepsilon\\in(0,1), an RMS problem111There is a dual formulation of RMS which asks for a subset of size r𝑟r that minimizes the maximum regret ratio. Considering the equivalence of both formulations, we do not elaborate on the dual problem anymore in this paper.\nasks for the smallest subset whose maximum regret ratio is at most ε𝜀\\varepsilon.\nHowever, a significant limitation of RMS and its variations  7   9 2 4\nis that they only consider the class of nonnegative (monotonic) linear ranking functions, i.e.,\nthe utility vector is restricted to be nonnegative in each dimension, which may not be suitable\nfor modeling user preferences and decision-making processes in many cases.\nSpecifically, they are unable to express the “liking” and “dislike” of an attribute\nat the same time. For example, when evaluating players’ performance, we can find that\na criterion is positive for one player but negative for another, depending on their positions\nand play styles .\nAs another example, to find preferable houses in a real estate database,\nsome users favor the ones close to traffic as they are convenient while others favor\nthe ones far away from traffic as they are quiet 5.\nIn such cases, nonnegative linear functions\ncannot express conflicting user preferences on the same attribute simultaneously.\nFurthermore, in many applications such as epidemiological and financial analytics  6 ,\nthe attribute values of tuples and weights of utilities are permitted to be negative,\nand both the maxima and minima of a database are considered as representatives.\nObviously, RMS is not applicable in such scenarios. To address the limitations of RMS, we propose the\nGeneralized Regret-Minimizing Representative\n(GRMR) problem in this paper. We first extend the notion of\nmaximum regret ratio by considering the class of all linear functions\nother than merely nonnegative ones. In this way, we can capture\nthe “liking” (resp. positive weight) and “dislike” (resp. negative weight)\nof an attribute as well as the maxima and minima of a database all at once.\nThen, GRMR is defined to find the smallest subset with a regret ratio\nof at most ε𝜀\\varepsilon for any possible linear function.\nDue to the extension of ranking function spaces, GRMR becomes more challenging\nthan RMS. Most existing algorithms for RMS such as Greedy \nand its variants  1\ncannot be used for GRMR because they heavily rely on the monotonicity\nand non-negativity of ranking functions for computation. A few RMS algorithms, e.g.,\nε𝜀\\varepsilon-Kernel  \nand HittingSet  4\ncan be adapted to GRMR, but unfortunately, they suffer from low efficiency\nand/or inferior solution quality. Therefore, it is essential to design more efficient and effective algorithms for GRMR.\nFirst of all, we prove that GRMR is NP-hard on databases of three or higher dimensionality.\nThen, we provide an exact polynomial-time algorithm E-GRMR for GRMR on two-dimensional\ndatabases. The basic idea of E-GRMR is to transform GRMR in 2D into an equivalent problem\nof finding the shortest cycle of a directed graph. E-GRMR has O​(n3)𝑂superscript𝑛3O(n^{3})\nrunning time in the worst case where n𝑛n is the number of tuples in the database\nwhile always providing an optimal result for GRMR.\nFurthermore, we develop a polynomial-time heuristic algorithm H-GRMR for GRMR on databases in arbitrary dimensions. Based on a geometric interpretation of\nGRMR using Voronoi diagram and\nDelaunay graph ,\nH-GRMR simplifies GRMR to a minimum dominating set problem on\na directed graph. Theoretically, the result of H-GRMR always has a maximum regret ratio\nof at most ε𝜀\\varepsilon. But H-GRMR cannot guarantee the minimality of result size.\nMoreover, we discuss two practical issues on the implementation of H-GRMR,\nincluding building an approximate Delaunay graph for H-GRMR and improving the solution quality of H-GRMR via graph materialization and reuse. Finally, we conduct extensive experiments on real and synthetic datasets to evaluate\nthe performance of our proposed algorithms. The experimental results confirm that\nE-GRMR always provides optimal results for GRMR on two-dimensional data within reasonable time.\nIn addition, H-GRMR not only is more efficient (up to 104superscript10410^{4}x faster in running time)\nbut also achieves better solution quality (up to 505050x smaller in result sizes)\nthan the baseline methods. In summary, we make the following contributions in this paper. We propose the generalized regret-minimizing representative problem (GRMR) to\nfind a small subset as an approximate maxima representation of a database for all possible\nlinear functions. We prove that GRMR is NP-hard in ℝdsuperscriptℝ𝑑\\mathbb{R}^{d} when d≥3𝑑3d\\geq 3.\n(Section 2) In the case of two-dimensional databases, we provide an exact polynomial-time algorithm\nE-GRMR for GRMR. (Section 3) For databases of higher dimensionality (d≥3𝑑3d\\geq 3), we develop a polynomial-time\nheuristic algorithm H-GRMR for GRMR. We also discuss the practical\nimplementation of H-GRMR. (Section 4) We conduct extensive experiments on real and synthetic datasets to demonstrate\nthe efficiency, effectiveness, and scalability of our proposed algorithms. (Section 5)"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Approximating extent measures of points",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. ACM",
+      "authors": "P. K. Agarwal, S. Har-Peled, and K. R. Varadarajan"
+    },
+    {
+      "index": 1,
+      "title": "Efficient algorithms for k-regret minimizing sets",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SEA",
+      "authors": "P. K. Agarwal, N. Kumar, S. Sintos, and S. Suri"
+    },
+    {
+      "index": 2,
+      "title": "Efficient computation of regret-ratio minimizing set: A compact maxima representative",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIGMOD",
+      "authors": "A. Asudeh, A. Nazi, N. Zhang, and G. Das"
+    },
+    {
+      "index": 3,
+      "title": "RRR: Rank-Regret Representative",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SIGMOD",
+      "authors": "A. Asudeh, A. Nazi, N. Zhang, G. Das, and H. V. Jagadish",
+      "orig_title": "RRR: rank-regret representative",
+      "paper_id": "1802.10303v2"
+    },
+    {
+      "index": 4,
+      "title": "Voronoi diagrams - A survey of a fundamental geometric data structure",
+      "abstract": "",
+      "year": "1991",
+      "venue": "ACM Comput. Surv.",
+      "authors": "F. Aurenhammer"
+    },
+    {
+      "index": 5,
+      "title": "Scalable k-means clustering via lightweight coresets",
+      "abstract": "",
+      "year": "2018",
+      "venue": "KDD",
+      "authors": "O. Bachem, M. Lucic, and A. Krause"
+    },
+    {
+      "index": 6,
+      "title": "Streaming submodular maximization: massive data summarization on the fly",
+      "abstract": "",
+      "year": "2014",
+      "venue": "KDD",
+      "authors": "A. Badanidiyuru, B. Mirzasoleiman, A. Karbasi, and A. Krause"
+    },
+    {
+      "index": 7,
+      "title": "The quickhull algorithm for convex hulls",
+      "abstract": "",
+      "year": "1996",
+      "venue": "ACM Trans. Math. Softw.",
+      "authors": "C. B. Barber, D. P. Dobkin, and H. Huhdanpaa"
+    },
+    {
+      "index": 8,
+      "title": "The skyline operator",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ICDE",
+      "authors": "S. Börzsönyi, D. Kossmann, and K. Stocker"
+    },
+    {
+      "index": 9,
+      "title": "k-regret minimizing set: Efficient algorithms and hardness",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICDT",
+      "authors": "W. Cao, J. Li, H. Wang, K. Wang, R. Wang, R. C. Wong, and W. Zhan"
+    },
+    {
+      "index": 10,
+      "title": "Modeling player performance in basketball through mixed models",
+      "abstract": "",
+      "year": "2013",
+      "venue": "International Journal of Performance Analysis in Sport",
+      "authors": "M. Casals and A. J. Martinez"
+    },
+    {
+      "index": 11,
+      "title": "Fair and diverse dpp-based data summarization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "L. E. Celis, V. Keswani, D. Straszak, A. Deshpande, T. Kathuria, and N. K. Vishnoi"
+    },
+    {
+      "index": 12,
+      "title": "The onion technique: Indexing for linear optimization queries",
+      "abstract": "",
+      "year": "2000",
+      "venue": "SIGMOD",
+      "authors": "Y. Chang, L. D. Bergman, V. Castelli, C. Li, M. Lo, and J. R. Smith"
+    },
+    {
+      "index": 13,
+      "title": "Computing k-regret minimizing sets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "PVLDB",
+      "authors": "S. Chester, A. Thomo, S. Venkatesh, and S. Whitesides"
+    },
+    {
+      "index": 14,
+      "title": "A note on two problems in connexion with graphs",
+      "abstract": "",
+      "year": "1959",
+      "venue": "Numerische Mathematik",
+      "authors": "E. W. Dijkstra"
+    },
+    {
+      "index": 15,
+      "title": "k-regret queries with nonlinear utilities",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PVLDB",
+      "authors": "T. K. Faulkner, W. Brackenbury, and A. Lall"
+    },
+    {
+      "index": 16,
+      "title": "Optimal packing and covering in the plane are np-complete",
+      "abstract": "",
+      "year": "1981",
+      "venue": "Inf. Process. Lett.",
+      "authors": "R. J. Fowler, M. Paterson, and S. L. Tanimoto"
+    },
+    {
+      "index": 17,
+      "title": "Fibonacci heaps and their uses in improved network optimization algorithms",
+      "abstract": "",
+      "year": "1987",
+      "venue": "J. ACM",
+      "authors": "M. L. Fredman and R. E. Tarjan"
+    },
+    {
+      "index": 18,
+      "title": "An efficient algorithm for determining the convex hull of a finite planar set",
+      "abstract": "",
+      "year": "1972",
+      "venue": "Inf. Process. Lett.",
+      "authors": "R. L. Graham"
+    },
+    {
+      "index": 19,
+      "title": "On the expected complexity of random convex hulls",
+      "abstract": "",
+      "year": "2011",
+      "venue": "CoRR",
+      "authors": "S. Har-Peled"
+    },
+    {
+      "index": 20,
+      "title": "A survey of top-k query processing techniques in relational database systems",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ACM Comput. Surv.",
+      "authors": "I. F. Ilyas, G. Beskales, and M. A. Soliman"
+    },
+    {
+      "index": 21,
+      "title": "Applications of weighted Voronoi diagrams and randomization to variance-based k-clustering",
+      "abstract": "",
+      "year": "1994",
+      "venue": "SoCG",
+      "authors": "M. Inaba, N. Katoh, and H. Imai"
+    },
+    {
+      "index": 22,
+      "title": "A survey of skyline query processing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "C. Kalyvas and T. Tzouramanis"
+    },
+    {
+      "index": 23,
+      "title": "Faster approximation algorithm for the k-regret minimizing set and related problems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ALENEX",
+      "authors": "N. Kumar and S. Sintos"
+    },
+    {
+      "index": 24,
+      "title": "Answering linear optimization queries with an approximate stream index",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Knowl. Inf. Syst.",
+      "authors": "G. Luo, K. Wu, and P. S. Yu"
+    },
+    {
+      "index": 25,
+      "title": "Efficient and robust approximate nearest neighbor search using hierarchical navigable small world graphs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "Y. A. Malkov and D. A. Yashunin"
+    },
+    {
+      "index": 26,
+      "title": "Non-metric similarity graphs for maximum inner product search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "S. Morozov and A. Babenko"
+    },
+    {
+      "index": 27,
+      "title": "Regret-minimizing representative databases",
+      "abstract": "",
+      "year": "2010",
+      "venue": "PVLDB",
+      "authors": "D. Nanongkai, A. D. Sarma, A. Lall, R. J. Lipton, and J. J. Xu"
+    },
+    {
+      "index": 28,
+      "title": "Interactive regret minimization",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGMOD",
+      "authors": "D. Nanongkai, A. Lall, A. D. Sarma, and K. Makino"
+    },
+    {
+      "index": 29,
+      "title": "An O(nm) time algorithm for finding the min length directed cycle in a graph",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SODA",
+      "authors": "J. B. Orlin and A. Sedeño-Noda"
+    },
+    {
+      "index": 30,
+      "title": "Geometry approach for k-regret query",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICDE",
+      "authors": "P. Peng and R. C. Wong"
+    },
+    {
+      "index": 31,
+      "title": "Computational Geometry - An Introduction",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Springer",
+      "authors": "F. P. Preparata and M. I. Shamos"
+    },
+    {
+      "index": 32,
+      "title": "K-Regret Queries Using Multiplicative Utility Functions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Trans. Database Syst.",
+      "authors": "J. Qi, F. Zuo, H. Samet, and J. C. Yao",
+      "orig_title": "K-regret queries using multiplicative utility functions",
+      "paper_id": "1609.07964v4"
+    },
+    {
+      "index": 33,
+      "title": "A unified optimization algorithm for solving “regret-minimizing representative” problems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "PVLDB",
+      "authors": "S. Shetiya, A. Asudeh, S. Ahmed, and G. Das"
+    },
+    {
+      "index": 34,
+      "title": "Delaunay refinement algorithms for triangular mesh generation",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Comput. Geom.",
+      "authors": "J. R. Shewchuk"
+    },
+    {
+      "index": 35,
+      "title": "Regret ratio minimization in multi-objective submodular function maximization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI",
+      "authors": "T. Soma and Y. Yoshida"
+    },
+    {
+      "index": 36,
+      "title": "Algorithms for average regret minimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "S. Storandt and S. Funke"
+    },
+    {
+      "index": 37,
+      "title": "On efficient retrieval of top similarity vectors",
+      "abstract": "",
+      "year": "2019",
+      "venue": "EMNLP/IJCNLP (1)",
+      "authors": "S. Tan, Z. Zhou, Z. Xu, and P. Li"
+    },
+    {
+      "index": 38,
+      "title": "Coresets for Minimum Enclosing Balls over Sliding Windows",
+      "abstract": "",
+      "year": "2019",
+      "venue": "KDD",
+      "authors": "Y. Wang, Y. Li, and K. Tan",
+      "orig_title": "Coresets for minimum enclosing balls over sliding windows",
+      "paper_id": "1905.03718v2"
+    },
+    {
+      "index": 39,
+      "title": "Efficient Representative Subset Selection over Sliding Windows",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Knowl. Data Eng.",
+      "authors": "Y. Wang, Y. Li, and K. Tan",
+      "orig_title": "Efficient representative subset selection over sliding windows",
+      "paper_id": "1706.04764v2"
+    },
+    {
+      "index": 40,
+      "title": "Efficient k-regret query algorithm with restriction-free bound for any dimensionality",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGMOD",
+      "authors": "M. Xie, R. C. Wong, J. Li, C. Long, and A. Lall"
+    },
+    {
+      "index": 41,
+      "title": "Strongly truthful interactive regret minimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "SIGMOD",
+      "authors": "M. Xie, R. C. Wong, and A. Lall"
+    },
+    {
+      "index": 42,
+      "title": "An experimental survey of regret minimization query and variants: bridging the best worlds between top-k query and skyline query",
+      "abstract": "",
+      "year": "2020",
+      "venue": "VLDB J.",
+      "authors": "M. Xie, R. C. Wong, and A. Lall"
+    },
+    {
+      "index": 43,
+      "title": "Being happy with the least: Achieving α𝛼\\alpha-happiness with minimum number of tuples",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICDE",
+      "authors": "M. Xie, R. C. Wong, P. Peng, and V. J. Tsotras"
+    },
+    {
+      "index": 44,
+      "title": "Progressive and selective merge: computing top-k with ad-hoc ranking functions",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIGMOD",
+      "authors": "D. Xin, J. Han, and K. C. Chang"
+    },
+    {
+      "index": 45,
+      "title": "Processing a large number of continuous preference top-k queries",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SIGMOD",
+      "authors": "A. Yu, P. K. Agarwal, and J. Yang"
+    },
+    {
+      "index": 46,
+      "title": "Finding Average Regret Ratio Minimizing Set in Database",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICDE",
+      "authors": "S. Zeighami and R. C. Wong",
+      "orig_title": "Finding average regret ratio minimizing set in database",
+      "paper_id": "1810.08047v1"
+    },
+    {
+      "index": 47,
+      "title": "Möbius transformation for fast inner product search on graph",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Z. Zhou, S. Tan, Z. Xu, and P. Li"
+    },
+    {
+      "index": 48,
+      "title": "Data summarization with social contexts",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CIKM",
+      "authors": "H. Zhuang, R. Rahman, X. Hu, T. Guo, P. Hui, and K. Aberer"
+    }
+  ]
+}

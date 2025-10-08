@@ -1,0 +1,433 @@
+{
+  "paper_id": "2006.04798v3",
+  "title": "Test and Yield Loss Reduction of AI and Deep Learning Accelerators",
+  "sections": {
+    "iv results and analysis": "To identify the impact of the number of LSBs having faults in their logic cones, we varied the number of LSBs from 2 to 4 for int8  and 3 to 5 for bfloat16  data formats for the CNN model AlexNet with the ImageNet test set. These experiments were done with PyTorch . The results are shown in Fig. 10, where X-axis is fault-rate in non-critical logic cones (the LSBs). From this analysis, we conservatively selected 2 LSBs for int8 and 4 mantissa LSBs for the recent bfloat16 hardware models. In our experiments the accelerator hardware comprised of 128 by 128 array of PE/MACs as shown in Fig. 11. The faulty PEs are modeled as uniformly distributed across the rows and columns with fault probability of F​R%𝐹percent𝑅FR\\%, the fault rate. This implies that for F​R%𝐹percent𝑅FR\\% fault rate, each column of the accelerator has 0.01∗F​R∗NR​o​w0.01𝐹𝑅subscript𝑁𝑅𝑜𝑤0.01*FR*N_{Row} faulty PEs randomly distributed across that column. The reported results here are the average of 10 independent fault injection experiments done in MATLAB [ref]48 (for NN) and PyTorch  (for CNN) according to this hardware and fault distribution model. The prediction accuracy data reported in subsequent experiments are independent of the SIMD/Systolic architecture of the accelerator. However, the throughput will vary based on architecture type and fault rate as discussed in Section III-D. In identifying the critical and non-critical circuit faults in the MAC of a PE and corresponding test pattern generation, we used the RTL of the MAC unit present in each PE and analyzed both int8 and recent bfloat16 format implementations. For int8 quantized data format, first, the RTL of signed 8-bit MAC unit was developed, followed by gate-level synthesis with SAED [ref]46 28nm standard cell library with Synopsys Design Compiler (DC) [ref]46. During synthesis, DC tool implemented the signed multiplier using the Baugh-Wooly architecture available in DesignWare [ref]46 IP library. The 16-bit adder unit was implemented using the Carry Look Ahead (CLA) structure from the DesignWare IP library. After the complete gate-level netlist of the MAC was available, a custom TCL script was developed for the logic cone analysis of the output bits. From analysis of Fig.10, we selected the first two bits of the LSB (i.e., bits 0 and bit 1) as non-critical and bit positions 2 to 7 as critical, implying that the worst-case total MAC error resulting from these two bits is ±(20+21+22\\pm(2^{0}+2^{1}+2^{2}) as explained in Section III(B). Next, using the developed TCL script with DC we obtained critical (Gc​r​i​tsubscript𝐺𝑐𝑟𝑖𝑡G_{crit}) and non-critical (Gn​o​n−c​r​i​tsubscript𝐺𝑛𝑜𝑛𝑐𝑟𝑖𝑡G_{non-crit}) standard cell logic gates present in the logic cones of critical and non-critical bits, respectively, as described in Algorithm 1 in Section 3(B). Next, the gate-level netlist and the critical and non-critical fault lists were taken to TestMAX ATPG tool [ref]46 and three sets of ATPG test patterns were generated – (i) with all faults, (ii) only with the critical faults, (iii) considering only the non-critical faults. The results are shown in Table I. The reason that the number of test patterns for the all-faults case is lower than the sum of critical-only and non-critical-only cases is due to the method of ATPG pattern generation, where a single pattern can sometimes detect faults from both critical and non-critical groups. However, the test pattern counts to test the critical-only faults is less than the all-faults case in Table I. This critical pattern set can be applied first to all the PEs in a broadcast manner to identify if there are any PEs that must be disabled, this is because, having a critical fault in MAC introduces a large magnitude of error. Next, for the PEs that passed the first test, we apply the test patterns from Row 4 of Table I to test the presence of any non-critical faults. If faults are detected by this pattern set, the IDs of the faulty PEs are recorded in FSR memory as explained in Section III(c). As discussed in , recently, for training NN/CNN bfloat16 method is used where maultiplier is bfloat16 and accumulator is float32 type. To isolate the critical and non-critical faults of a floating-point MAC, we obtained a floating-point MAC benchmark circuit from OpenCores  and modified it for above mentioned bfloat format. We synthesized a gate-level netlist of the floating point MAC using the DesignWare IP library. For the floating-point MAC, we took the first 4 LSB bits (bits 0 to 5) of the mantissa as non-critical (from analysis in Fig. 10), and the rest of the bits of mantissa, the exponent and sign bit are considered critical. After identifying the critical and non-critical gates and corresponding faults, the fault lists and the gate-level netlist were taken to the ATPG tool and test patterns were generated similar to the int8 case above. The results are shown in Table II. First, the test patterns from Row 3 of Table II are applied to identify all faulty PEs that must be disabled to prevent significant accuracy loss in AI tasks. After that, the non-critical faults are identified with the patterns from Row 4 of Table II. All PEs that failed this second test have non-critical faults and their IDs are recorded in FSR. To analyze the impact of PE/MAC faults on the inference accuracy of NN, we implemented a 4-layer NN with two hidden layers, and varied the number of neurons in the hidden layers. Also, both un-pruned and 30% pruned (with-retraining) - versions were implemented. For NN experiments we used MATLAB deep learning toolbox [ref]48. All weights and activations were quantized in int8 format using MATLAB Fixed-Point tool [ref]48. To incorporate the worst-case non-critical MAC faults - obtained from the gate-level netlist above - into the NN inference task, the matrix multiplication function in forward pass of the NN used in inference was modified in MATLAB to inject faults according to the hardware model of Fig. 11. The relationship between accuracy and fault rates are shown in Fig. 12. It can be seen from Fig. 12 (a) that, other than the smaller 100 hidden layer case, the rest of the NNs are robust to faults in the MAC, with normalized accuracy changes less than 0.5% at 5% fault rate. With pruning (Fig. 12 (b)), the accuracy degrades slightly more with faults. This is because with pruning less number of neurons are present, and those that are present become more important. To assess the impact of MAC circuit faults on the accuracy of CNN, we used several key benchmark CNNs – AlexNet [ref]11, VGG-16 , ResNet-50  and LeNet-5 . The number of convolution, linear layers and the total number of multiplication and additions required (without pruning) to classify each image in these networks are tabulated in Table III. These results were obtained using custom functions developed in Pytorch . For the smaller CNN, LeNet-5, we performed both training and inference with MNIST dataset . For the complex architectures - AlexNet, VGG-16 and ResNet-50 - training takes several days and requires multiple GPUs [ref]11-. In Pytorch  library, pre-trained versions of these CNNs are available where they were already trained with ImageNet  dataset having millions of training images and 1000 possible classes. In our experiments we used these pre-trained models and performed inference with the 50,000 images from the ImageNet  validation dataset. During inference, the models were quantized into int8 format using Pytorch’s ‘t​o​r​c​h.n​n.q​u​a​n​t​i​z​e​dformulae-sequence𝑡𝑜𝑟𝑐ℎ𝑛𝑛𝑞𝑢𝑎𝑛𝑡𝑖𝑧𝑒𝑑torch.nn.quantized’ library. To incorporate the worst-case non-critical MAC faults - obtained from the gate-level netlist above - in the inference function of the CNN, we used Pytorch’s ‘r​e​g​i​s​t​e​r​_​f​o​r​w​a​r​d​_​h​o​o​k𝑟𝑒𝑔𝑖𝑠𝑡𝑒𝑟_𝑓𝑜𝑟𝑤𝑎𝑟𝑑_ℎ𝑜𝑜𝑘register\\_forward\\_hook’ feature to access the data in Conv2d function and injected the MAC faults according to the hardware model of Fig. 11. The accuracy changes - in the standard Top-1 and Top-5 format - with MAC faults are shown in Fig. 13 for 50,000 test images from ImageNet . Top-1 accuracy implies that the predicted class matches exactly the actual class (out of 1000 possible classes) and Top-5 refers to the case where the actual class is within the top 5 predicted classes [ref]11-. From Fig. 13 (e), it can be seen that the normalized accuracy in Top-1 category changes by less than 1.5% for all networks when fault rates are within 5%. For the Top-5 category in Fig. 13 (f), except for the computationally intensive VGG-16 network, the normalized accuracy degradation was confined within 1% for fault rates up to 5%. Next, we pruned 30% of the filter weights of the convolution layers and repeated our fault injection experiments. Form Fig. 13 (g)-(h), it can be seen that, with pruning, the normalized Top-1 accuracy degraded by a small amount with worst-case happening for ResNet-50 where it degraded by 2.2% for fault rate 5%. Even with pruning, the Top-5 normalized accuracy degradation was within 1% for fault rates up to 5%. Note that, during our pruning experiments on AlexNet/VGG-16/ResNet-50 retraining was not done, because it would have required us to retrain the networks with 14 million images using a large number of GPUs. Retraining during pruning would improve the accuracy further -. As discussed in Section III(c)(2), using our proposed fault-aware training flow some of the accuracy loss due to faults in MAC units can be recovered by incorporating the fault effects in the backpropagation-based weight update segment and allowing the CNN to adapt accordingly. To experimentally demonstrate this technique, we used the LeNet-5 CNN architecture. We picked the simpler LeNet-5 architecture over AlexNet/VGG-16/ResNet-50 because of the computational complexity of training. Whereas AlexNet/VGG-16/ResNet-50 would require multiple GPUs and several days of training with ImageNet data [ref]11-, the LeNet-5 can be trained in several minutes on MNIST dataset using CPU. We used 6-core Intel core i7 CPU with 24GB RAM in this training experiment. We modeled the equivalent worst-case MAC error - corresponding to faults occurring in the logic cones of 4 LSB bits of mantissa - in the forward and backpropagation segment using Pytorch’s ‘r​e​g​i​s​t​e​r​_​h​o​o​k𝑟𝑒𝑔𝑖𝑠𝑡𝑒𝑟_ℎ𝑜𝑜𝑘register\\_hook’ feature . Results from this fault-aware training are shown in Fig. 14. The results in Fig. 14, corresponds to the bfloat16 format training and inference hardware model as presented in  where multiplier is of bfloat16 type and accumulator is of float32. It can be seen that for 7.5% fault rate the normalized accuracy loss improved from 0.5% to 0.22% due to fault-aware training. In Section II(A), we explained that the presence of defect-induced circuit faults in approximate NN/CNN will deteriorate the AI task’s accuracy as errors from approximations in MAC were already introduced in the model, and any further error from circuit faults will be detrimental. In Fig. 15, the normalized change of accuracy with respect to faults for LeNet-5 on MNIST dataset is shown for cases of exact and approximate multipliers. In  a comprehensive analysis (with approximation aware retraining) of different types approximate multipliers on the efficiency of neural networks were performed, and the best approx. multipliers in terms of prediction accuracy were reported. Based on these findings , in our experiment as an approx. multiplier, we chose m​u​l​8​_​134𝑚𝑢𝑙8_134mul8\\_134 from the open-source library of EvoApprox8b . As discussed in , the accuracy of CNN/NN using approximate multipliers are very sensitive to proper training compared to regular multipliers, and the backpropagation training phase must be updated to account for approximate computing. In our experiment, the initial training phase was updated (using Pytorch’s hook functions ) to account for the use of 8-bit approx. multiplier, also int8 quantization was used. From Fig. 15, it can be observed that the presence of faults will degrade the performance of NNs with approx. multipliers significantly. Hence, if yield loss reduction is the primary goal, exact MAC units need to be used to account for possible circuit faults. From these detailed analyses of gate-level synthesis, fault isolation, ATPG pattern generation for the MAC circuit, and corresponding simulation of fault effects on standard NN/CNN benchmarks, it can be observed that certain circuit faults - based on their locations in the circuit - have minimal impact on the AI task’s accuracy when the fault rate is within an upper limit. For example, with 5% fault rate in non-critical gates, the normalized Top-5 accuracy loss in CNNs is less than 1% (Fig. 13(f)(h)). If this 1% accuracy loss is acceptable, and if there are more than 5% faulty PEs, then using the IDs of faulty PEs stored in the Fault Status Register, some faulty PEs can de deactivated on each column of the accelerator such that the fault rate is within 5% on each column of the PE array. For instance, in Fig. 13(h), at 10% fault-rate the normalized Top-5 accuracy degradation is 3.2% for AlexNet, but after deactivating few faulty PEs uniformly in each column of the accelerator the fault-rate per column can be reduced to 5% and this will result in improved Top-5 accuracy degradation to less than 1%. As a result, an AI accelerator chip with few faulty PEs can be binned accordingly and shipped, improving valuable yield and revenue. The tradeoff in this yield saving would be the lower number of PE blocks in the accelerator due to the deactivation of few faulty PEs to keep the fault rate within an acceptable limit (i.e., 5%), however, this will not have any functional impact, and will only reduce the throughput marginally. Furthermore, the reduced throughput PEs can be binned and priced differently without totally discarding the chip, thus saving yield. For example, the accelerators with no fault at all can be placed in the top bin and sold at a premium price to be used in safety-critical applications such as self-driving cars, whereas accelerators in the lower bins (with few faults, e.g., less than 5% fault rate) can be used in other AI/deep-learning tasks that can tolerate errors with minimal performance loss. In  when considering faults, authors assumed the complete MAC unit (i.e., all bits) was faulty, in contrast, our approach is more pragmatic and conservative. We analyzed our faults within groups of bits (i.e., logic cone of certain LSBs Vs. logic cone of the rest). If there are any errors beyond a certain LSB position we deactivate that PE to avoid a large extent of error in the accuracy. The complexity and cost of our approach are also minimal. For identifying the allowable non-critical fault rate and the number of LSBs, our search space is limited as we choose few LSB bits and fault rates (Fig. 10). Moreover, inference is not necessarily time-consuming and if such an analysis is performed once per hardware with an exhaustive benchmark like ImageNet , then it will suffice for any other benchmark. For the fault-aware training part, only the forward pass function needs to be updated to reflect the MAC fault rate that would be present during inference, and this is done for only one fault rate (e.g., 2.5% or 5% in Fig. 14). Hence, our fault-aware training does not add extra complexity compared to regular training. As we confine our faults within a few LSBs, our approach does not require hardware fault location-aware AI workload mapping and retraining as in . In our experiments we used the state-of-the-art CNNs that were pre-trained with 1 million images from ImageNet . Because of the large training set, these CNNs are very well-trained for any other type of pattern recognition/AI task (i.e., similar to the concept of “transfer learning” where ImageNet pre-trained networks can be used for any other pattern recognition problem by adjusting and training the final layers). Also, for validation of our fault effects, we used the 50K sample validation images from ImageNet with PyTorch. As we have shown our approach works on various CNNs trained with ImageNet, it suffices that for any other AI workload the concept is applicable."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Efficient Processing of Deep Neural Networks: A Tutorial and Survey",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE",
+      "authors": "V. Sze, Y. Chen, T. Yang and J. S. Emer",
+      "orig_title": "Efficient Processing of Deep Neural Networks: A Tutorial and Survey",
+      "paper_id": "1703.09039v2"
+    },
+    {
+      "index": 1,
+      "title": "Eyeriss v2: A Flexible Accelerator for Emerging Deep Neural Networks on Mobile Devices",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Journal on Emerging and Selected Topics in Circuits and Systems",
+      "authors": "Y. Chen, T. Yang, J. Emer and V. Sze",
+      "orig_title": "Eyeriss v2: A Flexible Accelerator for Emerging Deep Neural Networks on Mobile Devices",
+      "paper_id": "1807.07928v2"
+    },
+    {
+      "index": 2,
+      "title": "LNPU: A 25.3TFLOPS/W Sparse Deep-Neural-Network Learning Processor with Fine-Grained Mixed Precision of FP8-FP16",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Solid-State Circuits Conference - (ISSCC)",
+      "authors": "J. Lee et. al."
+    },
+    {
+      "index": 3,
+      "title": "A domain-specific architecture for deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Commun. ACM",
+      "authors": "N. Jouppi et. al."
+    },
+    {
+      "index": 4,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 5,
+      "title": "NVIDIA Tensor Core Programmability, Performance & Precision",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW)",
+      "authors": "S. Markidis, et. al.",
+      "orig_title": "NVIDIA Tensor Core Programmability, Performance & Precision",
+      "paper_id": "1803.04014v1"
+    },
+    {
+      "index": 6,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 7,
+      "title": "Artificial-intelligence hardware: New opportunities for semiconductor companies",
+      "abstract": "",
+      "year": "2019",
+      "venue": "McKinsey & Company",
+      "authors": "G. Batra et. al."
+    },
+    {
+      "index": 8,
+      "title": "GPU Killer: Google reveals just how powerful its TPU2 chip really is",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ZDNet",
+      "authors": "Liam Tung"
+    },
+    {
+      "index": 9,
+      "title": "Cerebras’s Giant Chip Will Smash Deep Learning’s Speed Barrier",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Spectrum",
+      "authors": "S. Moore"
+    },
+    {
+      "index": 10,
+      "title": "ImageNet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "NIPS",
+      "authors": "A. Krizhevsky, I. Sutskever, and G. E. Hinton"
+    },
+    {
+      "index": 11,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "K. He et. al",
+      "orig_title": "Deep Residual Learning for Image Recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 12,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 13,
+      "title": "ImageNet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE CVPR",
+      "authors": "J. Deng, W. Dong, R. Socher, L. Li, Kai Li and Li Fei-Fei"
+    },
+    {
+      "index": 14,
+      "title": "Yield and Reliability Challenges at 7nm and Below",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Electron Devices Technology and Manufacturing Conference (EDTM)",
+      "authors": "A. J. Strojwas, K. Doong and D. Ciplickas"
+    },
+    {
+      "index": 15,
+      "title": "Yield-centric layout optimization with precise quantification of lithographic yield loss",
+      "abstract": "",
+      "year": "2008",
+      "venue": "SPIE, Photomask and Next-Generation Lithography Mask Technology",
+      "authors": "S. Kobayashi, et. al."
+    },
+    {
+      "index": 16,
+      "title": "Concept Recognition in Production Yield Data Analytics",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Test Conference",
+      "authors": "M. Nero, C. Shan, L. Wang and N. Sumikawa"
+    },
+    {
+      "index": 17,
+      "title": "Accelerating 14nm device learning and yield ramp using parallel test structures as part of a new inline parametric test strategy",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICMTS",
+      "authors": "G. Moore et al."
+    },
+    {
+      "index": 18,
+      "title": "Cell-aware diagnosis: Defective inmates exposed in their cells",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European Test Symposium (ETS)",
+      "authors": "P. Maxwell, F. Hapke and H. Tang"
+    },
+    {
+      "index": 19,
+      "title": "Application of Cell-Aware Test on an Advanced 3nm CMOS Technology Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Test Conference (ITC)",
+      "authors": "Z. Gao et al."
+    },
+    {
+      "index": 20,
+      "title": "Intel’s 2020 Forecast is Grim",
+      "abstract": "",
+      "year": "2020",
+      "venue": "EE Times",
+      "authors": "B. Jorgenson"
+    },
+    {
+      "index": 21,
+      "title": "3 Ways Chiplets Are Remaking Processors",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Spectrum",
+      "authors": "S. Moore"
+    },
+    {
+      "index": 22,
+      "title": "Goodbye, Motherboard. Hello, Silicon-Interconnect Fabric",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Spectrum",
+      "authors": "P. Gupta and S. Iyer"
+    },
+    {
+      "index": 23,
+      "title": "Learning both Weights and Connections for Efficient Neural Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Neural Information Processing Systems (NIPS’15)",
+      "authors": "S. Han, J. Pool, J. Tran, and W. Dally",
+      "orig_title": "Learning both weights and connections for efficient neural networks",
+      "paper_id": "1506.02626v3"
+    },
+    {
+      "index": 24,
+      "title": "SNIP: Single-shot Network Pruning based on Connection Sensitivity",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "N. Lee, T. Ajanthan and P. Torr",
+      "orig_title": "SNIP: Single-shot network pruning based on connection sensitivity",
+      "paper_id": "1810.02340v2"
+    },
+    {
+      "index": 25,
+      "title": "Deep Compression: Compressing Deep Neural Networks with Pruning, Trained Quantization and Huffman Coding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICLR",
+      "authors": "S. Han, H. Mao, W. Dally"
+    },
+    {
+      "index": 26,
+      "title": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "N. Srivastava et. al."
+    },
+    {
+      "index": 27,
+      "title": "AxNN: Energy-efficient neuromorphic systems using approximate computing",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE/ACM International Symposium on Low Power Electronics and Design (ISLPED)",
+      "authors": "S. Venkataramani, A. Ranjan, K. Roy and A. Raghunathan"
+    },
+    {
+      "index": 28,
+      "title": "ApproxANN: An approximate computing framework for artificial neural network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Design, Automation & Test in Europe Conference & Exhibition (DATE)",
+      "authors": "Q. Zhang et. al."
+    },
+    {
+      "index": 29,
+      "title": "Design of power-efficient approximate multipliers for approximate artificial neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Computer-Aided Design (ICCAD)",
+      "authors": "V. Mrazek et. al."
+    },
+    {
+      "index": 30,
+      "title": "Improving the Accuracy and Hardware Efficiency of Neural Networks Using Approximate Multipliers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Very Large Scale Integration (VLSI) Systems",
+      "authors": "M. S. Ansari et. al"
+    },
+    {
+      "index": 31,
+      "title": "Testing of Neuromorphic Circuits: Structural vs Functional",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Test Conference (ITC)",
+      "authors": "A. Gebregiorgis and M. B. Tahoori"
+    },
+    {
+      "index": 32,
+      "title": "Fault-Tolerant Systolic Array Based Accelerators for Deep Neural Network Execution",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Design & Test",
+      "authors": "J. Zhang, K. Basu and S. Garg"
+    },
+    {
+      "index": 33,
+      "title": "Thundervolt: enabling aggressive voltage underscaling and timing error resilience for energy efficient deep learning accelerators",
+      "abstract": "",
+      "year": "2018",
+      "venue": "55th Annual Design Automation Conference",
+      "authors": "J. Zhang, K. Rangineni, Z .Ghodsi, and S Garg"
+    },
+    {
+      "index": 34,
+      "title": "Energy-Efficient Neural Network Acceleration in the Presence of Bit-Level Memory Errors",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Circuits and Systems I: Regular Papers",
+      "authors": "S. Kim et. al."
+    },
+    {
+      "index": 35,
+      "title": "On the design of fault-tolerant two-dimensional systolic arrays for yield enhancement",
+      "abstract": "",
+      "year": "1989",
+      "venue": "IEEE Transactions on Computers",
+      "authors": "J. Kim and S. M. Reddy"
+    },
+    {
+      "index": 36,
+      "title": "DNN Accelerator Architecture – SIMD or Systolic?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Computer Architecture Today, ACM SIGARCH",
+      "authors": "R.Das and T. Krishna"
+    },
+    {
+      "index": 37,
+      "title": "Quantized Convolutional Neural Networks for Mobile Devices",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "J. Wu et. al."
+    },
+    {
+      "index": 38,
+      "title": "8-bit Inference with TensorRT",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NVIDIA",
+      "authors": "S. Migacz"
+    },
+    {
+      "index": 39,
+      "title": "Mixed Precision Training",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "P. Micikevicius et. al.",
+      "orig_title": "Mixed Precision Training",
+      "paper_id": "1710.03740v3"
+    },
+    {
+      "index": 40,
+      "title": "BFloat16: The secret to high performance on Cloud TPUs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Google Cloud Blog",
+      "authors": "S. Wang and P. Kanwar"
+    },
+    {
+      "index": 41,
+      "title": "EvoApprox8b: Library of Approximate Adders and Multipliers for Circuit Design and Benchmarking of Approximation Methods",
+      "abstract": "",
+      "year": "2017",
+      "venue": "DATE",
+      "authors": "V. Mrazek et. al."
+    },
+    {
+      "index": 42,
+      "title": "Method and apparatus for disabling and swapping cores in a multi-core microprocessor",
+      "abstract": "",
+      "year": "",
+      "venue": "Intel Corporation, US Patent",
+      "authors": "R. Ray Ramadorai, et. al."
+    },
+    {
+      "index": 43,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 44,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 45,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 46,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 47,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 48,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    }
+  ]
+}

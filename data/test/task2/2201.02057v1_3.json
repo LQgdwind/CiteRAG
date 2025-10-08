@@ -1,0 +1,331 @@
+{
+  "paper_id": "2201.02057v1",
+  "title": "GLAN: A Graph-based Linear Assignment Network",
+  "sections": {
+    "evaluation in mot.": "To validate the effectiveness of our framework on real scenarios, we employ the multi-object tracking (MOT) problem as the task and embed our GLAN into MOT architecture as an assignment module. In the following, we will introduce the experimental settings and report the experimental results in detail. MOT can be tackled by exploiting the regression head of a detector to perform temporal alignment of object bounding boxes [ref]36. Based on the tracking pipeline in [ref]36 which adopts the Faster-RCNN [ref]37 as a detector, Xu et al.  embed the differentiable DHN into the MOT architecture to train the detector in an end-to-end manner. Similarly, we also combine the differentiable assignment solvers with the tracker in [ref]36 to verify their effectiveness in MOT tasks. Here, we exclude the DFC  because it is inflexible to cope with cost matrices with varying sizes. For simplicity, we name the tracker in [ref]36 FRT (Faster RCNN Tracker). In training, the matching between predicted bounding boxes and ground truth is viewed as an assignment problem, and the cost matrix is constructed according to center distance and Intersection-over-Union (IOU) between tracks and bounding boxes. Furthermore, we employ the soft MOTA and MOTP (please refer to  for the details of the construction of them) to guide the learning process. In the case of MOT, there can be different numbers of tracks and ground-truth objects, and the objects in the previous frame can be missed in the current frame or a new object can exist in the current frame. Therefore, in training, we remove the constraint loss to prevent the un-assigned track or object from having a high assignment score.\nIn evaluation, following the tracking pipeline in [ref]36, only the trained detector is used to perform tracking and the assignment solvers are not employed to facilitate the tracking process. The performance of each tested method on MOT benchmark MOT17  is evaluated by standard MOT metrics and is reported in Table 6. It is observed that trained along with differentiable assignment solvers, the performance of the tracker has been improved in most metrics.\nSpecifically, the learnable-free differentiable methods, RM , SD [ref]14 and SH , solve the assignment problem directly on the cost matrix, which allows the relationships between each pair of tracks and bounding boxes to be taken into consideration. Therefore, the trackers trained with these solvers have been improved on almost metrics. Despite the improvements achieved by learning-based baselines, there are still several limitations to enhancing the tracker. In detail, the BDL  splits the assignment problem into several classification sub-tasks, but the relationships between these sub-tasks are not involved in solving the original assignment problems. The DHN  transforms the cost matrix to a sequential pattern and passes it to an RNN-based model to extract discriminative representations from the global scope. However, it is unsuitable to solve the time-independent problem with the RNN-based model. Besides, the DCNN  regards the cost matrix as an image and employs stacked CNN layers to obtain the assignment prediction. But the predicted assignments always reach the local optima when the size of problems exceeds the receptive fields. In virtue of the structure of the bipartite graph constructed from the cost matrix, the proposed framework GLAN can well capture the global inductive information through message passing, and the tracker trained with GLAN achieves the best results in terms of most metrics. Specifically, in MOT17, both our model and RM  achieve the best improvement in terms of MOTA (+2.9%percent2.9+2.9\\%), MOTP (+0.9%percent0.9+0.9\\%) and MT (+1.8%percent1.8+1.8\\%) over FRT [ref]36.\nBesides, the tracker combined with our GLAN also obtains the best results in terms of ML and FN, which demonstrates the effectiveness and adaptability of our method for MOT task."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Linear assignment problems and extensions",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Handb. Comb. Optim.",
+      "authors": "R. E. Burkard, E. Cela"
+    },
+    {
+      "index": 1,
+      "title": "A concave optimization algorithm for matching partially overlapping point sets",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Pattern Recognit.",
+      "authors": "W. Lian, L. Zhang"
+    },
+    {
+      "index": 2,
+      "title": "Matching based ground-truth annotation for online handwritten mathematical expressions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Pattern Recognit.",
+      "authors": "N. S. Hirata, F. D. Julca-Aguilar"
+    },
+    {
+      "index": 3,
+      "title": "Deep affinity network for multiple object tracking",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "S. Sun, N. Akhtar, H. Song, A. Mian, M. Shah"
+    },
+    {
+      "index": 4,
+      "title": "How To Train Your Deep Multi-Object Tracker",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Conf. Comput. Vis. Pattern Recog.",
+      "authors": "Y. Xu, A. Osep, Y. Ban, R. Horaud, L. Leal-Taixé, X. Alameda-Pineda",
+      "orig_title": "How to train your deep multi-object tracker",
+      "paper_id": "1906.06618v3"
+    },
+    {
+      "index": 5,
+      "title": "The hungarian method for the assignment problem",
+      "abstract": "",
+      "year": "2010",
+      "venue": "50 Years of Integer Programming",
+      "authors": "H. W. Kuhn"
+    },
+    {
+      "index": 6,
+      "title": "Algorithms for the assignment and transportation problems",
+      "abstract": "",
+      "year": "1957",
+      "venue": "J. Soc. Ind. Appl. Math.",
+      "authors": "J. Munkres"
+    },
+    {
+      "index": 7,
+      "title": "Deep greedy switching: A fast and simple approach for linear assignment problems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Int. Conf. Numer. Anal. Appl. Numer.",
+      "authors": "A. Naiem, M. El-Beltagy"
+    },
+    {
+      "index": 8,
+      "title": "On the optimality and speed of the deep greedy switching algorithm for linear assignment problems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Int. Symp. Parallel Distrib. Process. Worksh. Phd Forum",
+      "authors": "Naiem, Amgad and El-Beltagy, Mohammed"
+    },
+    {
+      "index": 9,
+      "title": "Computational results of an interior point algorithm for large scale linear programming",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Math. Program.",
+      "authors": "N. Karmarkar, K. G. Ramakrishnan"
+    },
+    {
+      "index": 10,
+      "title": "An approximate dual projective algorithm for solving assignment problems",
+      "abstract": "",
+      "year": "",
+      "venue": "Network Flows And Matching",
+      "authors": "K. G. Ramakrishnan, N. Karmarkar, A. Kamath"
+    },
+    {
+      "index": 11,
+      "title": "The auction algorithm: A distributed relaxation method for the assignment problem",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Ann. Oper. Res.",
+      "authors": "D. P. Bertsekas"
+    },
+    {
+      "index": 12,
+      "title": "A relationship between arbitrary positive matrices and doubly stochastic matrices",
+      "abstract": "",
+      "year": "1964",
+      "venue": "Ann. Math. Stat.",
+      "authors": "R. Sinkhorn"
+    },
+    {
+      "index": 13,
+      "title": "Sinkhorn distances: Lightspeed computation of optimal transport",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Adv. Neural Inform. Process. Syst.",
+      "authors": "M. Cuturi"
+    },
+    {
+      "index": 14,
+      "title": "Near-linear time approximation algorithms for optimal transport via Sinkhorn iteration",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Adv. Neural Inform. Process. Syst.",
+      "authors": "J. Altschuler, J. Weed, P. Rigollet",
+      "orig_title": "Near-linear time approximation algorithms for optimal transport via sinkhorn iteration",
+      "paper_id": "1705.09634v2"
+    },
+    {
+      "index": 15,
+      "title": "DMM-Net: Differentiable Mask-Matching Network for Video Object Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Int. Conf. Comput. Vis.",
+      "authors": "X. Zeng, R. Liao, L. Gu, Y. Xiong, S. Fidler, R. Urtasun",
+      "orig_title": "Dmm-net: Differentiable mask-matching network for video object segmentation",
+      "paper_id": "1909.12471v1"
+    },
+    {
+      "index": 16,
+      "title": "A method for finding projections onto the intersection of convex sets in hilbert spaces",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Adv. Order Restr. Stat. Inference",
+      "authors": "J. P. Boyle, R. L. Dykstra"
+    },
+    {
+      "index": 17,
+      "title": "An algorithm for restricted least squares regression",
+      "abstract": "",
+      "year": "1983",
+      "venue": "J. Am. Stat. Assoc.",
+      "authors": "R. L. Dykstra"
+    },
+    {
+      "index": 18,
+      "title": "Deep neural networks for linear sum assignment problems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Wirel. Commun. Lett.",
+      "authors": "M. Lee, Y. Xiong, G. Yu, G. Y. Li"
+    },
+    {
+      "index": 19,
+      "title": "Bidirectional long short-term memory neural networks for linear sum assignment problems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Appl. Sci.",
+      "authors": "N. Minh-Tuan, Y.-H. Kim"
+    },
+    {
+      "index": 20,
+      "title": "Serial order: A parallel distributed processing approach",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Adv. Psychol.",
+      "authors": "M. I. Jordan"
+    },
+    {
+      "index": 21,
+      "title": "Convolutional networks for images, speech, and time series",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Handb. Brain Theory Neural Netw.",
+      "authors": "Y. LeCun, Y. Bengio, et al."
+    },
+    {
+      "index": 22,
+      "title": "A shortest augmenting path algorithm for dense and sparse linear assignment problems",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Computing",
+      "authors": "R. Jonker, A. Volgenant"
+    },
+    {
+      "index": 23,
+      "title": "A dual feasible forest algorithm for the linear assignment problem",
+      "abstract": "",
+      "year": "1991",
+      "venue": "RAIRO-Operations Research",
+      "authors": "M. Akgül, O. Ekin"
+    },
+    {
+      "index": 24,
+      "title": "A new polynomial-time algorithm for linear programming",
+      "abstract": "",
+      "year": "1984",
+      "venue": "Comb.",
+      "authors": "N. Karmarkar"
+    },
+    {
+      "index": 25,
+      "title": "An efficient cost scaling algorithm for the assignment problem",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Math. Program.",
+      "authors": "A. V. Goldberg, R. Kennedy"
+    },
+    {
+      "index": 26,
+      "title": "A linear relaxation heuristic for the generalized assignment problem",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Nav. Res. Logist.",
+      "authors": "M. A. Trick"
+    },
+    {
+      "index": 27,
+      "title": "Greedy randomized adaptive search procedures",
+      "abstract": "",
+      "year": "1995",
+      "venue": "J. Glob. Optim.",
+      "authors": "T. A. Feo, M. G. C. Resende"
+    },
+    {
+      "index": 28,
+      "title": "A one-layer projection neural network for linear assignment problem",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Chin. Control Conf.",
+      "authors": "Q. Liu, Y. Zhao"
+    },
+    {
+      "index": 29,
+      "title": "A Comprehensive Survey on Graph Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Neural Networks Learn. Syst.",
+      "authors": "Z. Wu, S. Pan, F. Chen, G. Long, C. Zhang, P. S. Yu",
+      "orig_title": "A comprehensive survey on graph neural networks",
+      "paper_id": "1901.00596v4"
+    },
+    {
+      "index": 30,
+      "title": "Relational inductive biases, deep learning, and graph networks",
+      "abstract": "",
+      "year": "",
+      "venue": "CoRR",
+      "authors": "P. W. Battaglia, J. B. Hamrick, V. Bapst, A. Sanchez-Gonzalez, V. F. Zambaldi, M. Malinowski, A. Tacchetti, D. Raposo, A. Santoro, R. Faulkner, Ç. Gülçehre, H. F. Song, A. J. Ballard, J. Gilmer, G. E. Dahl, A. Vaswani, K. R. Allen, C. Nash, V. Langston, C. Dyer, N. Heess, D. Wierstra, P. Kohli, M. Botvinick, O. Vinyals, Y. Li, R. Pascanu",
+      "orig_title": "Relational inductive biases, deep learning, and graph networks",
+      "paper_id": "1806.01261v3"
+    },
+    {
+      "index": 31,
+      "title": "Transductive zero-shot action recognition via visually connected graph convolutional networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Trans. Neural Networks Learn. Syst.",
+      "authors": "Y. Xu, C. Han, J. Qin, X. Xu, G. Han, S. He"
+    },
+    {
+      "index": 32,
+      "title": "Graph edge convolutional neural networks for skeleton-based action recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Neural Networks Learn. Syst.",
+      "authors": "X. Zhang, C. Xu, X. Tian, D. Tao"
+    },
+    {
+      "index": 33,
+      "title": "Hierarchical Representation Learning in Graph Neural Networks with Node Decimation Pooling",
+      "abstract": "",
+      "year": "",
+      "venue": "CoRR",
+      "authors": "F. M. Bianchi, D. Grattarola, L. Livi, C. Alippi",
+      "orig_title": "Hierarchical representation learning in graph neural networks with node decimation pooling",
+      "paper_id": "1910.11436v3"
+    },
+    {
+      "index": 34,
+      "title": "Learning combinatorial solver for graph matching",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Conf. Comput. Vis. Pattern Recog.",
+      "authors": "T. Wang, H. Liu, Y. Li, Y. Jin, X. Hou, H. Ling"
+    },
+    {
+      "index": 35,
+      "title": "Tracking without bells and whistles",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Int. Conf. Comput. Vis.",
+      "authors": "P. Bergmann, T. Meinhardt, L. Leal-Taixé",
+      "orig_title": "Tracking without bells and whistles",
+      "paper_id": "1903.05625v3"
+    },
+    {
+      "index": 36,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "S. Ren, K. He, R. B. Girshick, J. Sun",
+      "orig_title": "Faster R-CNN: towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 37,
+      "title": "MOT16: A Benchmark for Multi-Object Tracking",
+      "abstract": "",
+      "year": "",
+      "venue": "CoRR",
+      "authors": "A. Milan, L. Leal-Taixé, I. D. Reid, S. Roth, K. Schindler",
+      "orig_title": "MOT16: A benchmark for multi-object tracking",
+      "paper_id": "1603.00831v2"
+    }
+  ]
+}

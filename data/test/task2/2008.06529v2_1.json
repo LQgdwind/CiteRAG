@@ -1,0 +1,449 @@
+{
+  "paper_id": "2008.06529v2",
+  "title": "Three Variants of Differential Privacy: Lossless Conversion and ApplicationsThis work was supported in part by NSF under grants CIF 1922971, 1815361, 1742836, 1900750, and CIF CAREER 1845852. Part of the results in this paper was presented at the International Symposium on Information Theory 2020 [1].",
+  "sections": {
+    "i introduction": "Differential privacy (DP)  has become the de facto standard for privacy-preserving data analytics. Intuitively, a randomized algorithm is said to be differentially private if its output does not vary significantly with small perturbations of the input. DP guarantees are usually cast in terms of properties of the difference of the information density  of the algorithm’s output and two different inputs—referred to as the privacy loss random variable in the DP literature. In fact, several variants of DP has been proposed based on different properties of privacy loss random variable. Informally speaking, a mechanism is said to satisfy (ε,δ)𝜀𝛿(\\varepsilon,\\delta)-DP  if the privacy loss random variable is bounded by ε𝜀\\varepsilon with probability 1−δ1𝛿1-\\delta. A mechanism is said to be (α,γ)𝛼𝛾(\\alpha,\\gamma)-Rényi differential privacy (RDP) [ref]4 if the α𝛼\\alphath moment of the privacy loss random variable is upper bounded by γ𝛾\\gamma; see Sec. II for more details. Several methods have recently been proposed to ensure differentially private training of machine learning (ML) models    [ref]8  . Here, the parameters of the model determined by a learning algorithm (e.g., weights of a neural network or coefficients of a regression) are sought to be differentially private with respect to the data used for fitting the model (i.e. the training data). When the model parameters are computed by applying stochastic gradient descent (SGD) to minimize a given loss function, DP can be ensured by directly adding noise to the gradient. The empirical and theoretical flexibility of this noise-adding procedure for ensuring DP was demonstrated, for example, in  . This method is currently being used for privacy-preserving training of large-scale ML models in industry, see e.g., the implementation of  in the Google’s open-source TensorFlow Privacy\nframework . Not surprisingly, for a fixed training dataset, privacy deteriorates with each SGD iteration. In practice, the DP constraints (i.e., ε𝜀\\varepsilon and δ𝛿\\delta) are set a priori, and then mapped to a permissible number of SGD iterations for fitting the model parameters. Thus, a key question is: given a DP constraint, how many iterations are allowed before the SGD algorithm is no longer private?\nThe main challenge in determining the DP guarantees provided by noisy SGD is keeping track of the evolution of the privacy loss random variable during subsequent gradient descent iterations. This can be done, for example, by invoking advanced composition theorems for DP, such as  . Such composition results, while theoretically significant, may be loose due to their generality (e.g., they do not take into account the noise distribution used by the privacy mechanism). Recently, Abadi et al.  circumvented the use of DP composition results by developing a method called moments accountant (MA). Instead of dealing with DP directly, the MA approach provides privacy guarantees in terms of RDP for which composition has a simple linear form [ref]4. Once the privacy guarantees of the SGD execution are determined in terms of RDP, they are mapped back to DP guarantees in terms of ε𝜀\\varepsilon and δ𝛿\\delta via a relationship between DP and RDP [5, Theorem 2] allowing for converting from one to another. This approach renders tighter DP guarantees than those obtained from advanced composition theorems (see [5, Figure 2]).\nNevertheless, the existing conversion rules between RDP and DP are loose. In this work, we provide a framework which settles the optimal conversion between RDP and DP, and thus further enhances the privacy guarantee obtained by the MA approach.\nOur technique relies on the information-theoretic study of joint range of f𝑓f-divergences: we first describe both DP and RDP using two certain types of the f𝑓f-divergences, namely 𝖤λsubscript𝖤𝜆\\mathsf{E}_{\\lambda} and χαsuperscript𝜒𝛼\\chi^{\\alpha} divergences (see Section II). We then apply [15, Theorem 8] to characterize the joint range of these two f𝑓f-divergences which, in turn, leads to the “optimal” conversion between RDP and DP (see Section III).\nSpecifically, this optimal conversion allows us to derive bounds on the number of noisy SGD iterations for a given DP parameters ε𝜀\\varepsilon and δ𝛿\\delta. Our result improves upon the state-of-the-art  by allowing more training iterations (often hundreds more) for the same privacy budget, and thus providing higher utility for free (see Section IV). In the second part of this work, we revisit another variant of DP based on binary hypothesis testing. Consider an attacker who, given a mechanism’s output, aims to determine if a certain individual (say Alice) has participated in the input dataset. This goal can be thought of as a hypothesis testing problem: rejecting the null hypothesis corresponds to the absence of Alice in the input dataset.\nIt is well-known that (ε,δ)𝜀𝛿(\\varepsilon,\\delta)-DP is equivalent to enforcing that the type II error probability of any (possibly randomized) such test at significance level (or type I error probability) τ𝜏\\tau is lower bounded by 1−δ−eε​τ1𝛿superscript𝑒𝜀𝜏1-\\delta-e^{\\varepsilon}\\tau  . Thus, for small ε𝜀\\varepsilon and δ𝛿\\delta, any test is\nessentially powerless, i.e., it is impossible to have both small type I and type II error probabilities.\nThis view of privacy (which we henceforth call hypothesis test DP) brings an operational interpretation for DP. This notion of privacy has recently been parameterized by a convex and decreasing function f:[ref]0 →[ref]0 :𝑓01→01f\\mathrel{\\mathop{\\ordinarycolon}}[ref]0 \\to[ref]0  that specifies the tradeoff between type I and type II error probabilities. A mechanism is said to be f𝑓f-DP 7 if, given a mechanism’s output, the type II error probability of any test for a given significance level τ𝜏\\tau is lower bounded by f​(τ)𝑓𝜏f(\\tau). Thus, if f​(τ)𝑓𝜏f(\\tau) is approximately 1−τ1𝜏1-\\tau, then any tests will be essentially powerless. This new definition is shown to provide easily interpretable privacy guarantees. This is in sharp contrast with RDP whose privacy guarantee does not enjoy a clear interpretation (see 8 for more details). Our goal is to address the interpretability issue of RDP by relating RDP to f𝑓f-DP. We first prove an explicit expression for the RDP guarantee of mechanism in terms of the type I and type II probabilities corresponding to the “optimal” test (given by Neyman-Pearson lemma). We remark that our expression is similar to an unproved formula that appeared first in [19, Eq. (2.79)]. Conversely, we develop a machinery to implicitly relate RDP constraint to f𝑓f-DP by constructing an achievable region of type I and type II error probabilities among all tests. This relationship is in particular interesting for the privacy analysis of iterative ML algorithm in that it converts the simple linear composition property of RDP to an interpretable privacy guarantee in terms of f𝑓f-DP. Another approach for deriving an interpretable and tight privacy guarantee for ML algorithms is to resort to the general composition result of f𝑓f-DP [17, Theore 3.2]. This approach is advocated in 0 for the privacy analysis of noisy SGD in training neural networks. We compare our results with 7 0 in two different directions: The f𝑓f-DP guarantee can be easily related to (ε,δ)𝜀𝛿(\\varepsilon,\\delta)-DP (see [17, Proposition 2.12]). It is argued in [20, Theorems 1 and 2] that f𝑓f-DP guarantee of SGD always yields a strictly stronger (ε,δ)𝜀𝛿(\\varepsilon,\\delta)-DP guarantee than what would be obtained by moments accountant. We empirically show that this does not hold if one incorporates our optimal RDP-to-DP conversion rule into the moments accountant framework; i.e., the improved moments accountant might outperform f𝑓f-DP, see Fig. 5. Rather then using the general composition results of f𝑓f-DP, we propose to apply the linear composability of RDP and then convert the resulting guarantee to f𝑓f-DP. Focusing on SGD with Gaussian noise, we demonstrate that there exists a threshold for variance below which our approach strictly outperforms f𝑓f-DP, see Fig. 8 and Fig. 9."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A Better Bound Gives a Hundred Rounds: Enhanced Privacy Guarantees via 𝑓-Divergences",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Int. Symp. Inf. Theory (ISIT)",
+      "authors": "S. Asoodeh, J. Liao, F. P. Calmon, O. Kosut, and L. Sankar",
+      "orig_title": "A better bound gives a hundred rounds: Enhanced privacy guarantees via f𝑓f-divergence",
+      "paper_id": "2001.05990v1"
+    },
+    {
+      "index": 1,
+      "title": "Calibrating noise to sensitivity in private data analysis",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Conf. Theory of Cryptography (TCC)",
+      "authors": "C. Dwork, F. McSherry, K. Nissim, and A. Smith"
+    },
+    {
+      "index": 2,
+      "title": "Information and information stability of random variables and processes",
+      "abstract": "",
+      "year": "1964",
+      "venue": "Holden-Day",
+      "authors": "M. A. Pinsker"
+    },
+    {
+      "index": 3,
+      "title": "Rényi differential privacy",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Comp. Security Foundations Symp. (CSF)",
+      "authors": "I. Mironov"
+    },
+    {
+      "index": 4,
+      "title": "Deep Learning with Differential Privacy",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CCS",
+      "authors": "M. Abadi, A. Chu, I. Goodfellow, H. B. McMahan, I. Mironov, K. Talwar, and L. Zhang",
+      "orig_title": "Deep learning with differential privacy",
+      "paper_id": "1607.00133v2"
+    },
+    {
+      "index": 5,
+      "title": "Privacy-preserving deep learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CCS",
+      "authors": "R. Shokri and V. Shmatikov"
+    },
+    {
+      "index": 6,
+      "title": "Differentially private empirical risk minimization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "K. Chaudhuri, C. Monteleoni, and A. D. Sarwate"
+    },
+    {
+      "index": 7,
+      "title": "Private empirical risk minimization: Efficient algorithms and tight error bounds",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Sympos. Foundations Computer Science (FOCS)",
+      "authors": "R. Bassily, A. Smith, and A. Thakurta"
+    },
+    {
+      "index": 8,
+      "title": "Privacy Amplification by Subsampling: Tight Analyses via Couplings and Divergences",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Int. Conf. Neural Inf. Process. Systems (NeurIPS)",
+      "authors": "B. Balle, G. Barthe, and M. Gaboardi",
+      "orig_title": "Privacy amplification by subsampling: Tight analyses via couplings and divergences",
+      "paper_id": "1807.01647v2"
+    },
+    {
+      "index": 9,
+      "title": "Bolt-on Differential Privacy for Scalable Stochastic Gradient Descent-based Analytics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIGMOD",
+      "authors": "X. Wu, F. Li, A. Kumar, K. Chaudhuri, S. Jha, and J. Naughton",
+      "orig_title": "Bolt-on differential privacy for scalable stochastic gradient descent-based analytics",
+      "paper_id": "1606.04722v3"
+    },
+    {
+      "index": 10,
+      "title": "A General Approach to Adding Differential Privacy to Iterative Training Procedures",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "H. B. McMahan, G. Andrew, U. Erlingsson, S. Chien, I. Mironov, and P. Kairouz",
+      "orig_title": "A general approach to adding differential privacy to iterative training procedures",
+      "paper_id": "1812.06210v2"
+    },
+    {
+      "index": 11,
+      "title": "Tensorflow privacy",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Google"
+    },
+    {
+      "index": 12,
+      "title": "Boosting and differential privacy",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Sympos. Foundations Computer Science (FOCS)",
+      "authors": "C. Dwork, G. N. Rothblum, and S. Vadhan"
+    },
+    {
+      "index": 13,
+      "title": "The composition theorem for differential privacy",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "P. Kairouz, S. Oh, and P. Viswanath"
+    },
+    {
+      "index": 14,
+      "title": "On pairs of f𝑓f-divergences and their joint range",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "P. Harremoës and I. Vajda"
+    },
+    {
+      "index": 15,
+      "title": "A statistical framework for differential privacy",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "L. Wasserman and S. Zhou"
+    },
+    {
+      "index": 16,
+      "title": "Gaussian Differential Privacy",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "J. Dong, A. Roth, and W. J. Su",
+      "orig_title": "Gaussian differential privacy",
+      "paper_id": "1905.02383v3"
+    },
+    {
+      "index": 17,
+      "title": "Hypothesis testing interpretations and Rényi differential privacy",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Int. Conf. Art. Intelligence and Stat. (AISTAT)",
+      "authors": "B. Balle, G. Barthe, M. Gaboardi, J. Hsu, and T. Sato"
+    },
+    {
+      "index": 18,
+      "title": "Channel coding: non-asymptotic fundamental limits",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Princeton University",
+      "authors": "Y. Polyanskiy"
+    },
+    {
+      "index": 19,
+      "title": "Deep Learning with Gaussian Differential Privacy",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Int. Conf. Machine Learning (ICML)",
+      "authors": "Z. Bu, J. Dong, Q. Long, and W. J. Su",
+      "orig_title": "Deep learning with Gaussian differential privacy",
+      "paper_id": "1911.11607v3"
+    },
+    {
+      "index": 20,
+      "title": "When random sampling preserves privacy",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Advances in Cryptology - CRYPTO 2006",
+      "authors": "K. Chaudhuri and N. Mishra"
+    },
+    {
+      "index": 21,
+      "title": "Private empirical risk minimization, revisited",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICML 2014 Workshop on Learning, Security and Privacy",
+      "authors": "R. Bassily, A. Smith, and A. Thakurta"
+    },
+    {
+      "index": 22,
+      "title": "Private stochastic convex optimization with optimal rates",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neural Inf. Process. Systems",
+      "authors": "R. Bassily, V. Feldman, K. Talwar, and A. Guha Thakurta"
+    },
+    {
+      "index": 23,
+      "title": "Privacy-preserving logistic regression",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Neural Inf. Process. Systems",
+      "authors": "K. Chaudhuri and C. Monteleoni"
+    },
+    {
+      "index": 24,
+      "title": "Differentially private online learning",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Conf. Learning Theory (COLT)",
+      "authors": "P. Jain, P. Kothari, and A. Thakurta"
+    },
+    {
+      "index": 25,
+      "title": "Differentially private feature selection via stability arguments, and the robustness of the lasso",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Conf. Learning Theory (COLT)",
+      "authors": "A. G. Thakurta and A. Smith"
+    },
+    {
+      "index": 26,
+      "title": "Stochastic gradient descent with differentially private updates",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Global Conf. Signal and Inf. Process.",
+      "authors": "S. Song, K. Chaudhuri, and A. D. Sarwate"
+    },
+    {
+      "index": 27,
+      "title": "Local privacy and statistical minimax rates",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Foundations of Computer Science (FOCS)",
+      "authors": "J. C. Duchi, M. I. Jordan, and M. J. Wainwright"
+    },
+    {
+      "index": 28,
+      "title": "(near) dimension independent risk bounds for differentially private learning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Int. Conf. Machine Learning",
+      "authors": "P. Jain and A. G. Thakurta"
+    },
+    {
+      "index": 29,
+      "title": "Is interaction necessary for distributed private learning?",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Symposium on Security and Privacy (SP)",
+      "authors": "A. Smith, A. Thakurta, and J. Upadhyay"
+    },
+    {
+      "index": 30,
+      "title": "Nearly-optimal private lasso",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Neural Inf. Process. Systems",
+      "authors": "K. Talwar, A. Thakurta, and L. Zhang"
+    },
+    {
+      "index": 31,
+      "title": "Differentially private empirical risk minimization revisited: Faster and more general",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Neural Inf. Process. Systems (NeurIPS)",
+      "authors": "D. Wang, M. Ye, and J. Xu"
+    },
+    {
+      "index": 32,
+      "title": "The Complexity of Computing the Optimal Composition of Differential Privacy",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Int. Conf. Theory of Cryptography",
+      "authors": "J. Murtagh and S. Vadhan",
+      "orig_title": "The complexity of computing the optimal composition of differential privacy",
+      "paper_id": "1507.03113v2"
+    },
+    {
+      "index": 33,
+      "title": "Concentrated Differential Privacy",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ArXiv",
+      "authors": "C. Dwork and G. N. Rothblum",
+      "orig_title": "Concentrated differential privacy",
+      "paper_id": "1603.01887v2"
+    },
+    {
+      "index": 34,
+      "title": "Concentrated differential privacy: Simplifications, extensions, and lower bounds",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Theory of Cryptography",
+      "authors": "M. Bun and T. Steinke"
+    },
+    {
+      "index": 35,
+      "title": "Composable and versatile privacy via truncated CDP",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM SIGACT Sympos. Theory of Computing (STOC)",
+      "authors": "M. Bun, C. Dwork, G. N. Rothblum, and T. Steinke"
+    },
+    {
+      "index": 36,
+      "title": "Subsampled Rényi Differential Privacy and Analytical Moments Accountant",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Artificial Intelligence and Stat. (AISTATS)",
+      "authors": "Y.-X. Wang, B. Balle, and S. P. Kasiviswanathan",
+      "orig_title": "Subsampled Rényi differential privacy and analytical moments accountant",
+      "paper_id": "1808.00087v2"
+    },
+    {
+      "index": 37,
+      "title": "Information-type measures of difference of probability distributions and indirect observations",
+      "abstract": "",
+      "year": "1967",
+      "venue": "Studia Sci. Math. Hungar.",
+      "authors": "I. Csiszár"
+    },
+    {
+      "index": 38,
+      "title": "A general class of coefficients of divergence of one distribution from another",
+      "abstract": "",
+      "year": "1966",
+      "venue": "Journal of Royal Statistics",
+      "authors": "S. M. Ali and S. D. Silvey"
+    },
+    {
+      "index": 39,
+      "title": "Privacy amplification by mixing and diffusion mechanisms",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neural Inf. Process. Systems (NeurIPS)",
+      "authors": "B. Balle, G. Barthe, M. Gaboardi, and J. Geumlek"
+    },
+    {
+      "index": 40,
+      "title": "Semi-supervised Knowledge Transfer for Deep Learning from Private Training Data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Int. Conf. Learning Repres. (ICLR)",
+      "authors": "N. Papernot, M. Abadi, U. Erlingsson, I. Goodfellow, and K. Talwar",
+      "orig_title": "Semi-supervised knowledge transfer for deep learning from private training data",
+      "paper_id": "1610.05755v4"
+    },
+    {
+      "index": 41,
+      "title": "Rényi Differential Privacy Mechanisms for Posterior Sampling",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Neural Inf. Process. Systems (NeurIPS)",
+      "authors": "J. Geumlek, S. Song, and K. Chaudhuri",
+      "orig_title": "Rényi differential privacy mechanisms for posterior sampling",
+      "paper_id": "1710.00892v1"
+    },
+    {
+      "index": 42,
+      "title": "Privacy Amplification by Iteration",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE 59th Annual Symposium on Foundations of Computer Science (FOCS)",
+      "authors": "V. Feldman, I. Mironov, K. Talwar, and A. Thakurta",
+      "orig_title": "Privacy amplification by iteration",
+      "paper_id": "1808.06651v2"
+    },
+    {
+      "index": 43,
+      "title": "Protection Against Reconstruction and Its Applications in Private Federated Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv",
+      "authors": "A. Bhowmick, J. Duchi, J. Freudiger, G. Kapoor, and R. Rogers",
+      "orig_title": "Protection against reconstruction and its applications in private federated learning",
+      "paper_id": "1812.00984v2"
+    },
+    {
+      "index": 44,
+      "title": "Channel coding rate in the finite blocklength regime",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "Y. Polyanskiy, H. V. Poor, and S. Verdú"
+    },
+    {
+      "index": 45,
+      "title": "Fundamental bound on the reliability of quantum information transmission",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "N. Sharma and N. A. Warsi"
+    },
+    {
+      "index": 46,
+      "title": "𝑓-Divergence Inequalities",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "I. Sason and S. Verdú",
+      "orig_title": "f𝑓f-divergence inequalities",
+      "paper_id": "1508.00335v7"
+    },
+    {
+      "index": 47,
+      "title": "Beyond differential privacy: Composition theorems and relational logic for f𝑓f-divergences between probabilistic programs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ICALP",
+      "authors": "G. Barthe and F. Olmedo"
+    },
+    {
+      "index": 48,
+      "title": "Rényi divergence and Kullback-Leibler divergence",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "T. van Erven and P. Harremos"
+    },
+    {
+      "index": 49,
+      "title": "Arimoto channel coding converse and Rényi divergence",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Allerton Conf. Commun., Control, and Computing (Allerton)",
+      "authors": "Y. Polyanskiy and S. Verdú"
+    },
+    {
+      "index": 50,
+      "title": "On the Rényi Divergence, Joint Range of Relative Entropies, and a Channel Coding Theorem",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Trans. Inf. Theory",
+      "authors": "I. Sason",
+      "orig_title": "On the rényi divergence, joint range of relative entropies, and a channel coding theorem",
+      "paper_id": "1501.03616v4"
+    }
+  ]
+}

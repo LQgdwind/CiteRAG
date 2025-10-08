@@ -1,0 +1,355 @@
+{
+  "paper_id": "2404.00935v1",
+  "title": "Random Circuit Sampling: Fourier Expansion and Statistics",
+  "sections": {
+    "introduction": "The 2019 paper “Quantum supremacy using a programmable superconducting processor”  described an experiment carried out by Google’s Sycamore quantum computer.\nGoogle’s Sycamore quantum computer performed a sampling task; that is,\nit generated (with considerable noise) random bitstrings (vectors of zeroes and ones) of length n𝑛n, 12≤n≤5312𝑛5312\\leq n\\leq 53,\nfrom certain discrete probability distributions supported on all such 2nsuperscript2𝑛2^{n} bitstrings.\nGoogle’s sampling task is referred to as random circuit sampling (RCS). The samples are from probability distributions that depend on the circuits (a circuit can be regarded as a program that the quantum computer runs); These probability distributions are not computed by the quantum computers, and for large number of qubits their computation is claimed to be infeasible (even for a quantum computer).\nIn the Google experiment the Sycamore quantum computer produced samples, each\nconsisting\nof several hundred thousand binary strings (“bitstrings”), for each of around 1000 random circuits. For each sample, a certain statistic called the linear cross-entropy fidelity estimator denoted by ℱX​E​Bsubscriptℱ𝑋𝐸𝐵{\\mathcal{F}}_{XEB} (and sometimes simply by X​E​B𝑋𝐸𝐵XEB) was computed. Based on the value of this estimator it was concluded that the samples produced by the quantum computer represent “quantum supremacy.” This paper continues our statistical analysis of the data and the statistical methods\nof the Google experiment and may have wider interest for the study of NISQ computers. For our earlier works, see\n 0 1. In this paper we rely, for the first time, on simulations for noisy quantum circuits, and for that purpose we used both the Google and the IBM simulators. (We also ran a few 5-qubit experiments on freely available IBM 7-qubit quantum computers.) All this experimental data and simulations are based on samples of N=500,000𝑁500000N=500,000 bitstrings for every circuit that we study. In the appendix we also use our statistical tools to analyze samples for 12-qubit computation from a recent experiment  of logical circuits based on neutral atoms. The main novelty of this paper is the use of Fourier analysis (the Fourier–Walsh expansion) for statistical analysis of samples coming from NISQ computers and from simulations and, in particular, to refine the ℱX​E​Bsubscriptℱ𝑋𝐸𝐵{\\cal F}_{XEB} fidelity estimator according to Fourier degrees. Put\n[n]={1,2,…,n}delimited-[]𝑛12…𝑛[n]=\\{1,2,\\dots,n\\}. Recall that every real function f𝑓f defined on 0-1 vectors x𝑥x of length n𝑛n, the Fourier–Walsh expansion of f𝑓f is a representation of f𝑓f as a linear combination of the Fourier–Walsh functions WS​(x)subscript𝑊𝑆𝑥W_{S}(x), where S𝑆S goes over all subsets of [n]delimited-[]𝑛[n]. (See section 2.1 for details.)\nThe coefficients f^​(S)^𝑓𝑆\\widehat{f}(S) are referred to as the Fourier–Walsh coefficients of f𝑓f, and if k=|S|𝑘𝑆k=|S| then f^​(S)^𝑓𝑆\\widehat{f}(S) is referred to as a degree-k𝑘k Fourier–Walsh coefficient.\nWe use both analytical methods and simulations to study the effect of readout and gate errors on the refined Fourier-based estimators, and use this study to examine the data from the Google experiment and from simulations.\n For an early work on noise stability, noise sensitivity and Fourier–Walsh expansion see Benjamini, Kalai, and Schramm .111The Fourier–Walsh expansion is also related to the ANOVA decomposition in statistics that goes back to Hoeffding, see, e.g., 2. Kalai and Kindler  used a related noise operator based on\nFourier–Hermite expansion\nto study noisy boson sampling.\nIn the context of random circuit sampling, Fourier–Walsh expansion played a role in Boixo et al. , Gao and Duan [ref]6, Kalai  ,\nand Aharonov et al. . A basic insight in the analysis of Boolean functions is the relevance of the noise operator Tρsubscript𝑇𝜌T_{\\rho}, where ρ𝜌\\rho is a real number, 0≤ρ≤10𝜌10\\leq\\rho\\leq 1, defined as follows. Readout errors, namely, reading with probability q𝑞q a qubit as “0” when it is in fact “1” and vice versa, directly correspond to the noise operator T(1−2​q)subscript𝑇12𝑞T_{(1-2q)}. When the probability distribution described by a random circuit C𝐶C on n𝑛n qubits is given by the function 𝒫C​(x)subscript𝒫𝐶𝑥{\\cal P}_{C}(x), one ingredient of our analysis is finding the best fit to the noisy data of the form where s,q𝑠𝑞s,q are real numbers, 0≤s≤10𝑠10\\leq s\\leq 1 and 0≤q≤1/20𝑞120\\leq q\\leq 1/2. As it turned out (and can be anticipated from theoretical works  ), the value of q𝑞q may reflect not only the simple connection with readout errors but also a subtle effect of gate errors. We will refer to the value of q𝑞q that best fits the data as the “effective readout error.” The effect of gate errors towards larger effective readout errors is witnessed in data coming from Google’s simulator but not in the samples of the Google quantum supremacy experiment. Here is a brief summary of this paper. Section 2 provides background on Fourier–Walsh analysis and on the Google quantum supremacy experiment . Section 3 describes the Fourier–Walsh distributions coming from random circuit sampling. Section 4 develops statistical estimates that refine the ℱX​E​Bsubscriptℱ𝑋𝐸𝐵{\\cal F}_{XEB} estimate (and related estimates) to study the Fourier behavior. Section 5 applies these estimates to study the samples of the Google experiment as well as samples from simulations. Of special interest to us is the effect of gate errors on the Fourier–Walsh coefficients. Section 6 studies fidelity estimators. We extend some of our analysis from  to data coming from simulations of noisy quantum circuits and we concentrate on the estimators based on readout errors introduced in Section 6 of  which are related to the Fourier–Walsh behavior. Section 7 concludes."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A polynomial-time classical algorithm for noisy random circuit sampling",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "D. Aharonov, X. Gao, Z. Landau, Y. Liu, U. Vazirani"
+    },
+    {
+      "index": 1,
+      "title": "Quantum supremacy using a programmable superconducting processor",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Nature",
+      "authors": "F. Arute et al."
+    },
+    {
+      "index": 2,
+      "title": "Noise sensitivity of Boolean functions and applications to percolation",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Publications Mathématiques de l’Institut des Hautes Études Scientifiques",
+      "authors": "I. Benjamini, G. Kalai, and O. Schramm"
+    },
+    {
+      "index": 3,
+      "title": "Logical quantum processor based on reconfigurable atom arrays",
+      "abstract": "",
+      "year": "2024",
+      "venue": "Nature",
+      "authors": "D. Bluvstein, S. J. Evered, A. A. Geim, et al."
+    },
+    {
+      "index": 4,
+      "title": "Fourier analysis of sampling from noisy chaotic quantum circuits",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "S. Boixo, V. N. Smelyanskiy, and H. Neven"
+    },
+    {
+      "index": 5,
+      "title": "Efficient classical simulation of noisy quantum computation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "X. Gao and L. Duan"
+    },
+    {
+      "index": 6,
+      "title": "Limitations of Linear Cross-Entropy as a Measure for Quantum Advantage",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "X. Gao, M. Kalinowski, C.-N. Chou, M. D. Lukin, B. Barak, and S. Choi",
+      "orig_title": "Limitations of linear cross-entropy as a measure for quantum advantage",
+      "paper_id": "2112.01657v1"
+    },
+    {
+      "index": 7,
+      "title": "Noise Sensitivity of Boolean Functions and Percolation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Cambridge university press",
+      "authors": "C. Garban and J. Steif"
+    },
+    {
+      "index": 8,
+      "title": "Suppressing quantum errors by scaling a surface code logical qubit",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Nature",
+      "authors": "Google Quantum AI"
+    },
+    {
+      "index": 9,
+      "title": "Documentation for Quantum Virtual Machine",
+      "abstract": "",
+      "year": "",
+      "venue": "Cirq",
+      "authors": "Google AI"
+    },
+    {
+      "index": 10,
+      "title": "IBM Quantum documentation, FakeGuadalupe.V2",
+      "abstract": "",
+      "year": "",
+      "venue": "Qiskit documentation",
+      "authors": "IBM Quantum documentation"
+    },
+    {
+      "index": 11,
+      "title": "Traversable wormhole dynamics on a quantum processor",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Nature",
+      "authors": "D. Jafferis et al."
+    },
+    {
+      "index": 12,
+      "title": "Demonstration of quantum volume 64 on a superconducting quantum computing system",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Quantum Sci. Technol.",
+      "authors": "P. Jurcevic et al."
+    },
+    {
+      "index": 13,
+      "title": "The influence of variables on Boolean functions",
+      "abstract": "",
+      "year": "1988",
+      "venue": "29th Annual Symposium on Foundations of Computer Science",
+      "authors": "J. Kahn, G. Kalai, and N. Linial"
+    },
+    {
+      "index": 14,
+      "title": "Three Puzzles on Mathematics, Computation, and Games",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Congress of Mathematicians 2018, Rio de Janeiro",
+      "authors": "G. Kalai",
+      "orig_title": "Three puzzles on mathematics, computation and games",
+      "paper_id": "1801.02602v1"
+    },
+    {
+      "index": 15,
+      "title": "The argument against quantum computers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Quantum, Probability, Logic: Itamar Pitowsky’s Work and Influence, Springer",
+      "authors": "G. Kalai"
+    },
+    {
+      "index": 16,
+      "title": "The argument against quantum computers, the quantum laws of nature, and Google’s supremacy claims",
+      "abstract": "",
+      "year": "2024",
+      "venue": "The Intercontinental Academia Laws: Rigidity and Dynamics, World Scientific",
+      "authors": "G. Kalai"
+    },
+    {
+      "index": 17,
+      "title": "Gaussian noise sensitivity and BosonSampling",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "G. Kalai and G. Kindler"
+    },
+    {
+      "index": 18,
+      "title": "Concerns about recent claims of a huge quantum computational advantage via Gaussian boson sampling",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "G. Kalai and G. Kindler"
+    },
+    {
+      "index": 19,
+      "title": "Google’s Quantum Supremacy Claim: Data, Documentation, and Discussion",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "G. Kalai, Y. Rinott, and T. Shoham",
+      "orig_title": "Google’s quantum supremacy claims: data, documentation, and discussion",
+      "paper_id": "2210.12753v3"
+    },
+    {
+      "index": 20,
+      "title": "Questions and Concerns About Google’s Quantum Supremacy Claim",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "G. Kalai, Y. Rinott, and T. Shoham",
+      "orig_title": "Questions and concerns about Google’s quantum supremacy claim",
+      "paper_id": "2305.01064v1"
+    },
+    {
+      "index": 21,
+      "title": "Applications of ANOVA type decompositions for comparisons of conditional variance statistics including jackknife estimates",
+      "abstract": "",
+      "year": "1982",
+      "venue": "The Annals of Statistics",
+      "authors": "S. Karlin and Y. Rinott"
+    },
+    {
+      "index": 22,
+      "title": "Hardware-efficient random circuits to classify noise in a multi-qubit system",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Physical Review A",
+      "authors": "J.-S. Kim, L. S. Bishop, A. D. Corcoles, S. Merkel, J. A. Smolin, S. Sheldon"
+    },
+    {
+      "index": 23,
+      "title": "Evidence for the utility of quantum computing before fault tolerance",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Nature",
+      "authors": "Y. Kim, A. Eddins, S. Anand et al."
+    },
+    {
+      "index": 24,
+      "title": "Quantum computational advantage with a programmable photonic processor",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Nature",
+      "authors": "L. S. Madsen, F. Laudenbach, M. F. Askarani et al."
+    },
+    {
+      "index": 25,
+      "title": "Time-crystalline eigenstate order on a quantum processor",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Nature",
+      "authors": "X. Mi, M. Ippoliti, C. Quintana et al."
+    },
+    {
+      "index": 26,
+      "title": "Noise-resilient edge modes on a chain of superconducting qubits",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Science",
+      "authors": "X. Mi et al."
+    },
+    {
+      "index": 27,
+      "title": "Phase transition in Random Circuit Sampling",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "A. Morvan et al."
+    },
+    {
+      "index": 28,
+      "title": "Analysis of Boolean Functions",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Cambridge University Press",
+      "authors": "R. O’Donnell"
+    },
+    {
+      "index": 29,
+      "title": "On classical simulation algorithms for noisy Boson Sampling",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "C. Oh, L. Jiang, and B. Fefferman"
+    },
+    {
+      "index": 30,
+      "title": "Quantum Volume in Practice: What Users Can Expect from NISQ Devices",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Quantum Engineering",
+      "authors": "E. Pelofske, A. Bärtschi, S. Eidenbenz"
+    },
+    {
+      "index": 31,
+      "title": "Demonstration of algorithmic quantum speedup",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Phys. Rev. Lett.",
+      "authors": "B. Pokharel and D. A. Lidar"
+    },
+    {
+      "index": 32,
+      "title": "Better-than-classical Grover search via quantum error detection and suppression",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "B. Pokharel and D. A. Lidar"
+    },
+    {
+      "index": 33,
+      "title": "Exactly solving the Kitaev chain and generating Majorana-zero-modes out of noisy qubits",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Scientific Reports",
+      "authors": "M. J. Rančić"
+    },
+    {
+      "index": 34,
+      "title": "Statistical Aspects of the Quantum Supremacy Demonstration",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Statistical Science",
+      "authors": "Y. Rinott, T. Shoham, and G. Kalai",
+      "orig_title": "Statistical aspects of the quantum supremacy demonstration",
+      "paper_id": "2008.05177v3"
+    },
+    {
+      "index": 35,
+      "title": "Realization of real-time fault-tolerant quantum error correction",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "C. Ryan-Anderson et al."
+    },
+    {
+      "index": 36,
+      "title": "Implementing Fault-tolerant Entangling Gates on the Five-qubit Code and the Color Code",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "C. Ryan-Anderson et al."
+    },
+    {
+      "index": 37,
+      "title": "Real-time quantum error correction beyond break-even",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Nature",
+      "authors": "V. V. Sivak et al."
+    },
+    {
+      "index": 38,
+      "title": "Simulating the dynamics of braiding of Majorana zero modes using an IBM quantum computer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Phys. Rev. Research",
+      "authors": "J. P. T. Stenger, N. T. Bronn, D. J. Egger, and D. Pekker"
+    },
+    {
+      "index": 39,
+      "title": "List of quantum processors",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Wikipedia article"
+    },
+    {
+      "index": 40,
+      "title": "Strong quantum computational advantage using a superconducting quantum processor",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Physical Review Letters",
+      "authors": "Y. Wu et al."
+    },
+    {
+      "index": 41,
+      "title": "Quantum computational advantage using photons",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Science",
+      "authors": "H.-S. Zhong et al."
+    }
+  ]
+}

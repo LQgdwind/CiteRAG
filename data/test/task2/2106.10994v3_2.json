@@ -1,0 +1,373 @@
+{
+  "paper_id": "2106.10994v3",
+  "title": "BernNet: Learning Arbitrary Graph Spectral Filters via Bernstein Approximation",
+  "sections": {
+    "node classification on real-world datasets": "We now evaluate the performance of BernNet against the competitors on real-world datasets. Following [ref]5, we include three citation graph Cora, CiteSeer and PubMed  [ref]37, and the Amazon co-purchase graph Computers and Photo [ref]20. As shown in [ref]5 these 5 datasets are homophilic graphs on which the connected nodes tend to share the same label. We also include the Wikipedia graph Chameleon and Squirrel , the Actor co-occurrence graph, and webpage graphs Texas and Cornell from WebKB333http://www.cs.cmu.edu/afs/cs.cmu.edu/project/theo-11/www/wwkb/ . These 5 datasets are heterophilic datasets on which connected nodes tend to have different labels.\nWe summarize the statistics of these datasets in Table 3. Following [ref]5, we perform full-supervised node classification task with each model, where we randomly split the node set into train/validation/test set with ratio 60%/20%/20%. For fairness, we generate 10 random splits by random seeds and evaluate all models on the same splits, and report the average metric for each model. We compare BernNet with 6 baseline models: MLP, GCN , GAT , APPNP , ChebNet , and GPR-GNN [ref]5. For GPR-GNN, we use the officially released code (see the supplementary materials for URL and commit numbers) and set the order of polynomial filter K=10𝐾10K=10. For other models, we use the corresponding Pytorch Geometric library implementations . For BernNet, we use the following propagation process: where f​(𝐗)𝑓𝐗f(\\mathbf{X}) is\na 2-layer MLP with 64 hidden units on the feature matrix 𝐗𝐗\\mathbf{X}.\nNote that this propagation process is almost identical to that of APPNP or GPR-GNN.\nThe only difference is that we substitute the Generalized PageRank polynomial with Bernstein polynomial. We set the K=10𝐾10K=10 and use different learning rate and dropout for the linear layer and the propagation layer. For all models, we optimal leaning rate over {0.001,0.002,0.01,0.05}0.0010.0020.010.05\\{0.001,0.002,0.01,0.05\\} and weight decay {0.0,0.0005}0.00.0005\\{0.0,0.0005\\}. More detailed experimental settings are discussed in Appendix. We use the micro-F1 score with a 95% confidence interval as the evaluation metric.\nThe relevant results are summarized in Table 4.\nBoldface letters indicate the best result for the given confidence interval.\nWe observe that BernNet provides the best results on seven out of the ten datasets.\nOn the other three datasets, BernNet also achieves competitive results against SOTA methods. More interestingly, this experiment also shows BernNet can learn complex filters from real-world datasets with only the supervision of node labels. Figure 4 plots some of the filters BernNet learnt in the training process. On Actor, BernNet learns an all-pass-alike filter, which concurs with the fact that MLP outperforms all other baselines on this dataset. On Chameleon and Squirrel, BernNet learns two comb-alike filters. Given that BernNet outperforms all competitors by at least 1% on these two datasets, it may suggest that comb-alike filters are necessary for Chameleon and Squirrel. Figure 5 shows the Coefficients θksubscript𝜃𝑘\\theta_{k} learnt from real-world datasets by BernNet. When comparing Figures  4 and  5, we observe that the curves of filters and curves of coefficients are almost the same. This is because BernNet’s coefficients are highly correlated with the spectral property of the target filter, which indicates BernNet Bernnet has strong interpretability. Finally, we present the train time for each method in Table  5. BernNet is slower than other methods due to its quadratic dependence on the degree K𝐾K. However, compared to the SOTA method GPR-GNN, the margin is generally less than 222, which is often acceptable in practice. In theory, both ChebNet  and GPR-GNN [ref]5 are linear time complexity related to propagation step K𝐾K, but BernNet is quadratic time complexity related to K𝐾K. Delgado et al.  show that Bernstein approximation can be evaluated in linear time related to K𝐾K using the corner cutting algorithm.\nHowever, BernNet can not use this algorithm directly, because we need to multiply signal 𝐱𝐱\\mathbf{x}. How to convert BernNet to linear complexity will be a problem worth studying in the future."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Analyzing the expressive power of graph neural networks in a spectral perspective",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Muhammet Balcilar, Pierre Héroux, Benoit Gaüzère, Sébastien\nAdam, and Paul Honeine."
+    },
+    {
+      "index": 1,
+      "title": "Analyzing the expressive power of graph neural networks in a spectral perspective",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Muhammet Balcilar, Pierre Héroux, Benoit Gaüzère, Sébastien Adam, and Paul Honeine"
+    },
+    {
+      "index": 2,
+      "title": "Graph Neural Networks with Convolutional ARMA Filters",
+      "abstract": "",
+      "year": "2021",
+      "venue": "TPAMI",
+      "authors": "Filippo Maria Bianchi, Daniele Grattarola, Lorenzo Livi, and Cesare Alippi",
+      "orig_title": "Graph neural networks with convolutional arma filters",
+      "paper_id": "1901.01343v7"
+    },
+    {
+      "index": 3,
+      "title": "A graph cnn-lstm neural network for short and long-term traffic forecasting based on trajectory data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Transportation Research Part C: Emerging Technologies",
+      "authors": "Toon Bogaerts, Antonio D Masegosa, Juan S Angarita-Zapata, Enrique Onieva, and Peter Hellinckx"
+    },
+    {
+      "index": 4,
+      "title": "Multi-label image recognition with graph convolutional networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Zhao-Min Chen, Xiu-Shen Wei, Peng Wang, and Yanwen Guo"
+    },
+    {
+      "index": 5,
+      "title": "Adaptive Universal Generalized PageRank Graph Neural Network",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Eli Chien, Jianhao Peng, Pan Li, and Olgica Milenkovic",
+      "orig_title": "Adaptive universal generalized pagerank graph neural network",
+      "paper_id": "2006.07988v6"
+    },
+    {
+      "index": 6,
+      "title": "Traffic graph convolutional recurrent neural network: A deep learning framework for network-scale traffic learning and forecasting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "T-ITS",
+      "authors": "Zhiyong Cui, Kristian Henrickson, Ruimin Ke, and Yinhai Wang"
+    },
+    {
+      "index": 7,
+      "title": "Convolutional neural networks on graphs with fast localized spectral filtering",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NeurIPS",
+      "authors": "Michaël Defferrard, Xavier Bresson, and Pierre Vandergheynst"
+    },
+    {
+      "index": 8,
+      "title": "A linear complexity algorithm for the bernstein basis",
+      "abstract": "",
+      "year": "2003",
+      "venue": "GMP",
+      "authors": "Jorge Delgado and Juan Manuel Pena"
+    },
+    {
+      "index": 9,
+      "title": "Graph neural networks with adaptive frequency response filter",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CIKM",
+      "authors": "Yushun Dong, Kaize Ding, Brian Jalaian, Shuiwang Ji, and Jundong Li"
+    },
+    {
+      "index": 10,
+      "title": "The bernstein polynomial basis: A centennial retrospective",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Computer Aided Geometric Design",
+      "authors": "Rida T Farouki"
+    },
+    {
+      "index": 11,
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Matthias Fey and Jan Eric Lenssen",
+      "orig_title": "Fast graph representation learning with pytorch geometric",
+      "paper_id": "1903.02428v3"
+    },
+    {
+      "index": 12,
+      "title": "Could graph neural networks learn better molecular representation for drug discovery? a comparison study of descriptor-based and graph-based models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Journal of cheminformatics",
+      "authors": "Dejun Jiang, Zhenxing Wu, Chang-Yu Hsieh, Guangyong Chen, Ben Liao, Zhe Wang, Chao Shen, Dongsheng Cao, Jian Wu, and Tingjun Hou"
+    },
+    {
+      "index": 13,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Thomas N Kipf and Max Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 14,
+      "title": "Predict then propagate: Graph neural networks meet personalized pagerank",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Johannes Klicpera, Aleksandar Bojchevski, and Stephan Günnemann"
+    },
+    {
+      "index": 15,
+      "title": "Diffusion Improves Graph Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Johannes Klicpera, Stefan Weißenberger, and Stephan Günnemann",
+      "orig_title": "Diffusion improves graph learning",
+      "paper_id": "1911.05485v6"
+    },
+    {
+      "index": 16,
+      "title": "CayleyNets: Graph Convolutional Neural Networks with Complex Rational Spectral Filters",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Transactions on Signal Processing",
+      "authors": "Ron Levie, Federico Monti, Xavier Bresson, and Michael M Bronstein",
+      "orig_title": "Cayleynets: Graph convolutional neural networks with complex rational spectral filters",
+      "paper_id": "1705.07664v2"
+    },
+    {
+      "index": 17,
+      "title": "Encoding social information with graph convolutional networks forpolitical perspective detection in news media",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACL",
+      "authors": "Chang Li and Dan Goldwasser"
+    },
+    {
+      "index": 18,
+      "title": "Diffusion convolutional recurrent neural network: Data-driven traffic forecasting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Yaguang Li, Rose Yu, Cyrus Shahabi, and Yan Liu"
+    },
+    {
+      "index": 19,
+      "title": "Towards Deeper Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "KDD",
+      "authors": "Meng Liu, Hongyang Gao, and Shuiwang Ji",
+      "orig_title": "Towards deeper graph neural networks",
+      "paper_id": "2007.09296v1"
+    },
+    {
+      "index": 20,
+      "title": "Image-based Recommendations on Styles and Substitutes",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIGIR",
+      "authors": "Julian McAuley, Christopher Targett, Qinfeng Shi, and Anton Van Den Hengel",
+      "orig_title": "Image-based recommendations on styles and substitutes",
+      "paper_id": "1506.04757v1"
+    },
+    {
+      "index": 21,
+      "title": "Signal processing techniques for interpolation in graph structured data",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ICASSP",
+      "authors": "Sunil K Narang, Akshay Gadde, and Antonio Ortega"
+    },
+    {
+      "index": 22,
+      "title": "Geom-GCN: Geometric Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Hongbin Pei, Bingzhe Wei, Kevin Chen-Chuan Chang, Yu Lei, and Bo Yang",
+      "orig_title": "Geom-gcn: Geometric graph convolutional networks",
+      "paper_id": "2002.05287v2"
+    },
+    {
+      "index": 23,
+      "title": "Polynomials that are positive on an interval",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Transactions of the American Mathematical Society",
+      "authors": "Victoria Powers and Bruce Reznick"
+    },
+    {
+      "index": 24,
+      "title": "Deepinf: Social influence prediction with deep learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "KDD",
+      "authors": "Jiezhong Qiu, Jian Tang, Hao Ma, Yuxiao Dong, Kuansan Wang, and Jie Tang"
+    },
+    {
+      "index": 25,
+      "title": "Practical high-quality electrostatic potential surfaces for drug discovery using a graph-convolutional deep neural network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Journal of medicinal chemistry",
+      "authors": "Prakash Chandra Rathi, R Frederick Ludlow, and Marcel L Verdonk"
+    },
+    {
+      "index": 26,
+      "title": "Multi-scale attributed node embedding",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Journal of Complex Networks",
+      "authors": "Benedek Rozemberczki, Carl Allen, and Rik Sarkar"
+    },
+    {
+      "index": 27,
+      "title": "Collective classification in network data",
+      "abstract": "",
+      "year": "2008",
+      "venue": "AI magazine",
+      "authors": "Prithviraj Sen, Galileo Namata, Mustafa Bilgic, Lise Getoor, Brian Galligher, and Tina Eliassi-Rad"
+    },
+    {
+      "index": 28,
+      "title": "Spectral and algebraic graph theory",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Yale lecture notes",
+      "authors": "Daniel Spielman"
+    },
+    {
+      "index": 29,
+      "title": "Leveraging domain context for question answering over knowledge graph",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Data Science and Engineering",
+      "authors": "Peihao Tong, Qifan Zhang, and Junjie Yao"
+    },
+    {
+      "index": 30,
+      "title": "Graph Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Petar Veličković, Guillem Cucurull, Arantxa Casanova, Adriana Romero, Pietro Lio, and Yoshua Bengio",
+      "orig_title": "Graph attention networks",
+      "paper_id": "1710.10903v3"
+    },
+    {
+      "index": 31,
+      "title": "Simplifying Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "Felix Wu, Amauri Souza, Tianyi Zhang, Christopher Fifty, Tao Yu, and Kilian Weinberger",
+      "orig_title": "Simplifying graph convolutional networks",
+      "paper_id": "1902.07153v2"
+    },
+    {
+      "index": 32,
+      "title": "Session-based Recommendation with Graph Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "Shu Wu, Yuyuan Tang, Yanqiao Zhu, Liang Wang, Xing Xie, and Tieniu Tan",
+      "orig_title": "Session-based recommendation with graph neural networks",
+      "paper_id": "1811.00855v4"
+    },
+    {
+      "index": 33,
+      "title": "A Comprehensive Survey on Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE transactions on neural networks and learning systems",
+      "authors": "Zonghan Wu, Shirui Pan, Fengwen Chen, Guodong Long, Chengqi Zhang, and S Yu Philip",
+      "orig_title": "A comprehensive survey on graph neural networks",
+      "paper_id": "1901.00596v4"
+    },
+    {
+      "index": 34,
+      "title": "Graph Convolutional Networks using Heat Kernel for Semi-supervised Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IJCAI",
+      "authors": "Bingbing Xu, Huawei Shen, Qi Cao, Keting Cen, and Xueqi Cheng",
+      "orig_title": "Graph convolutional networks using heat kernel for semi-supervised learning",
+      "paper_id": "2007.16002v1"
+    },
+    {
+      "index": 35,
+      "title": "Graph wavelet neural network",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Bingbing Xu, Huawei Shen, Qi Cao, Yunqi Qiu, and Xueqi Cheng",
+      "orig_title": "Graph wavelet neural network",
+      "paper_id": "1904.07785v1"
+    },
+    {
+      "index": 36,
+      "title": "Representation learning on graphs with jumping knowledge networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Keyulu Xu, Chengtao Li, Yonglong Tian, Tomohiro Sonobe, Ken-ichi Kawarabayashi, and Stefanie Jegelka"
+    },
+    {
+      "index": 37,
+      "title": "Revisiting Semi-Supervised Learning with Graph Embeddings",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML",
+      "authors": "Zhilin Yang, William Cohen, and Ruslan Salakhudinov",
+      "orig_title": "Revisiting semi-supervised learning with graph embeddings",
+      "paper_id": "1603.08861v2"
+    },
+    {
+      "index": 38,
+      "title": "Graph Convolutional Neural Networks for Web-Scale Recommender Systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "KDD",
+      "authors": "Rex Ying, Ruining He, Kaifeng Chen, Pong Eksombatchai, William L Hamilton, and Jure Leskovec",
+      "orig_title": "Graph convolutional neural networks for web-scale recommender systems",
+      "paper_id": "1806.01973v1"
+    },
+    {
+      "index": 39,
+      "title": "Semantic Graph Convolutional Networks for 3D Human Pose Regression",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Long Zhao, Xi Peng, Yu Tian, Mubbasir Kapadia, and Dimitris N Metaxas",
+      "orig_title": "Semantic graph convolutional networks for 3d human pose regression",
+      "paper_id": "1904.03345v3"
+    },
+    {
+      "index": 40,
+      "title": "Learning with local and global consistency",
+      "abstract": "",
+      "year": "2004",
+      "venue": "NeurIPS",
+      "authors": "Dengyong Zhou, Olivier Bousquet, Thomas Lal, Jason Weston, and Bernhard Schölkopf"
+    }
+  ]
+}

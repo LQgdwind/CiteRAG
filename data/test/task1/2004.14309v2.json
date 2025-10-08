@@ -1,0 +1,535 @@
+{
+  "paper_id": "2004.14309v2",
+  "title": "How to Learn a Useful Critic? Model-based Action-Gradient-Estimator Policy Optimization",
+  "abstract": "Abstract\nDeterministic-policy actor-critic algorithms for continuous control improve the actor by plugging its actions into the critic and ascending the action-value gradient, which is obtained by chaining the actor’s Jacobian matrix with the gradient of the critic with respect to input actions.\nHowever, instead of gradients, the critic is, typically, only trained to accurately predict expected returns, which, on their own, are useless for policy optimization.\nIn this paper, we propose MAGE, a model-based actor-critic algorithm, grounded in the theory of policy gradients, which explicitly learns the action-value gradient.\nMAGE backpropagates through the learned dynamics to compute gradient targets in temporal difference learning, leading to a critic tailored for policy improvement.\nOn a set of MuJoCo continuous-control tasks, we demonstrate the efficiency of the algorithm in comparison to model-free and model-based state-of-the-art baselines.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Using inaccurate models in reinforcement learning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "23rd international conference on Machine learning",
+      "authors": "Pieter Abbeel, Morgan Quigley, and Andrew Y Ng"
+    },
+    {
+      "index": 1,
+      "title": "Compatible Value Gradients for Reinforcement Learning of Continuous Deep Policies",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1509.03005",
+      "authors": "David Balduzzi and Muhammad Ghifary",
+      "orig_title": "Compatible value gradients for reinforcement learning of continuous deep policies",
+      "paper_id": "1509.03005v1"
+    },
+    {
+      "index": 2,
+      "title": "Distributional policy gradients",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Gabriel Barth-Maron, Matthew W. Hoffman, David Budden, Will Dabney, Dan Horgan, Dhruva TB, Alistair Muldal, Nicolas Heess, and Timothy Lillicrap"
+    },
+    {
+      "index": 3,
+      "title": "Infinite-horizon policy-gradient estimation",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Journal of Artificial Intelligence Research",
+      "authors": "Jonathan Baxter and Peter L Bartlett"
+    },
+    {
+      "index": 4,
+      "title": "Automatic Differentiation in Machine Learning: a Survey",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Atilim Gunes Baydin, Barak A. Pearlmutter, Alexey Andreyevich Radul, and Jeffrey Mark Siskind",
+      "orig_title": "Automatic differentiation in machine learning: a survey",
+      "paper_id": "1502.05767v4"
+    },
+    {
+      "index": 5,
+      "title": "Openai gym, 2016.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "Greg Brockman, Vicki Cheung, Ludwig Pettersson, Jonas Schneider, John Schulman, Jie Tang, and Wojciech Zaremba"
+    },
+    {
+      "index": 6,
+      "title": "Deep Reinforcement Learning in a Handful of Trials using Probabilistic Dynamics Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Kurtland Chua, Roberto Calandra, Rowan McAllister, and Sergey Levine",
+      "orig_title": "Deep reinforcement learning in a handful of trials using probabilistic dynamics models",
+      "paper_id": "1805.12114v2"
+    },
+    {
+      "index": 7,
+      "title": "Model-Augmented Actor-Critic: Backpropagating through Paths",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Ignasi Clavera, Yao Fu, and Pieter Abbeel",
+      "orig_title": "Model-augmented actor-critic: Backpropagating through paths",
+      "paper_id": "2005.08068v1"
+    },
+    {
+      "index": 8,
+      "title": "Sobolev Training for Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Wojciech M Czarnecki, Simon Osindero, Max Jaderberg, Grzegorz Swirszcz, and Razvan Pascanu",
+      "orig_title": "Sobolev training for neural networks",
+      "paper_id": "1706.04859v3"
+    },
+    {
+      "index": 9,
+      "title": "A survey on policy search for robotics",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Foundations and Trends® in Robotics",
+      "authors": "Marc Peter Deisenroth, Gerhard Neumann, Jan Peters, et al."
+    },
+    {
+      "index": 10,
+      "title": "Gradient-aware model-based policy search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Thirty-Fourth AAAI Conference on Artificial Intelligence",
+      "authors": "Pierluca D’Oro, Alberto Maria Metelli, Andrea Tirinzoni, Matteo Papini, and Marcello Restelli"
+    },
+    {
+      "index": 11,
+      "title": "Improving generalization performance using double backpropagation",
+      "abstract": "",
+      "year": "1992",
+      "venue": "IEEE Transactions on Neural Networks",
+      "authors": "Harris Drucker and Yann Le Cun"
+    },
+    {
+      "index": 12,
+      "title": "Reinforcement learning by value gradients",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ArXiv",
+      "authors": "Michael Fairbank"
+    },
+    {
+      "index": 13,
+      "title": "Value-gradient learning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "City University London",
+      "authors": "Michael Fairbank"
+    },
+    {
+      "index": 14,
+      "title": "Value-aware loss function for model-based reinforcement learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Artificial Intelligence and Statistics",
+      "authors": "Amir-massoud Farahmand, Andre Barreto, and Daniel Nikovski"
+    },
+    {
+      "index": 15,
+      "title": "Efficient and accurate estimation of lipschitz constants for deep neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Mahyar Fazlyab, Alexander Robey, Hamed Hassani, Manfred Morari, and George Pappas"
+    },
+    {
+      "index": 16,
+      "title": "Model-based value estimation for efficient model-free reinforcement learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1803.00101",
+      "authors": "Vladimir Feinberg, Alvin Wan, Ion Stoica, Michael I Jordan, Joseph E Gonzalez, and Sergey Levine"
+    },
+    {
+      "index": 17,
+      "title": "Addressing Function Approximation Error in Actor-Critic Methods",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Scott Fujimoto, Herke Hoof, and David Meger",
+      "orig_title": "Addressing function approximation error in actor-critic methods",
+      "paper_id": "1802.09477v3"
+    },
+    {
+      "index": 18,
+      "title": "DeepMDP: Learning Continuous Latent Space Models for Representation Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "36th International Conference on Machine Learning",
+      "authors": "Carles Gelada, Saurabh Kumar, Jacob Buckman, Ofir Nachum, and Marc G. Bellemare",
+      "orig_title": "DeepMDP: Learning continuous latent space models for representation learning",
+      "paper_id": "1906.02736v1"
+    },
+    {
+      "index": 19,
+      "title": "Improved training of wasserstein gans",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Ishaan Gulrajani, Faruk Ahmed, Martin Arjovsky, Vincent Dumoulin, and Aaron C Courville"
+    },
+    {
+      "index": 20,
+      "title": "Learning Continuous Control Policies by Stochastic Value Gradients",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Nicolas Heess, Gregory Wayne, David Silver, Timothy Lillicrap, Tom Erez, and Yuval Tassa",
+      "orig_title": "Learning continuous control policies by stochastic value gradients",
+      "paper_id": "1510.09142v1"
+    },
+    {
+      "index": 21,
+      "title": "A Closer Look at Deep Policy Gradients",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Andrew Ilyas, Logan Engstrom, Shibani Santurkar, Dimitris Tsipras, Firdaus Janoos, Larry Rudolph, and Aleksander Madry",
+      "orig_title": "A closer look at deep policy gradients",
+      "paper_id": "1811.02553v4"
+    },
+    {
+      "index": 22,
+      "title": "When to trust your model: Model-based policy optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Michael Janner, Justin Fu, Marvin Zhang, and Sergey Levine"
+    },
+    {
+      "index": 23,
+      "title": "Reinforcement learning with misspecified model classes",
+      "abstract": "",
+      "year": "2013",
+      "venue": "2013 IEEE International Conference on Robotics and Automation",
+      "authors": "Joshua Joseph, Alborz Geramifard, John W Roberts, Jonathan P How, and Nicholas Roy"
+    },
+    {
+      "index": 24,
+      "title": "Uncertainty-driven imagination for continuous deep reinforcement learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Conference on Robot Learning",
+      "authors": "Gabriel Kalweit and Joschka Boedecker"
+    },
+    {
+      "index": 25,
+      "title": "Actor-critic algorithms",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Vijay R Konda and John N Tsitsiklis"
+    },
+    {
+      "index": 26,
+      "title": "Model-Ensemble Trust-Region Policy Optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Thanard Kurutach, Ignasi Clavera, Yan Duan, Aviv Tamar, and Pieter Abbeel",
+      "orig_title": "Model-ensemble trust-region policy optimization",
+      "paper_id": "1802.10592v2"
+    },
+    {
+      "index": 27,
+      "title": "Continuous control with deep reinforcement learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1509.02971",
+      "authors": "Timothy P Lillicrap, Jonathan J Hunt, Alexander Pritzel, Nicolas Heess, Tom Erez, Yuval Tassa, David Silver, and Daan Wierstra"
+    },
+    {
+      "index": 28,
+      "title": "On the Variance of the Adaptive Learning Rate and Beyond",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1908.03265",
+      "authors": "Liyuan Liu, Haoming Jiang, Pengcheng He, Weizhu Chen, Xiaodong Liu, Jianfeng Gao, and Jiawei Han",
+      "orig_title": "On the variance of the adaptive learning rate and beyond",
+      "paper_id": "1908.03265v4"
+    },
+    {
+      "index": 29,
+      "title": "Adversarial Regularizers in Inverse Problems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Sebastian Lunz, Ozan Öktem, and Carola-Bibiane Schönlieb",
+      "orig_title": "Adversarial regularizers in inverse problems",
+      "paper_id": "1805.11572v2"
+    },
+    {
+      "index": 30,
+      "title": "The Concrete Distribution: A Continuous Relaxation of Discrete Random Variables",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.00712",
+      "authors": "Chris J Maddison, Andriy Mnih, and Yee Whye Teh",
+      "orig_title": "The concrete distribution: A continuous relaxation of discrete random variables",
+      "paper_id": "1611.00712v3"
+    },
+    {
+      "index": 31,
+      "title": "Policy Optimization via Importance Sampling",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Alberto Maria Metelli, Matteo Papini, Francesco Faccio, and Marcello Restelli",
+      "orig_title": "Policy optimization via importance sampling",
+      "paper_id": "1809.06098v2"
+    },
+    {
+      "index": 32,
+      "title": "Asynchronous methods for deep reinforcement learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International conference on machine learning",
+      "authors": "Volodymyr Mnih, Adria Puigdomenech Badia, Mehdi Mirza, Alex Graves, Timothy Lillicrap, Tim Harley, David Silver, and Koray Kavukcuoglu"
+    },
+    {
+      "index": 33,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, et al.",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 34,
+      "title": "Adaptive critic designs",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE transactions on Neural Networks",
+      "authors": "Danil V Prokhorov and Donald C Wunsch"
+    },
+    {
+      "index": 35,
+      "title": "Markov decision processes: Discrete stochastic dynamic programming",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Wiley Series in Probability and Statistics",
+      "authors": "Martin L. Puterman"
+    },
+    {
+      "index": 36,
+      "title": "Searching for Activation Functions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1710.05941",
+      "authors": "Prajit Ramachandran, Barret Zoph, and Quoc V Le",
+      "orig_title": "Searching for activation functions",
+      "paper_id": "1710.05941v2"
+    },
+    {
+      "index": 37,
+      "title": "Contractive auto-encoders: Explicit invariance during feature extraction",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICML",
+      "authors": "Salah Rifai, Pascal Vincent, Xavier Muller, Xavier Glorot, and Yoshua Bengio"
+    },
+    {
+      "index": 38,
+      "title": "On approximating ∇f∇𝑓\nabla f with neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.12744",
+      "authors": "Saeed Saremi"
+    },
+    {
+      "index": 39,
+      "title": "Neural Empirical Bayes",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Saeed Saremi and Aapo Hyvarinen",
+      "orig_title": "Neural empirical bayes",
+      "paper_id": "1903.02334v2"
+    },
+    {
+      "index": 40,
+      "title": "Making the world differentiable: On using self-supervised fully recurrent neural networks for dynamic reinforcement learning and planning in non-stationary environments",
+      "abstract": "",
+      "year": "1990",
+      "venue": "",
+      "authors": "Jürgen Schmidhuber"
+    },
+    {
+      "index": 41,
+      "title": "Deep learning in neural networks: An overview",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Neural networks",
+      "authors": "Jürgen Schmidhuber"
+    },
+    {
+      "index": 42,
+      "title": "Gradient estimation using stochastic computation graphs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "John Schulman, Nicolas Heess, Theophane Weber, and Pieter Abbeel"
+    },
+    {
+      "index": 43,
+      "title": "Trust Region Policy Optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International conference on machine learning",
+      "authors": "John Schulman, Sergey Levine, Pieter Abbeel, Michael Jordan, and Philipp Moritz",
+      "orig_title": "Trust region policy optimization",
+      "paper_id": "1502.05477v5"
+    },
+    {
+      "index": 44,
+      "title": "Proximal policy optimization algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1707.06347",
+      "authors": "John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov"
+    },
+    {
+      "index": 45,
+      "title": "Model-Based Active Exploration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Pranav Shyam, Wojciech Jaśkowski, and Faustino Gomez",
+      "orig_title": "Model-based active exploration",
+      "paper_id": "1810.12162v5"
+    },
+    {
+      "index": 46,
+      "title": "Deterministic policy gradient algorithms",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "David Silver, Guy Lever, Nicolas Heess, Thomas Degris, Daan Wierstra, and Martin Riedmiller"
+    },
+    {
+      "index": 47,
+      "title": "First-order Adversarial Vulnerability of Neural Networks and Input Dimension",
+      "abstract": "",
+      "year": "2019",
+      "venue": "36th International Conference on Machine Learning",
+      "authors": "Carl-Johann Simon-Gabriel, Yann Ollivier, Leon Bottou, Bernhard Schölkopf, and David Lopez-Paz",
+      "orig_title": "First-order adversarial vulnerability of neural networks and input dimension",
+      "paper_id": "1802.01421v4"
+    },
+    {
+      "index": 48,
+      "title": "Penalty functions",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Handbook of evolutionary computation",
+      "authors": "Alice E Smith, David W Coit, Thomas Baeck, David Fogel, and Zbigniew Michalewicz"
+    },
+    {
+      "index": 49,
+      "title": "Learning to predict by the methods of temporal differences",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Machine learning",
+      "authors": "Richard S Sutton"
+    },
+    {
+      "index": 50,
+      "title": "Dyna, an integrated architecture for learning, planning, and reacting",
+      "abstract": "",
+      "year": "1991",
+      "venue": "ACM Sigart Bulletin",
+      "authors": "Richard S Sutton"
+    },
+    {
+      "index": 51,
+      "title": "Reinforcement learning: An introduction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "MIT press",
+      "authors": "Richard S Sutton and Andrew G Barto"
+    },
+    {
+      "index": 52,
+      "title": "Policy gradient methods for reinforcement learning with function approximation",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Richard S Sutton, David A McAllester, Satinder P Singh, and Yishay Mansour"
+    },
+    {
+      "index": 53,
+      "title": "Model-based policy gradients with parameter-based exploration by least-squares conditional density estimation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Neural networks",
+      "authors": "Voot Tangkaratt, Syogo Mori, Tingting Zhao, Jun Morimoto, and Masashi Sugiyama"
+    },
+    {
+      "index": 54,
+      "title": "Mujoco: A physics engine for model-based control",
+      "abstract": "",
+      "year": "2012",
+      "venue": "2012 IEEE/RSJ International Conference on Intelligent Robots and Systems",
+      "authors": "Emanuel Todorov, Tom Erez, and Yuval Tassa"
+    },
+    {
+      "index": 55,
+      "title": "Analysis of temporal-diffference learning with function approximation",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Advances in neural information processing systems",
+      "authors": "John N Tsitsiklis and Benjamin Van Roy"
+    },
+    {
+      "index": 56,
+      "title": "When to use parametric models in reinforcement learning?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Hado P van Hasselt, Matteo Hessel, and John Aslanides"
+    },
+    {
+      "index": 57,
+      "title": "Model-based policy gradient reinforcement learning",
+      "abstract": "",
+      "year": "2003",
+      "venue": "20th International Conference on Machine Learning (ICML-03)",
+      "authors": "Xin Wang and Thomas G Dietterich"
+    },
+    {
+      "index": 58,
+      "title": "Credit assignment techniques in stochastic computation graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "22nd International Conference on Artificial Intelligence and Statistics",
+      "authors": "Théophane Weber, Nicolas Heess, Lars Buesing, and David Silver"
+    },
+    {
+      "index": 59,
+      "title": "Advanced forecasting methods for global crisis warning and models of intelligence",
+      "abstract": "",
+      "year": "1977",
+      "venue": "General Systems Yearbook",
+      "authors": "Paul Werbos"
+    },
+    {
+      "index": 60,
+      "title": "Simple statistical gradient-following algorithms for connectionist reinforcement learning",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Machine learning",
+      "authors": "Ronald J Williams"
+    }
+  ]
+}

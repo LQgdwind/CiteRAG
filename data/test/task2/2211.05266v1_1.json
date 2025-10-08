@@ -1,0 +1,475 @@
+{
+  "paper_id": "2211.05266v1",
+  "title": "Certified Numerical Real Root Isolation of Zero-dimensional Multivariate Real Nonlinear Systems11footnote 1This work was partially supported by the National Key Research and Development Program of China grant 2022YFC3802102.",
+  "sections": {
+    "introduction": "Real root isolation of equation systems is a fundamental problem in mathematics and engineering applications. There are many famous symbolic computation methods to solve the problem: the Gröbner basis method  6, the Ritt-Wu characteristic set method , the cylindrical algebraic decomposition(CAD) and the resultant method 6 and so on. Though the size of the polynomial systems that can be solved is limited, symbolic methods can get the algebraic representation(s) of all the complex solutions, even including the multiplicity of the solutions.\nNumerical methods, such as the homotopy continuation method 6, can get all the isolated complex solutions of square polynomial systems (systems with n𝑛n variables and n𝑛n polynomials) with large sizes, even for over-determined systems or positive dimensional systems .\nThough the solutions with traditional homotopy continuation method are lack of certification,\nthe certified homotopy method was proposed   2 3 6 in some literatures to overcome the shortcoming based on the famous α𝛼\\alpha-theory. To ensure that the output results are reliable, certification with interval Newton’s method (see 4 1 7) for possible real roots after homotopy continuation method is applied in 8. Subdivision method is also used to get the real solutions of the given systems, which are not limited to polynomial case   5 1 7 2 8 4 5 9 7. There are many methods to exclude the domains without solutions 5 4 9 9 .\nMore requirements are needed to ensure that the boxes are isolating boxes. There are three main methods for certifying a real root: Miranda theorem with Jacobian test, the interval Newton method, and the α𝛼\\alpha-theory. Miranda theorem 9 and its practical version MK test 5 3 2 is used for checking the existence of a real zero of a system inside a box. The MK test works well for linear systems 2.\nJacobian test  is used for certifying that a system has at most one real zero inside a box, so does the methods in 7. Thus, the termination of the subdivision method based on the MK test and Jacobian test is guaranteed in a theoretical sense for square systems with simple roots.\nWhen MK test is used for systems with more than two variables, it seldom succeeds which can also be found in our experiments. We also analyze the reason in the experiments section.\nBesides that, the interval Newton method 4 1 7 and α𝛼\\alpha-theory 0 can work for testing the uniqueness and existence of the complex (or real) zeros. The interval Newton method can verify that a box is an isolating box. In 1 2 5 8, the authors use the interval Newton method for real root finding. But the termination of the method is not ensured for certifying a box containing a simple zero or not by successive subdivision. Since an isolating box of a square system may not satisfy the existence and uniqueness condition, the termination condition of subdivision is absent. Thus the theory for root isolation of equation systems based on interval Newton method is not complete even for systems with only simple roots. The α𝛼\\alpha-theory is slightly different from the other two methods, which computes derivatives with high orders, and the verified domain of α𝛼\\alpha-theory is a ball, not a box. Similar as the interval Newton method, the termination of the α𝛼\\alpha-theory method for root isolation of a square system is also not complete. In 8, the authors present the concept of the α𝛼\\alpha-inclusion box and use it for seeking the real roots of a square system. In , we presented a new method which was based on the geometrical property, the so-called orthogonal monotonicity inside a box for a bivariate polynomial system to certify the existence and uniqueness of a real root inside the box. We used bounding polynomials to exclude the regions which contained no roots. The termination of the method is guaranteed. Thus it can be used for real root isolation inside a box containing only simple real zeros. The method was extended to bivariate nonlinear systems in the journal version 5. We extend the method to general zero-dimensional equation systems in this paper. In this paper, we present a new existence criterion of a simple real root of a zero-dimensional square system inside a box, which is much easier to succeed than Miranda based criterion. Based on the new criterion, we propose an algorithm to isolate the real roots of a zero-dimensional real nonlinear square system F=(f1,…,fn)𝐹subscript𝑓1…subscript𝑓𝑛F=(f_{1},\\ldots,f_{n}) inside a given box B=[a1,b1]×…×[an,bn]𝐵subscript𝑎1subscript𝑏1…subscript𝑎𝑛subscript𝑏𝑛B=[a_{1},b_{1}]\\times\\ldots\\times[a_{n},b_{n}], where fisubscript𝑓𝑖f_{i} and ∂fi∂xjsubscript𝑓𝑖subscript𝑥𝑗\\frac{\\partial f_{i}}{\\partial x_{j}} are well defined in B𝐵B for 1≤i,j≤nformulae-sequence1𝑖𝑗𝑛1\\leq i,j\\leq n. In order to analyze the roots of the system locally inside a box, we give the concept of the opposite monotone system (O-M system for short) in an n−limit-from𝑛n-D box and give a criterion to check the existence and uniqueness of a simple real zero of the given system in the given box based on properties of the opposite monotone system. Though the O-M system is firstly presented in  for 2-D case (It is called orthogonal monotone in ), the O-M condition for n𝑛n-D systems are more complicated than that for 2-D systems. Simply speaking, for a system F𝐹F and an n𝑛n-D box B𝐵B, we transform locally the original system F𝐹F into a new system G=(g1,…,gn)𝐺subscript𝑔1…subscript𝑔𝑛G=(g_{1},\\ldots,g_{n}) with the same zeros as F𝐹F such that the curve S=𝕍​(g1,…,gn−1)𝑆𝕍subscript𝑔1…subscript𝑔𝑛1S={\\mathbb{V}}(g_{1},\\ldots,g_{n-1}) is monotone in B𝐵B and S𝑆S intersects transversally with the hypersurface 𝕍​(gn)𝕍subscript𝑔𝑛{\\mathbb{V}}(g_{n}) in B𝐵B (see Definition 3). The evaluation of the functions of the tangent vector of S𝑆S on B𝐵B does not contain zeros ensures its monotonicity inside B𝐵B. The direction of the tangent vector of S𝑆S and the normal vector of 𝕍​(gn)𝕍subscript𝑔𝑛{\\mathbb{V}}(g_{n}) are almost identical or opposite when evaluating on B𝐵B, which ensures the uniqueness of the root inside B𝐵B. The existence of a real zero of G𝐺G inside the box B𝐵B can be determined by the change of the signs of the evaluations of gnsubscript𝑔𝑛g_{n} on the two endpoints of S𝑆S which are the intersection of S𝑆S and the boundaries of B𝐵B. Some local transformation techniques in MK test 3 2 are modified and used in our method. The new system in MK test is JF​(mB)−1​FTsubscript𝐽𝐹superscriptsubscript𝑚𝐵1superscript𝐹𝑇J_{F}(m_{B})^{-1}F^{T}, here JF​(mB)−1subscript𝐽𝐹superscriptsubscript𝑚𝐵1J_{F}(m_{B})^{-1} is the inverse of the Jacobian matrix of F𝐹F at the middle point of B𝐵B and FTsuperscript𝐹𝑇F^{T} is the transpose of F𝐹F. In our method, G=U​JF​(mB)−1​FT𝐺𝑈subscript𝐽𝐹superscriptsubscript𝑚𝐵1superscript𝐹𝑇G=U\\,J_{F}(m_{B})^{-1}F^{T}, where U𝑈U is an invertible matrix under some requirements.\nWe prove that the termination of the subdivision process for finding all simple real zeros of a system inside a box. So our method is complete for real root isolation of a square nonlinear system inside a bounded box. Since the existence condition based on the opposite monotone method is used recursively, we revise the original conditions for the opposite monotone system and propose the concept of the strong monotone (S-M) system to avoid constructing opposite monotone systems repeatedly.\nFor boxes which contain multiple real zeros of systems, our method is invalid, thus we give a terminate precision for subdivision process. Therefore, we may get some suspected boxes which reach the terminate precision and do not satisfy the conditions of our method. We give a heuristic verification method to deal with those suspected boxes. Based on our theory, we design an algorithm to isolate the real zeros of a multivariate equation system. We also analyze the complexity of our algorithm.\nWe implement our algorithm in C++. Our experiments show the effectivity and efficiency of our method. We compare our method with some existing methods and analyze some aspects of the methods. Notice that our method can be used for complex root isolation since a complex nonlinear system can be transformed into a real nonlinear system.  The rest of this paper is organized as follows. We introduce some notations and preliminaries in the next section. In Section 3, we give the concepts of O-M system and S-M system in a box and prove the uniqueness and existence theorem, then we show how to match the uniqueness and existence conditions for a given system and a given box. The algorithm of the method is also given in this section. The complexity analysis is also given there. In Section 4,\nsome experiment results are given and an analysis based on the results is shown. We draw a conclusion in the last section."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Introduction to precise numerical methods",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Elsevier/Academic Press",
+      "authors": "O. Aberth"
+    },
+    {
+      "index": 1,
+      "title": "Cylindrical algebraic decomposition i: The basic algorithm",
+      "abstract": "",
+      "year": "1984",
+      "venue": "SIAM Journal on Computing",
+      "authors": "D.S. Arnon, G.E. Collins, and S. McCallum"
+    },
+    {
+      "index": 2,
+      "title": "Numerically solving polynomial systems with Bertini",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Software, Environments, and Tools 25, SIAM",
+      "authors": "D.J. Bates, J.D. Hauenstein, A.J. Sommese, and C.W. Wampler"
+    },
+    {
+      "index": 3,
+      "title": "Certified numerical homotopy tracking",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Experimental Mathematics",
+      "authors": "C. Beltran and A. Leykin"
+    },
+    {
+      "index": 4,
+      "title": "Robust certified numerical homotopy tracking",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Found. Comput. Math.",
+      "authors": "C. Beltran and A. Leykin"
+    },
+    {
+      "index": 5,
+      "title": "Bruno buchberger’s phd thesis 1965: An algorithm for finding the basis elements of the residue class ring of a zero dimensional polynomial ideal",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Journal of Symbolic Computation",
+      "authors": "B. Buchberger"
+    },
+    {
+      "index": 6,
+      "title": "Complete subdivision algorithms, ii: Isotopic meshing of singular algebraic curves",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Journal of Symbolic Computation",
+      "authors": "M. Burr, S. W. Choi, B. Galehouse, and C. Yap"
+    },
+    {
+      "index": 7,
+      "title": "The complexity of an adaptive subdivision method for approximating real curves",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISSAC’2017, ACM",
+      "authors": "M. Burr, S. Gao, and E. Tsigaridas"
+    },
+    {
+      "index": 8,
+      "title": "The complexity of an adaptive subdivision method for approximating real curves",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISSAC ’17, ACM",
+      "authors": "M. A. Burr, S. Gao, and E. P. Tsigaridas"
+    },
+    {
+      "index": 9,
+      "title": "Hom4ps-3: A parallel numerical solver for systems of polynomial equations based on polyhedral homotopy continuation methods",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Mathematical Software – ICMS 2014, Springer Berlin Heidelberg",
+      "authors": "T. Chen, T.-L. Lee, and T.-Y. Li"
+    },
+    {
+      "index": 10,
+      "title": "A New Deflation Method For Verifying the Isolated Singular Zeros of Polynomial Systems",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Computational and Applied Mathematics",
+      "authors": "J. S. Cheng, X. Dou, and J. Wen",
+      "orig_title": "A new deflation method for verifying the isolated singular zeros of polynomial systems",
+      "paper_id": "1812.11534v1"
+    },
+    {
+      "index": 11,
+      "title": "Complete numerical isolation of real roots in zero-dimensional triangular systems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Journal of Symbolic Computation",
+      "authors": "J. S. Cheng, X. S. Gao, and C. K. Yap"
+    },
+    {
+      "index": 12,
+      "title": "A generic position based method for real root isolation of zero-dimensional polynomial systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Journal of Symbolic Computation",
+      "authors": "J. S. Cheng and K. Jin"
+    },
+    {
+      "index": 13,
+      "title": "Certified numerical real root isolation for bivariate polynomial systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Symposium on Symbolic and Algebraic Computation, ISSAC ’19, ACM",
+      "authors": "J. S. Cheng and J. Wen"
+    },
+    {
+      "index": 14,
+      "title": "Certified numerical real root isolation for bivariate nonlinear systems",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Journal of Symbolic Computation",
+      "authors": "J.-S. Cheng, J. Wen, and B. Zhang"
+    },
+    {
+      "index": 15,
+      "title": "Ideals, Varieties, and Algorithms: An Introduction to Computational Algebraic Geometry and Commutative Algebra",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Springer",
+      "authors": "D. Cox, J. Little, and D. O’Shea"
+    },
+    {
+      "index": 16,
+      "title": "Plantinga-Vegter algorithm takes average polynomial time",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Symposium on Symbolic and Algebraic Computation, ISSAC, ACM",
+      "authors": "F. Cucker, E. Alperen A., and J. Tonelli-Cueto",
+      "orig_title": "Plantinga-vegter algorithm takes average polynomial time",
+      "paper_id": "1901.09234v2"
+    },
+    {
+      "index": 17,
+      "title": "A numerical algorithm for zero counting, i: Complexity and accuracy",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of Complexity",
+      "authors": "F. Cucker, T. Krick, G. Malajovich, and M. Wschebor"
+    },
+    {
+      "index": 18,
+      "title": "A numerical algorithm for zero counting. ii: Distance to ill-posedness and smoothed analysis",
+      "abstract": "",
+      "year": "2009",
+      "venue": "J. Fixed Point Theory Appl.",
+      "authors": "F. Cucker, T. Krick, G. Malajovich, and M. Wschebor"
+    },
+    {
+      "index": 19,
+      "title": "A numerical algorithm for zero counting. iii: Randomization and condition",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advances in Applied Mathematics",
+      "authors": "F. Cucker, T. Krick, G. Malajovich, and M. Wschebor"
+    },
+    {
+      "index": 20,
+      "title": "Multiple Zeros of Nonlinear Systems",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Mathematics of Computation",
+      "authors": "B. H. Dayton, T. Y. Li, and Z. Zeng",
+      "orig_title": "Multiple zeros of nonlinear systems",
+      "paper_id": "2103.05738v1"
+    },
+    {
+      "index": 21,
+      "title": "Reliable homotopy continuation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "hal-00589948v3",
+      "authors": "J. Van der Hoeven"
+    },
+    {
+      "index": 22,
+      "title": "Advanced Calculus of Several Variables",
+      "abstract": "",
+      "year": "1973",
+      "venue": "Academic Press",
+      "authors": "JR. C.H. Edwards"
+    },
+    {
+      "index": 23,
+      "title": "Investigation of a subdivision based algorithm for solving systems of polynomial equations",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Nonlinear Analysis: Theory, Methods and Applications",
+      "authors": "J. Garloff and A.P. Smith"
+    },
+    {
+      "index": 24,
+      "title": "Solution of systems of polynomial equations by using bernstein expansion",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Symbolic Algebraic Methods and Verification Methods, Springer",
+      "authors": "J. Garloff and A.P. Smith"
+    },
+    {
+      "index": 25,
+      "title": "Discriminants, resultants, and multidimensional determinants",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Springer Science & Business Media",
+      "authors": "I. Gelfand, M. Kapranov, and A. Zelevinsky"
+    },
+    {
+      "index": 26,
+      "title": "Subdivision termination criteria in subdivision multivariate solvers using dual hyperplanes representations",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Computer-Aided Design",
+      "authors": "Iddo Hanniel and Gershon Elber"
+    },
+    {
+      "index": 27,
+      "title": "Solving polynomial systems using a branch and prune approach",
+      "abstract": "",
+      "year": "1997",
+      "venue": "SIAM Journal on Numerical Analysis",
+      "authors": "P. Van Hentenryck, D. Mcallester, and D. Kapur"
+    },
+    {
+      "index": 28,
+      "title": "Safe starting regions by fixed points and tightening",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Computing",
+      "authors": "H. Hong and V. Stahl"
+    },
+    {
+      "index": 29,
+      "title": "Determinants of interval matrices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Electronic Journal of Linear Algebra",
+      "authors": "J. Horacek, M. Hladik, and J. Matejka"
+    },
+    {
+      "index": 30,
+      "title": "A subdivision solver for systems of large dense polynomials",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv:1603.07916",
+      "authors": "R. Imbach"
+    },
+    {
+      "index": 31,
+      "title": "Rigorous Global Search: Continuous Problems",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Springer, Boston, MA",
+      "authors": "R. Baker Kearfott"
+    },
+    {
+      "index": 32,
+      "title": "Algorithmic error estimation for approximate solutions of nonlinear systems of equations",
+      "abstract": "",
+      "year": "1978",
+      "venue": "Computing",
+      "authors": "J. B. Kioustelidis"
+    },
+    {
+      "index": 33,
+      "title": "Newton-algorithmen zur bestimmung von nullstellen mit fehlerschranken",
+      "abstract": "",
+      "year": "1969",
+      "venue": "Computing",
+      "authors": "R. Krawczyk"
+    },
+    {
+      "index": 34,
+      "title": "Newton’s method with deflation for isolated singularities of polynomial systems",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "Anton Leykin, Jan Verschelde, and Ailing Zhao"
+    },
+    {
+      "index": 35,
+      "title": "Numerically determining solutions of systems of polynomial equations",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Bulletin of the American Mathematical Society",
+      "authors": "T.-Y. Li, T. Sauer, and J. A. Yorke"
+    },
+    {
+      "index": 36,
+      "title": "Isotopic Arrangement of Simple Curves: an Exact Numerical Approach based on Subdivision",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICMS 2014, Springer",
+      "authors": "J. M. Lien, V. Sharma, G. Vegter, and C. Yap",
+      "orig_title": "Isotopic arrangement of simple curves: An exact numerical approach based on subdivision",
+      "paper_id": "2009.00811v1"
+    },
+    {
+      "index": 37,
+      "title": "On continued fraction expansion of real roots of polynomial systems, complexity and condition numbers",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Theoretical Computer Science",
+      "authors": "A. Mantzaflaris, B. Mourrain, and E. Tsigaridas"
+    },
+    {
+      "index": 38,
+      "title": "Un’osservazione su un teorema di Brouwer",
+      "abstract": "",
+      "year": "1940",
+      "venue": "Consiglio Nazionale delle Ricerche",
+      "authors": "C. Miranda"
+    },
+    {
+      "index": 39,
+      "title": "Interval analysis, volume 4",
+      "abstract": "",
+      "year": "1966",
+      "venue": "Prentice-Hall Englewood Cliffs, NJ",
+      "authors": "R. E. Moore"
+    },
+    {
+      "index": 40,
+      "title": "A test for existence of solutions to nonlinear systems",
+      "abstract": "",
+      "year": "1977",
+      "venue": "SIAM Journal on Numerical Analysis",
+      "authors": "R. E. Moore"
+    },
+    {
+      "index": 41,
+      "title": "A simple test for accuracy of approximate solutions to nonlinear (or linear) systems",
+      "abstract": "",
+      "year": "1980",
+      "venue": "SIAM Journal on Numerical Analysis",
+      "authors": "R. E. Moore and J. B. Kioustelidis"
+    },
+    {
+      "index": 42,
+      "title": "Computing all solutions to polynomial systems using homotopy continuation",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Appl. Math. Comput.",
+      "authors": "A. P. MORGAN"
+    },
+    {
+      "index": 43,
+      "title": "Subdivision methods for solving polynomial equations",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Journal of Symbolic Computation",
+      "authors": "B. Mourrain and J. P. Pavone"
+    },
+    {
+      "index": 44,
+      "title": "Interval Methods for Systems of Equations",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Cambridge University Press",
+      "authors": "A. Neumaier"
+    },
+    {
+      "index": 45,
+      "title": "Isotopic approximation of implicit curves and surfaces",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Eurographics/ACM SIGGRAPH symposium on Geometry processing, ACM",
+      "authors": "S. Plantinga and G. Vegter"
+    },
+    {
+      "index": 46,
+      "title": "Solving algebraic problems with high accuracy",
+      "abstract": "",
+      "year": "1983",
+      "venue": "A new approach to scientific computation, Elsevier",
+      "authors": "S. M. Rump"
+    },
+    {
+      "index": 47,
+      "title": "Real root isolation of polynomial equations based on hybrid computation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computer Mathematics, Springer Berlin Heidelberg",
+      "authors": "F. Shen, W. Wu, and B. Xia"
+    },
+    {
+      "index": 48,
+      "title": "Computation of the solutions of nonlinear polynomial systems",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Computer Aided Geometric Design",
+      "authors": "E. C. Sherbrooke and N. M. Patrikalakis"
+    },
+    {
+      "index": 49,
+      "title": "Newton’s method estimates from data at one point",
+      "abstract": "",
+      "year": "1986",
+      "venue": "The merging of disciplines: new directions in pure, applied, and computational mathematics, Springer",
+      "authors": "S. Smale"
+    },
+    {
+      "index": 50,
+      "title": "On the complexity of inverting integer and polynomial matrices",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Comput. Complex.",
+      "authors": "A. Storjohann"
+    },
+    {
+      "index": 51,
+      "title": "Newton¡¯s method¡¯s basins of attraction revisited",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Applied Mathematics and Computation",
+      "authors": "H. Susanto and N. Karjanto"
+    },
+    {
+      "index": 52,
+      "title": "A Robust Numerical Path Tracking Algorithm for Polynomial Homotopy Continuation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIAM Journal on Scientific Computing",
+      "authors": "S. Telen, M. Van Barel, and J. Verschelde",
+      "orig_title": "A robust numerical path tracking algorithm for polynomial homotopy continuation",
+      "paper_id": "1909.04984v2"
+    },
+    {
+      "index": 53,
+      "title": "Algorithm 795: Phcpack: a general-purpose solver for polynomial systems by homotopy continuation",
+      "abstract": "",
+      "year": "1999",
+      "venue": "ACM Transactions on Mathematical Software",
+      "authors": "J. Verschelde"
+    },
+    {
+      "index": 54,
+      "title": "Mathematics mechanization: mechanical geometry theorem-proving, mechanical geometry problem-solving, and polynomial equations-solving",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Science Press Beijing",
+      "authors": "W. Wu"
+    },
+    {
+      "index": 55,
+      "title": "An approach for certifying homotopy continuation paths: Univariate case",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ISSAC ’18, ACM",
+      "authors": "J. Xu, M. Burr, and C. Yap"
+    },
+    {
+      "index": 56,
+      "title": "Effective subdivision algorithm for isolating zeros of real systems of equations, with complexity analysis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ISSAC ’19, ACM",
+      "authors": "J. Xu and C. Yap"
+    }
+  ]
+}

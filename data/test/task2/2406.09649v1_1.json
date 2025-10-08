@@ -1,0 +1,495 @@
+{
+  "paper_id": "2406.09649v1",
+  "title": "SquirrelFS: using the Rust compiler to check file-system crash consistency",
+  "sections": {
+    "introduction": "One of the most important properties for file systems is to preserve their integrity and user data in the face of a crash or a power loss       .\nUnfortunately, building crash-consistent file systems is challenging; checking or ensuring crash consistency is even more so  . There are two main approaches to building file systems today, as summarized in Table 1.\nFirst, we build file systems using low-level languages like C, and we use runtime testing to gain some confidence in the correctness of the systems      .\nNote that this approach is necessarily incomplete; testing can only reveal bugs, not prove their absence.\nHowever, this approach allows rapid development, and entire testing ecosystems have sprung up around this basic approach, like the widely-used xfstests  and Linux Test Project . A different approach to building file systems is to verify them: we write a high-level specification of correct behavior (including crash behavior) and then prove that the implementation matches the specification\n  3   .\nThis approach can prove that the implementation does not have certain classes of bugs;\nhowever, it comes at a high cost.\nFor each line of code in the implementation, we may need to write 7–13 lines of proof.\nWriting and maintaining proofs is time-consuming and requires specialized expertise, constraining rapid development. In this work, we seek to find a middle ground between these two approaches.\nWe would like to verify some aspects of file systems, but without the burden of having to write and maintain proofs.\nIn particular, we are interested in crash consistency, a correctness property that is especially difficult to test for.\nIn order to be crash consistent, systems must ensure that updates become persistent on storage media in the correct order; however, hardware or caching layers may reorder updates to improve performance in unanticipated ways.\nExposing crash-consistency bugs thus requires one to find and reproduce these low-level orderings, which requires specialized testing software      .\nOur goal is to develop lightweight approaches to statically check for crash-consistency bugs without the overhead of full verification. We exploit two recent developments to achieve this goal (§2).\nFirst, the Rust programming language has a strong type system that supports powerful compile-time safety checks.\nOur work takes inspiration from Corundum , a Rust crate (library) that uses Rust’s type system to check low-level PM safety properties.\nIn this work, we observe that Rust’s type system can also statically enforce that certain operations are carried out in a given order  .\nSince the root of crash consistency is ordering updates to storage, if we can encode those ordering-based invariants in the type system,\nthe compiler can ensure the invariants hold at compile time. However, to do so, crash consistency must be derived purely from ordering-based invariants;\nsome mechanisms such as journaling use writes to a log to obtain atomicity, which is harder to encode in the type system.\nSoft updates achieves crash consistency purely via ordering , but the traditional soft updates scheme is complex and hard to implement  . We observe that the low latency of persistent memory  6 allows file-system operations to be synchronous; all updates to storage media are durable by the time each operation returns 7  [ref]34  .\nWe take advantage of persistent memory’s synchronous updates and byte addressability\nto develop a new mechanism for crash consistency we term Synchronous Soft Updates. Synchronous Soft Updates builds on the classical soft updates mechanism , but avoids most of the complexity that prevented the widespread adoption of soft updates .\nTwo of the most complicated aspects of soft updates, dependency structures and cyclic dependency management, arise due to the need to track ordering requirements between block-sized updates across asynchronous operations.\nSynchronous Soft Updates eliminates these challenges entirely by using fast, fine-grained storage to back synchronous operations. We ensure that the ordering invariants of Synchronous Soft Updates hold by using the Rust compiler.\nWe take advantage of Rust’s support for the typestate pattern, an API design pattern where an object’s type reflects the operations that have been performed on it 4.\nThe legal order of operations is encoded in function signatures and enforced by Rust’s typechecker.\nFor example, an uninitialized inode has a different type than an initialized one; attempting to use one where the other is expected will result in a compile-time error.\nFigure 1 illustrates the approach. We implement Synchronous Soft Updates in a new file system for PM called SquirrelFS and use the typestate pattern in Rust to check that update orderings are implemented correctly. SquirrelFS provides crash-atomic metadata system calls, including rename; on the original soft updates, a crash during rename could result in both the source and destination existing.\nSquirrelFS compiles and typechecks in seconds, whereas running verification on existing storage systems takes minutes or hours. Building SquirrelFS required no modifications to the Rust language. We evaluate SquirrelFS by comparing to a number of file systems meant for persistent memory, such as NOVA 7 and WineFS [ref]34 (§5).\nWe use Intel’s Optane DC Persistent Memory Module for our comparison, and find that SquirrelFS offers comparable or better performance to other PM file systems across a broad range of workloads.\n\nThe current SquirrelFS prototype prioritizes simplicity of update ordering rules over performance in some areas, leading to relatively high mount times and memory utilization; however, these are not fundamental limitations of the design.\n\nWe also model the design of SquirrelFS using the Alloy model-checking language  to gain confidence in the correctness of its Synchronous Soft Updates mechanism. We note that SquirrelFS is not fully verified, and thus does not obtain the strong correctness guarantees of verified storage systems like FSCQ .\nCrash-consistency bugs may still occur in SquirrelFS if their root causes are unrelated to ordering, if the ordering rules enforced by the compiler are incorrect, or if trusted code in SquirrelFS’s implementation or the Rust compiler are buggy.\nFor example, SquirrelFS’s ordering rules guarantee that inodes are always initialized before they are linked into the file system tree, but they do not guarantee that the contents of the inode are correct.\nSquirrelFS’s static checks are also limited by the capabilities of the Rust compiler.\nFor instance, the Rust compiler cannot check properties about variable-sized sets of data structures, as checking such properties is undecidable in general. SquirrelFS offers a useful new point in the spectrum of approaches to building robust storage systems;\nit provides weaker guarantees than verified systems, but comes at a lower cost.\nAs such, we hope that it proves useful for developers of storage systems that require strong guarantees, good performance, and rapid development. In summary, this work makes the following contributions: Statically-checked crash consistency, an approach where high-level properties are encoded into the type system and checked at compile time (§3) The Synchronous Soft Updates crash-consistency mechanism for persistent-memory file systems (§3.1) The SquirrelFS prototype, along with a discussion of lessons learned during its development (§4). SquirrelFS and its Alloy model are publicly available at https://github.com/utsaslab/squirrelfs."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "BTRFS documentation",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Compute Express Link (CXL) specification",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 2,
+      "title": "Direct Access for files",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 3,
+      "title": "Filebench",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 4,
+      "title": "Linux test project",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 5,
+      "title": "LMDB",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 6,
+      "title": "Rocksdb",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 7,
+      "title": "Rust for linux",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 8,
+      "title": "Typestate programming",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 9,
+      "title": "xfstests",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 10,
+      "title": "Typestate-oriented programming",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ACM SIGPLAN Conference Companion on Object Oriented Programming Systems Languages and Applications",
+      "authors": "Jonathan Aldrich, Joshua Sunshine, Darpan Saini, and Zachary Sparks"
+    },
+    {
+      "index": 11,
+      "title": "Cogent: Verifying high-assurance file system implementations",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Architectural Support for Programming Languages and Operating Systems",
+      "authors": "Sidney Amani, Alex Hixon, Zilin Chen, Christine Rizkallah, Peter Chubb, Liam O’Connor, Joel Beeren, Yutaka Nagashima, Japheth Lim, Thomas Sewell, Joseph Tuong, Gabriele Keller, Toby Murray, Gerwin Klein, and Gernot Heiser"
+    },
+    {
+      "index": 12,
+      "title": "Soft updates, hard problems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "Valerie Aurora"
+    },
+    {
+      "index": 13,
+      "title": "Exploring the Software Ecosystem for Compute Express Link (CXL) Memory",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Piotr Balcer"
+    },
+    {
+      "index": 14,
+      "title": "Using lightweight formal methods to validate a key-value storage node in Amazon S3",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM SIGOPS Symposium on Operating Systems Principles",
+      "authors": "James Bornholt, Rajeev Joshi, Vytautas Astrauskas, Brendan Cully, Bernhard Kragl, Seth Markle, Kyle Sauri, Drew Schleit, Grant Slatton, Serdar Tasiran, Jacob Van Geffen, and Andrew Warfield"
+    },
+    {
+      "index": 15,
+      "title": "Specifying and checking file system crash-consistency models",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conference on Architectural Support for Programming Languages and Operating Systems",
+      "authors": "James Bornholt, Antoine Kaufmann, Jialin Li, Arvind Krishnamurthy, Emina Torlak, and Xi Wang"
+    },
+    {
+      "index": 16,
+      "title": "Verifying the DaisyNFS concurrent and crash-safe file system with sequential reasoning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+      "authors": "Tej Chajed, Joseph Tassarotti, Mark Theng, M. Frans Kaashoek, and Nickolai Zeldovich"
+    },
+    {
+      "index": 17,
+      "title": "Verifying a high-performance crash-safe file system using a tree specification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Symposium on Operating Systems Principles",
+      "authors": "Haogang Chen, Tej Chajed, Alex Konradi, Stephanie Wang, Atalay İleri, Adam Chlipala, M. Frans Kaashoek, and Nickolai Zeldovich"
+    },
+    {
+      "index": 18,
+      "title": "Using crash hoare logic for certifying the fscq file system",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Symposium on Operating Systems Principles",
+      "authors": "Haogang Chen, Daniel Ziegler, Tej Chajed, Adam Chlipala, M. Frans Kaashoek, and Nickolai Zeldovich"
+    },
+    {
+      "index": 19,
+      "title": "Orderless and Eventually Durable File Systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Vijay Chidambaram"
+    },
+    {
+      "index": 20,
+      "title": "Consistency Without Ordering",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Conference on File and Storage Technologies",
+      "authors": "Vijay Chidambaram, Tushar Sharma, Andrea C. Arpaci-Dusseau, and Remzi H. Arpaci-Dusseau"
+    },
+    {
+      "index": 21,
+      "title": "Benchmarking cloud serving systems with ycsb",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ACM Symposium on Cloud Computing",
+      "authors": "Brian F. Cooper, Adam Silberstein, Erwin Tam, Raghu Ramakrishnan, and Russell Sears"
+    },
+    {
+      "index": 22,
+      "title": "Soft updates made simple and fast on non-volatile memory",
+      "abstract": "",
+      "year": "2017",
+      "venue": "USENIX Annual Technical Conference",
+      "authors": "Mingkai Dong and Haibo Chen"
+    },
+    {
+      "index": 23,
+      "title": "System software for persistent memory",
+      "abstract": "",
+      "year": "2014",
+      "venue": "European Conference on Computer Systems",
+      "authors": "Subramanya R. Dulloor, Sanjay Kumar, Anil Keshavamurthy, Philip Lantz, Dheeraj Reddy, Rajesh Sankaran, and Jeff Jackson"
+    },
+    {
+      "index": 24,
+      "title": "Generalized file system dependencies",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM SIGOPS Symposium on Operating Systems Principles",
+      "authors": "Christopher Frost, Mike Mammarella, Eddie Kohler, Andrew de los Reyes, Shant Hovsepian, Andrew Matsuoka, and Lei Zhang"
+    },
+    {
+      "index": 25,
+      "title": "Metadata update performance in file systems",
+      "abstract": "",
+      "year": "1994",
+      "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+      "authors": "Gregory R. Ganger and Yale N. Patt"
+    },
+    {
+      "index": 26,
+      "title": "Rust for Rustaceans",
+      "abstract": "",
+      "year": "2022",
+      "venue": "No Starch Press",
+      "authors": "Jon Gjenset"
+    },
+    {
+      "index": 27,
+      "title": "Reimplementing the cedar file system using logging and group commit",
+      "abstract": "",
+      "year": "1987",
+      "venue": "ACM Symposium on Operating System Principles",
+      "authors": "Robert B. Hagmann"
+    },
+    {
+      "index": 28,
+      "title": "Storage systems are distributed systems (so verify them that way!)",
+      "abstract": "",
+      "year": "2020",
+      "venue": "USENIX Conference on Operating Systems Design and Implementation",
+      "authors": "Travis Hance, Andrea Lattuada, Chris Hawblitzel, Jon Howell, Rob Johnson, and Bryan Parno"
+    },
+    {
+      "index": 29,
+      "title": "Ironfleet: Proving practical distributed systems correct",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM Symposium on Operating Systems Principles",
+      "authors": "Chris Hawblitzel, Jon Howell, Manos Kapritsos, Jay Lorch, Bryan Parno, Justine Stephenson, Srinath Setty, and Brian Zill"
+    },
+    {
+      "index": 30,
+      "title": "File system design for an NFS file server appliance",
+      "abstract": "",
+      "year": "1994",
+      "venue": "USENIX Winter Technical Conference",
+      "authors": "Dave Hitz, James Lau, and Michael A. Malcolm"
+    },
+    {
+      "index": 31,
+      "title": "Corundum: Statically-enforced persistent memory safety",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM International Conference on Architectural Support for Programming Languages and Operating Systems",
+      "authors": "Morteza Hoseinzadeh and Steven Swanson"
+    },
+    {
+      "index": 32,
+      "title": "Software Abstractions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "The MIT Press",
+      "authors": "Daniel Jackson"
+    },
+    {
+      "index": 33,
+      "title": "Winefs: A hugepage-aware file system for persistent memory that ages gracefully",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM SIGOPS Symposium on Operating Systems Principles",
+      "authors": "Rohan Kadekodi, Saurabh Kadekodi, Soujanya Ponnapalli, Harshad Shirwadkar, Gregory R. Ganger, Aasheesh Kolli, and Vijay Chidambaram"
+    },
+    {
+      "index": 34,
+      "title": "SplitFS: Reducing Software Overhead in File Systems for Persistent Memory",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Symposium on Operating Systems Principles",
+      "authors": "Rohan Kadekodi, Se Kwon Lee, Sanidhya Kashyap, Taesoo Kim, Aasheesh Kolli, and Vijay Chidambaram",
+      "orig_title": "Splitfs: Reducing software overhead in file systems for persistent memory",
+      "paper_id": "1909.10123v1"
+    },
+    {
+      "index": 35,
+      "title": "Vinter: Automatic Non-Volatile memory crash consistency testing for full systems",
+      "abstract": "",
+      "year": "2022",
+      "venue": "USENIX Annual Technical Conference",
+      "authors": "Samuel Kalbfleisch, Lukas Werling, and Frank Bellosa"
+    },
+    {
+      "index": 36,
+      "title": "Finding semantic bugs in file systems with an extensible fuzzing framework",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Symposium on Operating Systems Principles",
+      "authors": "Seulbae Kim, Meng Xu, Sanidhya Kashyap, Jungyeon Yoon, Wen Xu, and Taesoo Kim"
+    },
+    {
+      "index": 37,
+      "title": "The Rust Programming Language",
+      "abstract": "",
+      "year": "2018",
+      "venue": "No Starch Press",
+      "authors": "Steve Klabnik and Carol Nichols"
+    },
+    {
+      "index": 38,
+      "title": "Strata: A cross media file system",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Symposium on Operating Systems Principles",
+      "authors": "Youngjin Kwon, Henrique Fingler, Tyler Hunt, Simon Peter, Emmett Witchel, and Thomas Anderson"
+    },
+    {
+      "index": 39,
+      "title": "Bug #317781: Ext4 Data Loss",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Ubuntu Bugs LaunchPad"
+    },
+    {
+      "index": 40,
+      "title": "Chipmunk: Investigating crash-consistency in persistent-memory file systems",
+      "abstract": "",
+      "year": "2023",
+      "venue": "European Conference on Computer Systems",
+      "authors": "Hayley LeBlanc, Shankara Pailoor, Om Saran K R E, Isil Dillig, James Bornholt, and Vijay Chidambaram"
+    },
+    {
+      "index": 41,
+      "title": "Physical Integrity in a Large Segmented Database",
+      "abstract": "",
+      "year": "1977",
+      "venue": "ACM Transactions on Databases",
+      "authors": "R. Lorie"
+    },
+    {
+      "index": 42,
+      "title": "Soft updates: A technique for eliminating most synchronous writes in the fast filesystem",
+      "abstract": "",
+      "year": "1999",
+      "venue": "USENIX Annual Technical Conference",
+      "authors": "Marshall Kirk McKusick and Gregory R. Ganger"
+    },
+    {
+      "index": 43,
+      "title": "The Design and Implementation of the FreeBSD Operating System",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Addison-Wesley Professional",
+      "authors": "Marshall Kirk McKusick, George Neville-Neil, and Robert N.M. Watson"
+    },
+    {
+      "index": 44,
+      "title": "High Velocity Kernel File Systems with Bento",
+      "abstract": "",
+      "year": "2021",
+      "venue": "USENIX Conference on File and Storage Technologies",
+      "authors": "Samantha Miller, Kaiyuan Zhang, Mengqi Chen, Ryan Jennings, Ang Chen, Danyang Zhuo, and Thomas Anderson",
+      "orig_title": "High velocity kernel file systems with bento",
+      "paper_id": "2005.09723v3"
+    },
+    {
+      "index": 45,
+      "title": "CrashMonkey and ACE: Systematically testing file-system crash consistency",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Transactions on Storage",
+      "authors": "Jayashree Mohan, Ashlie Martinez, Soujanya Ponnapalli, Pandian Raju, and Vijay Chidambaram"
+    },
+    {
+      "index": 46,
+      "title": "AGAMOTTO: How persistent is your persistent memory application?",
+      "abstract": "",
+      "year": "2020",
+      "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+      "authors": "Ian Neal, Ben Reeves, Ben Stoler, Andrew Quinn, Youngjin Kwon, Simon Peter, and Baris Kasikci"
+    },
+    {
+      "index": 47,
+      "title": "The cedar file system",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Communications of the ACM",
+      "authors": "Roger M. Needham, David K. Gifford, and Mike Schroeder"
+    },
+    {
+      "index": 48,
+      "title": "How amazon web services uses formal methods",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Communications of the ACM",
+      "authors": "Chris Newcombe, Tim Rath, Fan Zhang, Bogdan Munteanu, Marc Brooker, and Michael Deardeuff"
+    },
+    {
+      "index": 49,
+      "title": "All file systems are not created equal: On the complexity of crafting crash-consistent applications",
+      "abstract": "",
+      "year": "2014",
+      "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+      "authors": "Thanumalayan Sankaranarayana Pillai, Vijay Chidambaram, Ramnatthan Alagappan, Samer Al-Kiswany, Andrea C. Arpaci-Dusseau, and Remzi H. Arpaci-Dusseau"
+    },
+    {
+      "index": 50,
+      "title": "Crash consistency",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Communications of the ACM",
+      "authors": "Thanumalayan Sankaranarayana Pillai, Vijay Chidambaram, Ramnatthan Alagappan, Samer Al-Kiswany, Andrea C. Arpaci-Dusseau, and Remzi H. Arpaci-Dusseau"
+    },
+    {
+      "index": 51,
+      "title": "Persistent memory programming",
+      "abstract": "",
+      "year": "2017",
+      "venue": "login:",
+      "authors": "Andy Rudoff"
+    },
+    {
+      "index": 52,
+      "title": "Push-Button verification of file systems via crash refinement",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX Symposium on Operating Systems Design and Implementation",
+      "authors": "Helgi Sigurbjarnarson, James Bornholt, Emina Torlak, and Xi Wang"
+    },
+    {
+      "index": 53,
+      "title": "Typestate: A programming language concept for enhancing software reliability",
+      "abstract": "",
+      "year": "1986",
+      "venue": "IEEE Transactions on Software Engineering",
+      "authors": "Robert E. Strom and Shaula Yemini"
+    },
+    {
+      "index": 54,
+      "title": "Synthesis-Aided Crash Consistency for Storage Systems",
+      "abstract": "",
+      "year": "2023",
+      "venue": "European Conference on Object-Oriented Programming",
+      "authors": "Jacob Van Geffen, Xi Wang, Emina Torlak, and James Bornholt"
+    },
+    {
+      "index": 55,
+      "title": "Finding and fixing performance pathologies in persistent memory software stacks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Architectural Support for Programming Languages and Operating Systems",
+      "authors": "Jian Xu, Juno Kim, Amir Saman Memaripour, and Steven Swanson"
+    },
+    {
+      "index": 56,
+      "title": "NOVA: A log-structured file system for hybrid Volatile/Non-volatile main memories",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX Conference on File and Storage Technologies",
+      "authors": "Jian Xu and Steven Swanson"
+    },
+    {
+      "index": 57,
+      "title": "An Empirical Guide to the Behavior and Use of Scalable Persistent Memory",
+      "abstract": "",
+      "year": "2020",
+      "venue": "USENIX Conference on File and Storage Technologies",
+      "authors": "Jian Yang, Juno Kim, Morteza Hoseinzadeh, Joseph Izraelevitz, and Steven Swanson",
+      "orig_title": "An empirical guide to the behavior and use of scalable persistent memory",
+      "paper_id": "1908.03583v1"
+    },
+    {
+      "index": 58,
+      "title": "Using model checking to find serious file system errors",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Symposium on Operating Systems Design and Implementation",
+      "authors": "Junfeng Yang, Paul Twohey, Dawson Engler, and Madanlal Musuvathi"
+    },
+    {
+      "index": 59,
+      "title": "Enabling high-performance and secure userspace nvm file systems with the trio architecture",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Symposium on Operating Systems Principles",
+      "authors": "Diyu Zhou, Vojtech Aschenbrenner, Tao Lyu, Jian Zhang, Sudarsun Kannan, and Sanidhya Kashyap"
+    }
+  ]
+}

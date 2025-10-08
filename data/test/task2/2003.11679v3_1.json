@@ -1,0 +1,397 @@
+{
+  "paper_id": "2003.11679v3",
+  "title": "An Accelerated Surface Integral Equation Method for the Electromagnetic Modeling of Dielectric and Lossy Objects of Arbitrary Conductivity",
+  "sections": {
+    "i introduction": "The efficient electromagnetic modeling of penetrable media is an important challenge in a wide variety of applications.\nFor example, the quantification of signal integrity phenomena in high-speed interconnects and of antenna losses requires the accurate modeling of the frequency-dependent variation of skin depth in lossy conductors.\nLikewise, the sub-wavelength unit cells that comprise metasurfaces may involve both dielectric and conductive elements.\nConductor losses impact the electromagnetic response of the unit cells, and therefore must be modeled accurately . Finite element methods  and volumetric integral equations , though robust, require a volumetric discretization of the structure, which leads to a large number of unknowns.\nThis is of particular concern for lossy conductors at high frequency, where an extremely fine mesh is required to capture the shrinking skin depth.\nSurface integral equation (SIE) techniques, based on the boundary element method, are an effective alternative since they only require a surface mesh on the interfaces between objects .\nThis leads to a smaller number of unknowns compared to volumetric methods.\nFull-wave modeling of penetrable objects with SIEs requires solving an interior problem to capture the physics within objects, and an exterior problem to capture coupling between them. Existing SIE methods for dielectrics include the Poggio Miller Chang Harrington Wu Tsai (PMCHWT) algorithm    and related formulations.\nThe methods in this class require adding together integral equations for adjacent media, which leads to loss of accuracy when there is a large contrast in electrical properties.\nThis renders PMCHWT-based techniques unsuitable for modeling lossy conductors embedded in a dielectric substrate. For conductive media, approximate techniques such as the Leontovich surface impedance boundary condition (SIBC)  are widely used, but are accurate only at high frequency.\nThe generalized impedance boundary condition (GIBC) [ref]9, single-layer impedance matrix (SLIM) 0 and the differential surface admittance (DSA) approach 1 have been proposed for modeling lossy conductors0 2 3 and dielectrics 4, but they require the inversion of at least one dense matrix for every object in the system.\nThis is only feasible for small objects or at high frequency, where skin effect has developed and the interior problem matrices are sparse.\nTherefore, assembling the matrices which model the interior region becomes prohibitive, in terms of both CPU time and memory consumption, for large conductive objects at low frequency, and for dielectric objects in any regime. The augmented electric field integral equation (AEFIE) 5 avoids the low-frequency issues associated with the conventional electric field integral equation (EFIE) 6 by taking the charge density as an additional unknown.\nInitially introduced for perfect electric conductors 5, the AEFIE was also extended to model penetrable media.\nThe enhanced augmented electric field integral equation (eAEFIE) formulation was proposed for both dielectrics 7 and conductors 8.\nThe eAEFIE takes both electric and magnetic current densities as unknowns, in addition to the charge density, leading to a system of equations larger than those in GIBC- and DSA-based formulations.\nThe system matrix that results from the eAEFIE tends to be poorly conditioned, unless expensive dual basis functions are employed 9 0.\nAlthough the eAEFIE formulation avoids the inversion of matrices associated with the interior problem, the number of iterations required by an iterative solver is significantly increased when dual basis functions are not used, as we will show in Section V.\nFurthermore, for conductive media, the eAEFIE only accounts for electromagnetic interactions between mesh elements that are close to each other 8.\nAt low frequencies, where skin depth is large, ignoring far-away interactions compromises accuracy. A SIE formulation for penetrable media was also proposed in 1, but is similar to the eAEFIE in that both electric and magnetic current densities are taken as unknown in the final system of equations.\nA formulation similar to the GIBC was also proposed in 2, which is based on 1 and uses nested hierarchical matrices along with a dense matrix direct solver to accelerate both the interior and exterior problems.\nThis method achieves an overall time complexity of 𝒪​(N)𝒪𝑁\\mathcal{O}(N), and has shown significant promise for the extraction of port parameters in on-chip applications such as interconnects and inductor coils.\nHowever, 2 considers only conductive objects, and might not be suitable for problems such as dielectric antennas and metasurfaces. In summary, existing SIE techniques tend to be effective only under restrictive assumptions on material properties and/or frequency, or require advanced basis functions which lead to an increased computational cost.\nTheir limitations may be an issue in practical applications, since many devices of great interest involve both dielectrics and conductors, and must be analyzed over a wide range of frequencies or, equivalently, involve objects of different electrical size. In this paper, we propose a SIE technique which is based on the GIBC formulation [ref]9, but reduces the computational complexity of the interior problem from 𝒪​(N3)𝒪superscript𝑁3\\mathcal{O}(N^{3}) to approximately 𝒪​(N1.5​log⁡N)𝒪superscript𝑁1.5𝑁\\mathcal{O}(N^{1.5}\\log N), without requiring dual basis functions.\nThe proposed method handles, in a unified manner, both dielectrics and lossy conductors over a wide range of conductivity, size and frequency.\nA numerical surface impedance operator represented in compressed form is devised, which accurately models the interior physics of each object in the structure, but avoids the assembly and factorization of large dense matrices, unlike the original GIBC.\nTo accelerate matrix inversions related to the impedance operator, we develop a multiple-grid adaptive integral method (AIM) 3 for both dielectric and conductive media, by constructing multiple object-specific AIM grids.\nMatrix-vector products involving the impedance operator are efficiently computed with an iterative solver, and further accelerated with a preconditioner based on the interactions of nearby mesh elements.\nThe proposed operator and preconditioner naturally take advantage of matrix sparsity arising from skin effect, when present.\nUnlike the eAEFIE formulation 7, the proposed method does not require expensive dual basis functions to achieve good conditioning, nor does it require taking both electric and magnetic current densities as unknowns. The second contribution of this paper is a systematic error analysis of the AIM in the context of conductive media.\nIt is demonstrated that the AIM can be applied to lossy media across wide ranges of frequency and conductivity, with a grid resolution based only on frequency and the real part of the object’s permittivity.\nIn particular, it is shown that the AIM can be used for highly conductive media over a wide range of frequency, without the need for an extremely fine mesh.\nThe proposed method is therefore suitable for applications which require accurate modeling of the frequency-dependent skin effect in conductors.\nAn analysis of the AIM for highly lossy media has not been presented before, to the best of our knowledge. The third contribution of this manuscript is a detailed comparison of the conditioning and performance of the GIBC, the eAEFIE, and the proposed method.\nA direct comparison of matrix conditioning between state-of-the-art penetrable medium formulations has not been offered previously.\nWe demonstrate that the proposed technique leads to faster convergence of iterative solvers than the eAEFIE 7 8, when dual basis functions are not used. This paper is organized as follows. Section II defines the notation and general setup which will be used throughout.\nSection III describes the proposed algorithm.\nThe accuracy of AIM for general lossy media is established in Section IV.\nFinally, numerical results demonstrating the efficiency of the proposed method are presented in Section V, and concluding remarks are provided in Section VI."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Reducing ohmic losses in metamaterials by geometric tailoring",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Phys. Rev. B",
+      "authors": "D. Güney, T. Koschny, and C. M. Soukoulis"
+    },
+    {
+      "index": 1,
+      "title": "The Finite Element Method in Electromagnetics",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Wiley",
+      "authors": "J.-M. Jin"
+    },
+    {
+      "index": 2,
+      "title": "A new volume integral formulation for broadband 3-D circuit extraction in inhomogeneous materials with and without external electromagnetic fields",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Trans. Microw. Theory Tech.",
+      "authors": "S. Omar and D. Jiao"
+    },
+    {
+      "index": 3,
+      "title": "The Method of Moments in Electromagnetics",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CRC press",
+      "authors": "W. C. Gibson"
+    },
+    {
+      "index": 4,
+      "title": "Integral equation solutions of three-dimensional scattering problems",
+      "abstract": "",
+      "year": "1973",
+      "venue": "Computer Techniques for Electromagnetics, International Series of Monographs in Electrical Engineering",
+      "authors": "A. Poggio and E. Miller"
+    },
+    {
+      "index": 5,
+      "title": "A surface formulation for characteristic modes of material bodies",
+      "abstract": "",
+      "year": "1977",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "Y. Chang and R. Harrington"
+    },
+    {
+      "index": 6,
+      "title": "Scattering from arbitrarily-shaped lossy dielectric bodies of revolution",
+      "abstract": "",
+      "year": "1977",
+      "venue": "Radio Sci.",
+      "authors": "T. Wu and L. L. Tsai"
+    },
+    {
+      "index": 7,
+      "title": "Surface Impedance Boundary Conditions: A Comprehensive Approach",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CRC Press",
+      "authors": "S. V. Yuferev and N. Ida"
+    },
+    {
+      "index": 8,
+      "title": "Generalized impedance boundary condition for conductor modeling in surface integral equation",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE Trans. Microw. Theory Tech.",
+      "authors": "Z. G. Qian, W. C. Chew, and R. Suaya"
+    },
+    {
+      "index": 9,
+      "title": "SLIM: A Well-Conditioned Single-Source Boundary Element Method for Modeling Lossy Conductors in Layered Media",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Antennas Wireless Propag. Lett.",
+      "authors": "S. Sharma and P. Triverio",
+      "orig_title": "SLIM: A well-conditioned single-source boundary element method for modeling lossy conductors in layered media",
+      "paper_id": "2007.07378v2"
+    },
+    {
+      "index": 10,
+      "title": "Skin effect modeling based on a differential surface admittance operator",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Trans. Microw. Theory Tech.",
+      "authors": "D. De Zutter and L. Knockaert"
+    },
+    {
+      "index": 11,
+      "title": "Entire domain basis function expansion of the differential surface admittance for efficient broadband characterization of lossy interconnects",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Microw. Theory Tech.",
+      "authors": "M. Huynen, K. Y. Kapusuz, X. Sun, G. Van der Plas, E. Beyne, D. De Zutter, and D. Vande Ginste"
+    },
+    {
+      "index": 12,
+      "title": "Full-wave electromagnetic characterization of 3D interconnects using a surface integral formulation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conf. Electr. Perform. Electron. Packag. and Syst.",
+      "authors": "U. R. Patel, S. Sharma, S. Yang, S. V. Hum, and P. Triverio"
+    },
+    {
+      "index": 13,
+      "title": "A Novel Single-Source Surface Integral Method to Compute Scattering from Dielectric Objects",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Antennas Wireless Propag. Lett.",
+      "authors": "U. R. Patel, S. V. Hum, and P. Triverio",
+      "orig_title": "A novel single-source surface integral method to compute scattering from dielectric objects",
+      "paper_id": "1611.06271v1"
+    },
+    {
+      "index": 14,
+      "title": "Fast full-wave surface integral equation solver for multiscale structure modeling",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "Z.-G. Qian and W. C. Chew"
+    },
+    {
+      "index": 15,
+      "title": "A quantitative study on the low frequency breakdown of EFIE",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Microw. Opt. Technol. Lett.",
+      "authors": "Z. G. Qian and W. C. Chew"
+    },
+    {
+      "index": 16,
+      "title": "An enhanced augmented electric-field integral equation formulation for dielectric objects",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "T. Xia, H. Gan, M. Wei, W. C. Chew, H. Braunisch, Z. Qian, K. Aygün, and A. Aydiner"
+    },
+    {
+      "index": 17,
+      "title": "An integral equation modeling of lossy conductors with the enhanced augmented electric field integral equation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "T. Xia, H. Gan, M. Wei, W. C. Chew, H. Braunisch, Z. Qian, K. Aygün, and A. Aydiner"
+    },
+    {
+      "index": 18,
+      "title": "A dual finite element complex on the barycentric refinement",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Math. Computation",
+      "authors": "A. Buffa and S. H. Christiansen"
+    },
+    {
+      "index": 19,
+      "title": "On the dual basis for solving electromagnetic surface integral equations",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "M. S. Tong, W. C. Chew, B. J. Rubin, J. D. Morsey, and L. Jiang"
+    },
+    {
+      "index": 20,
+      "title": "A new surface integral formulation for wideband impedance extraction of 3-D structures",
+      "abstract": "",
+      "year": "2003",
+      "venue": "IEEE/ACM Int. Conf. Comput.-Aided Des., ICCAD ’03",
+      "authors": "B. Song, Z. Zhu, J. D. Rockway, and J. White"
+    },
+    {
+      "index": 21,
+      "title": "Direct matrix solution of linear complexity for surface integral-equation-based impedance extraction of complicated 3-D structures",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Proc. IEEE",
+      "authors": "W. Chai and D. Jiao"
+    },
+    {
+      "index": 22,
+      "title": "AIM: Adaptive integral method for solving large-scale electromagnetic scattering and radiation problems",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Radio Sci.",
+      "authors": "E. Bleszynski, M. Bleszynski, and T. Jaroszewicz"
+    },
+    {
+      "index": 23,
+      "title": "Generalized Kirchoff’s current and voltage law formulation for coupled circuit-electromagnetic simulation with surface integral equations",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE Trans. Microw. Theory Tech.",
+      "authors": "Y. Wang, D. Gope, V. Jandhyala, and C.-J. R. Shi"
+    },
+    {
+      "index": 24,
+      "title": "A complete surface integral method for broadband modeling of 3D interconnects in stratified media",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv e-prints",
+      "authors": "S. Sharma, U. R. Patel, S. V. Hum, and P. Triverio"
+    },
+    {
+      "index": 25,
+      "title": "Electromagnetic scattering by surfaces of arbitrary shape",
+      "abstract": "",
+      "year": "1982",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "S. Rao, D. Wilton, and A. Glisson"
+    },
+    {
+      "index": 26,
+      "title": "A multiplicative calderon preconditioner for the electric field integral equation",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "F. P. Andriulli, K. Cools, H. Bagci, F. Olyslager, A. Buffa, S. Christiansen, and E. Michielssen"
+    },
+    {
+      "index": 27,
+      "title": "Algorithms in FastImp: a fast and wide-band impedance extraction program for complicated 3-D geometries",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Trans. Comput.-Aided Design Integr. Circuits Syst.",
+      "authors": "Z. Zhu, B. Song, and J. K. White"
+    },
+    {
+      "index": 28,
+      "title": "The effect of near-zone preconditioning on electromagnetic integral equations of first and second kind",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Adv. Radio Sci.",
+      "authors": "O. Wiedenmann and T. F. Eibert"
+    },
+    {
+      "index": 29,
+      "title": "An augmented electric field integral equation for high-speed interconnect analysis",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Microw. Opt. Technol. Lett.",
+      "authors": "Z.-G. Qian and W. C. Chew"
+    },
+    {
+      "index": 30,
+      "title": "A hybrid message passing/shared memory parallelization of the adaptive integral method for multi-core clusters",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Parallel Comput.",
+      "authors": "F. Wei and A. E. Yilmaz"
+    },
+    {
+      "index": 31,
+      "title": "A more scalable and efficient parallelization of the adaptive integral method–part I: Algorithm",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "F. Wei and A. E. Yılmaz"
+    },
+    {
+      "index": 32,
+      "title": "An efficient parallelization strategy for the adaptive integral method based on graph partitioning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Eur. Conf. Antennas Propag. (EuCAP)",
+      "authors": "D. Marek, S. Sharma, and P. Triverio"
+    },
+    {
+      "index": 33,
+      "title": "The design and implementation of FFTW3",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Proc. IEEE",
+      "authors": "M. Frigo and S. G. Johnson"
+    },
+    {
+      "index": 34,
+      "title": "PFFT: An extension of FFTW to massively parallel architectures",
+      "abstract": "",
+      "year": "2013",
+      "venue": "SIAM J. Scientific Comput.",
+      "authors": "M. Pippig"
+    },
+    {
+      "index": 35,
+      "title": "Multilevel fast multipole algorithm for electromagnetic scattering by large complex objects",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "J. Song, C.-C. Lu, and W. C. Chew"
+    },
+    {
+      "index": 36,
+      "title": "A mixed-form fast multipole algorithm",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "L. J. Jiang and W. C. Chew"
+    },
+    {
+      "index": 37,
+      "title": "A multiple-grid adaptive integral method for multi-region problems",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Trans. Antennas Propag.",
+      "authors": "M. F. Wu, G. Kaur, and A. E. Yilmaz"
+    },
+    {
+      "index": 38,
+      "title": "Analysis of scattering from composite conducting and dielectric targets using the precorrected-FFT algorithm",
+      "abstract": "",
+      "year": "2003",
+      "venue": "J. Electromagn. Waves Appl.",
+      "authors": "N. Yuan, T. S. Yeo, X. C. Nie, L. W. Li, and Y. B. Gan"
+    },
+    {
+      "index": 39,
+      "title": "Error and complexity analysis for a collocation-grid-projection plus precorrected-FFT algorithm for solving potential integral equations with laplace or helmholtz kernels.",
+      "abstract": "",
+      "year": "1996",
+      "venue": "NASA conf. publication",
+      "authors": "J. R. Phillips"
+    },
+    {
+      "index": 40,
+      "title": "Comparison of precorrected FFT/adaptive integral method matching schemes",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Microw. Opt. Technol. Lett.",
+      "authors": "K. Yang and A. E. Yilmaz"
+    },
+    {
+      "index": 41,
+      "title": "Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables",
+      "abstract": "",
+      "year": "1964",
+      "venue": "Dover",
+      "authors": "M. Abramowitz and I. A. Stegun"
+    },
+    {
+      "index": 42,
+      "title": "Rapid Solution of Potential Integral Equations in Complicated 3-Dimensional Geometries",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Massachusetts Institute of Technology",
+      "authors": "J. R. Phillips"
+    },
+    {
+      "index": 43,
+      "title": "Metal-loaded dielectric resonator metasurfaces for radiative cooling",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Adv. Opt. Mater.",
+      "authors": "C. Zou, G. Ren, M. M. Hossain, S. Nirantar, W. Withayachumnankul, T. Ahmed, M. Bhaskaran, S. Sriram, M. Gu, and C. Fumeaux"
+    },
+    {
+      "index": 44,
+      "title": "pFFT in FastMaxwell: A fast impedance extraction solver for 3D conductor structures over substrate",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Conf. Des., Automat. Test",
+      "authors": "T. Moselhy, X. Hu, and L. Daniel"
+    },
+    {
+      "index": 45,
+      "title": "PETSc Web Page",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "S. Balay, S. Abhyankar M. F. Adams, J. Brown, P. Brune, K. Buschelman, L. Dalcin, V. Eijkhout, W. D. Gropp, D. Kaushik, M. G. Knepley, D. A. May, L. C. McInnes R. T. Mills, T. Munson, K. Rupp, P. Sanan B. F. Smith, S. Zampini, H. Zhang"
+    },
+    {
+      "index": 46,
+      "title": "GMRES: A generalized minimal residual algorithm for solving nonsymmetric linear systems",
+      "abstract": "",
+      "year": "1986",
+      "venue": "SIAM J. Scientific Statistical Comput.",
+      "authors": "Y. Saad and M. Schultz"
+    },
+    {
+      "index": 47,
+      "title": "Design optimization of high bandwidth memory (HBM) interposer considering signal integrity",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Electr. Des. Adv. Packag. Syst. Symp.",
+      "authors": "K. Cho, H. Lee, H. Kim, S. Choi, Y. Kim, J. Lim, J. Kim, H. Kim, Y. Kim, and Y. Kim"
+    }
+  ]
+}

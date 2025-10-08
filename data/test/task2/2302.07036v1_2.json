@@ -1,0 +1,567 @@
+{
+  "paper_id": "2302.07036v1",
+  "title": "SCONNA: A Stochastic Computing Based Optical Accelerator for Ultra-Fast, Energy-Efficient Inference of Integer-Quantized CNNs",
+  "sections": {
+    "iii-a scalability limitations of mrr-based analog vdpcs": "Prior works , [ref]21, and  have analysed the scalability (i.e., achievable value of VDPE size N under the constraints of bit precision and data rate) of AMM and MAM VDPCs. Table I reproduces the supported values of VDPE size N (considering M=N) for AMM and MAM VDPCs at various data rates (DRs) and bit precision from [ref]21. From Table 1, the maximum N=44 is obtained for MAM VDPC across all tested DR and B values. For MAM VDPC for 1 GS/s, maximum N reduces from 44 to 12 as we increase the input/weight precision from 4-bit to 6-bit. The reason for such strong trade-off between N and achievable input/weight precision (referred to as B, henceforth) in MAM and AMM VDPCs is that both B and N strongly depend on the number of distinguishable analog optical power levels [ref]21, which is proportional to N×2B𝑁superscript2𝐵N\\times 2^{B}. Hence, for a fixed number of distinguishable analog optical power levels, which is defined by the analog optical power resolution of the utilized summation elements (SEs) (see SEs in Fig. 2) the supported N drastically decreases with an increase in B. As a result, N decreases all the way to 1 when B increases to 8-bit [ref]21. Due to such strong trade-off between N and B, the MAM and AMM type of analog VDPCs face two consequences. First, they produce high number of partial sums and incur significantly high latency for partial sum reduction. For example, a VDPE with N=44 for B=4-bit can only produce a VDP operation between two 44-point vectors.\nTherefore, producing a VDP operation between an input vector and kernel vector with S=4608 (e.g., ResNet50 [ref]21) requires that the input vector is first decomposed into a total of C=Ceil(S/N)=105 DIVs of N=44 points each. Similarly, the kernel vector also needs to be decomposed into a total of C=Ceil(S/N)=105 DKVs of N=44 points each. Then, a total of 105 VDPEs can be employed to perform 105 VDP operations between 105 pairs of DKVs and DIVs, to consequently produce a total of 105 intermediate VDP results (i.e., partial sums (psums)). Although these 105 VDP operations can be parallelized over 105 VDPEs, producing the final VDP result of S=4608 would require the accumulation of the 105 psums. Doing so can incur very high latency and energy consumption, which should be avoided using a more efficient VDPC design. As the second consequence, the throughput of the MAM and AMM VDPCs decreases at higher bit precision (higher value of B). This is because to avoid a drastic decrease in N as B increases beyond 4-bit, the AMM and MAM type of analog VDPCs typically operate at B=4-bit [ref]21. However, using at least 8-bit precision (B=8-bit) for the integer-quantized CNN models is recommended to achieve competitive inference accuracy, while also reducing the computational effort, memory requirements, and energy consumption . To meet this requirement, analog VDPCs from  (an MAM VDPC) and  (an AMM VDPC) employ bit-slicing of input/weight parameters. They slice each 8-bit integer input/weigh parameter into two slices of 4-bit each. Then, they employ two VDPCs in parallel; each VDPC processes one 4-bit slice of the input/weight parameters. The corresponding 4-bit VDP results from these two 4-bit VDPCs are then combined using shifters and adders to produce the final 8-bit results. Thus, performing VDP operations using bit slices reduces the total number of VDP results that can be produced by a fixed number of VDPCs, because multiple VDPCs are needed to produce a single set of VDP results. This can severely degrade the throughput of such VDPCs. Such undesired outcome should be avoided by designing a more efficient VDPC."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature",
+      "authors": "Y. LeCun et al.",
+      "orig_title": "Deep learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 1,
+      "title": "A survey of deep neural network architectures and their applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Neurocomputing",
+      "authors": "W. Liu et al."
+    },
+    {
+      "index": 2,
+      "title": "A survey of convolutional neural networks: Analysis, applications, and prospects",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "Z. Li et al."
+    },
+    {
+      "index": 3,
+      "title": "Scaling for edge inference of deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Nature Electronics",
+      "authors": "X. Xu et al."
+    },
+    {
+      "index": 4,
+      "title": "Learning on Hardware: A Tutorial on Neural Network Accelerators and Co-Processors",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "L. Baischer et al.",
+      "orig_title": "Learning on hardware: A tutorial on neural network accelerators and co-processors",
+      "paper_id": "2104.09252v1"
+    },
+    {
+      "index": 5,
+      "title": "Quantizing deep convolutional networks for efficient inference: A whitepaper",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1806.08342",
+      "authors": "R. Krishnamoorthi",
+      "orig_title": "Quantizing deep convolutional networks for efficient inference: A whitepaper",
+      "paper_id": "1806.08342v1"
+    },
+    {
+      "index": 6,
+      "title": "Holylight: A nanophotonic accelerator for deep learning in data centers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "DATE",
+      "authors": "W. Liu et al."
+    },
+    {
+      "index": 7,
+      "title": "Squeezelight: Towards scalable optical neural networks with multi-operand ring resonators",
+      "abstract": "",
+      "year": "2021",
+      "venue": "DATE",
+      "authors": "J. Gu et al."
+    },
+    {
+      "index": 8,
+      "title": "Digital Electronics and Analog Photonics for Convolutional Neural Networks (DEAP-CNNs)",
+      "abstract": "",
+      "year": "2020",
+      "venue": "JSTQE",
+      "authors": "V. Bangari et al.",
+      "orig_title": "Digital electronics and analog photonics for convolutional neural networks (DEAP-CNNs)",
+      "paper_id": "1907.01525v1"
+    },
+    {
+      "index": 9,
+      "title": "Silicon photonics codesign for deep learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE",
+      "authors": "Q. Cheng et al."
+    },
+    {
+      "index": 10,
+      "title": "On-chip optical matrix-vector multiplier",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Optics and Photonics for Information Processing. SPIE",
+      "authors": "L. Yang et al."
+    },
+    {
+      "index": 11,
+      "title": "Crosslight: A cross-layer optimized silicon photonic neural network accelerator",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "F. Sunny et al."
+    },
+    {
+      "index": 12,
+      "title": "On-Chip Optical Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "H. Bagherian et al.",
+      "orig_title": "On-chip optical convolutional neural networks",
+      "paper_id": "1808.03303v2"
+    },
+    {
+      "index": 13,
+      "title": "An optical neural chip for implementing complex-valued neural network",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Nature Communications",
+      "authors": "H. Zhang et al."
+    },
+    {
+      "index": 14,
+      "title": "An Electro-Photonic System for Accelerating Deep Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "C. Demirkiran et al.",
+      "orig_title": "An electro-photonic system for accelerating deep neural networks",
+      "paper_id": "2109.01126v2"
+    },
+    {
+      "index": 15,
+      "title": "Broadcast and weight: An integrated network for scalable photonic spike processing",
+      "abstract": "",
+      "year": "2014",
+      "venue": "J. Lightwave Technol.",
+      "authors": "A. N. Tait et al."
+    },
+    {
+      "index": 16,
+      "title": "Neuromorphic Photonics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CRC Press",
+      "authors": "P. R. Prucnal et al."
+    },
+    {
+      "index": 17,
+      "title": "Pixel: Photonic neural network accelerator",
+      "abstract": "",
+      "year": "2020",
+      "venue": "HPCA",
+      "authors": "K. Shiflett et al."
+    },
+    {
+      "index": 18,
+      "title": "Scaling Up Silicon Photonic-based Accelerators: Challenges and Opportunities",
+      "abstract": "",
+      "year": "2022",
+      "venue": "APL Photonics",
+      "authors": "M. A. Al-Qadasi et al.",
+      "orig_title": "Scaling up silicon photonic based accelerators: Challenges and opportunities",
+      "paper_id": "2109.08025v4"
+    },
+    {
+      "index": 19,
+      "title": "Demonstration of scalable microring weight bank control for large-scale photonic integrated circuits",
+      "abstract": "",
+      "year": "2020",
+      "venue": "APL Photonics",
+      "authors": "C. Huang et al."
+    },
+    {
+      "index": 20,
+      "title": "Photonic Reconfigurable Accelerators for Efficient Inference of CNNs with Mixed-Sized Tensors",
+      "abstract": "",
+      "year": "2022",
+      "venue": "TCAD",
+      "authors": "V. S. Sri and T. I. G",
+      "orig_title": "Photonic reconfigurable accelerators for efficient inference of cnns with mixed-sized tensors",
+      "paper_id": "2207.05278v1"
+    },
+    {
+      "index": 21,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "H. Kaiming et al.",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 22,
+      "title": "Stochastic Computing Systems",
+      "abstract": "",
+      "year": "1969",
+      "venue": "",
+      "authors": "B. R. Gaines"
+    },
+    {
+      "index": 23,
+      "title": "Survey of stochastic computing",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM Trans. Embed. Comput. Syst.",
+      "authors": "A. Alaghi et al."
+    },
+    {
+      "index": 24,
+      "title": "The promise and challenge of stochastic computing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "TCAD",
+      "authors": "A. Armin et al."
+    },
+    {
+      "index": 25,
+      "title": "Ugemm: Unary computing architecture for gemm applications",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ISCA",
+      "authors": "D. Wu et al."
+    },
+    {
+      "index": 26,
+      "title": "SC-DCNN: Highly-Scalable Deep Convolutional Neural Network using Stochastic Computing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ASPLOS '17. ACM",
+      "authors": "A. Ren et al.",
+      "orig_title": "Sc-dcnn: Highly-scalable deep convolutional neural network using stochastic computing",
+      "paper_id": "1611.05939v2"
+    },
+    {
+      "index": 27,
+      "title": "Towards acceleration of deep convolutional neural networks using stochastic computing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ASP-DAC",
+      "authors": "J. Li et al."
+    },
+    {
+      "index": 28,
+      "title": "Dscnn: Hardware-oriented optimization for stochastic computing based deep convolutional neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICCD",
+      "authors": "Z. Li et al."
+    },
+    {
+      "index": 29,
+      "title": "Computation on stochastic bit streams digital image processing case studies",
+      "abstract": "",
+      "year": "2014",
+      "venue": "TVLSI",
+      "authors": "P. Li et al."
+    },
+    {
+      "index": 30,
+      "title": "Albireo: Energy-efficient acceleration of convolutional neural networks via silicon photonics",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ISCA",
+      "authors": "S. Kyle et al."
+    },
+    {
+      "index": 31,
+      "title": "Keras",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "F. Chollet et al."
+    },
+    {
+      "index": 32,
+      "title": "Design exploration and scalability analysis of a cmos-integrated, polymorphic, nanophotonic arithmetic-logic unit",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CENSS",
+      "authors": "V. S. P. Karempudi et al."
+    },
+    {
+      "index": 33,
+      "title": "Architecting a stochastic computing unit with molecular optical devices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ISCA",
+      "authors": "X. Zhang et al."
+    },
+    {
+      "index": 34,
+      "title": "Towards all-optical stochastic computing using photonic crystal nanocavities",
+      "abstract": "",
+      "year": "2021",
+      "venue": "JETC",
+      "authors": "H. El-Derhalli et al."
+    },
+    {
+      "index": 35,
+      "title": "Pic design and simulation software - lumerical interconnect",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 36,
+      "title": "Delocalized photonic deep learning on the internet’s edge",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Science",
+      "authors": "A. Sludds et al."
+    },
+    {
+      "index": 37,
+      "title": "A large scale photonic matrix processor enabled by charge accumulation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Nanophotonics",
+      "authors": "F. Brückerhoff-Plückelmann et al."
+    },
+    {
+      "index": 38,
+      "title": "Cacti 7: New tools for interconnect exploration in innovative off-chip memories",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Trans. Archit. Code Optim.",
+      "authors": "R. Balasubramonian, A. B. Kahng, N. Muralimanohar, A. Shafiee, and V. Srinivas"
+    },
+    {
+      "index": 39,
+      "title": "Implementing a hybrid sram / edram nuca architecture",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICHPC",
+      "authors": "J. Lira et al."
+    },
+    {
+      "index": 40,
+      "title": "Crosstalk penalty in microring-based silicon photonic interconnect systems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "JLT",
+      "authors": "B. Meisam et al."
+    },
+    {
+      "index": 41,
+      "title": "Comprehensive design space exploration of silicon photonic interconnects",
+      "abstract": "",
+      "year": "2016",
+      "venue": "JLT",
+      "authors": "M. Bahadori et al."
+    },
+    {
+      "index": 42,
+      "title": "Energy-performance optimized design of silicon photonic interconnection networks for high-performance computing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "DATE",
+      "authors": "B. Meisam et al."
+    },
+    {
+      "index": 43,
+      "title": "Multisim.",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 44,
+      "title": "A 10-gs/s 4-bit single-core digital-to-analog converter for cognitive ultrawidebands",
+      "abstract": "",
+      "year": "2017",
+      "venue": "TCS",
+      "authors": "F. N. U. Juanda et al."
+    },
+    {
+      "index": 45,
+      "title": "A 29mw 5gs/s time-interleaved sar adc achieving 48.5db sndr with fully-digital timing-skew calibration based on digital-mixing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "VLSI Circuits",
+      "authors": "M. Guo et al."
+    },
+    {
+      "index": 46,
+      "title": "An 8b 1gs/s 2.55mw sar-flash adc with complementary dynamic amplifiers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IVLSIC",
+      "authors": "D.-R. Oh et al."
+    },
+    {
+      "index": 47,
+      "title": "A 45 nm cmos-soi monolithic photonics platform with bit-statistics-based resonant microring thermal tuning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IJSSC",
+      "authors": "C. Sun et al."
+    },
+    {
+      "index": 48,
+      "title": "Double-gate w-doped amorphous indium oxide transistors for monolithic 3d capacitorless gain cell edram",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEDM",
+      "authors": "H. Ye et al."
+    },
+    {
+      "index": 49,
+      "title": "Going deeper with convolutions",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CoRR",
+      "authors": "C. Szegedy et al.",
+      "orig_title": "Going deeper with convolutions",
+      "paper_id": "1409.4842v1"
+    },
+    {
+      "index": 50,
+      "title": "Inverted residuals and linear bottlenecks: Mobile networks for classification, detection and segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "M. Sandler et al."
+    },
+    {
+      "index": 51,
+      "title": "ShuffleNet: An Extremely Efficient Convolutional Neural Network for Mobile Devices",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "X. Zhang et al.",
+      "orig_title": "Shufflenet: An extremely efficient convolutional neural network for mobile devices",
+      "paper_id": "1707.01083v2"
+    },
+    {
+      "index": 52,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR",
+      "authors": "J. Deng et al."
+    },
+    {
+      "index": 53,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems 32",
+      "authors": "A. Paszke et al.",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 54,
+      "title": "Hub: A dataset format for ai. a simple api for creating, storing, collaborating on ai datasets of any size and streaming them to ml frameworks at scale.",
+      "abstract": "",
+      "year": "2022",
+      "venue": "GitHub",
+      "authors": "A. D. Team"
+    },
+    {
+      "index": 55,
+      "title": "A Comprehensive Survey on Hardware-Aware Neural Architecture Search",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2101.09336",
+      "authors": "H. Benmeziane et al.",
+      "orig_title": "A comprehensive survey on hardware-aware neural architecture search",
+      "paper_id": "2101.09336v1"
+    },
+    {
+      "index": 56,
+      "title": "Photonic independent component analysis using an on-chip microring weight bank",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Optics Express",
+      "authors": "P. Y. Ma et al."
+    },
+    {
+      "index": 57,
+      "title": "Parallel convolutional processing using an integrated photonic tensor core",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Nature",
+      "authors": "J. Feldmann et al."
+    },
+    {
+      "index": 58,
+      "title": "Large-Scale Optical Neural Networks based on Photoelectric Multiplication",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Phys. Rev. X",
+      "authors": "R. Hamerly et al.",
+      "orig_title": "Large-scale optical neural networks based on photoelectric multiplication",
+      "paper_id": "1812.07614v2"
+    },
+    {
+      "index": 59,
+      "title": "Hardware-software co-design of slimmed optical neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ASPDAC '19",
+      "authors": "Z. Zhao et al."
+    },
+    {
+      "index": 60,
+      "title": "11 TOPS photonic convolutional accelerator for optical neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Nature",
+      "authors": "X. Xu et al."
+    },
+    {
+      "index": 61,
+      "title": "An integrated optical neural network chip based on mach-zehnder interferometers",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "X. Zhao et al."
+    },
+    {
+      "index": 62,
+      "title": "All-optical machine learning using diffractive deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Science",
+      "authors": "X. Lin and Others"
+    },
+    {
+      "index": 63,
+      "title": "Large-scale neuromorphic optoelectronic computing with a reconfigurable diffractive processing unit",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Nature Photonics",
+      "authors": "T. Zhou et al."
+    },
+    {
+      "index": 64,
+      "title": "Neuromorphic photonics with coherent linear neurons using dual-iq modulation cells",
+      "abstract": "",
+      "year": "2020",
+      "venue": "JLT",
+      "authors": "Mourgias-Alexandris et al."
+    },
+    {
+      "index": 65,
+      "title": "Photonic neural networks: A survey",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "L. De Marinis et al."
+    }
+  ]
+}

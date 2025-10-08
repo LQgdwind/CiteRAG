@@ -1,0 +1,403 @@
+{
+  "paper_id": "2210.01628v2",
+  "title": "Monte Carlo Tree Search based Variable Selection for High Dimensional Bayesian Optimization",
+  "sections": {
+    "introduction": "In many real-world tasks such as neural architecture search (NAS)  and policy search in reinforcement learning (RL) [ref]6, one often needs to solve the expensive black-box optimization problems. Bayesian optimization (BO)  [ref]11 3 [ref]32 is a sample-efficient algorithm for solving such problems. It iteratively fits a surrogate model, typically Gaussian process (GP), and maximizes an acquisition function to obtain the next point to evaluate. While BO has been employed in a wide variety of settings, successful applications are often limited to low-dimensional problems. Recently, scaling BO to high-dimensional problems has received a lot of interest. Decomposition-based methods    6  assume that the high-dimensional function to be optimized has a certain structure, typically the additive structure. By decomposing the original high-dimensional function into the sum of several low-dimensional functions, they optimize each low-dimensional function to obtain the point in the high-dimensional space. However, it is not easy to decide whether a decomposition exists as well as to learn the decomposition. Other methods often assume that the original high-dimensional function with dimension D𝐷D has a low-dimensional subspace with dimension d≪Dmuch-less-than𝑑𝐷d\\ll D, and then perform the optimization in the low-dimensional subspace and project the low-dimensional point back for evaluation. For example, embedding-based methods 0 7  use a random matrix to embed the original space into the low-dimensional subspace. Another way is to select a subset of variables directly, which can even avoid the time-consuming matrix operations of embedding-based methods. For example, Dropout 1 selects d𝑑d variables randomly in each iteration. Note that for both embedding and variable selection methods, the parameter d𝑑d can have a large influence on the performance, which is, however, difficult to set in real-world problems. In this paper, we propose a new Variable Selection method using Monte Carlo Tree Search (MCTS), called MCTS-VS. MCTS is employed to partition the variables into important and unimportant ones, and only those selected important variables are optimized via any black-box optimization algorithm, e.g., vanilla BO [ref]32 or TuRBO . The values of unimportant variables are sampled using historical information. Compared with Dropout-BO, MCTS-VS can select important variables automatically. We also provide regret and computational complexity analyses of general variable selection methods, showing that variable selection can reduce the computational complexity while increasing the cumulative regret. Our regret bound generalizes that of GP-UCB  which always selects all variables, as well as that of Dropout 1 which selects d𝑑d variables randomly in each iteration. The results suggest that a good variable selection method should select as important variables as possible. Experiments on high-dimensional synthetic functions and real-world problems (i.e., NAS and RL problems) show that MCTS-VS is better than the previous variable selection method Dropout 1, and can also achieve the competitive performance to state-of-the-art BO algorithms. Furthermore, its running time is small due to the advantage of variable selection. We also observe that MCTS-VS can select important variables, explaining its good performance based on our theoretical analysis."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Finite-time analysis of the multiarmed bandit problem",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Machine learning",
+      "authors": "P. Auer, N. Cesa-Bianchi, and P. Fischer"
+    },
+    {
+      "index": 1,
+      "title": "A survey on high-dimensional Gaussian process modeling with application to Bayesian optimization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Transactions on Evolutionary Learning and Optimization",
+      "authors": "M. Binois and N. Wycoff"
+    },
+    {
+      "index": 2,
+      "title": "A warped kernel improving robustness in Bayesian optimization via random embeddings",
+      "abstract": "",
+      "year": "2015",
+      "venue": "9th International Conference on Learning and Intelligent Optimization (LION’15)",
+      "authors": "M. Binois, D. Ginsbourger, and O. Roustant"
+    },
+    {
+      "index": 3,
+      "title": "On the choice of the low-dimensional domain for global optimization via random embeddings",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Global Optimization",
+      "authors": "M. Binois, D. Ginsbourger, and O. Roustant"
+    },
+    {
+      "index": 4,
+      "title": "A survey of Monte Carlo tree search methods",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Transactions on Computational Intelligence and AI in Games",
+      "authors": "C. Browne, E. J. Powley, D. Whitehouse, S. M. M. Lucas, P. I. Cowling, P. Rohlfshagen, S. Tavener, D. P. Liebana, S. Samothrakis, and S. Colton"
+    },
+    {
+      "index": 5,
+      "title": "Bayesian optimization for learning gaits under uncertainty",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Annals of Mathematics and Artificial Intelligence",
+      "authors": "R. Calandra, A. Seyfarth, J. Peters, and M. P. Deisenroth"
+    },
+    {
+      "index": 6,
+      "title": "NAS-Bench-201: Extending the Scope of Reproducible Neural Architecture Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "8th International Conference on Learning Representations (ICLR’20)",
+      "authors": "X. Dong and Y. Yang",
+      "orig_title": "NAS-Bench-201: Extending the scope of reproducible neural architecture search",
+      "paper_id": "2001.00326v2"
+    },
+    {
+      "index": 7,
+      "title": "TransNAS-Bench-101: Improving Transferability and Generalizability of Cross-Task Neural Architecture Search",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "Y. Duan, X. Chen, H. Xu, Z. Chen, X. Liang, T. Zhang, and Z. Li",
+      "orig_title": "TransNAS-Bench-101: Improving transferability and generalizability of cross-task neural architecture search",
+      "paper_id": "2105.11871v1"
+    },
+    {
+      "index": 8,
+      "title": "High-Dimensional Bayesian Optimization with Sparse Axis-Aligned Subspaces",
+      "abstract": "",
+      "year": "2021",
+      "venue": "37th Conference on Uncertainty in Artificial Intelligence (UAI’21)",
+      "authors": "D. Eriksson and M. Jankowiak",
+      "orig_title": "High-dimensional Bayesian optimization with sparse axis-aligned subspaces",
+      "paper_id": "2103.00349v2"
+    },
+    {
+      "index": 9,
+      "title": "Scalable Global Optimization via Local Bayesian Optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems 32 (NeurIPS’19)",
+      "authors": "D. Eriksson, M. Pearce, J. R. Gardner, R. D. Turner, and M. Poloczek",
+      "orig_title": "Scalable global optimization via local Bayesian optimization",
+      "paper_id": "1910.01739v4"
+    },
+    {
+      "index": 10,
+      "title": "A tutorial on Bayesian optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "P. I. Frazier"
+    },
+    {
+      "index": 11,
+      "title": "Automatic Chemical Design Using a Data-Driven Continuous Representation of Molecules",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACS Central Science",
+      "authors": "R. Gómez-Bombarelli, D. K. Duvenaud, J. M. Hernández-Lobato, J. Aguilera-Iparraguirre, T.D. Hirzel, R. P. Adams, and A. Aspuru-Guzik",
+      "orig_title": "Automatic chemical design using a data-driven continuous representation of molecules",
+      "paper_id": "1610.02415v3"
+    },
+    {
+      "index": 12,
+      "title": "High-Dimensional Bayesian Optimization via Tree-Structured Additive Models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "35th Association for the Advancement of Artificial Intelligence (AAAI’21)",
+      "authors": "E. Han, I. Arora, and J. Scarlett",
+      "orig_title": "High-dimensional Bayesian optimization via tree-structured additive models",
+      "paper_id": "2012.13088v1"
+    },
+    {
+      "index": 13,
+      "title": "The CMA evolution strategy: A tutorial",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "N. Hansen"
+    },
+    {
+      "index": 14,
+      "title": "Decentralized High-Dimensional Bayesian Optimization with Factor Graphs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "32nd Association for the Advancement of Artificial Intelligence (AAAI’18)",
+      "authors": "T. N. Hoang, Q. M. Hoang, R. Ouyang, and K. H. Low",
+      "orig_title": "Decentralized high-dimensional Bayesian optimization with factor graphs",
+      "paper_id": "1711.07033v3"
+    },
+    {
+      "index": 15,
+      "title": "Efficient global optimization of expensive black-box functions",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Journal of Global Optimization",
+      "authors": "D. R. Jones, M. Schonlau, and W. J. Welch"
+    },
+    {
+      "index": 16,
+      "title": "High Dimensional Bayesian Optimisation and Bandits via Additive Models",
+      "abstract": "",
+      "year": "2015",
+      "venue": "32nd International Conference on Machine Learning (ICML’15)",
+      "authors": "K. Kandasamy, J. G. Schneider, and B. Póczos",
+      "orig_title": "High dimensional Bayesian optimisation and bandits via additive models",
+      "paper_id": "1503.01673v3"
+    },
+    {
+      "index": 17,
+      "title": "Auto-encoding variational Bayes",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CoRR",
+      "authors": "D. P. Kingma and M. Welling"
+    },
+    {
+      "index": 18,
+      "title": "A new method of locating the maximum point of an arbitrary multipeak curve in the presence of noise",
+      "abstract": "",
+      "year": "1964",
+      "venue": "Journal of Basic Engineering",
+      "authors": "H. J. Kushner"
+    },
+    {
+      "index": 19,
+      "title": "Re-Examining Linear Embeddings for High-Dimensional Bayesian Optimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems 33 (NeurIPS’20)",
+      "authors": "B. Letham, R. Calandra, A. Rai, and E. Bakshy",
+      "orig_title": "Re-examining linear embeddings for high-dimensional Bayesian optimization",
+      "paper_id": "2001.11659v2"
+    },
+    {
+      "index": 20,
+      "title": "High dimensional Bayesian optimization using dropout",
+      "abstract": "",
+      "year": "2017",
+      "venue": "26th International Joint Conference on Artificial Intelligence (IJCAI’17)",
+      "authors": "C. Li, S. Gupta, S. Rana, V. Nguyen, S. Venkatesh, and A. Shilton"
+    },
+    {
+      "index": 21,
+      "title": "Structured variationally auto-encoded optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "35th International Conference on Machine Learning (ICML’18)",
+      "authors": "X. Lu, J. I. González, Z. Dai, and N. D. Lawrence"
+    },
+    {
+      "index": 22,
+      "title": "Bayesian optimization in high-dimensional spaces: A brief survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "12th International Conference on Information, Intelligence, Systems & Applications (IISA’21)",
+      "authors": "M. Malu, G. Dasarathy, and A. Spanias"
+    },
+    {
+      "index": 23,
+      "title": "A comparison of three methods for selecting values of input variables in the analysis of output from a computer code",
+      "abstract": "",
+      "year": "1979",
+      "venue": "Technometrics",
+      "authors": "M. D. McKay, R. J. Beckman, and W. J. Conover"
+    },
+    {
+      "index": 24,
+      "title": "NAS-Bench-ASR: Reproducible neural architecture search for speech recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "9th International Conference on Learning Representations (ICLR’21)",
+      "authors": "A. Mehrotra, A. G. C. P. Ramos, S. Bhattacharya, Ł. Dudziak, R. Vipperla, T. Chau, M. S. Abdelfattah, S. Ishtiaq, and N. D. Lane"
+    },
+    {
+      "index": 25,
+      "title": "Efficient high dimensional Bayesian optimization with additivity and quadrature Fourier features",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems 31 (NeurIPS’18)",
+      "authors": "M. Mutný and A. Krause"
+    },
+    {
+      "index": 26,
+      "title": "A framework for Bayesian optimization in embedded subspaces",
+      "abstract": "",
+      "year": "2019",
+      "venue": "36th International Conference on Machine LearninG (ICML’19)",
+      "authors": "A. Nayebi, A. Munteanu, and M. Poloczek"
+    },
+    {
+      "index": 27,
+      "title": "Numerical Optimization",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Springer",
+      "authors": "J. Nocedal and S. J. Wright"
+    },
+    {
+      "index": 28,
+      "title": "Bayesian Optimization using Pseudo-Points",
+      "abstract": "",
+      "year": "2020",
+      "venue": "29th International Joint Conference on Artificial Intelligence (IJCAI’20)",
+      "authors": "C. Qian, H. Xiong, and K. Xue",
+      "orig_title": "Bayesian optimization using pseudo-points",
+      "paper_id": "1910.05484v2"
+    },
+    {
+      "index": 29,
+      "title": "Gaussian Processes for Machine Learning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "The MIT Press",
+      "authors": "C. E. Rasmussen and C. K. I. Williams"
+    },
+    {
+      "index": 30,
+      "title": "High-dimensional Bayesian optimization via additive models with overlapping groups",
+      "abstract": "",
+      "year": "2018",
+      "venue": "21st International Conference on Artificial Intelligence and Statistics (AISTATS’18)",
+      "authors": "P. Rolland, J. Scarlett, I. Bogunovic, and V. Cevher"
+    },
+    {
+      "index": 31,
+      "title": "Taking the human out of the loop: A review of Bayesian optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE",
+      "authors": "B. Shahriari, K. Swersky, Z. Wang, R. P. Adams, and N. De Freitas"
+    },
+    {
+      "index": 32,
+      "title": "Computationally Efficient High-Dimensional Bayesian Optimization via Variable Selection",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "Y. Shen and C. Kingsford",
+      "orig_title": "Computationally efficient high-dimensional Bayesian optimization via variable selection",
+      "paper_id": "2109.09264v2"
+    },
+    {
+      "index": 33,
+      "title": "Mastering the game of Go with deep neural networks and tree search",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Nature",
+      "authors": "D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. van den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam, M. Lanctot, S. Dieleman, D. Grewe, J. Nham, N. Kalchbrenner, I. Sutskever, T. P. Lillicrap, M. Leach, K. Kavukcuoglu, T. Graepel, and D. Hassabis"
+    },
+    {
+      "index": 34,
+      "title": "Mastering the game of Go without human knowledge",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Nature",
+      "authors": "D. Silver, J. Schrittwieser, K. Simonyan, I. Antonoglou, A. Huang, A. Guez, T. Hubert, L. baker, M. Lai, A. Bolton, Y. Chen, T. P. Lillicrap, F. Hui, L. Sifre, G. van den Driessche, T. Graepel, and D. Hassabis"
+    },
+    {
+      "index": 35,
+      "title": "Scalable Bayesian optimization using deep neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "32nd International Conference on Machine Learning (ICML’15)",
+      "authors": "J. Snoek, O. Rippel, K. Swersky, R. Kiros, N. Satish, N. Sundaram, M. M. A. Patwary, Prabhat, and R. P. Adams"
+    },
+    {
+      "index": 36,
+      "title": "Bayesian optimization in effective dimensions via kernel-based sensitivity indices",
+      "abstract": "",
+      "year": "2019",
+      "venue": "13th International Conference on Applications of Statistics and Probability in Civil Engineering (ICASP’13)",
+      "authors": "A. Spagnol, R. L. Riche, and S. D. Veiga"
+    },
+    {
+      "index": 37,
+      "title": "Information-theoretic regret bounds for Gaussian process optimization in the bandit setting",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Transactions on Information Theory",
+      "authors": "N. Srinivas, A. Krause, S. M. Kakade, and M. W. Seeger"
+    },
+    {
+      "index": 38,
+      "title": "MuJoCo: A physics engine for model-based control",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems",
+      "authors": "E. Todorov, E. Erez, and Y. Tassa"
+    },
+    {
+      "index": 39,
+      "title": "Learning Search Space Partition for Black-box Optimization using Monte Carlo Tree Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems 33 (NeurIPS’20)",
+      "authors": "L. Wang, R. Fonseca, and Y. Tian",
+      "orig_title": "Learning search space partition for black-box optimization using Monte Carlo tree search",
+      "paper_id": "2007.00708v2"
+    },
+    {
+      "index": 40,
+      "title": "Sample-efficient neural architecture search by learning actions for Monte Carlo tree search",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "L. Wang, S. Xie, T. Li, R. Fonseca, and Y. Tian"
+    },
+    {
+      "index": 41,
+      "title": "Bayesian optimization in a billion dimensions via random embeddings",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Journal of Artificial Intelligence Research",
+      "authors": "Z. Wang, F. Hutter, M. Zoghi, D. Matheson, and N. de Feitas"
+    },
+    {
+      "index": 42,
+      "title": "Batched large-scale Bayesian optimization in high-dimensional spaces",
+      "abstract": "",
+      "year": "2018",
+      "venue": "21st International Conference on Artificial Intelligence and Statistics (AISTATS’18)",
+      "authors": "Z. Wang, C. Gehring, P. Kohli, and S. Jegelka"
+    },
+    {
+      "index": 43,
+      "title": "The reparameterization trick for acquisition functions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "J. T. Wilson, R. Moriconi, F. Hutter, and M. P. Deisenroth",
+      "orig_title": "The reparameterization trick for acquisition functions",
+      "paper_id": "1712.00424v1"
+    },
+    {
+      "index": 44,
+      "title": "NAS-bench-101: Towards reproducible neural architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "36th International Conference on Machine Learning (ICML’19)",
+      "authors": "C. Ying, A. Klein, E. Christiansen, E. Real, K. Murphy, and F. Hutter"
+    },
+    {
+      "index": 45,
+      "title": "NAS-Bench-1Shot1: Benchmarking and dissecting one-shot neural architecture search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "8th International Conference on Learning Representations (ICLR’20)",
+      "authors": "A. Zela, J. Siems, and F. Hutter"
+    }
+  ]
+}

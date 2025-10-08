@@ -1,0 +1,419 @@
+{
+  "paper_id": "2308.00707v1",
+  "title": "Approximate Model-Based Shielding for Safe Reinforcement Learning",
+  "sections": {
+    "introduction": "Due to the inefficiencies of deep reinforcement learning (RL) and lack of guarantees, safe RL [ref]5 has emerged as an increasingly active area of research. Ensuring the safety of RL agents is crucial for their widespread adoption in safety-critical applications where the cost of failure is high. From formal verification, Shielding  has been developed as an approach for safe RL, that comes with strong safety guarantees on the agents performance. However, classical shielding approaches make quite restrictive assumptions which limit their capabilities in real-world and high-dimensional tasks. To this end, we propose approximate model-based shielding (AMBS) to address these limitations and obtain a more general and widely applicable algorithm. The constrained Markov decision process (CMDP)  is a popular way of framing the safe RL paradigm. In addition to maximising reward, the agent must satisfy a set of safety-constraints encoded as a cost function that penalises unsafe actions or states. In effect, this formulation constrains the set of feasible policies, which results in a tricky non-smooth optimisation problem. In high-dimensional settings, several model-free methods have been proposed based on trust-region methods  5 0 or Lagrangian relaxations of the constrained optimisation problem 7 1. Many of these methods rely on the assumption of convergence to obtain any guarantees. Furthermore, model-based approaches to safe RL have gained increasing traction, in part due to recent significant developments in model-based RL (MBRL) 8   and the superior sample complexity of model-based approaches 9 . In addition to learning a reward maximising policy, MBRL learns an approximate dynamics model of the system. Approximating the dynamics using Gaussian process (GP) regression 2 or ensembles of neural networks are both principled ways to quantify uncertainty, and develop risk- and safety-aware policy optimisation algorithms 1 2  and model predictive control (MPC) schemes 1. Shielding for RL was introduced in  as a correct by construction reactive system that forces hard constraints on the learned policy, preventing it from entering\nunsafe states determined by a given temporal logic formula. Classical approaches to shielding  require a priori access to a safety-relevant abstraction of the environment, where the dynamics are known or at least conservatively estimated. This can be quite a restrictive assumption in many real-world scenarios, where such an abstraction is not known or too complex to represent. However, these strong assumptions do come with the benefit of strong guarantees (i.e., correctness and minimal-interference). In this paper we operate in a less restrictive domain and only assume that there exists some expert labelling of the states; we claim that this is a more realistic paradigm which has been studied in previous work [ref]24 6. As a result, our approach is more broadly applicable to a variety of environments, including high-dimensional environments which have been rarely studied in the shielding literature 4. We do unfortunately loose the strict formal guarantees obtained by classical shielding, although we develop tight probabilistic bounds and a strong theoretical basis for our method. Our approach, AMBS, is inspired by latent shielding [ref]24 an approximate shielding algorithm that verifies policies in the latent space of a world model 9   and is closely related to previous work on approximate shielding of Atari agents 6. The core idea of our approach is that we remove the requirement for a suitable safety-relevant abstraction of the environment by learning an approximate dynamics model of the environment. With the learned dynamics model we can simulate possible future trajectories under the learned policy and estimate the probability of committing a safety-violation in the near future. In contrast to previous approaches, we provide a stronger theoretical justification for utilising world models as a suitable dynamics model. And while we leverage DreamerV3  as our stand-in dynamics model, we propose a more general purpose and model-agnostic framework for approximate shielding."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Constrained Policy Optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International conference on machine learning",
+      "authors": "Joshua Achiam, David Held, Aviv Tamar, and Pieter Abbeel",
+      "orig_title": "Constrained policy optimization",
+      "paper_id": "1705.10528v1"
+    },
+    {
+      "index": 1,
+      "title": "A general class of coefficients of divergence of one distribution from another",
+      "abstract": "",
+      "year": "1966",
+      "venue": "Journal of the Royal Statistical Society: Series B (Methodological)",
+      "authors": "Syed Mumtaz Ali and Samuel D Silvey"
+    },
+    {
+      "index": 2,
+      "title": "Safe Reinforcement Learning via Shielding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Mohammed Alshiekh, Roderick Bloem, Rüdiger Ehlers, Bettina Könighofer, Scott Niekum, and Ufuk Topcu",
+      "orig_title": "Safe reinforcement learning via shielding",
+      "paper_id": "1708.08611v2"
+    },
+    {
+      "index": 3,
+      "title": "Constrained Markov decision processes: stochastic modeling",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Routledge",
+      "authors": "Eitan Altman"
+    },
+    {
+      "index": 4,
+      "title": "Concrete Problems in AI Safety",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1606.06565",
+      "authors": "Dario Amodei, Chris Olah, Jacob Steinhardt, Paul Christiano, John Schulman, and Dan Mané",
+      "orig_title": "Concrete problems in ai safety",
+      "paper_id": "1606.06565v2"
+    },
+    {
+      "index": 5,
+      "title": "Constrained Policy Optimization via Bayesian World Models",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2201.09802",
+      "authors": "Yarden As, Ilnura Usmanova, Sebastian Curi, and Andreas Krause",
+      "orig_title": "Constrained policy optimization via bayesian world models",
+      "paper_id": "2201.09802v4"
+    },
+    {
+      "index": 6,
+      "title": "Principles of model checking",
+      "abstract": "",
+      "year": "2008",
+      "venue": "MIT press",
+      "authors": "Christel Baier and Joost-Pieter Katoen"
+    },
+    {
+      "index": 7,
+      "title": "The arcade learning environment: An evaluation platform for general agents",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Journal of Artificial Intelligence Research",
+      "authors": "M. G. Bellemare, Y. Naddaf, J. Veness, and M. Bowling"
+    },
+    {
+      "index": 8,
+      "title": "Shield synthesis: Runtime enforcement for reactive systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International conference on tools and algorithms for the construction and analysis of systems",
+      "authors": "Roderick Bloem, Bettina Könighofer, Robert Könighofer, and Chao Wang"
+    },
+    {
+      "index": 9,
+      "title": "Dopamine: A Research Framework for Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Pablo Samuel Castro, Subhodeep Moitra, Carles Gelada, Saurabh Kumar, and Marc G. Bellemare",
+      "orig_title": "Dopamine: A Research Framework for Deep Reinforcement Learning",
+      "paper_id": "1812.06110v1"
+    },
+    {
+      "index": 10,
+      "title": "Lyapunov-based safe policy optimization for continuous control",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1901.10031",
+      "authors": "Yinlam Chow, Ofir Nachum, Aleksandra Faust, Edgar Duenez-Guzman, and Mohammad Ghavamzadeh"
+    },
+    {
+      "index": 11,
+      "title": "Implicit Quantile Networks for Distributional Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on machine learning",
+      "authors": "Will Dabney, Georg Ostrovski, David Silver, and Rémi Munos",
+      "orig_title": "Implicit quantile networks for distributional reinforcement learning",
+      "paper_id": "1806.06923v1"
+    },
+    {
+      "index": 12,
+      "title": "Addressing Function Approximation Error in Actor-Critic Methods",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on machine learning",
+      "authors": "Scott Fujimoto, Herke Hoof, and David Meger",
+      "orig_title": "Addressing function approximation error in actor-critic methods",
+      "paper_id": "1802.09477v3"
+    },
+    {
+      "index": 13,
+      "title": "Learning Belief Representations for Imitation Learning in POMDPs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Uncertainty in Artificial Intelligence",
+      "authors": "Tanmay Gangwani, Joel Lehman, Qiang Liu, and Jian Peng",
+      "orig_title": "Learning belief representations for imitation learning in pomdps",
+      "paper_id": "1906.09510v1"
+    },
+    {
+      "index": 14,
+      "title": "Shielding Atari Games with Bounded Prescience",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Joint Conference on Autonomous Agents and Multiagent Systems, AAMAS",
+      "authors": "M Giacobbe, Mohammadhosein Hasanbeig, Daniel Kroening, and Hjalmar Wijk",
+      "orig_title": "Shielding atari games with bounded prescience",
+      "paper_id": "2101.08153v2"
+    },
+    {
+      "index": 15,
+      "title": "Approximate Shielding of Atari Agents for Safe Exploration",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2304.11104",
+      "authors": "Alexander W Goodall and Francesco Belardinelli",
+      "orig_title": "Approximate shielding of atari agents for safe exploration",
+      "paper_id": "2304.11104v1"
+    },
+    {
+      "index": 16,
+      "title": "Neurips 2019 competition: the minerl competition on sample efficient reinforcement learning using human priors",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1904.10079",
+      "authors": "William H Guss, Cayden Codel, Katja Hofmann, Brandon Houghton, Noboru Kuno, Stephanie Milani, Sharada Mohanty, Diego Perez Liebana, Ruslan Salakhutdinov, Nicholay Topin, et al."
+    },
+    {
+      "index": 17,
+      "title": "Recurrent World Models Facilitate Policy Evolution",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "David Ha and Jürgen Schmidhuber",
+      "orig_title": "Recurrent world models facilitate policy evolution",
+      "paper_id": "1809.01999v1"
+    },
+    {
+      "index": 18,
+      "title": "Dream to Control: Learning Behaviors by Latent Imagination",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Danijar Hafner, Timothy Lillicrap, Jimmy Ba, and Mohammad Norouzi",
+      "orig_title": "Dream to control: Learning behaviors by latent imagination",
+      "paper_id": "1912.01603v3"
+    },
+    {
+      "index": 19,
+      "title": "Learning Latent Dynamics for Planning from Pixels",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International conference on machine learning",
+      "authors": "Danijar Hafner, Timothy Lillicrap, Ian Fischer, Ruben Villegas, David Ha, Honglak Lee, and James Davidson",
+      "orig_title": "Learning latent dynamics for planning from pixels",
+      "paper_id": "1811.04551v5"
+    },
+    {
+      "index": 20,
+      "title": "Mastering Atari with Discrete World Models",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Danijar Hafner, Timothy P Lillicrap, Mohammad Norouzi, and Jimmy Ba",
+      "orig_title": "Mastering atari with discrete world models",
+      "paper_id": "2010.02193v4"
+    },
+    {
+      "index": 21,
+      "title": "Mastering diverse domains through world models",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2301.04104",
+      "authors": "Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap"
+    },
+    {
+      "index": 22,
+      "title": "Safe exploration for reinforcement learning.",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ESANN",
+      "authors": "Alexander Hans, Daniel Schneegaß, Anton Maximilian Schäfer, and Steffen Udluft"
+    },
+    {
+      "index": 23,
+      "title": "Do Androids Dream of Electric Fences? Safety-Aware Reinforcement Learning with Latent Shielding",
+      "abstract": "",
+      "year": "",
+      "venue": "CEUR Workshop Proceedings",
+      "authors": "P He, B Gonzalez Leon, and F Belardinelli",
+      "orig_title": "Do androids dream of electric fences? safety-aware reinforcement learning with latent shielding",
+      "paper_id": "2112.11490v1"
+    },
+    {
+      "index": 24,
+      "title": "Rainbow: Combining Improvements in Deep Reinforcement Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI conference on artificial intelligence",
+      "authors": "Matteo Hessel, Joseph Modayil, Hado Van Hasselt, Tom Schaul, Georg Ostrovski, Will Dabney, Dan Horgan, Bilal Piot, Mohammad Azar, and David Silver",
+      "orig_title": "Rainbow: Combining improvements in deep reinforcement learning",
+      "paper_id": "1710.02298v1"
+    },
+    {
+      "index": 25,
+      "title": "Probability inequalities for sums of bounded random variables",
+      "abstract": "",
+      "year": "1994",
+      "venue": "The collected works of Wassily Hoeffding",
+      "authors": "Wassily Hoeffding"
+    },
+    {
+      "index": 26,
+      "title": "When to trust your model: Model-based policy optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Michael Janner, Justin Fu, Marvin Zhang, and Sergey Levine"
+    },
+    {
+      "index": 27,
+      "title": "Near-optimal reinforcement learning in polynomial time",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Machine learning",
+      "authors": "Michael Kearns and Satinder Singh"
+    },
+    {
+      "index": 28,
+      "title": "Learning in POMDPs is Sample-Efficient with Hindsight Observability",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2301.13857",
+      "authors": "Jonathan N Lee, Alekh Agarwal, Christoph Dann, and Tong Zhang",
+      "orig_title": "Learning in pomdps is sample-efficient with hindsight observability",
+      "paper_id": "2301.13857v2"
+    },
+    {
+      "index": 29,
+      "title": "IPO: Interior-point policy optimization under constraints",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI conference on artificial intelligence",
+      "authors": "Yongshuai Liu, Jiaxin Ding, and Xin Liu"
+    },
+    {
+      "index": 30,
+      "title": "Constrained Model-based Reinforcement Learning with Robust Cross-Entropy Method",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2010.07968",
+      "authors": "Zuxin Liu, Hongyi Zhou, Baiming Chen, Sicheng Zhong, Martial Hebert, and Ding Zhao",
+      "orig_title": "Constrained model-based reinforcement learning with robust cross-entropy method",
+      "paper_id": "2010.07968v2"
+    },
+    {
+      "index": 31,
+      "title": "Learning Barrier Certificates: Towards Safe Reinforcement Learning with Zero Training-time Violations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Yuping Luo and Tengyu Ma",
+      "orig_title": "Learning barrier certificates: Towards safe reinforcement learning with zero training-time violations",
+      "paper_id": "2108.01846v2"
+    },
+    {
+      "index": 32,
+      "title": "Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of Artificial Intelligence Research",
+      "authors": "Marlos C. Machado, Marc G. Bellemare, Erik Talvitie, Joel Veness, Matthew J. Hausknecht, and Michael Bowling",
+      "orig_title": "Revisiting the arcade learning environment: Evaluation protocols and open problems for general agents",
+      "paper_id": "1709.06009v2"
+    },
+    {
+      "index": 33,
+      "title": "Shielded reinforcement learning: A review of reactive methods for safe learning",
+      "abstract": "",
+      "year": "2023",
+      "venue": "2023 IEEE/SICE International Symposium on System Integration (SII)",
+      "authors": "Haritz Odriozola-Olalde, Maider Zamalloa, and Nestor Arana-Arexolaleiba"
+    },
+    {
+      "index": 34,
+      "title": "Markov decision processes",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Handbooks in operations research and management science",
+      "authors": "Martin L Puterman"
+    },
+    {
+      "index": 35,
+      "title": "A Game Theoretic Framework for Model Based Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International conference on machine learning",
+      "authors": "Aravind Rajeswaran, Igor Mordatch, and Vikash Kumar",
+      "orig_title": "A game theoretic framework for model based reinforcement learning",
+      "paper_id": "2004.07804v2"
+    },
+    {
+      "index": 36,
+      "title": "Benchmarking safe exploration in deep reinforcement learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.01708",
+      "authors": "Alex Ray, Joshua Achiam, and Dario Amodei"
+    },
+    {
+      "index": 37,
+      "title": "Dyna, an integrated architecture for learning, planning, and reacting",
+      "abstract": "",
+      "year": "1991",
+      "venue": "ACM Sigart Bulletin",
+      "authors": "Richard S Sutton"
+    },
+    {
+      "index": 38,
+      "title": "Reinforcement learning: An introduction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "MIT press",
+      "authors": "Richard S Sutton and Andrew G Barto"
+    },
+    {
+      "index": 39,
+      "title": "DeepMind Control Suite",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1801.00690",
+      "authors": "Yuval Tassa, Yotam Doron, Alistair Muldal, Tom Erez, Yazhe Li, Diego de Las Casas, David Budden, Abbas Abdolmaleki, Josh Merel, Andrew Lefrancq, et al.",
+      "orig_title": "Deepmind control suite",
+      "paper_id": "1801.00690v1"
+    },
+    {
+      "index": 40,
+      "title": "Safe Reinforcement Learning by Imagining the Near Future",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Garrett Thomas, Yuping Luo, and Tengyu Ma",
+      "orig_title": "Safe reinforcement learning by imagining the near future",
+      "paper_id": "2202.07789v1"
+    },
+    {
+      "index": 41,
+      "title": "Gaussian processes for machine learning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "MIT press Cambridge, MA",
+      "authors": "Christopher KI Williams and Carl Edward Rasmussen"
+    },
+    {
+      "index": 42,
+      "title": "Numerical optimization",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": "Jorge Nocedal Stephen J Wright"
+    },
+    {
+      "index": 43,
+      "title": "Model-based Dynamic Shielding for Safe and Efficient Multi-Agent Reinforcement Learning",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2304.06281",
+      "authors": "Wenli Xiao, Yiwei Lyu, and John Dolan",
+      "orig_title": "Model-based dynamic shielding for safe and efficient multi-agent reinforcement learning",
+      "paper_id": "2304.06281v1"
+    },
+    {
+      "index": 44,
+      "title": "Projection-Based Constrained Policy Optimization",
+      "abstract": "",
+      "year": "",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Tsung-Yen Yang, Justinian Rosca, Karthik Narasimhan, and Peter J Ramadge",
+      "orig_title": "Projection-based constrained policy optimization",
+      "paper_id": "2010.03152v1"
+    }
+  ]
+}

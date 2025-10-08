@@ -1,0 +1,517 @@
+{
+  "paper_id": "2007.08557v1",
+  "title": "Unsupervised Text Generation by Learning from Search",
+  "sections": {
+    "simulated annealing search": "The search-based text generation [ref]29 [ref]24 relies on a heuristic-based objective function s​(y|x)𝑠conditionalyxs(\\rm y|\\rm x) that (roughly) evaluates the quality of an output sequence yy\\rm y given the input xx\\rm x (usually, one or a few sentences). Typically, the objective involves language modeling fluency slm​(x)subscript𝑠lmxs_{\\text{lm}}(\\rm x), semantic compliance ssemantic​(x,y)subscript𝑠semanticxys_{\\text{semantic}}(\\rm x,\\rm y), and other task-specific scorers stask​(y,⋅)subscript𝑠tasky⋅s_{\\text{task}}(\\rm y,\\cdot).\nThese individual scorers are combined by the product of experts [ref]13: We adopt simulated annealing (SA)  [ref]24, which performs local stochastic search to maximize the objective. Concretely, SA starts from an initial candidate output sentence y(0)superscripty0\\mathrm{y}^{(0)}, which is set to the input xx\\mathrm{x} in our first-stage SA. For the second stage, it will be the output of our GPT2 model. At a search step t𝑡t, SA iteratively proposes a new candidate y′superscripty′\\rm y^{\\prime} by local edits of y(t)superscripty𝑡\\mathrm{y}^{(t)}, namely, word insertion, deletion, and replacement. The proposal y′superscripty′\\rm y^{\\prime} is accepted with probability p​(accept|y′,y(t),x,T)=min​{1,exp⁡(s​(y′|x)−s​(y(t)|x)T)}𝑝conditionalacceptsuperscripty′superscripty𝑡x𝑇min1𝑠conditionalsuperscripty′x𝑠conditionalsuperscripty𝑡x𝑇p(\\text{accept}|\\mathrm{y}^{\\prime},\\mathrm{y}^{(t)},\\mathrm{x},T)=\\text{min}\\big{\\{}1,\\exp(\\frac{s(\\mathrm{y}^{\\prime}|\\mathrm{x})-s(\\mathrm{y}^{(t)}|\\mathrm{x})}{T})\\big{\\}}. Then, y(t+1)=y′superscripty𝑡1superscripty′\\mathrm{y}^{(t+1)}=\\mathrm{y}^{\\prime} if y′superscripty′\\rm y^{\\prime} is accepted, or otherwise, y(t+1)=y(t)superscript𝑦𝑡1superscripty𝑡y^{(t+1)}=\\mathrm{y}^{(t)}. In SA, T𝑇T is a temperature controlling how greedy the search algorithm is. Usually, T𝑇T is high at the beginning of search so as to be more explorative, and then T𝑇T is cooled down to achieve a better (local) optimum.\nAlthough we follow the generic SA framework of text generation as in [ref]24, the objective function and proposal are largely redesigned, detailed below. Fluency scorer (slmsubscript𝑠lms_{\\text{lm}}). The fluency of a sentence can oftentimes be approximated by a language model’s predicted probability. Previous search-based work uses recurrent neural networks for fluency evaluation [ref]29 [ref]24. In our work, we use the large-scale pretrained GPT2 model . For an output y=y1​⋯​ynysubscript𝑦1⋯subscript𝑦𝑛\\mathrm{y}=y_{1}\\cdots y_{n}, the language fluency scorer is the joint likelihood of yy\\mathrm{y}, given by slm​(y)=(∏i=1np​(yi|y1,⋯,yi−1))αsubscript𝑠lmysuperscriptsuperscriptsubscriptproduct𝑖1𝑛𝑝conditionalsubscript𝑦𝑖subscript𝑦1⋯subscript𝑦𝑖1𝛼s_{\\text{lm}}(\\mathrm{y})=(\\prod_{i=1}^{n}p(y_{i}|y_{1},\\cdots,y_{i-1}))^{\\alpha}, where α𝛼\\alpha is a hyperparameter balancing slmsubscript𝑠lms_{\\text{lm}} with other scorers in (1). In fact, we use the vocabulary of GPT2 with bype-pair encoding (BPE), and yisubscript𝑦𝑖y_{i} here is a token after BPE segmentation. Our GPT2 is fine-tuned with non-parallel in-domain corpora to learn the specificity of a task. Semantic scorer (ssemanticsubscript𝑠semantics_{\\text{semantic}}). In this part, we extend the semantic scorers in [ref]24 with a RoBERTa . Fine-tuning details are presented in Appendex A. Compared with autoregressive GPT2 used for fluency evaluation, RoBERTa is pretrained by masked language modeling, and is better at feature representation. Let x=(x1,⋯,xm)xsubscript𝑥1⋯subscript𝑥𝑚\\mathrm{x}=(x_{1},\\cdots,x_{m}) be a sentence. RoBERTa computes a contexualized representation of a word in the sentence as RoBERTa​(xi,x)RoBERTasubscript𝑥𝑖x\\text{RoBERTa}(x_{i},\\mathrm{x}). A word-level semantic scorer evaluates how much keyword information (detected by Rake ) is preserved, given by the least matched keyword of xx\\mathrm{x}: A sentence-level semantic scorer evaluates the cosine similarity of two sentence vectors ssent​(y,x)=𝒚⊤​𝒙∥𝒚∥𝒙∥s_{\\text{sent}}(\\mathrm{y},\\mathrm{x})=\\frac{\\bm{y}^{\\top}\\bm{x}}{\\|\\bm{y}\\,\\|\\bm{x}\\|}, where the sentence vector is given by the RoBERTa feature of the padded token [BOS] at the beginning end of a sentence, i.e., 𝒙=RoBERTa​([BOS],x)𝒙RoBERTa[BOS]x\\bm{x}=\\text{RoBERTa}(\\text{[BOS]},\\mathrm{x}) and 𝒚𝒚\\bm{y} is computed analogously. Finally, the semantic scorer is the product of both word- and sentence-level scores as where β𝛽\\beta and γ𝛾\\gamma are weighting hyperparameters. Task-specific scorers. We apply tgls to two tasks: paraphrasing and text formalization. For paraphrasing, the goal is to generate a semantically similar but lexically different sentence. Previous work [ref]24 uses the BLEU score to penalize the n𝑛n-gram overlapping between the output and input: sparaphrase(y,x)=(1−BLEU(y,x))δs_{\\text{paraphrase}}(\\mathrm{y},\\mathrm{x})=(1-\\operatorname{BLEU(\\mathrm{y},\\mathrm{x}))^{\\delta}}, which is also adopted in our work. Here, δ𝛿\\delta is a weighting hyperparameter for the task-specific scorer. For text formalization, the goal is to transform an informal sentence to the formal style , which is an example of text style transfer. We follow the setting of most text style-transfer work , where we assume the style labels are available, but no parallel supervision is given.\nWe train a classifier that predicts the probability of the style, also based on the RoBERTa features. Then, the task-specific scorer becomes sformality​(y)=(p​(formal|RoBERTa​([BOS],y)))δsubscript𝑠formalityysuperscript𝑝conditionalformalRoBERTa[BOS]y𝛿s_{\\text{formality}}(\\mathrm{y})=(p(\\text{formal}\\,|\\,\\text{RoBERTa}(\\text{[BOS]},\\mathrm{y})))^{\\delta},\nwhere δ𝛿\\delta is the weighting hyparaparameter for this task. Proposal of local edits. At a step t𝑡t of SA search, a new candidate y′superscripty′\\mathrm{y}^{\\prime} is proposed from y(t)superscripty𝑡\\mathrm{y}^{(t)} by local editing. SA randomly picks a position to edit, as well as one of the following edits: Replace, Insert, and Delete. For Replace, the model suggests a candidate word at xisubscript𝑥𝑖x_{i} based on the posterior distribution induced by s​(y|x)𝑠conditionalyxs(\\rm{y}|\\rm{x}). For efficiency concerns, previous work [ref]29 [ref]24 evaluates top-K𝐾K candidate words, suggested by a forward and backward language model. In our work, we adopt RoBERTa to evaluate the posterior probability of a word, where the word embedding layer of RoBERTa at this slot is randomly masked.\nThe Insert edit also suggests a word from the posterior, predicting a word given the newly added [MASK] token and the context. This complies with RoBERTa’s pretraining criteria of masked language modeling and is able to suggest high-quality candidate words. The Delete operator simply removes the word at a chosen position. In text formalization, we have local edits based on a set of rules, e.g., “we are” substituting “we’re.”, which are retrieved from PPDB. Previous sequence-to-sequence approaches on this task adopt manually designed rules as a preprocessing step . Our unsupervised tgls, on the other hand, can easily make use of the off-the-shelf resources, since it can filter out the noise by rejecting the bad candidates. In short, the SA search component in our tgls mainly follows [ref]24, but we re-design the scoring functions and the proposals. The main focus of this paper is to couple search and learning, especially the methods of training a machine learning model that learns from the search results, as follows."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Unsupervised opinion summarization with noising and denoising",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACL",
+      "authors": "R. K. Amplayo and M. Lapata"
+    },
+    {
+      "index": 1,
+      "title": "Generating Sentences from Disentangled Syntactic and Semantic Spaces",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACL",
+      "authors": "Y. Bao, H. Zhou, S. Huang, L. Li, L. Mou, O. Vechtomova, X. Dai, and J. Chen",
+      "orig_title": "Generating sentences from disentangled syntactic and semantic spaces",
+      "paper_id": "1907.05789v1"
+    },
+    {
+      "index": 2,
+      "title": "Generating sentences from a continuous space",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoNLL",
+      "authors": "S. R. Bowman, L. Vilnis, O. Vinyals, A. M. Dai, R. Jozefowicz, and S. Bengio"
+    },
+    {
+      "index": 3,
+      "title": "MeanSum : A Neural Model for Unsupervised Multi-Document Abstractive Summarization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "E. Chu and P. J. Liu",
+      "orig_title": "MeanSum: A neural model for unsupervised multi-document abstractive summarization",
+      "paper_id": "1810.05739v4"
+    },
+    {
+      "index": 4,
+      "title": "Learning as search optimization: Approximate large margin methods for structured prediction",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ICML",
+      "authors": "H. Daumé III and D. Marcu"
+    },
+    {
+      "index": 5,
+      "title": "Learning as search optimization: Approximate large margin methods for structured prediction",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ICML",
+      "authors": "H. Daumé III and D. Marcu"
+    },
+    {
+      "index": 6,
+      "title": "An Empirical Comparison on Imitation Learning and Reinforcement Learning for Paraphrase Generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "EMNLP-IJCNLP",
+      "authors": "W. Du and Y. Ji",
+      "orig_title": "An empirical comparison on imitation learning and reinforcement learning for paraphrase generation",
+      "paper_id": "1908.10835v1"
+    },
+    {
+      "index": 7,
+      "title": "Paraphrase generation with latent bag of words",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Y. Fu, Y. Feng, and J. P. Cunningham"
+    },
+    {
+      "index": 8,
+      "title": "Style transfer in text: Exploration and evaluation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "Z. Fu, X. Tan, N. Peng, D. Zhao, and R. Yan"
+    },
+    {
+      "index": 9,
+      "title": "An empirical investigation of global and local normalization for recurrent neural sequence models using a continuous relaxation to beam search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NAACL-HLT",
+      "authors": "K. Goyal, C. Dyer, and T. Berg-Kirkpatrick"
+    },
+    {
+      "index": 10,
+      "title": "Zero-Shot Paraphrase Generation with Multilingual Language Models",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.03597",
+      "authors": "Y. Guo, Y. Liao, X. Jiang, Q. Zhang, Y. Zhang, and Q. Liu",
+      "orig_title": "Zero-shot paraphrase generation with multilingual language models",
+      "paper_id": "1911.03597v1"
+    },
+    {
+      "index": 11,
+      "title": "A Deep Generative Framework for Paraphrase Generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "A. Gupta, A. Agarwal, P. Singh, and P. Rai",
+      "orig_title": "A deep generative framework for paraphrase generation",
+      "paper_id": "1709.05074v1"
+    },
+    {
+      "index": 12,
+      "title": "Training products of experts by minimizing contrastive divergence",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Neural Computation",
+      "authors": "G. E. Hinton"
+    },
+    {
+      "index": 13,
+      "title": "Toward Controlled Generation of Text",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "Z. Hu, Z. Yang, X. Liang, R. Salakhutdinov, and E. P. Xing",
+      "orig_title": "Toward controlled generation of text",
+      "paper_id": "1703.00955v4"
+    },
+    {
+      "index": 14,
+      "title": "Auto-encoding variational bayes",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1312.6114",
+      "authors": "D. P. Kingma and M. Welling"
+    },
+    {
+      "index": 15,
+      "title": "Optimization by simulated annealing",
+      "abstract": "",
+      "year": "1983",
+      "venue": "Science",
+      "authors": "S. Kirkpatrick, C. D. Gelatt, and M. P. Vecchi"
+    },
+    {
+      "index": 16,
+      "title": "Learning to Search Better than Your Teacher",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1502.02206",
+      "authors": "A. Krishnamurthy, H. D. CMU EDU III, and U. EDU",
+      "orig_title": "Learning to search better than your teacher",
+      "paper_id": "1502.02206v2"
+    },
+    {
+      "index": 17,
+      "title": "Iterative Edit-Based Unsupervised Sentence Simplification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACL",
+      "authors": "D. Kumar, L. Mou, L. Golab, and O. Vechtomova",
+      "orig_title": "Iterative edit-based unsupervised sentence simplification",
+      "paper_id": "2006.09639v1"
+    },
+    {
+      "index": 18,
+      "title": "Cross-lingual Language Model Pretraining",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "G. Lample and A. Conneau",
+      "orig_title": "Cross-lingual language model pretraining",
+      "paper_id": "1901.07291v1"
+    },
+    {
+      "index": 19,
+      "title": "Unsupervised Machine Translation Using Monolingual Corpora Only",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "G. Lample, A. Conneau, L. Denoyer, and M. Ranzato",
+      "orig_title": "Unsupervised machine translation using monolingual corpora only",
+      "paper_id": "1711.00043v2"
+    },
+    {
+      "index": 20,
+      "title": "Phrase-Based & Neural Unsupervised Machine Translation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "EMNLP",
+      "authors": "G. Lample, M. Ott, A. Conneau, L. Denoyer, and M. Ranzato",
+      "orig_title": "Phrase-based & neural unsupervised machine translation",
+      "paper_id": "1804.07755v2"
+    },
+    {
+      "index": 21,
+      "title": "Delete, Retrieve, Generate: A Simple Approach to Sentiment and Style Transfer",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NAACL-HLT",
+      "authors": "J. Li, R. Jia, H. He, and P. Liang",
+      "orig_title": "Delete, retrieve, generate: A simple approach to sentiment and style transfer",
+      "paper_id": "1804.06437v1"
+    },
+    {
+      "index": 22,
+      "title": "Paraphrase generation with deep reinforcement learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.00279",
+      "authors": "Z. Li, X. Jiang, L. Shang, and H. Li"
+    },
+    {
+      "index": 23,
+      "title": "Unsupervised paraphrasing by simulated annealing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACL",
+      "authors": "X. Liu, L. Mou, F. Meng, H. Zhou, J. Zhou, and S. Song"
+    },
+    {
+      "index": 24,
+      "title": "RoBERTa: A Robustly Optimized BERT Pretraining Approach",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.11692",
+      "authors": "Y. Liu, M. Ott, N. Goyal, J. Du, M. Joshi, D. Chen, O. Levy, M. Lewis, L. Zettlemoyer, and V. Stoyanov",
+      "orig_title": "RoBERTa: A robustly optimized BERT pretraining approach",
+      "paper_id": "1907.11692v1"
+    },
+    {
+      "index": 25,
+      "title": "A Dual Reinforcement Learning Framework for Unsupervised Text Style Transfer",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IJCAI",
+      "authors": "F. Luo, P. Li, J. Zhou, P. Yang, B. Chang, Z. Sui, and X. Sun",
+      "orig_title": "A dual reinforcement learning framework for unsupervised text style transfer",
+      "paper_id": "1905.10060v1"
+    },
+    {
+      "index": 26,
+      "title": "Paraphrasing revisited with neural machine translation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACL",
+      "authors": "J. Mallinson, R. Sennrich, and M. Lapata"
+    },
+    {
+      "index": 27,
+      "title": "An augmented template-based approach to text realization",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Natural Language Engineering",
+      "authors": "S. W. McRoy, S. Channarukul, and S. S. Ali"
+    },
+    {
+      "index": 28,
+      "title": "CGMH: Constrained Sentence Generation by Metropolis-Hastings Sampling",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "N. Miao, H. Zhou, L. Mou, R. Yan, and L. Li",
+      "orig_title": "CGMH: Constrained sentence generation by metropolis-hastings sampling",
+      "paper_id": "1811.10996v1"
+    },
+    {
+      "index": 29,
+      "title": "Unsupervised Sentence Simplification Using Deep Semantics",
+      "abstract": "",
+      "year": "2015",
+      "venue": "INLG",
+      "authors": "S. Narayan and C. Gardent",
+      "orig_title": "Unsupervised sentence simplification using deep semantics",
+      "paper_id": "1507.08452v3"
+    },
+    {
+      "index": 30,
+      "title": "Ppdb 2.0: Better paraphrase ranking, fine-grained entailment relations, word embeddings, and style classification",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACL",
+      "authors": "E. Pavlick, P. Rastogi, J. Ganitkevitch, B. Van Durme, and C. Callison-Burch"
+    },
+    {
+      "index": 31,
+      "title": "Style Transfer Through Back-Translation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACL",
+      "authors": "S. Prabhumoye, Y. Tsvetkov, R. Salakhutdinov, and A. W. Black",
+      "orig_title": "Style transfer through back-translation",
+      "paper_id": "1804.09000v3"
+    },
+    {
+      "index": 32,
+      "title": "Exploring diverse expressions for paraphrase generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "EMNLP-IJCNLP",
+      "authors": "L. Qian, L. Qiu, W. Zhang, X. Jiang, and Y. Yu"
+    },
+    {
+      "index": 33,
+      "title": "Language models are unsupervised multitask learners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "OpenAI Blog",
+      "authors": "A. Radford, J. Wu, R. Child, D. Luan, D. Amodei, and I. Sutskever"
+    },
+    {
+      "index": 34,
+      "title": "Sequence Level Training with Recurrent Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "M. Ranzato, S. Chopra, M. Auli, and W. Zaremba",
+      "orig_title": "Sequence level training with recurrent neural networks",
+      "paper_id": "1511.06732v7"
+    },
+    {
+      "index": 35,
+      "title": "Dear Sir or Madam, May I Introduce the GYAFC Dataset: Corpus, Benchmarks and Metrics for Formality Style Transfer",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NAACL-HLT",
+      "authors": "S. Rao and J. R. Tetreault",
+      "orig_title": "Dear sir or madam, may I introduce the GYAFC dataset: Corpus, benchmarks and metrics for formality style transfer",
+      "paper_id": "1803.06535v2"
+    },
+    {
+      "index": 36,
+      "title": "Automatic keyword extraction from individual documents",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Text Mining: Applications and Theory",
+      "authors": "S. Rose, D. Engel, N. Cramer, and W. Cowley"
+    },
+    {
+      "index": 37,
+      "title": "Discrete Optimization for Unsupervised Sentence Summarization with Word-Level Extraction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACL",
+      "authors": "R. Schumann, L. Mou, Y. Lu, O. Vechtomova, and K. Markert",
+      "orig_title": "Discrete optimization for unsupervised sentence summarization with word-level extraction",
+      "paper_id": "2005.01791v1"
+    },
+    {
+      "index": 38,
+      "title": "Style Transfer from Non-Parallel Text by Cross-Alignment",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS",
+      "authors": "T. Shen, T. Lei, R. Barzilay, and T. Jaakkola",
+      "orig_title": "Style transfer from non-parallel text by cross-alignment",
+      "paper_id": "1705.09655v2"
+    },
+    {
+      "index": 39,
+      "title": "A general reinforcement learning algorithm that masters chess, shogi, and Go through self-play",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Science",
+      "authors": "D. Silver, T. Hubert, J. Schrittwieser, I. Antonoglou, M. Lai, A. Guez, M. Lanctot, L. Sifre, D. Kumaran, T. Graepel, et al."
+    },
+    {
+      "index": 40,
+      "title": "Joint learning of a dual SMT system for paraphrase generation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ACL",
+      "authors": "H. Sun and M. Zhou"
+    },
+    {
+      "index": 41,
+      "title": "Unsupervised Neural Text Simplification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACL",
+      "authors": "S. Surya, A. Mishra, A. Laha, P. Jain, and K. Sankaranarayanan",
+      "orig_title": "Unsupervised neural text simplification",
+      "paper_id": "1810.07931v6"
+    },
+    {
+      "index": 42,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 43,
+      "title": "Topic-Guided Variational Autoencoders for Text Generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NAACL",
+      "authors": "W. Wang, Z. Gan, H. Xu, R. Zhang, G. Wang, D. Shen, C. Chen, and L. Carin",
+      "orig_title": "Topic-guided variational auto-encoder for text generation",
+      "paper_id": "1903.07137v1"
+    },
+    {
+      "index": 44,
+      "title": "Eliza—a computer program for the study of natural language communication between man and machine",
+      "abstract": "",
+      "year": "1966",
+      "venue": "Communications of the ACM",
+      "authors": "J. Weizenbaum"
+    },
+    {
+      "index": 45,
+      "title": "Sequence-to-sequence learning as beam-search optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "EMNLP",
+      "authors": "S. Wiseman and A. M. Rush"
+    },
+    {
+      "index": 46,
+      "title": "On Variational Learning of Controllable Representations for Text without Supervision",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "P. Xu, J. C. K. Cheung, and Y. Cao",
+      "orig_title": "On variational learning of controllable representations for text without supervision",
+      "paper_id": "1905.11975v4"
+    },
+    {
+      "index": 47,
+      "title": "Formality Style Transfer with Hybrid Textual Annotations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv 1903.06353",
+      "authors": "R. Xu, T. Ge, and F. Wei",
+      "orig_title": "Formality style transfer with hybrid textual annotations",
+      "paper_id": "1903.06353v1"
+    },
+    {
+      "index": 48,
+      "title": "Paraphrasing for style",
+      "abstract": "",
+      "year": "2012",
+      "venue": "COLING",
+      "authors": "W. Xu, A. Ritter, B. Dolan, R. Grishman, and C. Cherry"
+    },
+    {
+      "index": 49,
+      "title": "An end-to-end generative architecture for paraphrase generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "EMNLP-IJCNLP",
+      "authors": "Q. Yang, D. Shen, Y. Cheng, W. Wang, G. Wang, L. Carin, et al."
+    },
+    {
+      "index": 50,
+      "title": "SeqGAN: Sequence generative adversarial nets with policy gradient",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI",
+      "authors": "L. Yu, W. Zhang, J. Wang, and Y. Yu"
+    },
+    {
+      "index": 51,
+      "title": "Bridging the Gap between Training and Inference for Neural Machine Translation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACL",
+      "authors": "W. Zhang, Y. Feng, F. Meng, D. You, and Q. Liu",
+      "orig_title": "Bridging the gap between training and inference for neural machine translation",
+      "paper_id": "1906.02448v2"
+    },
+    {
+      "index": 52,
+      "title": "Syntax-Infused Variational Autoencoder for Text Generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACL",
+      "authors": "X. Zhang, Y. Yang, S. Yuan, D. Shen, and L. Carin",
+      "orig_title": "Syntax-infused variational autoencoder for text generation",
+      "paper_id": "1906.02181v1"
+    },
+    {
+      "index": 53,
+      "title": "Style Transfer as Unsupervised Machine Translation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1808.07894",
+      "authors": "Z. Zhang, S. Ren, S. Liu, J. Wang, P. Chen, M. Li, M. Zhou, and E. Chen",
+      "orig_title": "Style transfer as unsupervised machine translation",
+      "paper_id": "1808.07894v1"
+    },
+    {
+      "index": 54,
+      "title": "Leveraging multiple mt engines for paraphrase generation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "COLING",
+      "authors": "S. Zhao, H. Wang, X. Lan, and T. Liu"
+    },
+    {
+      "index": 55,
+      "title": "Sentence Centrality Revisited for Unsupervised Summarization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "57th Annual Meeting of the Association for Computational Linguistics",
+      "authors": "H. Zheng and M. Lapata",
+      "orig_title": "Sentence centrality revisited for unsupervised summarization",
+      "paper_id": "1906.03508v1"
+    }
+  ]
+}

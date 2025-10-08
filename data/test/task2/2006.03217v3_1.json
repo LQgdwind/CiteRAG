@@ -1,0 +1,479 @@
+{
+  "paper_id": "2006.03217v3",
+  "title": "Content and Context Features for Scene Image Representation",
+  "sections": {
+    "content features": "Most of the scene image features are based on the content of the images        0   6  [ref]29   [ref]36    2 4 3    . These features focus on the visual content of the images. These features can be further divided into two types: traditional content features        0   6  [ref]29   [ref]36  and deep learning-based content features   2 4 3    . Most of the traditional content features are computed based on the popular traditional methods\nsuch as Scale-Invariant Feature Transform (SIFT)  ,\nHistogram of Gradient (HOG) ,\nGeneralized\nSearch Trees (GIST)  ,\nSpatial Pyramid Matching (SPM) ,\nCENsus TRansform hISTogram (CENTRIST) , multi-channel (mCENTRIST) 0,\nOriented Texture Curves (OTC) ,\nGIST-Color  ,\nRoI (Region of Interest) with GIST  ,\nMax margin Scene (MM-Scene) 6,\nObject bank  ,\nReconfigurable BoW (RBoW)  [ref]29,\nBag of Parts (BoP)  ,\nImportant Spatial Pooling Region (ISPR)  ,\nLaplacian Sparse Coding SPM (LscSPM)  [ref]36,\nImproved Fisher Vector (IFV)  , and so on. In early works such as Search Trees GIST  , CENTRIST  and mCENTRIST 0, features were extracted from local details such as colors, pixels, orientations, etc.\nof the images. They have a limited ability to deal with the significant variations in the local content of images. Local features extracted by SIFT , are multi-scale and rotation-invariant in nature. These local information may not provide global layout information of images and hence results in lower classification accuracy. SPM  extracted the features based on the spatial regions of the image defined, by partitioning images into different slices. The features of each region were extracted as Bag of Visual Words (BoVW) of SIFT descriptors. Though their method captures some semantic regions of the image by partitioning method to some extent, it is not good at representing complex scene images that demand high-level information (object or scene details) for their better separability. In HoG , features were based on the gradient orientations in local grids of images. Since these features focus on designing histograms based on edge orientations, they are not suitable for complex scene images with multiple objects and their associations. In OTC , features were based on the color variation of patches in images. These features are suitable to represent texture images but they may not be suitable for scene images. Similarly, several other methods such as   6  [ref]29   [ref]36  extracted features based on local sense of images. Since all these methods rely on the fundamental components and fail to capture the association/relations between components, they have limited capability for the classification of scene images. To sum up, these traditional content features are insufficient to represent the complex images such as scenes, where multiple factors such as context, background and foreground need to be considered for better differentiation. Recent research works such as\nCNN-MOP ,\nCNN-sNBNL ,\nResNet152 2,\nVGG 4,\nEISR 3,\nGM2SF ,\nBag of Surrogate Parts (BoSP)  , CNN-LSTM , and HDF  used deep learning models to extract semantic features of images. Deep features are extracted from the intermediate layers of such pre-trained models and outperform existing traditional visual content features in scene image classification. Initially, Gong et al.\n  and Kuzborskij et al.  extracted deep features from Caffe 3 model pre-trained on hybrid datasets (ImageNet  and Places 4) and ImageNet , respectively. Specifically, Gong et al.  utilized fully connected layers (F​C𝐹𝐶FC-layers) resulting in features size of 4,09640964,096-D for each scale of the image to achieve orderless multi-scale pooling features. The size of final features is higher as the number of scales increases in their experiments. Their method outperforms single-scaled features though Gong et al. has a higher dimensional features size.\nSimilarly, Kuzborskij et al.  also used F​C𝐹𝐶FC-layers after fine-tuning. The features were used on top of Naive Bayes non-linear learning approach for the image classification purpose. Their method needs fine-tuning operations, which could need massive datasets for learning discriminating features. Furthermore, He et al. 2 proposed a deep architecture to extract features based on residual networks. The network was trained with ImageNet  dataset, as with previous researchers in prior deep learning models such as VGG-Net .\nNevertheless, there was a necessity of deep architectures pre-trained with scene related images for the extraction of scene features.\nThus, Zhou et al. 4 trained VGG-Net model  with scene image dataset, which utilizes\nthe background information of the image. Their background features (scene-based) of scene images were more prominent (in terms of classification) than foreground features (object-based) obtained from ImageNet  pre-trained models such as VGG16 . Furthermore, some studies extracted the mid-level features based on the pre-trained deep learning models to improve the separability. Zhang et al. 3 performed random cropping of images into multiple crops and extracted the visual features from the AlexNet 8 model, pre-trained on ImageNet , to design a codebook of size of 1,00010001,000. Then, sparse coding technique was used to extract the proposed features. The sparse coded features were concatenated with the tag-based features as the final features. Such types of features were extracted for each crop and concatenated as the final features of images. Their method suffers from the curse of the high features dimensionality. Furthermore, due to the chance of repetition of random patches, the chances of classification performance degradation is not surprising. Tang et al.  chose three classification layers of GoogleNet , which was fine tuned with the scene images of corresponding domains. The features were extracted in the form of probabilities from classification layers and then performed feature fusion of these three probability-based features. Their method is also called multi-stage CNN (Convolutional Neural Network). Their method demands large datasets and rigorous hyper-parameter tuning process to learn the separable features for the better discrimination of each input image.\nLikewise, Guo et al.   proposed Bag of Surrogate Parts (BoSP) features based on the higher pooling layers of the VGG16 model  pre-trained with ImageNet  such as 4t​hsuperscript4𝑡ℎ4^{th} and 5t​hsuperscript5𝑡ℎ5^{th} pooling layers.\nTheir method based on foreground information outperforms existing state-of-the-art methods.\nHowever, their method simply focuses on the foreground (object-based) information because their deep learning model has been pre-trained on ImageNet  with frequent object based information. Bai et al.  extracted image features based on the Long Short Term Memory (LSTM) on top of Convolutional Neural Networks (CNNs). They assumed that the ordered slices of the images come under the LSTM problem in scene image representation, which yields prominent features. The features of each slice were extracted from the VGG16  pre-trained on Places 4 and fed into the LSTM model. The use of background information with such model outperformed several other previous methods including traditional methods and deep learning-based methods. Since their method uses both CNN and LSTM models for the classification, it not only requires massive datasets to learn the highly separable features but also needs arduous hyper-parameter tuning process to mitigate both over-fitting and under-fitting problems. In addition, their method ignores the object-level information, which could be very important clues for better differentiation of complex scene images. Recently, Sitaula et al.  adopted the whole and part-level approach to represent the scene images. For this, they utilized both foreground and background information. From their experiment, they reported that the feature extraction using both foreground and background information at both whole level and part level can help capture the more interesting regions, which improves the class separability.  Since their method only relies on content information, it still may be unable to differentiate complex scene images having higher inter-class similarity problems. Aggregation of multi-scale features provides more discriminating information of scene images by their multi-scale nature. However, this has been ignored by previous methods whose representation are often based on either foreground features or background features using pre-trained deep learning models. The fusion of such multi-scale foreground features and background features can help to provide the stable and improved classification accuracy of scene images even on varying sized images."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Coordinate cnns and lstms to categorize scene images with multi-views and multi-levels of abstraction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Expert Systems with Applications",
+      "authors": "S. Bai, H. Tang, and S. An"
+    },
+    {
+      "index": 1,
+      "title": "Fast algorithms for sorting and searching strings",
+      "abstract": "",
+      "year": "1997",
+      "venue": "ACM-SIAM Symposium on Discrete Algorithms",
+      "authors": "J. L Bentley and R. Sedgewick"
+    },
+    {
+      "index": 2,
+      "title": "Enriching Word Vectors with Subword Information",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "authors": "P. Bojanowski, E. Grave, A. Joulin, and T. Mikolov",
+      "orig_title": "Enriching word vectors with subword information",
+      "paper_id": "1607.04606v2"
+    },
+    {
+      "index": 3,
+      "title": "Keras",
+      "abstract": "",
+      "year": "2015",
+      "venue": "https://github.com/fchollet/keras",
+      "authors": "François Chollet et al."
+    },
+    {
+      "index": 4,
+      "title": "Histograms of oriented gradients for human detection",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Comput. Soc. Conf. Comput. Vis. Pattern Recognit. (CVPR)",
+      "authors": "N. Dalal and B. Triggs"
+    },
+    {
+      "index": 5,
+      "title": "ImageNet: a large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR)",
+      "authors": "J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei"
+    },
+    {
+      "index": 6,
+      "title": "A bayesian hierarchical model for learning natural scene categories",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE Comput. Soc. Conf. Comput. Vis. and Pattern Recognit. (CVPR)",
+      "authors": "L. Fei-Fei and P. Perona"
+    },
+    {
+      "index": 7,
+      "title": "Iot security based on iris verification using multi-algorithm feature level fusion scheme",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Computer Applications & Information Security (ICCAIS)",
+      "authors": "R. Gad, AA Abd El-Latif, S. Elseuofi, HM Ibrahim, M. Elmezain, and W. Said"
+    },
+    {
+      "index": 8,
+      "title": "Multi-Scale Orderless Pooling of Deep Convolutional Activation Features",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Eur. Conf. Comput. Vis. (ECCV)",
+      "authors": "Y. Gong, L. Wang, R. Guo, and S. Lazebnik",
+      "orig_title": "Multi-scale orderless pooling of deep convolutional activation features",
+      "paper_id": "1403.1840v3"
+    },
+    {
+      "index": 9,
+      "title": "Bag of surrogate parts: one inherent feature of deep cnns",
+      "abstract": "",
+      "year": "2016",
+      "venue": "BMVC",
+      "authors": "Y. Guo and M. S. Lew"
+    },
+    {
+      "index": 10,
+      "title": "Bag of surrogate parts feature for visual recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Multimedia",
+      "authors": "Y. Guo, Y. Liu, S. Lao, E. M. Bakker, L. Bai, and M. S. Lew"
+    },
+    {
+      "index": 11,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 12,
+      "title": "Caffe: Convolutional Architecture for Fast Feature Embedding",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM Int. Conf. Multimedia",
+      "authors": "Y. Jia, E. Shelhamer, J. Donahue, S. Karayev, J. Long, R. Girshick, S. Guadarrama, and T. Darrell",
+      "orig_title": "Caffe: Convolutional architecture for fast feature embedding",
+      "paper_id": "1408.5093v1"
+    },
+    {
+      "index": 13,
+      "title": "Saliency detection based on integrated features",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Neurocomputing",
+      "authors": "H. Jing, X. He, Q. Han, AA Abd El-Latif, and X. Niu"
+    },
+    {
+      "index": 14,
+      "title": "Blocks that shout: Distinctive parts for scene classification",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR)",
+      "authors": "M. Juneja, A. Vedaldi, C. Jawahar, and A. Zisserman"
+    },
+    {
+      "index": 15,
+      "title": "Keras-vgg16-places365",
+      "abstract": "",
+      "year": "2017",
+      "venue": "https://github.com/GKalliatakis/Keras-VGG16-places365",
+      "authors": "G. Kalliatakis"
+    },
+    {
+      "index": 16,
+      "title": "Convolutional Neural Networks for Sentence Classification",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1408.5882",
+      "authors": "Y. Kim",
+      "orig_title": "Convolutional neural networks for sentence classification",
+      "paper_id": "1408.5882v2"
+    },
+    {
+      "index": 17,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Adv. Neural Inf. Process. Syst. (NIPS)",
+      "authors": "A. Krizhevsky, I. Sutskever, and G. E. Hinton"
+    },
+    {
+      "index": 18,
+      "title": "When naive bayes nearest neighbors meet convolutional neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "I. Kuzborskij, F. Maria Carlucci, and B. Caputo"
+    },
+    {
+      "index": 19,
+      "title": "Beyond bags of features: Spatial pyramid matching for recognizing natural scene categories",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Comput. Soc. Conf. Comput. Vis. Pattern Recognit.",
+      "authors": "S. Lazebnik, C. Schmid, and J. Ponce"
+    },
+    {
+      "index": 20,
+      "title": "What, where and who? classifying events by scene and object recognition",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ICCV",
+      "authors": "L.-J. Li and F.-F. Li"
+    },
+    {
+      "index": 21,
+      "title": "Object bank: A high-level image representation for scene classification & semantic feature sparsification",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Adv. Neural Inf. Process. Syst. (NIPS)",
+      "authors": "L.-J. Li, H. Su, L. Fei-Fei, and E. P. Xing"
+    },
+    {
+      "index": 22,
+      "title": "Learning important spatial pooling regions for scene classification",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR)",
+      "authors": "D. Lin, C. Lu, R. Liao, and J. Jia"
+    },
+    {
+      "index": 23,
+      "title": "Otc: A novel local descriptor for scene classification",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Eur. Conf. Comput. Vis. (ECCV)",
+      "authors": "R. Margolin, L. Zelnik-Manor, and A. Tal"
+    },
+    {
+      "index": 24,
+      "title": "Efficient estimation of word representations in vector space",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1301.3781",
+      "authors": "T. Mikolov, K. Chen, G. Corrado, and J. Dean"
+    },
+    {
+      "index": 25,
+      "title": "Wordnet: a lexical database for english",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Commun. ACM",
+      "authors": "G. A. Miller"
+    },
+    {
+      "index": 26,
+      "title": "Gist of the scene",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Neurobiology of Attention",
+      "authors": "A. Oliva"
+    },
+    {
+      "index": 27,
+      "title": "Modeling the shape of the scene: a holistic representation of the spatial envelope",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Int. J. Comput. Vis.",
+      "authors": "A. Oliva and A. Torralba"
+    },
+    {
+      "index": 28,
+      "title": "Reconfigurable models for scene recognition",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Comput. Vis. Pattern Recognit.(CVPR)",
+      "authors": "N. Parizi, J. G. Oberlin, and P. F. Felzenszwalb"
+    },
+    {
+      "index": 29,
+      "title": "Magnitude: A Fast, Efficient Universal Vector Embedding Utility Package",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conf. on Empirical Methods in Natural Language Processing: System Demonstrations",
+      "authors": "A. Patel, A. Sands, C. Callison-Burch, and M. Apidianaki",
+      "orig_title": "Magnitude: A fast, efficient universal vector embedding utility package",
+      "paper_id": "1810.11190v1"
+    },
+    {
+      "index": 30,
+      "title": "Linear discriminant multi-set canonical correlations analysis (ldmcca): an efficient approach for feature fusion of finger biometrics",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Multimedia Tools and Applications",
+      "authors": "J. Peng, Q. Li, AA Abd El-Latif, and X. Niu"
+    },
+    {
+      "index": 31,
+      "title": "Finger-vein verification using gabor filter and sift feature matching",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Eighth International Conference on Intelligent Information Hiding and Multimedia Signal Processing",
+      "authors": "J. Peng, N. Wang, AA Abd El-Latif, Q. Li, and X. Niu"
+    },
+    {
+      "index": 32,
+      "title": "Glove: Global vectors for word representation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "2014 Conf. on empirical methods in natural language processing (EMNLP)",
+      "authors": "J. Pennington, R. Socher, and C. Manning"
+    },
+    {
+      "index": 33,
+      "title": "Improving the fisher kernel for large-scale image classification",
+      "abstract": "",
+      "year": "2010",
+      "venue": "European Conference on Computer vision (ECCV)",
+      "authors": "F. Perronnin, J. Sánchez, and T. Mensink"
+    },
+    {
+      "index": 34,
+      "title": "Recognizing indoor scenes",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR)",
+      "authors": "A. Quattoni and A. Torralba"
+    },
+    {
+      "index": 35,
+      "title": "Local features are not lonely–laplacian sparse coding for image classification",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "I.-H. ShenghuaGao and P. Liang-TienChia"
+    },
+    {
+      "index": 36,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1409.1556",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 37,
+      "title": "Fusion of whole and part features for the classification of histopathological image of breast tissue",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Health Information Science and Systems",
+      "authors": "C. Sitaula and S. Aryal"
+    },
+    {
+      "index": 38,
+      "title": "Attention-based vgg-16 model for covid-19 chest x-ray image classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Applied Intelligence",
+      "authors": "C. Sitaula and MB Hossain"
+    },
+    {
+      "index": 39,
+      "title": "Unsupervised Deep Features for Privacy Image Classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Pacific-Rim Symposium on Image and Video Technology (PSIVT)",
+      "authors": "C. Sitaula, Y. Xiang, S. Aryal, and X. Lu",
+      "orig_title": "Unsupervised deep features for privacy image classification",
+      "paper_id": "1909.10708v1"
+    },
+    {
+      "index": 40,
+      "title": "Tag-based semantic features for scene image classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Int. Conf. on Neural Inf. Process. (ICONIP)",
+      "authors": "C. Sitaula, Y. Xiang, A. Basnet, S. Aryal, and X. Lu"
+    },
+    {
+      "index": 41,
+      "title": "HDF: Hybrid Deep Features for Scene Image Representation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Int. Joint Conf. on Neural Networks (IJCNN)",
+      "authors": "C. Sitaula, Y. Xiang, A. Basnet, S. Aryal, and X. Lu",
+      "orig_title": "Hdf: Hybrid deep features for scene image representation",
+      "paper_id": "2003.09773v1"
+    },
+    {
+      "index": 42,
+      "title": "Indoor Image Representation by High-Level Semantic Features",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "C. Sitaula, Y. Xiang, Y. Zhang, X. Lu, and S. Aryal",
+      "orig_title": "Indoor image representation by high-level semantic features",
+      "paper_id": "1906.04987v3"
+    },
+    {
+      "index": 43,
+      "title": "Going deeper with convolutions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR)",
+      "authors": "C. Szegedy, W. Liu, Y. Jia, P. Sermanet, S. Reed, D. Anguelov, D. Erhan, V. Vanhoucke, and A. Rabinovich",
+      "orig_title": "Going deeper with convolutions",
+      "paper_id": "1409.4842v1"
+    },
+    {
+      "index": 44,
+      "title": "Rethinking the inception architecture for computer vision",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conf. Comput. Vis. Pattern Recognit.",
+      "authors": "C. Szegedy, V. Vanhoucke, S. Ioffe, J. Shlens, and Z. Wojna"
+    },
+    {
+      "index": 45,
+      "title": "G-MS2F: GoogLeNet based multi-stage feature fusion of deep CNN for scene recognition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Neurocomputing",
+      "authors": "P. Tang, H. Wang, and S. Kwong"
+    },
+    {
+      "index": 46,
+      "title": "Learning semantic text features for web text aided image classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Multimedia",
+      "authors": "D. Wang and K. Mao"
+    },
+    {
+      "index": 47,
+      "title": "Task-generic semantic convolutional neural network for web text-aided image classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neurocomputing",
+      "authors": "D. Wang and K. Mao"
+    },
+    {
+      "index": 48,
+      "title": "CENTRIST: A visual descriptor for scene categorization",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "J. Wu and J. M. Rehg"
+    },
+    {
+      "index": 49,
+      "title": "mCENTRIST: a multi-channel feature generation mechanism for scene categorization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Trans. Image Process.",
+      "authors": "Y. Xiao, J. Wu, and J. Yuan"
+    },
+    {
+      "index": 50,
+      "title": "Feature fusion: parallel strategy vs. serial strategy",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Pattern recognition",
+      "authors": "J. Yang, J.-y. Yang, D. Zhang, and J.-f. Lu"
+    },
+    {
+      "index": 51,
+      "title": "Sift descriptors modeling and application in texture image classification",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Int. Conf. Comput. Graphics, Imaging and Visualization (CGiV)",
+      "authors": "O. Zeglazi, A. Amine, and M. Rziza"
+    },
+    {
+      "index": 52,
+      "title": "Image classification by search with explicitly and implicitly semantic representations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Information Sciences",
+      "authors": "C. Zhang, G. Zhu, Q. Huang, and Q. Tian"
+    },
+    {
+      "index": 53,
+      "title": "Places: An image database for deep scene understanding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1610.02055",
+      "authors": "B. Zhou, A. Khosla, A. Lapedriza, A. Torralba, and A. Oliva"
+    },
+    {
+      "index": 54,
+      "title": "Places: A 10 million image database for scene recognition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans. Pattern Anal. Mach. Intell.",
+      "authors": "B. Zhou, A. Lapedriza, A. Khosla, A. Oliva, and A. Torralba"
+    },
+    {
+      "index": 55,
+      "title": "Large margin learning of upstream scene understanding models",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Adv. Neural Inf. Process. Syst. (NIPS)",
+      "authors": "J. Zhu, L. Li, L. Fei-Fei, and EP. Xing"
+    }
+  ]
+}

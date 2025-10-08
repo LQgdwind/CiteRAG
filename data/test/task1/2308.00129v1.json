@@ -1,0 +1,1539 @@
+{
+  "paper_id": "2308.00129v1",
+  "title": "Speech representation learning: Learning bidirectional encoders with single-view, multi-view, and multi-task methods",
+  "abstract": "Abstract\nRepresentation learning refers to the problem of transforming high-dimensional and possibly noisy raw inputs to compact and informative representations of the data. Unlike traditional hand-engineered features, representation learning can automatically capture the underlying structure and patterns hidden in the surface features, which can be useful for improving performance on downstream tasks and improving generalization.\nThis thesis focuses on representation learning for sequence data over time or space, aiming to improve downstream sequence prediction tasks by using the learned representations. This problem is challenging because the sequences can be very diverse. For example, if the series is a continuous signal like a speech recording, sources of variation include (but are not limited to) linguistic material, different speakers, and distinct recording environments. Supervised learning has been the most dominant approach for training deep neural networks for learning good sequential representations. However, one limiting factor to scale supervised learning is the lack of enough annotated data.\nMotivated by this challenge, it is natural to explore representation learning methods that can utilize large amounts of unlabeled and weakly labeled data, as well as an additional data modality. I describe my broad study of representation learning for speech data. Unlike most other works that focus on a single learning setting, this thesis studies multiple settings: supervised learning with auxiliary losses, unsupervised learning, semi-supervised learning, and multi-view learning. Besides different learning problems, I also explore multiple approaches for representation learning. In this thesis, I focus on speech data, but the methods can also be applied to other domains.\nIn Chapter 3, I systematically study autoencoders for acoustic representation learning, and I show that speech recognition can benefit from the representations learned by a variational autoencoder (VAE) with a feedforward encoder when the VAE is trained using a much larger unlabeled dataset. To the best of my knowledge, this is the first work to experimentally show that VAEs learn representations that significantly improve speech recognition and outperform autoencoding approaches that do not use variational inference. I also explore in depth what makes VAEs powerful for representation learning. I find that their KL divergence term provides regularization effects which may play a critical role in representation learning.\nIn Chapter 4, I contribute new techniques for variational representation learning models in a multi-view learning setting. Specifically, I extend variational canonical correlation analysis (VCCA), an unsupervised multi-view representation learning method, with more informative sample-specific priors. My proposed extension of VCCA learns representations that improve speech recognition performance, when we have access to multi-view training data consisting of audio paired with articulatory measurements. I also explore two specific problems in multi-view learning — cross-domain multi-view learning and label embedding. I investigate learning an acoustic encoder using an additional modality (view) when we don’t have access to paired in-domain multi-view data. I explore multiple transfer learning techniques and optimization techniques to exploit the learned acoustic-articulatory mapping in the dataset where acoustic-articulatory pairs are accessible. I show that such acoustic-articulatory mapping information can improve speech recognition, especially with small training datasets. For label embedding, I directly treat the label as a second view and use the structural information hidden in the label to assist the representation learning.\nIn Chapter 5, I study multitask recurrent representation learning, combining supervised and unsupervised losses, and present several technical improvements to variational sequential models. Unlike other variational sequential models developed prior to my work that focus on generation tasks and typically use unidirectional recurrent layers as their encoders, I propose to use variational bidirectional recurrent layers as an encoder to learn better-performing representations for downstream tasks. I also propose to factor the representation into a discriminative component and a reconstruction-specific component. I also propose to update the priors dynamically, discuss the resulting benefits and limitations in depth, and propose potential extensions. My experimental results show that the proposed multitask representation learning framework works well for speech recognition, and also text tasks like entity recognition and text chunking.\nIn Chapter 6 I focus on unsupervised sequential representation learning. I compare multiple unsupervised learning approaches, including autoencoding, contrastive learning, and masked reconstruction. I also contribute a new approach, multi-view masked reconstruction. My experimental study shows that making representations invariant to different domains and robust to distortions can improve speech recognition performance and generalization to unseen data.\nOverall, the field of representation learning is developing rapidly. State-of-the-art results on speech related tasks are typically based on Transformers pre-trained with large-scale self-supervised learning, which aims to learn generic representations that can benefit multiple downstream tasks. Since 2020, large-scale pre-training has been the de facto choice to achieve good performance. This delayed thesis does not attempt to summarize and compare with the latest results on speech representation learning; Instead, it presents a unique study on speech representation learning before the Transformer era, that covers multiple learning settings. I believe some of the findings in this thesis can still be useful today, and in Chapter 7 I conclude those findings and discuss potential future work.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "TensorFlow: A system for large-scale machine learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "OSDI",
+      "authors": "M. Abadi, P. Barham, J. Chen, Z. Chen, Andy Davis, J. Dean, M. Devin, Sanjay Ghemawat, Geoffrey Irving, M. Isard, M. Kudlur, Josh Levenberg, Rajat Monga, Sherry Moore, D. Murray, B. Steiner, P. Tucker, V. Vasudevan, Pete Warden, Martin Wicke, Y. Yu, and Xiaoqiang Zhang",
+      "orig_title": "Tensorflow: A system for large-scale machine learning",
+      "paper_id": "1605.08695v2"
+    },
+    {
+      "index": 1,
+      "title": "What regularized auto-encoders learn from the data-generating distribution",
+      "abstract": "",
+      "year": "2014",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "Guillaume Alain and Yoshua Bengio"
+    },
+    {
+      "index": 2,
+      "title": "A comparison of unidirectional and bidirectional lstm networks for human activity recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE International Conference on Pervasive Computing and Communications Workshops (PerCom Workshops)",
+      "authors": "Luay Alawneh, Belal Mohsen, Mohammad Al-Zinati, Ahmed S. Shatnawi, and M. Al-Ayyoub"
+    },
+    {
+      "index": 3,
+      "title": "Deep variational information bottleneck",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1612.00410",
+      "authors": "Alexander A Alemi, Ian Fischer, Joshua V Dillon, and Kevin Murphy"
+    },
+    {
+      "index": 4,
+      "title": "Fixing a Broken ELBO",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1711.00464",
+      "authors": "Alexander A Alemi, Ben Poole, Ian Fischer, Joshua V Dillon, Rif A Saurous, and Kevin Murphy",
+      "orig_title": "Fixing a broken elbo",
+      "paper_id": "1711.00464v3"
+    },
+    {
+      "index": 5,
+      "title": "Linear and nonlinear ica based on mutual information - the misep method",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Signal Process.",
+      "authors": "L. Almeida"
+    },
+    {
+      "index": 6,
+      "title": "Deep canonical correlation analysis",
+      "abstract": "",
+      "year": "2013",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Galen Andrew, Raman Arora, Jeff Bilmes, and Karen Livescu"
+    },
+    {
+      "index": 7,
+      "title": "Black box variational inference for state space models",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1511.07367",
+      "authors": "Evan Archer, Il Memming Park, Lars Buesing, John Cunningham, and Liam Paninski"
+    },
+    {
+      "index": 8,
+      "title": "Bidirectional recurrent neural network language models for automatic speech recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "E. Arisoy, A. Sethy, B. Ramabhadran, and S. Chen"
+    },
+    {
+      "index": 9,
+      "title": "Multi-view cca-based acoustic features for phonetic recognition across speakers and domains",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE International Conference on Acoustics, Speech and Signal Processing",
+      "authors": "R. Arora and Karen Livescu"
+    },
+    {
+      "index": 10,
+      "title": "A probabilistic interpretation of canonical correlation analysis",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": "Francis R Bach and Michael I Jordan"
+    },
+    {
+      "index": 11,
+      "title": "vq-wav2vec: Self-Supervised Learning of Discrete Speech Representations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Alexei Baevski, Steffen Schneider, and Michael Auli",
+      "orig_title": "vq-wav2vec: Self-supervised learning of discrete speech representations",
+      "paper_id": "1910.05453v3"
+    },
+    {
+      "index": 12,
+      "title": "wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Alexei Baevski, Henry Zhou, Abdelrahman Mohamed, and Michael Auli",
+      "orig_title": "wav2vec 2.0: A framework for self-supervised learning of speech representations",
+      "paper_id": "2006.11477v3"
+    },
+    {
+      "index": 13,
+      "title": "Unsupervised Speech Recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Alexei Baevski, Wei-Ning Hsu, Alexis Conneau, and Michael Auli",
+      "orig_title": "Unsupervised speech recognition",
+      "paper_id": "2105.11084v3"
+    },
+    {
+      "index": 14,
+      "title": "End-to-end attention-based large vocabulary speech recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "Dzmitry Bahdanau, J. Chorowski, Dmitriy Serdyuk, Philemon Brakel, and Yoshua Bengio",
+      "orig_title": "End-to-end attention-based large vocabulary speech recognition",
+      "paper_id": "1508.04395v2"
+    },
+    {
+      "index": 15,
+      "title": "End-to-end attention-based large vocabulary speech recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "Dzmitry Bahdanau, Jan Chorowski, Dmitriy Serdyuk, Philemon Brakel, and Yoshua Bengio",
+      "orig_title": "End-to-end attention-based large vocabulary speech recognition",
+      "paper_id": "1508.04395v2"
+    },
+    {
+      "index": 16,
+      "title": "Contrastively Disentangled Sequential Variational Autoencoder",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Junwen Bai, Weiran Wang, and Carla P. Gomes",
+      "orig_title": "Contrastively disentangled sequential variational autoencoder",
+      "paper_id": "2110.12091v1"
+    },
+    {
+      "index": 17,
+      "title": "Self-organizing neural network that discovers surfaces in random-dot stereograms",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Nature",
+      "authors": "Suzanna Becker and Geoffrey E. Hinton"
+    },
+    {
+      "index": 18,
+      "title": "Mine: mutual information neural estimation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1801.04062",
+      "authors": "Mohamed Ishmael Belghazi, Aristide Baratin, Sai Rajeswar, Sherjil Ozair, Yoshua Bengio, Aaron Courville, and R Devon Hjelm"
+    },
+    {
+      "index": 19,
+      "title": "An information-maximization approach to blind separation and blind deconvolution",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Neural computation",
+      "authors": "Anthony J Bell and Terrence J Sejnowski"
+    },
+    {
+      "index": 20,
+      "title": "Greedy layer-wise training of deep networks",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Yoshua Bengio, Pascal Lamblin, Dan Popovici, and Hugo Larochelle."
+    },
+    {
+      "index": 21,
+      "title": "Representation learning: A review and new perspectives",
+      "abstract": "",
+      "year": "",
+      "venue": "IEEE transactions on pattern analysis and machine\nintelligence, 35(8):",
+      "authors": "Yoshua Bengio, Aaron Courville, and Pascal Vincent."
+    },
+    {
+      "index": 22,
+      "title": "Estimating or propagating gradients through stochastic neurons for conditional computation",
+      "abstract": "",
+      "year": "",
+      "venue": "ArXiv, abs/",
+      "authors": "Yoshua Bengio, N. Léonard, and Aaron C. Courville."
+    },
+    {
+      "index": 23,
+      "title": "Fully-convolutional siamese networks for object tracking",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European conference on computer vision, pages 850–865.\nSpringer",
+      "authors": "Luca Bertinetto, Jack Valmadre, Joao F Henriques, Andrea Vedaldi, and Philip HS\nTorr."
+    },
+    {
+      "index": 24,
+      "title": "Training with noise is equivalent to tikhonov regularization",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Neural computation, 7(1):108–116",
+      "authors": "Chris M Bishop."
+    },
+    {
+      "index": 25,
+      "title": "Generating sentences from a continuous space",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Samuel R Bowman, Luke Vilnis, Oriol Vinyals, Andrew M Dai, Rafal Jozefowicz,\nand Samy Bengio."
+    },
+    {
+      "index": 26,
+      "title": "Signature verification using a \"siamese\" time delay neural network",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Int. J. Pattern Recognit. Artif. Intell",
+      "authors": "Jane Bromley, James W. Bentz, Léon Bottou, Isabelle Guyon, Yann LeCun,\nCliff Moore, Eduard Säckinger, and Roopak Shah."
+    },
+    {
+      "index": 27,
+      "title": "Language Models are Few-Shot Learners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ArXiv, abs/",
+      "authors": "",
+      "orig_title": "Language models are few-shot learners",
+      "paper_id": "2005.14165v4"
+    },
+    {
+      "index": 28,
+      "title": "Deep clustering for unsupervised learning of visual features",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Mathilde Caron, Piotr Bojanowski, Armand Joulin, and Matthijs Douze."
+    },
+    {
+      "index": 29,
+      "title": "Listen, attend and spell: A neural network for large vocabulary conversational speech recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 IEEE International Conference on Acoustics, Speech and\nSignal Processing (ICASSP)",
+      "authors": "William Chan, Navdeep Jaitly, Quoc Le, and Oriol Vinyals."
+    },
+    {
+      "index": 30,
+      "title": "Variational Sequential Labelers for Semi-Supervised Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Proceedings of the 2018 Conference on Empirical Methods in\nNatural Language Processing",
+      "authors": "Mingda Chen, Qingming Tang, Karen Livescu, and Kevin Gimpel.",
+      "orig_title": "Variational sequential labelers for semi-supervised learning",
+      "paper_id": "1906.09535v1"
+    },
+    {
+      "index": 31,
+      "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+      "abstract": "",
+      "year": "2002",
+      "venue": "ArXiv, abs/",
+      "authors": "Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey E. Hinton.",
+      "orig_title": "A simple framework for contrastive learning of visual representations",
+      "paper_id": "2002.05709v3"
+    },
+    {
+      "index": 32,
+      "title": "Big Self-Supervised Models are Strong Semi-Supervised Learners",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ArXiv, abs/",
+      "authors": "Ting Chen, Simon Kornblith, Kevin Swersky, Mohammad Norouzi, and Geoffrey E.\nHinton.",
+      "orig_title": "Big self-supervised models are strong semi-supervised learners",
+      "paper_id": "2006.10029v2"
+    },
+    {
+      "index": 33,
+      "title": "Beyond triplet loss: a deep quadruplet network for person re-identification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings of the IEEE Conference on Computer Vision and\nPattern Recognition",
+      "authors": "Weihua Chen, Xiaotang Chen, Jianguo Zhang, and Kaiqi Huang.",
+      "orig_title": "Beyond triplet loss: a deep quadruplet network for person re-identification",
+      "paper_id": "1704.01719v1"
+    },
+    {
+      "index": 34,
+      "title": "Semi-supervised ASR by End-to-end Self-training",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ArXiv, abs/",
+      "authors": "Yang Chen, Weiran Wang, and Chao Wang.",
+      "orig_title": "Semi-supervised asr by end-to-end self-training",
+      "paper_id": "2001.09128v2"
+    },
+    {
+      "index": 35,
+      "title": "On the properties of neural machine translation: Encoder-decoder approaches",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Kyunghyun Cho, Bart Van Merriënboer, Dzmitry Bahdanau, and Yoshua Bengio."
+    },
+    {
+      "index": 36,
+      "title": "Unsupervised speech representation learning using WaveNet autoencoders",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/ACM Transactions on Audio, Speech, and Language\nProcessing, 27:",
+      "authors": "J. Chorowski, Ron J. Weiss, S. Bengio, and Aäron van den Oord.",
+      "orig_title": "Unsupervised speech representation learning using wavenet autoencoders",
+      "paper_id": "1901.08810v2"
+    },
+    {
+      "index": 37,
+      "title": "Gated feedback recurrent neural networks",
+      "abstract": "",
+      "year": "2075",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Junyoung Chung, Caglar Gulcehre, Kyunghyun Cho, and Yoshua Bengio."
+    },
+    {
+      "index": 38,
+      "title": "A Recurrent Latent Variable Model for Sequential Data",
+      "abstract": "",
+      "year": "",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Junyoung Chung, Kyle Kastner, Laurent Dinh, Kratarth Goel, Aaron C Courville,\nand Yoshua Bengio.",
+      "orig_title": "A recurrent latent variable model for sequential data",
+      "paper_id": "1506.02216v6"
+    },
+    {
+      "index": 39,
+      "title": "An Unsupervised Autoregressive Model for Speech Representation Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ArXiv, abs/",
+      "authors": "Yu-An Chung, Wei-Ning Hsu, Hao Tang, and James R. Glass.",
+      "orig_title": "An unsupervised autoregressive model for speech representation learning",
+      "paper_id": "1904.03240v2"
+    },
+    {
+      "index": 40,
+      "title": "Deep bidirectional and unidirectional lstm recurrent neural network for network-wide traffic speed prediction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ArXiv, abs/",
+      "authors": "Z. Cui, R. Ke, and Y. Wang."
+    },
+    {
+      "index": 41,
+      "title": "Improving deep neural networks for lvcsr using rectified linear units and dropout",
+      "abstract": "",
+      "year": "2013",
+      "venue": "2013 IEEE international conference on acoustics, speech and\nsignal processing",
+      "authors": "George E Dahl, Tara N Sainath, and Geoffrey E Hinton."
+    },
+    {
+      "index": 42,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "2009 IEEE conference on computer vision and pattern\nrecognition",
+      "authors": "Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei."
+    },
+    {
+      "index": 43,
+      "title": "Unsupervised Learning of Disentangled Representations from Video",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ArXiv, abs/",
+      "authors": "Emily L. Denton and Vighnesh Birodkar.",
+      "orig_title": "Unsupervised learning of disentangled representations from video",
+      "paper_id": "1705.10915v1"
+    },
+    {
+      "index": 44,
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova.",
+      "orig_title": "Bert: Pre-training of deep bidirectional transformers for language understanding",
+      "paper_id": "1810.04805v2"
+    },
+    {
+      "index": 45,
+      "title": "NICE: Non-linear Independent Components Estimation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Laurent Dinh, David Krueger, and Yoshua Bengio.",
+      "orig_title": "Nice: Non-linear independent components estimation",
+      "paper_id": "1410.8516v6"
+    },
+    {
+      "index": 46,
+      "title": "Density estimation using Real NVP",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Laurent Dinh, Jascha Sohl-Dickstein, and Samy Bengio.",
+      "orig_title": "Density estimation using real nvp",
+      "paper_id": "1605.08803v3"
+    },
+    {
+      "index": 47,
+      "title": "Tutorial on Variational Autoencoders",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Carl Doersch.",
+      "orig_title": "Tutorial on variational autoencoders",
+      "paper_id": "1606.05908v3"
+    },
+    {
+      "index": 48,
+      "title": "The Zero Resource Speech Challenge 2019: TTS without T",
+      "abstract": "",
+      "year": "2019",
+      "venue": "INTERSPEECH",
+      "authors": "Ewan Dunbar, Robin Algayres, Julien Karadayi, Mathieu Bernard, Juan Benjumea,\nXuan-Nga Cao, Lucie Miskic, Charlotte Dugrain, Lucas Ondel, A. Black,\nL. Besacier, S. Sakti, and Emmanuel Dupoux.",
+      "orig_title": "The zero resource speech challenge 2019: Tts without t",
+      "paper_id": "1904.11469v2"
+    },
+    {
+      "index": 49,
+      "title": "Variational Recurrent Auto-Encoders",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Otto Fabius and Joost R van Amersfoort.",
+      "orig_title": "Variational recurrent auto-encoders",
+      "paper_id": "1412.6581v6"
+    },
+    {
+      "index": 50,
+      "title": "Speech feature denoising and dereverberation via deep autoencoders for noisy reverberant speech recognition",
+      "abstract": "",
+      "year": "2014",
+      "venue": "2014 IEEE international conference on acoustics, speech and\nsignal processing (ICASSP)",
+      "authors": "Xue Feng, Yaodong Zhang, and James Glass."
+    },
+    {
+      "index": 51,
+      "title": "Sequential Neural Models with Stochastic Layers",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Marco Fraccaro, Søren Kaae Sønderby, Ulrich Paquet, and Ole Winther.",
+      "orig_title": "Sequential neural models with stochastic layers",
+      "paper_id": "1605.07571v2"
+    },
+    {
+      "index": 52,
+      "title": "Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning",
+      "abstract": "",
+      "year": "",
+      "venue": "international conference on machine learning",
+      "authors": "Yarin Gal and Zoubin Ghahramani.",
+      "orig_title": "Dropout as a bayesian approximation: Representing model uncertainty in deep learning",
+      "paper_id": "1506.02142v6"
+    },
+    {
+      "index": 53,
+      "title": "A theoretically grounded application of dropout in recurrent neural networks",
+      "abstract": "",
+      "year": "",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Yarin Gal and Zoubin Ghahramani."
+    },
+    {
+      "index": 54,
+      "title": "William M Fisher",
+      "abstract": "",
+      "year": "1993",
+      "venue": "NASA STI/Recon technical report n, 93",
+      "authors": "John S Garofolo, Lori F Lamel, William M Fisher, Jonathan G Fiscus, and David S\nPallett."
+    },
+    {
+      "index": 55,
+      "title": "Understanding the difficulty of training deep feedforward neural networks",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Proceedings of the thirteenth international conference on\nartificial intelligence and statistics",
+      "authors": "Xavier Glorot and Yoshua Bengio."
+    },
+    {
+      "index": 56,
+      "title": "Deep learning, volume 1",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MIT press Cambridge",
+      "authors": "Ian Goodfellow, Yoshua Bengio, Aaron Courville, and Yoshua Bengio."
+    },
+    {
+      "index": 57,
+      "title": "Generative adversarial nets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NIPS",
+      "authors": "Ian J. Goodfellow, Jean Pouget-Abadie, M. Mirza, Bing Xu, David Warde-Farley,\nSherjil Ozair, Aaron C. Courville, and Yoshua Bengio."
+    },
+    {
+      "index": 58,
+      "title": "Z-Forcing: Training Stochastic Recurrent Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Anirudh Goyal, Alessandro Sordoni, Marc-Alexandre Côté, Nan Ke, and\nYoshua Bengio.",
+      "orig_title": "Z-forcing: Training stochastic recurrent networks",
+      "paper_id": "1711.05411v2"
+    },
+    {
+      "index": 59,
+      "title": "Sequence transduction with recurrent neural networks",
+      "abstract": "",
+      "year": "",
+      "venue": "ArXiv, abs/",
+      "authors": "A. Graves."
+    },
+    {
+      "index": 60,
+      "title": "Bidirectional lstm networks for improved phoneme classification and recognition",
+      "abstract": "",
+      "year": "2005",
+      "venue": "ICANN",
+      "authors": "A. Graves, Santiago Fernández, and J. Schmidhuber."
+    },
+    {
+      "index": 61,
+      "title": "Hierarchical subsampling networks",
+      "abstract": "",
+      "year": "",
+      "venue": "Supervised Sequence Labelling with Recurrent Neural\nNetworks",
+      "authors": "Alex Graves."
+    },
+    {
+      "index": 62,
+      "title": "Connectionist temporal classification: labelling unsegmented sequence data with recurrent neural networks",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Proceedings of the 23rd international conference on Machine\nlearning",
+      "authors": "Alex Graves, Santiago Fernández, Faustino Gomez, and Jürgen\nSchmidhuber."
+    },
+    {
+      "index": 63,
+      "title": "Bootstrap Your Own Latent A New Approach to Self-Supervised Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ArXiv, abs/",
+      "authors": "Jean-Bastien Grill, Florian Strub, Florent Altch’e, Corentin Tallec, Pierre H.\nRichemond, Elena Buchatskaya, Carl Doersch, Bernardo Ávila Pires,\nZhaohan Daniel Guo, Mohammad Gheshlaghi Azar, Bilal Piot, Koray Kavukcuoglu,\nRémi Munos, and Michal Valko.",
+      "orig_title": "Bootstrap your own latent: A new approach to self-supervised learning",
+      "paper_id": "2006.07733v3"
+    },
+    {
+      "index": 64,
+      "title": "Unsupervised learning of spoken language with visual context",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NIPS",
+      "authors": "David F. Harwath, A. Torralba, and James R. Glass."
+    },
+    {
+      "index": 65,
+      "title": "Lagging Inference Networks and Posterior Collapse in Variational Autoencoders",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Junxian He, Daniel Spokoyny, Graham Neubig, and Taylor Berg-Kirkpatrick.",
+      "orig_title": "Lagging inference networks and posterior collapse in variational autoencoders",
+      "paper_id": "1901.05534v2"
+    },
+    {
+      "index": 66,
+      "title": "Multi-view recurrent neural acoustic word embeddings",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Wanjia He, Weiran Wang, and Karen Livescu."
+    },
+    {
+      "index": 67,
+      "title": "Multilingual models for compositional distributed semantics",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Karl Moritz Hermann and Phil Blunsom."
+    },
+    {
+      "index": 68,
+      "title": "Reducing the dimensionality of data with neural networks",
+      "abstract": "",
+      "year": "2006",
+      "venue": "science, 313(",
+      "authors": "Geoffrey E Hinton and Ruslan R Salakhutdinov."
+    },
+    {
+      "index": 69,
+      "title": "Learning deep representations by mutual information estimation and maximization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "R Devon Hjelm, Alex Fedorov, Samuel Lavoie-Marchildon, Karan Grewal, Adam\nTrischler, and Yoshua Bengio.",
+      "orig_title": "Learning deep representations by mutual information estimation and maximization",
+      "paper_id": "1808.06670v5"
+    },
+    {
+      "index": 70,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural computation, 9(8):",
+      "authors": "Sepp Hochreiter and Jürgen Schmidhuber."
+    },
+    {
+      "index": 71,
+      "title": "Deep metric learning using Triplet network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Workshop on Similarity-Based Pattern\nRecognition",
+      "authors": "Elad Hoffer and Nir Ailon.",
+      "orig_title": "Deep metric learning using triplet network",
+      "paper_id": "1412.6622v4"
+    },
+    {
+      "index": 72,
+      "title": "Elbo surgery: yet another way to carve up the variational evidence lower bound",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Workshop in Advances in Approximate Bayesian Inference,\nNIPS, volume 1",
+      "authors": "Matthew D Hoffman and Matthew J Johnson."
+    },
+    {
+      "index": 73,
+      "title": "Learning Consistent Deep Generative Models from Sparse Data via Prediction Constraints",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Gabriel Hope, Madina Abdrakhmanova, Xiaoyin Chen, Michael C Hughes, and Erik B\nSudderth.",
+      "orig_title": "Learning consistent deep generative models from sparse data via prediction constraints",
+      "paper_id": "2012.06718v1"
+    },
+    {
+      "index": 74,
+      "title": "Relations between two sets of variates",
+      "abstract": "",
+      "year": "1936",
+      "venue": "Biometrika, 28(3/4):321–377",
+      "authors": "Harold Hotelling."
+    },
+    {
+      "index": 75,
+      "title": "Unsupervised Learning of Disentangled and Interpretable Representations from Sequential Data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Wei-Ning Hsu, Yu Zhang, and James Glass.",
+      "orig_title": "Unsupervised learning of disentangled and interpretable representations from sequential data",
+      "paper_id": "1709.07902v1"
+    },
+    {
+      "index": 76,
+      "title": "Hierarchical Generative Modeling for Controllable Speech Synthesis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ArXiv, abs/",
+      "authors": "Wei-Ning Hsu, Y. Zhang, Ron J. Weiss, H. Zen, Y. Wu, Yuxuan Wang, Yuan Cao,\nY. Jia, Z. Chen, Jonathan Shen, P. Nguyen, and R. Pang.",
+      "orig_title": "Hierarchical generative modeling for controllable speech synthesis",
+      "paper_id": "1810.07217v2"
+    },
+    {
+      "index": 77,
+      "title": "Toward Controlled Generation of Text",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings of the 34th International Conference on Machine\nLearning-Volume 70",
+      "authors": "Zhiting Hu, Zichao Yang, Xiaodan Liang, Ruslan Salakhutdinov, and Eric P Xing.",
+      "orig_title": "Toward controlled generation of text",
+      "paper_id": "1703.00955v4"
+    },
+    {
+      "index": 78,
+      "title": "Nonlinear independent component analysis: Existence and uniqueness results",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Neural Networks, 12(3):429–439",
+      "authors": "Aapo Hyvärinen and Petteri Pajunen."
+    },
+    {
+      "index": 79,
+      "title": "Autoregressive product of multi-frame predictions can improve the accuracy of hybrid models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Fifteenth Annual Conference of the International Speech\nCommunication Association",
+      "authors": "Navdeep Jaitly, Vincent Vanhoucke, and Geoffrey Hinton."
+    },
+    {
+      "index": 80,
+      "title": "Categorical reparameterization with gumbel-softmax",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Eric Jang, Shixiang Gu, and Ben Poole."
+    },
+    {
+      "index": 81,
+      "title": "Principal component analysis",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Springer",
+      "authors": "Ian Jolliffe."
+    },
+    {
+      "index": 82,
+      "title": "A segmental framework for fully-unsupervised large-vocabulary speech recognition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ArXiv, abs/",
+      "authors": "H. Kamper, A. Jansen, and S. Goldwater.",
+      "orig_title": "A segmental framework for fully-unsupervised large-vocabulary speech recognition",
+      "paper_id": "1606.06950v2"
+    },
+    {
+      "index": 83,
+      "title": "Semi-supervised end-to-end speech recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Proc. Interspeech",
+      "authors": "Shigeki Karita, Shinji Watanabe, Tomoharu Iwata, Atsunori Ogawa, and Marc\nDelcroix."
+    },
+    {
+      "index": 84,
+      "title": "Semi-supervised end-to-end speech recognition using text-to-speech and autoencoders",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICASSP 2019-2019 IEEE International Conference on Acoustics,\nSpeech and Signal Processing (ICASSP)",
+      "authors": "Shigeki Karita, Shinji Watanabe, Tomoharu Iwata, Marc Delcroix, Atsunori Ogawa,\nand Tomohiro Nakatani."
+    },
+    {
+      "index": 85,
+      "title": "JOINT CTC-ATTENTION BASED END-TO-END SPEECH RECOGNITION USING MULTI-TASK LEARNING",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE international conference on acoustics, speech and\nsignal processing (ICASSP)",
+      "authors": "Suyoun Kim, Takaaki Hori, and Shinji Watanabe.",
+      "orig_title": "Joint ctc-attention based end-to-end speech recognition using multi-task learning",
+      "paper_id": "1609.06773v2"
+    },
+    {
+      "index": 86,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Diederik P Kingma and Jimmy Ba."
+    },
+    {
+      "index": 87,
+      "title": "Auto-encoding variational bayes",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Diederik P Kingma and Max Welling."
+    },
+    {
+      "index": 88,
+      "title": "Semi-supervised Learning with Deep Generative Models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Diederik P Kingma, Shakir Mohamed, Danilo Jimenez Rezende, and Max Welling.",
+      "orig_title": "Semi-supervised learning with deep generative models",
+      "paper_id": "1406.5298v2"
+    },
+    {
+      "index": 89,
+      "title": "Variational Dropout and the Local Reparameterization Trick",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Diederik P Kingma, Tim Salimans, and Max Welling.",
+      "orig_title": "Variational dropout and the local reparameterization trick",
+      "paper_id": "1506.02557v2"
+    },
+    {
+      "index": 90,
+      "title": "Improved variational inference with inverse autoregressive flow",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Diederik P Kingma, Tim Salimans, Rafal Jozefowicz, Xi Chen, Ilya Sutskever, and\nMax Welling."
+    },
+    {
+      "index": 91,
+      "title": "Glow: Generative Flow with Invertible 1×1 Convolutions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Durk P Kingma and Prafulla Dhariwal.",
+      "orig_title": "Glow: Generative flow with invertible 1x1 convolutions",
+      "paper_id": "1807.03039v2"
+    },
+    {
+      "index": 92,
+      "title": "Deep Kalman Filters",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ArXiv, abs/",
+      "authors": "Rahul G. Krishnan, Uri Shalit, and David A Sontag.",
+      "orig_title": "Deep kalman filters",
+      "paper_id": "1511.05121v2"
+    },
+    {
+      "index": 93,
+      "title": "Temporal Ensembling for Semi-Supervised Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ArXiv, abs/",
+      "authors": "Samuli Laine and Timo Aila.",
+      "orig_title": "Temporal ensembling for semi-supervised learning",
+      "paper_id": "1610.02242v3"
+    },
+    {
+      "index": 94,
+      "title": "Deep Learning under Privileged Information Using Heteroscedastic Dropout",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Proceedings of the IEEE Conference on Computer Vision and\nPattern Recognition",
+      "authors": "John Lambert, Ozan Sener, and Silvio Savarese.",
+      "orig_title": "Deep learning under privileged information using heteroscedastic dropout",
+      "paper_id": "1805.11614v1"
+    },
+    {
+      "index": 95,
+      "title": "Pseudo-label : The simple and efficient semi-supervised learning method for deep neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": "Dong-Hyun Lee."
+    },
+    {
+      "index": 96,
+      "title": "On large-vocabulary speaker-independent continuous speech recognition",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Speech communication, 7(4):375–379",
+      "authors": "Kai-Fu Lee."
+    },
+    {
+      "index": 97,
+      "title": "Prototypical Contrastive Learning of Unsupervised Representations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ArXiv, abs/",
+      "authors": "Junnan Li, Pan Zhou, Caiming Xiong, Richard Socher, and Steven C. H. Hoi.",
+      "orig_title": "Prototypical contrastive learning of unsupervised representations",
+      "paper_id": "2005.04966v5"
+    },
+    {
+      "index": 98,
+      "title": "Disentangled Sequential Autoencoder",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Yingzhen Li and Stephan Mandt.",
+      "orig_title": "Disentangled sequential autoencoder",
+      "paper_id": "1803.02991v2"
+    },
+    {
+      "index": 99,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Shaoshi Ling and Y. Liu.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 100,
+      "title": "Deep Contextualized Acoustic Representations For Semi-Supervised Speech Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICASSP 2020 - 2020 IEEE International Conference on Acoustics,\nSpeech and Signal Processing (ICASSP)",
+      "authors": "Shaoshi Ling, Y. Liu, Julian Salazar, and K. Kirchhoff.",
+      "orig_title": "Deep contextualized acoustic representations for semi-supervised speech recognition",
+      "paper_id": "1912.01679v2"
+    },
+    {
+      "index": 101,
+      "title": "Self-organization in a perceptual network",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Computer, 21(3):105–117",
+      "authors": "Ralph Linsker."
+    },
+    {
+      "index": 102,
+      "title": "Autoencoder for words",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Neurocomputing, 139:84–96",
+      "authors": "Cheng-Yuan Liou, Wei-Chen Cheng, Jiun-Wei Liou, and Daw-Ran Liou."
+    },
+    {
+      "index": 103,
+      "title": "Large-Margin Softmax Loss for Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML",
+      "authors": "Weiyang Liu, Yandong Wen, Zhiding Yu, and Meng Yang.",
+      "orig_title": "Large-margin softmax loss for convolutional neural networks",
+      "paper_id": "1612.02295v4"
+    },
+    {
+      "index": 104,
+      "title": "Phoneme recognition on the timit database",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Speech technologies. IntechOpen",
+      "authors": "Carla Lopes and Fernando Perdigao."
+    },
+    {
+      "index": 105,
+      "title": "Unsupervised Data Augmentation with Naive Augmentation and without Unlabeled Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Proceedings of the 2021 Conference on Empirical Methods in\nNatural Language Processing, pages 4992–5001, Online and Punta Cana,\nDominican Republic, November",
+      "authors": "David Lowell, Brian Howard, Zachary C. Lipton, and Byron Wallace.",
+      "orig_title": "Unsupervised data augmentation with naive augmentation and without unlabeled data",
+      "paper_id": "2010.11966v1"
+    },
+    {
+      "index": 106,
+      "title": "Speech enhancement based on deep denoising autoencoder",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Interspeech",
+      "authors": "Xugang Lu, Yu Tsao, Shigeki Matsuda, and Chiori Hori."
+    },
+    {
+      "index": 107,
+      "title": "Rectifier nonlinearities improve neural network acoustic models",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Proc. icml, volume 30",
+      "authors": "Andrew L Maas, Awni Y Hannun, and Andrew Y Ng."
+    },
+    {
+      "index": 108,
+      "title": "The Concrete Distribution: A Continuous Relaxation of Discrete Random Variables",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Chris J Maddison, Andriy Mnih, and Yee Whye Teh.",
+      "orig_title": "The concrete distribution: A continuous relaxation of discrete random variables",
+      "paper_id": "1611.00712v3"
+    },
+    {
+      "index": 109,
+      "title": "Adversarial autoencoders",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Alireza Makhzani, Jonathon Shlens, Navdeep Jaitly, Ian Goodfellow, and Brendan\nFrey."
+    },
+    {
+      "index": 110,
+      "title": "Stacked convolutional auto-encoders for hierarchical feature extraction",
+      "abstract": "",
+      "year": "2011",
+      "venue": "International Conference on Artificial Neural Networks",
+      "authors": "Jonathan Masci, Ueli Meier, Dan Cire𝐜𝐜\\mathbf{c}san, and Jürgen Schmidhuber."
+    },
+    {
+      "index": 111,
+      "title": "Neural Variational Inference for Text Processing",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International conference on machine learning",
+      "authors": "Yishu Miao, Lei Yu, and Phil Blunsom.",
+      "orig_title": "Neural variational inference for text processing",
+      "paper_id": "1511.06038v4"
+    },
+    {
+      "index": 112,
+      "title": "Virtual Adversarial Training: A Regularization Method for Supervised and Semi-Supervised Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine\nIntelligence, 41:",
+      "authors": "Takeru Miyato, Shin ichi Maeda, Masanori Koyama, and Shin Ishii.",
+      "orig_title": "Virtual adversarial training: A regularization method for supervised and semi-supervised learning",
+      "paper_id": "1704.03976v2"
+    },
+    {
+      "index": 113,
+      "title": "Regularizing Deep Networks by Modeling and Predicting Label Structure",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Proceedings of the IEEE Conference on Computer Vision and\nPattern Recognition",
+      "authors": "Mohammadreza Mostajabi, Michael Maire, and Gregory Shakhnarovich.",
+      "orig_title": "Regularizing deep networks by modeling and predicting label structure",
+      "paper_id": "1804.02009v1"
+    },
+    {
+      "index": 114,
+      "title": "Sensory coding: information maximization and redundancy reduction",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Neuronal Information Processing, pages 164–171. World\nScientific",
+      "authors": "J-P Nadal and NESTOR PARGA."
+    },
+    {
+      "index": 115,
+      "title": "Learning Disentangled Representations with Semi-Supervised Deep Generative Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS",
+      "authors": "S. Narayanaswamy, Brooks Paige, Jan-Willem van de Meent, Alban Desmaison,\nNoah D. Goodman, P. Kohli, F. Wood, and P. Torr.",
+      "orig_title": "Learning disentangled representations with semi-supervised deep generative models",
+      "paper_id": "1706.00400v2"
+    },
+    {
+      "index": 116,
+      "title": "Speaker-adaptation for hybrid hmm-ann continuous speech recognition system",
+      "abstract": "",
+      "year": "1995",
+      "venue": "EUROSPEECH",
+      "authors": "J. Neto, L. Almeida, M. Hochberg, C. Martins, L. Nunes, S. Renals, and\nT. Robinson."
+    },
+    {
+      "index": 117,
+      "title": "Sparse autoencoder",
+      "abstract": "",
+      "year": "2011",
+      "venue": "CS294A Lecture notes, 72(2011):1–19",
+      "authors": "Andrew Ng et al."
+    },
+    {
+      "index": 118,
+      "title": "f-gan: Training generative neural samplers using variational divergence minimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NIPS",
+      "authors": "Sebastian Nowozin, B. Cseke, and Ryota Tomioka."
+    },
+    {
+      "index": 119,
+      "title": "Representation Learning with Contrastive Predictive Coding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Aaron van den Oord, Yazhe Li, and Oriol Vinyals.",
+      "orig_title": "Representation learning with contrastive predictive coding",
+      "paper_id": "1807.03748v2"
+    },
+    {
+      "index": 120,
+      "title": "Librispeech: an asr corpus based on public domain audio books",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 IEEE International Conference on Acoustics, Speech and\nSignal Processing (ICASSP)",
+      "authors": "Vassil Panayotov, Guoguo Chen, Daniel Povey, and Sanjeev Khudanpur."
+    },
+    {
+      "index": 121,
+      "title": "SpecAugment: A Simple Data Augmentation Method for Automatic Speech Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "INTERSPEECH",
+      "authors": "D. Park, William Chan, Y. Zhang, Chung-Cheng Chiu, Barret Zoph, E. D. Cubuk,\nand Quoc V. Le.",
+      "orig_title": "Specaugment: A simple data augmentation method for automatic speech recognition",
+      "paper_id": "1904.08779v3"
+    },
+    {
+      "index": 122,
+      "title": "Learning Problem-agnostic Speech Representations from Multiple Self-supervised Tasks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Proc. Interspeech",
+      "authors": "Santiago Pascual, Mirco Ravanelli, Joan Serrà, Antonio Bonafonte, and Yoshua\nBengio.",
+      "orig_title": "Learning Problem-Agnostic Speech Representations from Multiple Self-Supervised Tasks",
+      "paper_id": "1904.03416v1"
+    },
+    {
+      "index": 123,
+      "title": "Context Encoders: Feature Learning by Inpainting",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 IEEE Conference on Computer Vision and Pattern Recognition\n(CVPR)",
+      "authors": "Deepak Pathak, Philipp Krähenbühl, Jeff Donahue, Trevor Darrell, and\nAlexei A. Efros.",
+      "orig_title": "Context encoders: Feature learning by inpainting",
+      "paper_id": "1604.07379v2"
+    },
+    {
+      "index": 124,
+      "title": "The design for the wall street journal-based csr corpus",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Proceedings of the workshop on Speech and Natural Language",
+      "authors": "Douglas B Paul and Janet M Baker."
+    },
+    {
+      "index": 125,
+      "title": "Glove: Global vectors for word representation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Proceedings of the 2014 conference on empirical methods in\nnatural language processing (EMNLP)",
+      "authors": "Jeffrey Pennington, Richard Socher, and Christopher Manning."
+    },
+    {
+      "index": 126,
+      "title": "Semi-supervised sequence tagging with bidirectional language models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Matthew E Peters, Waleed Ammar, Chandra Bhagavatula, and Russell Power."
+    },
+    {
+      "index": 127,
+      "title": "Deep contextualized word representations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Matthew E Peters, Mark Neumann, Mohit Iyyer, Matt Gardner, Christopher Clark,\nKenton Lee, and Luke Zettlemoyer.",
+      "orig_title": "Deep contextualized word representations",
+      "paper_id": "1802.05365v2"
+    },
+    {
+      "index": 128,
+      "title": "Efficient learning of sparse representations with an energy-based model",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Christopher Poultney, Sumit Chopra, Yann L Cun, et al."
+    },
+    {
+      "index": 129,
+      "title": "The kaldi speech recognition toolkit",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE 2011 workshop on automatic speech recognition and\nunderstanding, number EPFL-CONF-192584. IEEE Signal Processing Society",
+      "authors": "Daniel Povey, Arnab Ghoshal, Gilles Boulianne, Lukas Burget, Ondrej Glembek,\nNagendra Goel, Mirko Hannemann, Petr Motlicek, Yanmin Qian, Petr Schwarz,\net al."
+    },
+    {
+      "index": 130,
+      "title": "Improving language understanding by generative pre-training",
+      "abstract": "",
+      "year": "2018",
+      "venue": "URL https://s3-us-west-2. amazonaws.\ncom/openai-assets/researchcovers/languageunsupervised/language understanding\npaper. pdf",
+      "authors": "Alec Radford, Karthik Narasimhan, Tim Salimans, and Ilya Sutskever."
+    },
+    {
+      "index": 131,
+      "title": "Language models are unsupervised multitask learners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "OpenAI Blog, 1(8)",
+      "authors": "Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya\nSutskever."
+    },
+    {
+      "index": 132,
+      "title": "Tighter Variational Bounds are Not Necessarily Better",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Tom Rainforth, Adam R Kosiorek, Tuan Anh Le, Chris J Maddison, Maximilian Igl,\nFrank Wood, and Yee Whye Teh.",
+      "orig_title": "Tighter variational bounds are not necessarily better",
+      "paper_id": "1802.04537v3"
+    },
+    {
+      "index": 133,
+      "title": "Multi-task self-supervised learning for Robust Speech Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICASSP 2020 - 2020 IEEE International Conference on Acoustics,\nSpeech and Signal Processing (ICASSP)",
+      "authors": "M. Ravanelli, Jianyuan Zhong, S. Pascual, P. Swietojanski, J. Monteiro,\nJ. Trmal, and Yoshua Bengio.",
+      "orig_title": "Multi-task self-supervised learning for robust speech recognition",
+      "paper_id": "2001.09239v2"
+    },
+    {
+      "index": 134,
+      "title": "Preventing posterior collapse with delta-vaes",
+      "abstract": "",
+      "year": "1901",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Ali Razavi, Aäron van den Oord, Ben Poole, and Oriol Vinyals."
+    },
+    {
+      "index": 135,
+      "title": "Generating Diverse High-Fidelity Images with VQ-VAE-2",
+      "abstract": "",
+      "year": "1906",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Ali Razavi, Aaron van den Oord, and Oriol Vinyals.",
+      "orig_title": "Generating diverse high-fidelity images with vq-vae-2",
+      "paper_id": "1906.00446v1"
+    },
+    {
+      "index": 136,
+      "title": "Variational inference with normalizing flows",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Danilo Jimenez Rezende and Shakir Mohamed."
+    },
+    {
+      "index": 137,
+      "title": "Stochastic backpropagation and approximate inference in deep generative models",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Danilo Jimenez Rezende, Shakir Mohamed, and Daan Wierstra."
+    },
+    {
+      "index": 138,
+      "title": "Higher order contractive auto-encoder",
+      "abstract": "",
+      "year": "",
+      "venue": "Joint European Conference on Machine Learning and Knowledge\nDiscovery in Databases",
+      "authors": "Salah Rifai, Grégoire Mesnil, Pascal Vincent, Xavier Muller, Yoshua Bengio,\nYann Dauphin, and Xavier Glorot."
+    },
+    {
+      "index": 139,
+      "title": "Contractive auto-encoders: Explicit invariance during feature extraction",
+      "abstract": "",
+      "year": "",
+      "venue": "Proceedings of the 28th International Conference on\nInternational Conference on Machine Learning, pages 833–840. Omnipress",
+      "authors": "Salah Rifai, Pascal Vincent, Xavier Muller, Xavier Glorot, and Yoshua Bengio."
+    },
+    {
+      "index": 140,
+      "title": "Markov chain monte carlo and variational inference: Bridging the gap",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICML",
+      "authors": "Tim Salimans, Diederik P. Kingma, and M. Welling."
+    },
+    {
+      "index": 141,
+      "title": "Introduction to the conll-2000 shared task: Chunking",
+      "abstract": "",
+      "year": "2000",
+      "venue": "arXiv preprint cs/",
+      "authors": "Erik F Sang and Sabine Buchholz."
+    },
+    {
+      "index": 142,
+      "title": "Introduction to the conll-2003 shared task: Language-independent named entity recognition",
+      "abstract": "",
+      "year": "2003",
+      "venue": "arXiv preprint cs/",
+      "authors": "Erik F Sang and Fien De Meulder."
+    },
+    {
+      "index": 143,
+      "title": "wav2vec: Unsupervised Pre-training for Speech Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Steffen Schneider, Alexei Baevski, Ronan Collobert, and Michael Auli.",
+      "orig_title": "wav2vec: Unsupervised pre-training for speech recognition",
+      "paper_id": "1904.05862v4"
+    },
+    {
+      "index": 144,
+      "title": "Bidirectional recurrent neural networks",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE Transactions on Signal Processing, 45(11):",
+      "authors": "Mike Schuster and Kuldip K Paliwal."
+    },
+    {
+      "index": 145,
+      "title": "Autorec: Autoencoders meet collaborative filtering",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Proceedings of the 24th International Conference on World\nWide Web",
+      "authors": "Suvash Sedhain, Aditya Krishna Menon, Scott Sanner, and Lexing Xie."
+    },
+    {
+      "index": 146,
+      "title": "Piecewise latent variables for neural variational text processing",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Iulian V Serban, II Ororbia, G Alexander, Joelle Pineau, and Aaron Courville."
+    },
+    {
+      "index": 147,
+      "title": "Variational Bi-LSTMs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Samira Shabanian, Devansh Arpit, Adam Trischler, and Yoshua Bengio.",
+      "orig_title": "Variational bi-lstms",
+      "paper_id": "1711.05717v1"
+    },
+    {
+      "index": 148,
+      "title": "Amortized Inference Regularization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Rui Shu, Hung H Bui, Shengjia Zhao, Mykel J Kochenderfer, and Stefano Ermon.",
+      "orig_title": "Amortized inference regularization",
+      "paper_id": "1805.08913v2"
+    },
+    {
+      "index": 149,
+      "title": "Dropout: a simple way to prevent neural networks from overfitting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "The Journal of Machine Learning Research, 15(1):",
+      "authors": "Nitish Srivastava, Geoffrey Hinton, Alex Krizhevsky, Ilya Sutskever, and Ruslan\nSalakhutdinov."
+    },
+    {
+      "index": 150,
+      "title": "END-TO-END NEURAL SEGMENTAL MODELS FOR SPEECH RECOGNITION",
+      "abstract": "",
+      "year": "",
+      "venue": "IEEE Journal of Selected Topics in Signal Processing,\n11(8):",
+      "authors": "Hao Tang, Liang Lu, Lingpeng Kong, Kevin Gimpel, Karen Livescu, Chris Dyer,\nNoah A Smith, and Steve Renals.",
+      "orig_title": "End-to-end neural segmental models for speech recognition",
+      "paper_id": "1708.00531v2"
+    },
+    {
+      "index": 151,
+      "title": "Acoustic Feature Learning via Deep Variational Canonical Correlation Analysis",
+      "abstract": "",
+      "year": "",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Qingming Tang, Weiran Wang, and Karen Livescu.",
+      "orig_title": "Acoustic feature learning via deep variational canonical correlation analysis",
+      "paper_id": "1708.04673v2"
+    },
+    {
+      "index": 152,
+      "title": "Acoustic feature learning using cross-domain articulatory measurements",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Qingming Tang, Weiran Wang, and Karen Livescu.",
+      "orig_title": "Acoustic feature learning using cross-domain articulatory measurements",
+      "paper_id": "1803.06805v2"
+    },
+    {
+      "index": 153,
+      "title": "Neural Discrete Representation Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Aaron van den Oord, Oriol Vinyals, et al.",
+      "orig_title": "Neural discrete representation learning",
+      "paper_id": "1711.00937v2"
+    },
+    {
+      "index": 154,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,\nAidan N Gomez, Łukasz Kaiser, and Illia Polosukhin.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 155,
+      "title": "Extracting and composing robust features with denoising autoencoders",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Proceedings of the 25th international conference on Machine\nlearning",
+      "authors": "Pascal Vincent, Hugo Larochelle, Yoshua Bengio, and Pierre-Antoine Manzagol."
+    },
+    {
+      "index": 156,
+      "title": "Stacked denoising autoencoders: Learning useful representations in a deep network with a local denoising criterion",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Journal of machine learning research, 11(Dec):",
+      "authors": "Pascal Vincent, Hugo Larochelle, Isabelle Lajoie, Yoshua Bengio, and\nPierre-Antoine Manzagol."
+    },
+    {
+      "index": 157,
+      "title": "Dropout training as adaptive regularization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Stefan Wager, Sida Wang, and Percy S Liang."
+    },
+    {
+      "index": 158,
+      "title": "Fast dropout training",
+      "abstract": "",
+      "year": "2013",
+      "venue": "international conference on machine learning",
+      "authors": "Sida Wang and Christopher Manning."
+    },
+    {
+      "index": 159,
+      "title": "On deep multi-view representation learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Weiran Wang, Raman Arora, Karen Livescu, and Jeff Bilmes."
+    },
+    {
+      "index": 160,
+      "title": "Deep variational canonical correlation analysis",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Weiran Wang, Xinchen Yan, Honglak Lee, and Karen Livescu."
+    },
+    {
+      "index": 161,
+      "title": "Unsupervised pre-training of bidirectional speech encoders via masked reconstruction, 2020",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Weiran Wang, Qingming Tang, and Karen Livescu."
+    },
+    {
+      "index": 162,
+      "title": "X-ray microbeam speech production database",
+      "abstract": "",
+      "year": "1990",
+      "venue": "The Journal of the Acoustical Society of America, 88(S1):S56–S56",
+      "authors": "John Westbury, Paul Milenkovic, Gary Weismer, and Raymond Kent."
+    },
+    {
+      "index": 163,
+      "title": "X-ray microbeam speech production database user’s handbook",
+      "abstract": "",
+      "year": "1994",
+      "venue": "University of Wisconsin",
+      "authors": "John R Westbury, Greg Turner, and J Dembowski."
+    },
+    {
+      "index": 164,
+      "title": "Unsupervised data augmentation for consistency training",
+      "abstract": "",
+      "year": "",
+      "venue": "arXiv: Learning",
+      "authors": "Qizhe Xie, Zihang Dai, Eduard H. Hovy, Minh-Thang Luong, and Quoc V. Le."
+    },
+    {
+      "index": 165,
+      "title": "Self-training with noisy student improves imagenet classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "2020 IEEE/CVF Conference on Computer Vision and Pattern\nRecognition (CVPR)",
+      "authors": "Qizhe Xie, Eduard H. Hovy, Minh-Thang Luong, and Quoc V. Le."
+    },
+    {
+      "index": 166,
+      "title": "A survey on multi-view learning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Chang Xu, Dacheng Tao, and Chao Xu."
+    },
+    {
+      "index": 167,
+      "title": "XLNet: Generalized Autoregressive Pretraining for Language Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Zhilin Yang, Zihang Dai, Yiming Yang, Jaime Carbonell, Ruslan Salakhutdinov,\nand Quoc V Le.",
+      "orig_title": "Xlnet: Generalized autoregressive pretraining for language understanding",
+      "paper_id": "1906.08237v2"
+    },
+    {
+      "index": 168,
+      "title": "Adaptation of context-dependent deep neural networks for automatic speech recognition",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": "K. Yao, Dong Yu, F. Seide, H. Su, L. Deng, and Y. Gong."
+    },
+    {
+      "index": 169,
+      "title": "Towards a Deeper Understanding of Variational Autoencoding Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Shengjia Zhao, Jiaming Song, and Stefano Ermon.",
+      "orig_title": "Towards deeper understanding of variational autoencoding models",
+      "paper_id": "1702.08658v1"
+    },
+    {
+      "index": 170,
+      "title": "Improved representation learning for acoustic event classification using tree-structured ontology",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICASSP 2022 - 2022 IEEE International Conference on Acoustics,\nSpeech and Signal Processing (ICASSP)",
+      "authors": "Arman Zharmagambetov, Qingming Tang, Chieh-Chi Kao, Q. Zhang, Ming Sun, Viktor\nRozgic, Jasha Droppo, and Chao Ching Wang."
+    },
+    {
+      "index": 171,
+      "title": "Multi-space Variational Encoder-Decoders for Semi-supervised Labeled Sequence Transduction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Chunting Zhou and Graham Neubig.",
+      "orig_title": "Multi-space variational encoder-decoders for semi-supervised labeled sequence transduction",
+      "paper_id": "1704.01691v2"
+    },
+    {
+      "index": 172,
+      "title": "Advances in All-Neural Speech Recognition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICASSP",
+      "authors": "G. Zweig, C. Yu, J. Droppo, and A. Stolcke.",
+      "orig_title": "Advances in all-neural speech recognition",
+      "paper_id": "1609.05935v2"
+    }
+  ]
+}

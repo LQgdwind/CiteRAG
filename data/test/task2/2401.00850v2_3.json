@@ -1,0 +1,383 @@
+{
+  "paper_id": "2401.00850v2",
+  "title": "Refining Pre-Trained Motion Models",
+  "sections": {
+    "i introduction": "Given the difficulty of manually annotating motion in video, the current best motion estimation methods are trained with synthetic data [ref]1   [ref]4 [ref]5.\nThis synthetic training data is diverse, but highly unrealistic, forcing the methods to contend with a sim-to-real gap. Self-supervised (or “unsupervised”) models hold the promise of training directly on real video, yet currently lag behind the supervised counterparts. State-of-the-art self-supervised motion methods typically rely on warp error (i.e., color constancy) combined with smoothness terms   , and cycle-consistency (i.e., tracking backwards should yield the opposite trajectory as tracking forwards)    . In current experimental setups, fully-supervised versions are typically positioned in a league ahead, reflecting in some way an unfair advantage. This divide between supervised and unsupervised methods is purely academic; if synthetic supervision is available and helpful, it makes sense to use it. In this work, we take on the challenge of improving state-of-the-art supervised models with self-supervised training in an unabelled test domain.\nUnlike typical self-supervised or semi-supervised motion estimation approaches, which initialize a model from scratch, our setup is to take an\narbitrary pre-trained model off the shelf, and attempt to improve it for a given test domain, without access to any additional data.\nWe argue that this setup reflects a very practical use-case: a user notices some errors in the model’s output, and is willing to invest some GPU cycles into tuning up the results—provided that the tuning is effective.\n In this setup, the most straightforward solution is to directly optimize standard self-supervision objectives in the unlabelled data. We find that this reliably makes the pre-trained model perform even worse,\nsuggesting that the self-supervised training signals are too imprecise and noisy to provide useful gradients to an already well-optimized motion model. This observation is consistent with the fact that self-supervised models perform worse than supervised ones in general. Focusing on the problem of obtaining a “clean” training signal from real-world unlabelled video, we propose to separate label-making and training into two distinct stages. In the first stage, we use the pre-trained model to estimate motion in a video, and then select the subset of motion estimates which we can verify with cycle-consistency. This produces a sparse but accurate pseudo-labelling of the video. In the second stage, we fine-tune the model to reproduce these outputs, while also applying augmentations on the input. We complement this self-training method with simple techniques that densify and re-balance the pseudo-labels, ensuring that we do not merely train on \"easy\" tracks. In our experiments, we demonstrate that our method yields reliable gains over fully-supervised methods in real videos. Our experiments cover two types of motion models: optical flow (i.e., RAFT ), and long-term point tracking (i.e., PIPs ). We use standard benchmarks for the analysis: MPI-Sintel  for flow, and CroHD , Horse30 , and TAP-Vid-DAVIS  for point tracking. Despite starting from pre-trained state-of-the-art weights, our self-supervision framework produces consistent improvements in results. We hope that our technique, and our semi-supervised setup, will inspire future work into refining pre-trained motion models.\n"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "FlowNet: Learning Optical Flow with Convolutional Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "A. Dosovitskiy, P. Fischer, E. Ilg, P. Hausser, C. Hazirbas, V. Golkov, P. Van Der Smagt, D. Cremers, and T. Brox",
+      "orig_title": "Flownet: Learning optical flow with convolutional networks",
+      "paper_id": "1504.06852v2"
+    },
+    {
+      "index": 1,
+      "title": "A Large Dataset to Train Convolutional Networks for Disparity, Optical Flow, and Scene Flow Estimation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "N. Mayer, E. Ilg, P. Häusser, P. Fischer, D. Cremers, A. Dosovitskiy, and T. Brox",
+      "orig_title": "A large dataset to train convolutional networks for disparity, optical flow, and scene flow estimation",
+      "paper_id": "1512.02134v1"
+    },
+    {
+      "index": 2,
+      "title": "A naturalistic open source movie for optical flow evaluation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ECCV",
+      "authors": "D. J. Butler, J. Wulff, G. B. Stanley, and M. J. Black"
+    },
+    {
+      "index": 3,
+      "title": "Tartanair: A dataset to push the limits of visual slam",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "authors": "W. Wang, D. Zhu, X. Wang, Y. Hu, Y. Qiu, C. Wang, Y. Hu, A. Kapoor, and S. Scherer"
+    },
+    {
+      "index": 4,
+      "title": "PointOdyssey: A Large-Scale Synthetic Dataset for Long-Term Point Tracking",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICCV",
+      "authors": "Y. Zheng, A. W. Harley, B. Shen, G. Wetzstein, and L. J. Guibas",
+      "orig_title": "Pointodyssey: A large-scale synthetic dataset for long-term point tracking",
+      "paper_id": "2307.15055v1"
+    },
+    {
+      "index": 5,
+      "title": "Back to Basics: Unsupervised Learning of Optical Flow via Brightness Constancy and Motion Smoothness",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCVW",
+      "authors": "J. J. Yu, A. W. Harley, and K. G. Derpanis",
+      "orig_title": "Back to basics: Unsupervised learning of optical flow via brightness constancy and motion smoothness",
+      "paper_id": "1608.05842v1"
+    },
+    {
+      "index": 6,
+      "title": "SelFlow: Self-Supervised Learning of Optical Flow",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "P. Liu, M. Lyu, I. King, and J. Xu",
+      "orig_title": "Selflow: Self-supervised learning of optical flow",
+      "paper_id": "1904.09117v1"
+    },
+    {
+      "index": 7,
+      "title": "SMURF: Self-Teaching Multi-Frame Unsupervised RAFT with Full-Image Warping",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "A. Stone, D. Maurer, A. Ayvaci, A. Angelova, and R. Jonschkowski",
+      "orig_title": "Smurf: Self-teaching multi-frame unsupervised raft with full-image warping",
+      "paper_id": "2105.07014v1"
+    },
+    {
+      "index": 8,
+      "title": "Unsupervised Deep Tracking",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "N. Wang, Y. Song, C. Ma, W. Zhou, W. Liu, and H. Li",
+      "orig_title": "Unsupervised deep tracking",
+      "paper_id": "1904.01828v1"
+    },
+    {
+      "index": 9,
+      "title": "Joint-task Self-supervised Learning for Temporal Correspondence",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "X. Li, S. Liu, S. De Mello, X. Wang, J. Kautz, and M.-H. Yang",
+      "orig_title": "Joint-task self-supervised learning for temporal correspondence",
+      "paper_id": "1909.11895v1"
+    },
+    {
+      "index": 10,
+      "title": "Learning correspondence from the cycle-consistency of time",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "X. Wang, A. Jabri, and A. A. Efros"
+    },
+    {
+      "index": 11,
+      "title": "Space-Time Correspondence as a Contrastive Random Walk",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Jabri, A. Owens, and A. A. Efros",
+      "orig_title": "Space-time correspondence as a contrastive random walk",
+      "paper_id": "2006.14613v2"
+    },
+    {
+      "index": 12,
+      "title": "RAFT: Recurrent All-Pairs Field Transforms for Optical Flow",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Z. Teed and J. Deng",
+      "orig_title": "RAFT: Recurrent all-pairs field transforms for optical flow",
+      "paper_id": "2003.12039v3"
+    },
+    {
+      "index": 13,
+      "title": "Particle video revisited: Tracking through occlusions using point trajectories",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ECCV",
+      "authors": "A. W. Harley, Z. Fang, and K. Fragkiadaki"
+    },
+    {
+      "index": 14,
+      "title": "Tracking Pedestrian Heads in Dense Crowd",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "R. Sundararaman, C. De Almeida Braga, E. Marchand, and J. Pettre",
+      "orig_title": "Tracking pedestrian heads in dense crowd",
+      "paper_id": "2103.13516v1"
+    },
+    {
+      "index": 15,
+      "title": "Pretraining boosts out-of-domain robustness for pose estimation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF Winter Conference on Applications of Computer Vision",
+      "authors": "A. Mathis, T. Biasi, S. Schneider, M. Yuksekgonul, B. Rogers, M. Bethge, and M. W. Mathis",
+      "orig_title": "Pretraining boosts out-of-domain robustness for pose estimation",
+      "paper_id": "1909.11229v2"
+    },
+    {
+      "index": 16,
+      "title": "TAP-Vid: A Benchmark for Tracking Any Point in a Video",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:2211.03726",
+      "authors": "C. Doersch, A. Gupta, L. Markeeva, A. Recasens, L. Smaira, Y. Aytar, J. Carreira, A. Zisserman, and Y. Yang",
+      "orig_title": "Tap-vid: A benchmark for tracking any point in a video",
+      "paper_id": "2211.03726v2"
+    },
+    {
+      "index": 17,
+      "title": "An iterative image registration technique with an application to stereo vision",
+      "abstract": "",
+      "year": "1981",
+      "venue": "",
+      "authors": "B. D. Lucas, T. Kanade, et al."
+    },
+    {
+      "index": 18,
+      "title": "The laplacian pyramid as a compact image code",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Readings in computer vision",
+      "authors": "P. J. Burt and E. H. Adelson"
+    },
+    {
+      "index": 19,
+      "title": "What Matters in Unsupervised Optical Flow",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Computer Vision–ECCV 2020: 16th European Conference, Glasgow, UK, August 23–28, 2020, Part II 16",
+      "authors": "R. Jonschkowski, A. Stone, J. T. Barron, A. Gordon, K. Konolige, and A. Angelova",
+      "orig_title": "What matters in unsupervised optical flow",
+      "paper_id": "2006.04902v2"
+    },
+    {
+      "index": 20,
+      "title": "Semi-Supervised Learning of Optical Flow by Flow Supervisor",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ECCV",
+      "authors": "W. Im, S. Lee, and S.-E. Yoon",
+      "orig_title": "Semi-supervised learning of optical flow by flow supervisor",
+      "paper_id": "2207.10314v1"
+    },
+    {
+      "index": 21,
+      "title": "Distilling the Knowledge in a Neural Network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:1503.02531",
+      "authors": "G. Hinton, O. Vinyals, and J. Dean",
+      "orig_title": "Distilling the knowledge in a neural network",
+      "paper_id": "1503.02531v1"
+    },
+    {
+      "index": 22,
+      "title": "Breaking Shortcut: Exploring Fully Convolutional Cycle-Consistency for Video Correspondence Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2105.05838",
+      "authors": "Y. Tang, Z. Jiang, Z. Xie, Y. Cao, Z. Zhang, P. H. Torr, and H. Hu",
+      "orig_title": "Breaking shortcut: Exploring fully convolutional cycle-consistency for video correspondence learning",
+      "paper_id": "2105.05838v2"
+    },
+    {
+      "index": 23,
+      "title": "Learning Pixel Trajectories with Multiscale Contrastive Random Walks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Z. Bian, A. Jabri, A. A. Efros, and A. Owens",
+      "orig_title": "Learning pixel trajectories with multiscale contrastive random walks",
+      "paper_id": "2201.08379v2"
+    },
+    {
+      "index": 24,
+      "title": "ImageNet: A Large-Scale Hierarchical Image Database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR09",
+      "authors": "J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei"
+    },
+    {
+      "index": 25,
+      "title": "RAFT: Recurrent All-Pairs Field Transforms for Optical Flow",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Z. Teed and J. Deng",
+      "orig_title": "RAFT: Recurrent all-pairs field transforms for optical flow",
+      "paper_id": "2003.12039v3"
+    },
+    {
+      "index": 26,
+      "title": "Semi-supervised learning for optical flow with generative adversarial networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "W.-S. Lai, J.-B. Huang, and M.-H. Yang"
+    },
+    {
+      "index": 27,
+      "title": "Imposing Consistency for Optical Flow Estimation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "J. Jeong, J. M. Lin, F. Porikli, and N. Kwak",
+      "orig_title": "Imposing consistency for optical flow estimation",
+      "paper_id": "2204.07262v2"
+    },
+    {
+      "index": 28,
+      "title": "Pseudo-label: The simple and efficient semi-supervised learning method for deep neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Workshop on challenges in representation learning, ICML",
+      "authors": "D.-H. Lee et al."
+    },
+    {
+      "index": 29,
+      "title": "Toward an architecture for never-ending language learning",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Twenty-Fourth AAAI Conference on Artificial Intelligence",
+      "authors": "A. Carlson, J. Betteridge, B. Kisiel, B. Settles, E. R. Hruschka, and T. M. Mitchell"
+    },
+    {
+      "index": 30,
+      "title": "NEIL: Extracting visual knowledge from web data",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ICCV",
+      "authors": "X. Chen, A. Shrivastava, and A. Gupta"
+    },
+    {
+      "index": 31,
+      "title": "Dense point trajectories by GPU-accelerated large displacement optical flow",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ECCV",
+      "authors": "N. Sundaram, T. Brox, and K. Keutzer"
+    },
+    {
+      "index": 32,
+      "title": "The 2017 DAVIS challenge on video object segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv:1704.00675",
+      "authors": "J. Pont-Tuset, F. Perazzi, S. Caelles, P. Arbeláez, A. Sorkine-Hornung, and L. Van Gool"
+    },
+    {
+      "index": 33,
+      "title": "Emerging properties in self-supervised vision transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "M. Caron, H. Touvron, I. Misra, H. Jégou, J. Mairal, P. Bojanowski, and A. Joulin"
+    },
+    {
+      "index": 34,
+      "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai, T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly, J. Uszkoreit, and N. Houlsby",
+      "orig_title": "An image is worth 16x16 words: Transformers for image recognition at scale",
+      "paper_id": "2010.11929v2"
+    },
+    {
+      "index": 35,
+      "title": "MAST: A memory-augmented self-supervised tracker",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Z. Lai, E. Lu, and W. Xie"
+    },
+    {
+      "index": 36,
+      "title": "TSM: Temporal Shift Module for Efficient Video Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "J. Lin, C. Gan, and S. Han",
+      "orig_title": "Tsm: Temporal shift module for efficient video understanding",
+      "paper_id": "1811.08383v3"
+    },
+    {
+      "index": 37,
+      "title": "COTR: Correspondence Transformer for Matching Across Images",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "W. Jiang, E. Trulls, J. Hosang, A. Tagliasacchi, and K. M. Yi"
+    },
+    {
+      "index": 38,
+      "title": "FlowNet 2.0: Evolution of Optical Flow Estimation with Deep Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "E. Ilg, N. Mayer, T. Saikia, M. Keuper, A. Dosovitskiy, and T. Brox",
+      "orig_title": "Flownet 2.0: Evolution of optical flow estimation with deep networks",
+      "paper_id": "1612.01925v1"
+    },
+    {
+      "index": 39,
+      "title": "PWC-Net: CNNs for optical flow using pyramid, warping, and cost volume",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "D. Sun, X. Yang, M.-Y. Liu, and J. Kautz"
+    },
+    {
+      "index": 40,
+      "title": "Volumetric correspondence networks for optical flow",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in neural information processing systems",
+      "authors": "G. Yang and D. Ramanan"
+    }
+  ]
+}

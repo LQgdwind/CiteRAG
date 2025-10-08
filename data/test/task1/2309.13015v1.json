@@ -1,0 +1,543 @@
+{
+  "paper_id": "2309.13015v1",
+  "title": "Efficient N:M Sparse DNN Training Using Algorithm, Architecture, and Dataflow Co-Design",
+  "abstract": "Abstract\nSparse training is one of the promising techniques to reduce the computational cost of DNNs while retaining high accuracy.\nIn particular, N:M fine-grained structured sparsity, where only N out of consecutive M elements can be nonzero, has attracted attention due to its hardware-friendly pattern and capability of achieving a high sparse ratio.\nHowever, the potential to accelerate N:M sparse DNN training has not been fully exploited, and there is a lack of efficient hardware supporting N:M sparse training.\nTo tackle these challenges, this paper presents a computation-efficient training scheme for N:M sparse DNNs using algorithm, architecture, and dataflow co-design.\nAt the algorithm level, a bidirectional weight pruning method, dubbed BDWP, is proposed to leverage the N:M sparsity of weights during both forward and backward passes of DNN training, which can significantly reduce the computational cost while maintaining model accuracy.\nAt the architecture level, a sparse accelerator for DNN training, namely SAT, is developed to neatly support both the regular dense operations and the computation-efficient N:M sparse operations.\nAt the dataflow level, multiple optimization methods ranging from interleave mapping, pre-generation of N:M sparse weights, and offline scheduling, are proposed to boost the computational efficiency of SAT.\nFinally, the effectiveness of our training scheme is evaluated on a Xilinx VCU1525 FPGA card using various DNN models (ResNet9, ViT, VGG19, ResNet18, and ResNet50) and datasets (CIFAR-10, CIFAR-100, Tiny ImageNet, and ImageNet).\nExperimental results show the SAT accelerator with the BDWP sparse training method under 2:8 sparse ratio achieves an average speedup of 1.75×\\times over that with the dense training, accompanied by a negligible accuracy loss of 0.56% on average. Furthermore, our proposed training scheme significantly improves the training throughput by 2.97∼similar-to\\sim25.22×\\times and the energy efficiency by 1.36∼similar-to\\sim3.58×\\times over prior FPGA-based accelerators.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Journal of Machine Learning Research (JMLR)",
+      "authors": "W. Fedus et al.",
+      "orig_title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+      "paper_id": "2101.03961v3"
+    },
+    {
+      "index": 1,
+      "title": "Language Models are Few-Shot Learners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "T. Brown et al.",
+      "orig_title": "Language Models Are Few-shot Learners",
+      "paper_id": "2005.14165v4"
+    },
+    {
+      "index": 2,
+      "title": "Accelerating DNN Training with Structured Data Gradient Pruning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "26th International Conference on Pattern Recognition (ICPR)",
+      "authors": "B. McDanel et al.",
+      "orig_title": "Accelerating DNN Training with Structured Data Gradient Pruning",
+      "paper_id": "2202.00774v1"
+    },
+    {
+      "index": 3,
+      "title": "XST: A Crossbar Column-wise Sparse Training for Efficient Continual Learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Design, Automation & Test in Europe Conference & Exhibition (DATE)",
+      "authors": "F. Zhang et al."
+    },
+    {
+      "index": 4,
+      "title": "Approximate Random Dropout for DNN training acceleration in GPGPU",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Design, Automation & Test in Europe Conference & Exhibition (DATE)",
+      "authors": "Z. Song et al.",
+      "orig_title": "Approximate Random Dropout for DNN Training Acceleration in GPGPU",
+      "paper_id": "1805.08939v2"
+    },
+    {
+      "index": 5,
+      "title": "Growing Efficient Deep Networks by Structured Continuous Sparsification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "9th International Conference on Learning Representations (ICLR)",
+      "authors": "X. Yuan et al.",
+      "orig_title": "Growing Efficient Deep Networks by Structured Continuous Sparsification",
+      "paper_id": "2007.15353v2"
+    },
+    {
+      "index": 6,
+      "title": "StructADMM: Achieving Ultrahigh Efficiency in Structured Pruning for DNNs",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems (TNNLS)",
+      "authors": "T. Zhang et al."
+    },
+    {
+      "index": 7,
+      "title": "Accelerating CNN Training by Pruning Activation Gradients",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "X. Ye et al."
+    },
+    {
+      "index": 8,
+      "title": "Rigging the Lottery: Making All Tickets Winners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "U. Evci et al."
+    },
+    {
+      "index": 9,
+      "title": "Enabling On-Device CNN Training by Self-Supervised Instance Filtering and Error Map Pruning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)",
+      "authors": "Y. Wu et al."
+    },
+    {
+      "index": 10,
+      "title": "SCANN: Synthesis of Compact and Accurate Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)",
+      "authors": "S. Hassantabar et al.",
+      "orig_title": "SCANN: Synthesis of Compact and Accurate Neural Networks",
+      "paper_id": "1904.09090v2"
+    },
+    {
+      "index": 11,
+      "title": "Quantized Sparse Training: A Unified Trainable Framework for Joint Pruning and Quantization in DNNs",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Transactions on Embedded Computing Systems (TECS)",
+      "authors": "J.-H. Park et al."
+    },
+    {
+      "index": 12,
+      "title": "TinyADC: Peripheral Circuit-aware Weight Pruning Framework for Mixed-signal DNN Accelerators",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Design, Automation & Test in Europe Conference & Exhibition (DATE)",
+      "authors": "G. Yuan et al."
+    },
+    {
+      "index": 13,
+      "title": "OMNI: A Framework for Integrating Hardware and Software Optimizations for Sparse CNNs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)",
+      "authors": "Y. Liang et al."
+    },
+    {
+      "index": 14,
+      "title": "SDP: Co-Designing Algorithm, Dataflow, and Architecture for In-SRAM Sparse NN Acceleration",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)",
+      "authors": "F. Tu et al."
+    },
+    {
+      "index": 15,
+      "title": "FSA: A Fine-Grained Systolic Accelerator for Sparse CNNs",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)",
+      "authors": "F. Li et al."
+    },
+    {
+      "index": 16,
+      "title": "Search-Free Inference Acceleration for Sparse Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)",
+      "authors": "B. Liu et al."
+    },
+    {
+      "index": 17,
+      "title": "Energy-Efficient CNN Personalized Training by Adaptive Data Reformation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)",
+      "authors": "Y. Jung et al."
+    },
+    {
+      "index": 18,
+      "title": "A Low-latency Sparse-Winograd Accelerator for Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICASSP 2019 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "authors": "H. Wang et al."
+    },
+    {
+      "index": 19,
+      "title": "NVIDIA A100 Tensor Core GPU Architecture",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "NVIDIA"
+    },
+    {
+      "index": 20,
+      "title": "Accelerating Sparse Deep Neural Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2104.08378",
+      "authors": "A. Mishra et al.",
+      "orig_title": "Accelerating Sparse Deep Neural Networks",
+      "paper_id": "2104.08378v1"
+    },
+    {
+      "index": 21,
+      "title": "Pre-defined Sparsity for Low-Complexity Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Computers (TC)",
+      "authors": "S. Kundu et al.",
+      "orig_title": "Pre-defined Sparsity for Low-Complexity Convolutional Neural Networks",
+      "paper_id": "2001.10710v2"
+    },
+    {
+      "index": 22,
+      "title": "PatDNN: Achieving Real-Time DNN Execution on Mobile Devices with Pattern-based Weight Pruning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Twenty-Fifth International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS)",
+      "authors": "W. Niu et al.",
+      "orig_title": "PatDNN: Achieving Real-Time DNN Execution on Mobile Devices with Pattern-based Weight Pruning",
+      "paper_id": "2001.00138v4"
+    },
+    {
+      "index": 23,
+      "title": "Unleashing the Potential of Sparse DNNs Through Synergistic Hardware-Sparsity Co-Design",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)",
+      "authors": "E. Ozen et al."
+    },
+    {
+      "index": 24,
+      "title": "Structured Term Pruning for Computational Efficient Neural Networks Inference",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)",
+      "authors": "K. Huang et al."
+    },
+    {
+      "index": 25,
+      "title": "Efficient Layer-Wise N:M Sparse CNN Accelerator with Flexible SPEC: Sparse Processing Element Clusters",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Micromachines",
+      "authors": "X. Xie et al."
+    },
+    {
+      "index": 26,
+      "title": "An Algorithm-Hardware Co-Optimized Framework for Accelerating N:M Sparse Transformers",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Very Large Scale Integration (VLSI) Systems (TVLSI)",
+      "authors": "C. Fang et al.",
+      "orig_title": "An Algorithm–Hardware Co-optimized Framework for Accelerating N:M Sparse Transformers",
+      "paper_id": "2208.06118v1"
+    },
+    {
+      "index": 27,
+      "title": "Dynamic N:M Fine-grained Structured Sparse Attention Mechanism",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM SIGPLAN Annual Symposium on Principles and Practice of Parallel Programming (PPoPP)",
+      "authors": "Z. Chen et al.",
+      "orig_title": "Dynamic N:M Fine-Grained Structured Sparse Attention Mechanism",
+      "paper_id": "2203.00091v1"
+    },
+    {
+      "index": 28,
+      "title": "1xN Pattern for Pruning Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)",
+      "authors": "M. Lin et al.",
+      "orig_title": "1xN Pattern for Pruning Convolutional Neural Networks",
+      "paper_id": "2105.14713v6"
+    },
+    {
+      "index": 29,
+      "title": "SPDY: Accurate Pruning with Speedup Guarantees",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning (ICML)",
+      "authors": "E. Frantar et al.",
+      "orig_title": "SPDY: Accurate Pruning with Speedup Guarantees",
+      "paper_id": "2201.13096v2"
+    },
+    {
+      "index": 30,
+      "title": "DominoSearch: Find layer-wise fine-grained N:M sparse schemes from dense neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "authors": "W. Sun et al."
+    },
+    {
+      "index": 31,
+      "title": "Learning N:M Fine-grained Structured Sparse Neural Networks From Scratch",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "A. Zhou et al.",
+      "orig_title": "Learning N:M Fine-grained Structured Sparse Neural Networks from Scratch",
+      "paper_id": "2102.04010v2"
+    },
+    {
+      "index": 32,
+      "title": "FPGA-based Low-batch Training Accelerator for Modern CNNs Featuring High Bandwidth Memory",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Computer-Aided Design (ICCAD)",
+      "authors": "S. K. Venkataramanaiah et al."
+    },
+    {
+      "index": 33,
+      "title": "EF-Train: Enable Efficient On-device CNN Training on FPGA Through Data Reshaping for Online Adaptation or Personalization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Transactions on Design Automation of Electronic Systems (TODAES)",
+      "authors": "Y. Tang et al."
+    },
+    {
+      "index": 34,
+      "title": "FeCaffe: FPGA-enabled Caffe with OpenCL for Deep Learning Training and Inference on Intel Stratix 10",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM/SIGDA International Symposium on Field-Programmable Gate Arrays (FPGA)",
+      "authors": "K. He et al."
+    },
+    {
+      "index": 35,
+      "title": "An FPGA-based Processor for Training Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Field Programmable Technology (ICFPT)",
+      "authors": "Z. Liu et al."
+    },
+    {
+      "index": 36,
+      "title": "Automatic Compiler Based FPGA Accelerator for CNN Training",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Field Programmable Logic and Applications (FPL)",
+      "authors": "S. K. Venkataramanaiah et al."
+    },
+    {
+      "index": 37,
+      "title": "EILE: Efficient Incremental Learning on the Edge",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE International Conference on Artificial Intelligence Circuits and Systems (AICAS)",
+      "authors": "X. Chen et al."
+    },
+    {
+      "index": 38,
+      "title": "An On-Chip Fully Connected Neural Network Training Hardware Accelerator Based on Brain Float Point and Sparsity Awareness",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Open Journal of Circuits and Systems (OJCAS)",
+      "authors": "T.-H. Tsai et al."
+    },
+    {
+      "index": 39,
+      "title": "Pooling Acceleration in the DaVinci Architecture Using Im2col and Col2im Instructions",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW)",
+      "authors": "C. S. Rohwedder et al."
+    },
+    {
+      "index": 40,
+      "title": "PyTorch Profiler",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "PyTorch"
+    },
+    {
+      "index": 41,
+      "title": "SparseTrain: Exploiting Dataflow Sparsity for Efficient Convolutional Neural Networks Training",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM/IEEE Design Automation Conference (DAC)",
+      "authors": "P. Dai et al.",
+      "orig_title": "SparseTrain: Exploiting Dataflow Sparsity for Efficient Convolutional Neural Networks Training",
+      "paper_id": "2007.13595v1"
+    },
+    {
+      "index": 42,
+      "title": "THETA: A High-Efficiency Training Accelerator for DNNs With Triple-Side Sparsity Exploration",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Very Large Scale Integration (VLSI) Systems (TVLSI)",
+      "authors": "J. Lu et al."
+    },
+    {
+      "index": 43,
+      "title": "CEST: Computation-Efficient N:M Sparse Training for Deep Neural Networks",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Design, Automation & Test in Europe Conference & Exhibition (DATE)",
+      "authors": "C. Fang et al."
+    },
+    {
+      "index": 44,
+      "title": "Trainer: An Energy-Efficient Edge-Device Training Processor Supporting Dynamic Weight Pruning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Journal of Solid-State Circuits (JSSC)",
+      "authors": "Y. Wang et al."
+    },
+    {
+      "index": 45,
+      "title": "An FPGA-Based Reconfigurable Accelerator for Low-Bit DNN Training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Computer Society Annual Symposium on VLSI (ISVLSI)",
+      "authors": "H. Shao et al."
+    },
+    {
+      "index": 46,
+      "title": "Towards Efficient Deep Neural Network Training by FPGA-based Batch-level Parallelism",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Semiconductors (JOS)",
+      "authors": "C. Luo et al."
+    },
+    {
+      "index": 47,
+      "title": "ETA: An Efficient Training Accelerator for DNNs Based on Hardware-algorithm Co-optimization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems (TNNLS)",
+      "authors": "J. Lu et al."
+    },
+    {
+      "index": 48,
+      "title": "FPGA-based Training Accelerator Utilizing Sparseness of Convolutional Neural Network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Field Programmable Logic and Applications (FPL)",
+      "authors": "H. Nakahara et al."
+    },
+    {
+      "index": 49,
+      "title": "Automatic Mixed Precision",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "NVIDIA"
+    },
+    {
+      "index": 50,
+      "title": "In-Datacenter Performance Analysis of A Tensor Processing Unit",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Annual International Symposium on Computer Architecture (ISCA)",
+      "authors": "N. P. Jouppi et al."
+    },
+    {
+      "index": 51,
+      "title": "uSystolic: Byte-Crawling Unary Systolic Array",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE International Symposium on High-Performance Computer Architecture (HPCA)",
+      "authors": "D. Wu et al."
+    },
+    {
+      "index": 52,
+      "title": "Maestro: A Memory-on-Logic Architecture for Coordinated Parallel Use of Many Systolic Arrays",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Application-specific Systems, Architectures and Processors (ASAP)",
+      "authors": "H. Kung et al."
+    },
+    {
+      "index": 53,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "K. He et al.",
+      "orig_title": "Deep Residual Learning for Image Recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 54,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "K. Simonyan et al.",
+      "orig_title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 55,
+      "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "A. Dosovitskiy et al.",
+      "orig_title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "paper_id": "2010.11929v2"
+    },
+    {
+      "index": 56,
+      "title": "Low-bit Quantization of Neural Networks for Efficient Inference",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF International Conference on Computer Vision Workshop (ICCVW)",
+      "authors": "Y. Choukroun et al."
+    },
+    {
+      "index": 57,
+      "title": "PULP: A Parallel Ultra Low Power Platform for Next Generation IoT Applications",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Hot Chips 27 Symposium (HCS)",
+      "authors": "D. Rossi et al."
+    },
+    {
+      "index": 58,
+      "title": "Basejump STL: Systemverilog Needs a Standard Template Library for Hardware Design",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM/ESDA/IEEE Design Automation Conference (DAC)",
+      "authors": "M. B. Taylor"
+    },
+    {
+      "index": 59,
+      "title": "Adaptable Butterfly Accelerator for Attention-based NNs via Hardware and Algorithm Co-design",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/ACM International Symposium on Microarchitecture (MICRO)",
+      "authors": "H. Fan et al.",
+      "orig_title": "Adaptable Butterfly Accelerator for Attention-based NNs via Hardware and Algorithm Co-design",
+      "paper_id": "2209.09570v1"
+    },
+    {
+      "index": 60,
+      "title": "FAST: DNN Training Under Variable Precision Block Floating Point with Stochastic Rounding",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE International Symposium on High-Performance Computer Architecture (HPCA)",
+      "authors": "S. Q. Zhang et al.",
+      "orig_title": "Fast: DNN Training Under Variable Precision Block Floating Point with Stochastic Rounding",
+      "paper_id": "2110.15456v1"
+    },
+    {
+      "index": 61,
+      "title": "Intel Performance Counter Monitor",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Intel"
+    }
+  ]
+}

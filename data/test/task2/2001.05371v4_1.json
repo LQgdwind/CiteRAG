@@ -1,0 +1,575 @@
+{
+  "paper_id": "2001.05371v4",
+  "title": "Making deep neural networks right for the right scientific reasons by interacting with their explanations",
+  "sections": {
+    "making deep neural networks right for the right scientific reasons by interacting with their explanations": "Deep neural networks have shown excellent performances in many real-world applications. Unfortunately, they may show “Clever Hans”-like behavior—making use of confounding factors within datasets—to achieve high performance. In this work, we introduce the novel learning setting of “explanatory interactive learning” (XIL) and illustrate its benefits on a plant phenotyping research task. XIL adds the scientist into the training loop such that she interactively revises the original model via providing feedback on its explanations. Our experimental results demonstrate that XIL can help avoiding Clever Hans moments in machine learning and encourages (or discourages, if appropriate) trust into the underlying model. Imagine a plant phenotyping team attempting to characterize crop resistance to plant pathogens. The plant physiologist records a large amount of hyperspectral imaging data. Impressed by the results of deep learning in other scientific areas, she wants to establish similar results for phenotyping. Consequently, she asks a machine learning expert to apply deep learning to analyze the data. Luckily, the resulting predictive accuracy is very high. The plant physiologist, however, remains skeptical. The results are “too good, to be true”. Checking the decision process of the deep model using explainable artificial intelligence (AI), the machine learning expert is flabbergasted to find that the learned deep model uses clues within the data that do not relate to the biological problem at hand, so-called confounding factors. The physiologist loses trust in AI and turns away from it, proclaiming it to be useless.††Preprint. Work in progress. This example encapsulates an important issue of current explainable AI [ref]1 [ref]2. Indeed, the seminal paper of Lapuschkin et al. [ref]3 helps in “unmasking Clever Hans predictors and assessing what machines really learn”.\nHowever, rather than proclaiming, as the plant physiologist might, that the machines have learned the right predictions for the wrong reasons and can therefore not be trusted, we here showcase that interactions between the learning system and the human user can correct the model, towards making the right predictions for the right reasons . This may also increase the trust in machine learning models.\nActually, trust lies at the foundation of major theories of interpersonal relationships in psychology   and we argue that interaction and understandability are central to trust in learning machines.\nSurprisingly, the link between interacting, explaining and building trust has been largely ignored by the machine learning literature. Existing approaches focus on passive learning only and do not consider the interaction between the user and the learner   , whereas, interactive learning frameworks such as active  and coactive learning \ndo not consider the issue of trust. In active learning, for instance, the model presents unlabeled instances to a user, and in exchange obtains their label. This is completely opaque—the user is oblivious to the model’s beliefs and reasons for predictions and to how they change in time, and cannot see the consequences of her instructions. In coactive learning, the user sees and corrects the system’s prediction, if necessary, but the predictions are not explained to her. So, why should users trust models learned interactively? Furthermore, although an increasing amount of research investigates methods for explaining machine learning models, even here the notion of interaction has been largely ignored. Reconsider the study by Lapuschkin et al. [ref]3. They showed that one can find “Clever Hans”-like behavior in popular computer vision models basing their decisions on confounding factors. Based on these findings, the authors recommended a word of caution towards the interest in such models, but they did not offer a solution for correcting their behavior. Particularly in real-world applications, where monitoring for every possible confounding factor or acquiring a new dataset due to existing confounders is time and resource consuming, it is inevitable to move beyond revealing the (wrong) reasons by making a step towards correcting the reasons underlying a models decisions. Doing so is exactly the main technical contribution of the present study. We introduce the novel learning setting of “explanatory interactive learning” (XIL) and illustrate its benefits in an important scientific endeavor, namely, plant phenotyping. Starting from a learning system that does not deliver biologically plausible explanations for a relevant, real-world task in plant phenotyping, we add the scientist into the training loop, who interactively revises the original model by interacting via it’s explanations so that it produces trustworthy decisions without a major drop in performance.\nSpecifically, XIL takes the form illustrated in Fig. 1. In each step, the learner explains its interactive query to the domain expert, and she responds by correcting the explanations, if necessary, to provide feedback. This allows the user not only to check whether the model is right or wrong on the chosen instance but also if the answer is right (or wrong) for the wrong reasons, e.g., when there are ambiguities in the data such as confounders  . By witnessing the evolution of the explanations, similar to a teacher supervising the progress of a student, the human user can see whether the model eventually “gets it”. The user may even correct the explanation presented to guide the learner. This correction step is crucial for more directly affecting the learner’s beliefs and is integral to modulating trust  . Specifically, we make the following contributions:\n(i) Introduction of XIL with counterexamples (CE) to revise “Clever Hans” behavior in a model-agnostic fashion.\n(ii) Adaption of the “right for the right reasons” (RRR) loss to latent layers of deep neural networks.\n(iii) Showcasing XIL on the computer vision benchmark datasets PASCAL VOC 2007  and MSCOCO 2014 .\n(iv) Evaluation of XIL on a highly relevant dataset for plant phenotyping, demonstrating its potential as an enabler of scientific discovery.\n(v) Gathering of the plant phenotyping dataset and the creation of a version with confounders.\n(vi) A user study on trust development within XIL .\n\n A preliminary version of this manuscript has been published as a conference paper\n. The present paper significantly extends the conference version by (ii-v)\nMoreover, the ad-hoc XIL user study presented in  was completely re-designed, newly conducted, and now includes a thorough statistical analysis (vi). To encourage further research, we provide the created plant phenotyping dataset. We proceed as follows. We start by formally introducing Explanatory Interactive Machine Learning (XIL) and instantiate it in the caipi method \nas well as the rrr method .\nAfter introducing XIL, we discuss quantitative results on test datasets, before providing details on how domain experts can revise learning machines and in turn enable the machines to correct their abilities to solve the scientific real-world task of plant disease prediction. Finally, we demonstrate the importance of explaining decisions for building trustful machines via a user study.\nOur contributions thus address a main part of building trustworthy AI methods by providing an end-to-end, interactive method to evaluate and revise machine learning models.\nThis provides an important add-on to Rudin’s  message “Stop explaining black-box machine learning models for high stakes decisions and use interpretable models instead”, namely\n“Start interacting with explanations of machine learning models to avoid ‘Clever Hans’-like behavior.”"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A Survey Of Methods For Explaining Black Box Models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM computing surveys (CSUR)",
+      "authors": "Guidotti, R. et al.",
+      "orig_title": "A survey of methods for explaining black box models",
+      "paper_id": "1802.01933v3"
+    },
+    {
+      "index": 1,
+      "title": "Explaining Explanations: An Overview of Interpretability of Machine Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE International Conference on data science and advanced analytics (DSAA)",
+      "authors": "Gilpin, L. H. et al.",
+      "orig_title": "Explaining explanations: An overview of interpretability of machine learning",
+      "paper_id": "1806.00069v3"
+    },
+    {
+      "index": 2,
+      "title": "Unmasking Clever Hans Predictors and Assessing What Machines Really Learn",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Nature communications",
+      "authors": "Lapuschkin, S. et al.",
+      "orig_title": "Unmasking clever hans predictors and assessing what machines really learn",
+      "paper_id": "1902.10178v1"
+    },
+    {
+      "index": 3,
+      "title": "Right for the Right Reasons: Training Differentiable Models by Constraining their Explanations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Joint Conference on Artificial Intelligence",
+      "authors": "Ross, A. S., Hughes, M. C. & Doshi-Velez, F.",
+      "orig_title": "Right for the right reasons: Training differentiable models by constraining their explanations",
+      "paper_id": "1703.03717v2"
+    },
+    {
+      "index": 4,
+      "title": "Psychological foundations of trust",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Current directions in psychological science",
+      "authors": "Simpson, J. A."
+    },
+    {
+      "index": 5,
+      "title": "Trust in automation",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Intelligent Systems",
+      "authors": "Hoffman, R. R., Johnson, M., Bradshaw, J. M. & Underbrink, A."
+    },
+    {
+      "index": 6,
+      "title": "Model Compression",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, KDD",
+      "authors": "Buciluǎ, C., Caruana, R. & Niculescu-Mizil, A."
+    },
+    {
+      "index": 7,
+      "title": "“Why Should I Trust You?” Explaining the Predictions of Any Classifier",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM SIGKDD international conference on knowledge discovery and data mining",
+      "authors": "Ribeiro, M. T., Singh, S. & Guestrin, C.",
+      "orig_title": "Why should I trust you?: Explaining the predictions of any classifier",
+      "paper_id": "1602.04938v3"
+    },
+    {
+      "index": 8,
+      "title": "An unexpected unity among methods for interpreting model predictions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "Lundberg, S. & Lee, S.",
+      "orig_title": "An unexpected unity among methods for interpreting model predictions",
+      "paper_id": "1611.07478v3"
+    },
+    {
+      "index": 9,
+      "title": "Closing the loop: Fast, interactive semi-supervised annotation with queries on features and instances",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Conference on Empirical Methods in Natural Language Processing",
+      "authors": "Settles, B."
+    },
+    {
+      "index": 10,
+      "title": "Coactive learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Journal of Artificial Intelligence Research",
+      "authors": "Shivaswamy, P. & Joachims, T."
+    },
+    {
+      "index": 11,
+      "title": "Principles of explanatory debugging to personalize interactive machine learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Intelligent User Interfaces",
+      "authors": "Kulesza, T. et al."
+    },
+    {
+      "index": 12,
+      "title": "The PASCAL Visual Object Classes Challenge 2007 (VOC2007) Results",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Everingham, M., Van Gool, L., Williams, C. K. I., Winn, J. & Zisserman, A."
+    },
+    {
+      "index": 13,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Lin, T. et al.",
+      "orig_title": "Microsoft COCO: common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 14,
+      "title": "Why Should I Trust in AI?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Herbert, F. P., Kersting, K. & Jäkel, F."
+    },
+    {
+      "index": 15,
+      "title": "Explanatory interactive machine learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI/ACM Conference on AI, Ethics, and Society (AAAI)",
+      "authors": "Teso, S. & Kersting, K."
+    },
+    {
+      "index": 16,
+      "title": "Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Nature Machine Intelligence",
+      "authors": "Rudin, C."
+    },
+    {
+      "index": 17,
+      "title": "Active imitation learning via reduction to iid active learning",
+      "abstract": "",
+      "year": "2012",
+      "venue": "AAAI Fall Symposium Series",
+      "authors": "Judah, K. et al."
+    },
+    {
+      "index": 18,
+      "title": "Mixed-initiative active learning",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICML 2011 Workshop on Combining Learning Strategies to Reduce Label Cost",
+      "authors": "Cakmak, M. et al."
+    },
+    {
+      "index": 19,
+      "title": "Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Selvaraju, R. R. et al.",
+      "orig_title": "Grad-cam: Visual explanations from deep networks via gradient-based localization",
+      "paper_id": "1610.02391v4"
+    },
+    {
+      "index": 20,
+      "title": "Taking a hint: Leveraging explanations to make vision and language models more grounded",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "Selvaraju, R. R. et al."
+    },
+    {
+      "index": 21,
+      "title": "Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning Algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1708.07747",
+      "authors": "Xiao, H., Rasul, K. & Vollgraf, R.",
+      "orig_title": "Fashion-mnist: a novel image dataset for benchmarking machine learning algorithms",
+      "paper_id": "1708.07747v2"
+    },
+    {
+      "index": 22,
+      "title": "Visualizing Data using GTSNE",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of machine learning research",
+      "authors": "Maaten, L. v. d. & Hinton, G.",
+      "orig_title": "Visualizing data using t-SNE",
+      "paper_id": "2108.01301v1"
+    },
+    {
+      "index": 23,
+      "title": "Theoretical considerations and development of a questionnaire to measure trust in automation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Congress of the International Ergonomics Association",
+      "authors": "Körber, M."
+    },
+    {
+      "index": 24,
+      "title": "Machine learning: Trends, perspectives, and prospects",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Science",
+      "authors": "Jordan, M. I. & Mitchell, T. M."
+    },
+    {
+      "index": 25,
+      "title": "Probabilistic machine learning and artificial intelligence",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Nature",
+      "authors": "Ghahramani, Z."
+    },
+    {
+      "index": 26,
+      "title": "Mastering the game of go without human knowledge",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Nature",
+      "authors": "Silver, D. et al."
+    },
+    {
+      "index": 27,
+      "title": "Confounding variables can degrade generalization performance of radiological deep learning models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Zech, J. R. et al."
+    },
+    {
+      "index": 28,
+      "title": "Deep learning predicts hip fracture using confounding patient and healthcare variables",
+      "abstract": "",
+      "year": "2019",
+      "venue": "npj Digital Medicine",
+      "authors": "Badgeley, M. A. et al."
+    },
+    {
+      "index": 29,
+      "title": "A permutation approach to assess confounding in machine learning applications for digital health",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM SIGKDD International Conference on Knowledge Discovery & Data Mining",
+      "authors": "Chaibub Neto, E. et al."
+    },
+    {
+      "index": 30,
+      "title": "Sanity checks for saliency maps",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Adebayo, J. et al."
+    },
+    {
+      "index": 31,
+      "title": "This Looks Like That: Deep Learning for Interpretable Image Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Chen, C. et al.",
+      "orig_title": "This looks like that: Deep learning for interpretable image recognition",
+      "paper_id": "1806.10574v5"
+    },
+    {
+      "index": 32,
+      "title": "Explanations can be manipulated and geometry is to blame",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Dombrowski, A. et al."
+    },
+    {
+      "index": 33,
+      "title": "Human-guided learning for probabilistic logic models",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Frontiers in Robotics and AI",
+      "authors": "Odom, P. & Natarajan, S."
+    },
+    {
+      "index": 34,
+      "title": "How do Humans Understand Explanations from Machine Learning Systems? An Evaluation of the Human-Interpretability of Explanation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "Narayanan, M. et al.",
+      "orig_title": "How do humans understand explanations from machine learning systems? an evaluation of the human-interpretability of explanation",
+      "paper_id": "1802.00682v1"
+    },
+    {
+      "index": 35,
+      "title": "Learning to Explain with Complemental Examples",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Kanehira, A. & Harada, T.",
+      "orig_title": "Learning to explain with complemental examples",
+      "paper_id": "1812.01280v2"
+    },
+    {
+      "index": 36,
+      "title": "Multimodal Explanations: Justifying Decisions and Pointing to the Evidence",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Huk Park, D. et al.",
+      "orig_title": "Multimodal explanations: Justifying decisions and pointing to the evidence",
+      "paper_id": "1802.08129v1"
+    },
+    {
+      "index": 37,
+      "title": "Active learning",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Synthesis Lectures on Artificial Intelligence and Machine Learning",
+      "authors": "Settles, B."
+    },
+    {
+      "index": 38,
+      "title": "Theory of disagreement-based active learning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Foundations and Trends® in Machine Learning",
+      "authors": "Hanneke, S. et al."
+    },
+    {
+      "index": 39,
+      "title": "Toward optimal active learning through monte carlo estimation of error reduction",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ICML",
+      "authors": "Roy, N. et al."
+    },
+    {
+      "index": 40,
+      "title": "Upper and lower error bounds for active learning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Conference on Communication, Control and Computing",
+      "authors": "Castro, R. M. et al."
+    },
+    {
+      "index": 41,
+      "title": "The true sample complexity of active learning",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Machine learning",
+      "authors": "Balcan, M.-F. et al."
+    },
+    {
+      "index": 42,
+      "title": "Support vector machine active learning with applications to text classification",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Journal of machine learning research",
+      "authors": "Tong, S. & Koller, D."
+    },
+    {
+      "index": 43,
+      "title": "Nonmyopic active learning of gaussian processes: an exploration-exploitation approach",
+      "abstract": "",
+      "year": "2007",
+      "venue": "International Conference on Machine learning",
+      "authors": "Krause, A. et al."
+    },
+    {
+      "index": 44,
+      "title": "Deep Bayesian Active Learning with Image Data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine learning",
+      "authors": "Gal, Y. et al.",
+      "orig_title": "Deep bayesian active learning with image data",
+      "paper_id": "1703.02910v1"
+    },
+    {
+      "index": 45,
+      "title": "Short-term satisfaction and long-term coverage: Understanding how users tolerate algorithmic exploration",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM International Conference on Web Search and Data Mining",
+      "authors": "Schnabel, T. et al."
+    },
+    {
+      "index": 46,
+      "title": "Interpreting Blackbox Models via Model Extraction",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Bastani, O., Kim, C. & Bastani, H.",
+      "orig_title": "Interpreting blackbox models via model extraction",
+      "paper_id": "1705.08504v6"
+    },
+    {
+      "index": 47,
+      "title": "Learning Deep Features for Discriminative Localization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Zhou, B., Khosla, A., Lapedriza, A., Oliva, A. & Torralba, A.",
+      "orig_title": "Learning deep features for discriminative localization",
+      "paper_id": "1512.04150v1"
+    },
+    {
+      "index": 48,
+      "title": "Support-vector networks",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Machine learning",
+      "authors": "Cortes, C. et al."
+    },
+    {
+      "index": 49,
+      "title": "Analyzing imagenet with spectral relevance analysis: Towards imagenet un-hans’ed",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1912.11425",
+      "authors": "Anders, C. J. et al."
+    },
+    {
+      "index": 50,
+      "title": "Using “annotator rationales” to improve machine learning for text categorization",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+      "authors": "Zaidan, O. et al."
+    },
+    {
+      "index": 51,
+      "title": "The constrained weight space svm: learning with ranked features",
+      "abstract": "",
+      "year": "2011",
+      "venue": "International Conference on Machine learning",
+      "authors": "Small, K. et al."
+    },
+    {
+      "index": 52,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Simonyan, K. & Zisserman, A.",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 53,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Kingma, D. P. & Ba, J."
+    },
+    {
+      "index": 54,
+      "title": "High-throughput phenotyping of rice growth traits",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Nature Reviews Genetics",
+      "authors": "Lau, E."
+    },
+    {
+      "index": 55,
+      "title": "High-throughput phenotyping",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Nature Methods",
+      "authors": "de Souza, N."
+    },
+    {
+      "index": 56,
+      "title": "Plant Phenomics, From Sensors to Knowledge",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Current Biology",
+      "authors": "Tardieu, F., Cabrera-Bosquet, L., Pridmore, T. & Bennett, M."
+    },
+    {
+      "index": 57,
+      "title": "Deep machine learning provides state-of-the-art performance in image-based plant phenotyping",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Gigascience",
+      "authors": "Pound, M. P. et al."
+    },
+    {
+      "index": 58,
+      "title": "Computer vision-based phenotyping for improvement of plant productivity: a machine learning perspective",
+      "abstract": "",
+      "year": "2018",
+      "venue": "GigaScience",
+      "authors": "Mochida, K. et al."
+    },
+    {
+      "index": 59,
+      "title": "Quantitative and qualitative phenotyping of disease resistance of crops by hyperspectral sensors: seamless interlocking of phytopathology, sensors, and machine learning is needed!",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Current opinion in Plant Biology",
+      "authors": "Mahlein, A.-K. et al."
+    },
+    {
+      "index": 60,
+      "title": "Phenological growth stages of sugar beet (Beta vulgaris l. ssp.) codification and description according to the general bbch scale (with figures)",
+      "abstract": "",
+      "year": "1993",
+      "venue": "Nachrichtenblatt des Deutschen Pflanzenschutzdienstes",
+      "authors": "Meier, U. et al."
+    },
+    {
+      "index": 61,
+      "title": "A Benchmark for Interpretability Methods in Deep Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Hooker, S., Erhan, D., Kindermans, P. & Kim, B.",
+      "orig_title": "A benchmark for interpretability methods in deep neural networks",
+      "paper_id": "1806.10758v3"
+    },
+    {
+      "index": 62,
+      "title": "ImageNet: A Large-Scale Hierarchical Image Database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Deng, J. et al."
+    },
+    {
+      "index": 63,
+      "title": "A tutorial on spectral clustering",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Statistics and computing",
+      "authors": "Von Luxburg, U."
+    },
+    {
+      "index": 64,
+      "title": "How and what can humans learn from being in the loop?",
+      "abstract": "",
+      "year": "2020",
+      "venue": "KI-Künstliche Intelligenz",
+      "authors": "Abdel-Karim, B. M., Pfeuffer, N., Rohde, G. & Hinz, O."
+    },
+    {
+      "index": 65,
+      "title": "Learning explainable models using attribution priors",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Erion, G. G., Janizek, J. D., Sturmfels, P., Lundberg, S. & Lee, S."
+    }
+  ]
+}

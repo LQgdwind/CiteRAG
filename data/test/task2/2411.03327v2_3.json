@@ -1,0 +1,483 @@
+{
+  "paper_id": "2411.03327v2",
+  "title": "Maximal Extractable Value in Decentralized Finance: Taxonomy, Detection, and Mitigation",
+  "sections": {
+    "introduction": "Decentralized Finance (DeFi) , powered by blockchain technology, offers financial services, such as investing, lending loans, and trading assets, to various stakeholders without the need for intermediary brokers. This creates a decentralized, secure, transparent, and traceable financial ecosystem. According to a Skyquest report, the DeFi market size is expected to reach 48.02 billion USD by 2031, up from 23.99 billion USD in 2023, a compound annual growth rate of 9.06%111https://www.skyquestt.com/report/decentralized-finance-market, accessed on 19 September 2024. Furthermore, as of September 2022, the total value locked in the DeFi ecosystem exceeded 82 billion USD222https://defillama.com/, accessed on 19 September 2024, with the Ethereum network accounting more than 45 billion USD (approximately 56%). Decentralized Exchanges (DEXes) are one of the prominent applications of DeFi, enabling users to directly swap tokens using smart contracts [ref]2. Most DEXes operate on the Ethereum blockchain to facilitate trustless and automated transactions. However, in the Ethereum network, transactions are stored in a public mempool before they are included in a block. This creates profitable opportunities for network participants, referred to as searchers, who can submit new transactions by observing pending financial transactions to gain additional revenue. These searchers maximize their profits by manipulating gas prices to influence the order of their transactions within the block. This additional value extracted from the blockchain network is termed Maximal Extractable Value (MEV). MEV searchers can be the block producers (i.e., miners in Proof of Work (PoW) and validators in Proof of Stake (PoS)), other network participants, or a bot. However, block producers have a unique advantage, as they can include transactions in blocks without paying high gas prices . Furthermore, the transition from PoW to PoS in Ethereum has significantly reduced block producer rewards, further luring block producers to engage in MEV activities . MEV could result in major financial losses, network congestion, increased gas prices, and blockchain inefficiency  . Before Ethereum’s transition to PoS in September 2022, around 440,000 ETH in MEV was extracted. Since the transition, approximately 180,000 ETH has been extracted up until May 2023333https://milkroad.com/guide/mev/, accessed on 19 September 2024. However, not all MEV transactions are detrimental to the DeFi ecosystem. Some can destabilize consensus mechanisms and cause economic harm, while others may even stabilize financial markets [ref]6. Therefore, understanding, detecting, and mitigating MEV is critical to ensure the efficiency and stability of the DeFi ecosystem. Several surveys have explored various aspects of MEV, including transaction types and mitigation strategies  [ref]8 [ref]6  . In particular,  classifies MEV transactions, while [ref]8 [ref]6 emphasize on mitigation techniques. In contrast,   cover both transaction types and mitigation strategies. However, none have thoroughly examined all transaction types, detection approaches, and mitigation strategies. This comprehensive survey addresses this gap by presenting a novel taxonomy of MEV transaction types supported by real-world examples from the Ethereum network. It also explores MEV detection approaches and mitigation strategies and examines various simulation and extraction methods. The main contributions of this survey are as follows. We introduce a novel and comprehensive taxonomy of MEV transactions, supported by real Ethereum transaction examples for each identified MEV type. The taxonomy clearly distinguishes between value-diverting MEV transactions, which can lead to financial loss and network instability, and value-creating MEV transactions, which can stabilize markets or enhance efficiency. This distinction provides clarity on the dual nature of MEV activities and lays the foundation for discussions on mitigation and detection strategies. We present a critical comparative analysis of the various MEV detection approaches proposed for different types of MEV transactions, highlighting their effectiveness in identifying these transaction types. We provide an in-depth analysis of various MEV mitigation strategies, such as transaction ordering solutions, privacy-preserving public pools, and private pools. By identifying the specific limitations of these strategies, we offer a critical assessment of their real-world applicability and potential areas for improvement. We explore existing MEV simulation frameworks and extraction methods, offering a comprehensive overview of how these tools model and replicate real-world MEV scenarios. We critically examine the major challenges in MEV mitigation and detection, such as centralization, latency, layer-2 MEV, and multi-address MEV. Furthermore, we discuss potential solutions paving the way for a more secure and efficient DeFi system. The remainder of this article is organized as follows. Section 2 provides essential background on Ethereum, DEXes, and MEV, enabling readers to gain a clearer understanding of the key concepts. Section 3 reviews existing related surveys on MEV, highlighting gaps in the literature. In Section 4, we describe the methodology used to conduct this survey. Section 5 introduces and synthesizes the proposed taxonomy of MEV transactions. Sections 6 and 7 focus on MEV detection approaches and mitigation strategies, respectively. Section 8 explores MEV simulation and extraction methods. Section 9 addresses the challenges associated with MEV mitigation and detection, along with potential solutions. Finally, Section 10 concludes the survey."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A taxonomy for decentralized finance",
+      "abstract": "",
+      "year": "2024",
+      "venue": "International Review of Financial Analysis",
+      "authors": "T. Puschmann and M. Huang-Sui"
+    },
+    {
+      "index": 1,
+      "title": "Sok: Decentralized exchanges (dex) with automated market maker (amm) protocols",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM Computing Surveys",
+      "authors": "J. Xu, K. Paruch, S. Cousaert, and Y. Feng"
+    },
+    {
+      "index": 2,
+      "title": "Frontrunner Jones and the Raiders of the Dark Forest: An Empirical Study of Frontrunning on the Ethereum Blockchain",
+      "abstract": "",
+      "year": "2021",
+      "venue": "30th USENIX Security Symposium (USENIX Security 21)",
+      "authors": "C. F. Torres, R. Camino et al.",
+      "orig_title": "Frontrunner jones and the raiders of the dark forest: An empirical study of frontrunning on the ethereum blockchain",
+      "paper_id": "2102.03347v2"
+    },
+    {
+      "index": 3,
+      "title": "An event study of the ethereum transition to proof-of-stake",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Commodities",
+      "authors": "E. Kapengut and B. Mizrach"
+    },
+    {
+      "index": 4,
+      "title": "Maximal extractable value and the blockchain commons",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Available at SSRN 4198139",
+      "authors": "P. Poux, P. De Filippi, and B. Deffains"
+    },
+    {
+      "index": 5,
+      "title": "Blockchains, mev and the knapsack problem: a primer",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "V. Mohan and P. Khezr"
+    },
+    {
+      "index": 6,
+      "title": "A Survey of DeFi Security: Challenges and Opportunities",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Journal of King Saud University-Computer and Information Sciences",
+      "authors": "W. Li, J. Bu, X. Li, H. Peng, Y. Niu, and Y. Zhang",
+      "orig_title": "A survey of defi security: Challenges and opportunities",
+      "paper_id": "2206.11821v3"
+    },
+    {
+      "index": 7,
+      "title": "Maximal extractable value mitigation approaches in ethereum and layer-2 chains: A comprehensive survey",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "Z. Alipanahloo, A. S. Hafid, and K. Zhang"
+    },
+    {
+      "index": 8,
+      "title": "MEV Ecosystem Evolution From Ethereum 1.0",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "Rasheed, Y. Chaurasia, P. Desai, and S. Gujar",
+      "orig_title": "Mev ecosystem evolution from ethereum 1.0",
+      "paper_id": "2406.13585v1"
+    },
+    {
+      "index": 9,
+      "title": "Ethreview: An ethereum-based product review system for mitigating rating frauds",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Computers & Security",
+      "authors": "M. Zulfiqar, F. Tariq, M. U. Janjua, A. N. Mian, A. Qayyum, J. Qadir, F. Sher, and M. Hassan"
+    },
+    {
+      "index": 10,
+      "title": "Flash boys 2.0: Frontrunning in decentralized exchanges, miner extractable value, and consensus instability",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE symposium on security and privacy (SP)",
+      "authors": "P. Daian, S. Goldfeder, T. Kell, Y. Li, X. Zhao, I. Bentov, L. Breidenbach, and A. Juels"
+    },
+    {
+      "index": 11,
+      "title": "Transaction fee mechanism design for the ethereum blockchain: An economic analysis of eip-1559",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2012.00854",
+      "authors": "T. Roughgarden"
+    },
+    {
+      "index": 12,
+      "title": "Ransomware activity and blockchain congestion",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Journal of Financial Economics",
+      "authors": "K. Sokolov"
+    },
+    {
+      "index": 13,
+      "title": "Trading and arbitrage in cryptocurrency markets",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Financial Economics",
+      "authors": "I. Makarov and A. Schoar"
+    },
+    {
+      "index": 14,
+      "title": "Quantifying blockchain extractable value: How dark is the forest?",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Symposium on Security and Privacy (SP)",
+      "authors": "K. Qin, L. Zhou, and A. Gervais"
+    },
+    {
+      "index": 15,
+      "title": "Estimating (miner) extractable value is hard, let’s go shopping!",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Financial Cryptography and Data Security",
+      "authors": "A. Judmayer, N. Stifter, P. Schindler, and E. Weippl"
+    },
+    {
+      "index": 16,
+      "title": "The prisma 2020 statement: an updated guideline for reporting systematic reviews",
+      "abstract": "",
+      "year": "2021",
+      "venue": "bmj",
+      "authors": "M. J. Page, J. E. McKenzie, P. M. Bossuyt, I. Boutron, T. C. Hoffmann, C. D. Mulrow, L. Shamseer, J. M. Tetzlaff, E. A. Akl, S. E. Brennan et al."
+    },
+    {
+      "index": 17,
+      "title": "Fairblock: Preventing blockchain front-running with minimal overheads",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Security and Privacy in Communication Systems",
+      "authors": "P. Momeni, S. Gorbunov, and B. Zhang"
+    },
+    {
+      "index": 18,
+      "title": "Cryptography versus incentives",
+      "abstract": "",
+      "year": "2023",
+      "venue": "The Economics of Blockchain Consensus: Exploring the Key Tradeoffs in Blockchain Design",
+      "authors": "J. Gans"
+    },
+    {
+      "index": 19,
+      "title": "Unraveling the MEV Enigma: ABI-Free Detection Model using Graph Neural Networks",
+      "abstract": "",
+      "year": "2024",
+      "venue": "Future Generation Computer Systems",
+      "authors": "S. Park, W. Jeong, Y. Lee, B. Son, H. Jang, and J. Lee",
+      "orig_title": "Unraveling the mev enigma: Abi-free detection model using graph neural networks",
+      "paper_id": "2305.05952v1"
+    },
+    {
+      "index": 20,
+      "title": "Demystifying defi mev activities in flashbots bundle",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "Z. Li, J. Li, Z. He, X. Luo, T. Wang, X. Ni, W. Yang, X. Chen, and T. Chen"
+    },
+    {
+      "index": 21,
+      "title": "Maximizing extractable value from automated market makers",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Financial Cryptography and Data Security",
+      "authors": "M. Bartoletti, J. H.-y. Chiang, and A. Lluch Lafuente"
+    },
+    {
+      "index": 22,
+      "title": "Remeasuring the Arbitrage and Sandwich Attacks of Maximal Extractable Value in Ethereum",
+      "abstract": "",
+      "year": "2024",
+      "venue": "",
+      "authors": "T. Chi, N. He, X. Hu, and H. Wang",
+      "orig_title": "Remeasuring the arbitrage and sandwich attacks of maximal extractable value in ethereum",
+      "paper_id": "2405.17944v2"
+    },
+    {
+      "index": 23,
+      "title": "n-mvtl attack: Optimal transaction reordering attack on defi",
+      "abstract": "",
+      "year": "2023",
+      "venue": "European Symposium on Research in Computer Security",
+      "authors": "J. Wang, J. Li, Z. Li, X. Deng, and B. Xiao"
+    },
+    {
+      "index": 24,
+      "title": "Demystifying just-in-time (jit) liquidity attacks on uniswap v3",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Conference on Blockchain Research & Applications for Innovative Networks and Services (BRAINS)",
+      "authors": "X. Xiong, Z. Wang, W. Knottenbelt, and M. Huth"
+    },
+    {
+      "index": 25,
+      "title": "Routing mev in constant function market makers",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Web and Internet Economics",
+      "authors": "K. Kulkarni, T. Diamandis, and T. Chitra"
+    },
+    {
+      "index": 26,
+      "title": "Cyclic Arbitrage in Decentralized Exchanges",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Companion Proceedings of the Web Conference 2022",
+      "authors": "Y. Wang, Y. Chen, H. Wu, L. Zhou, S. Deng, and R. Wattenhofer",
+      "orig_title": "Cyclic arbitrage in decentralized exchanges",
+      "paper_id": "2105.02784v3"
+    },
+    {
+      "index": 27,
+      "title": "A flash (bot) in the pan: measuring maximal extractable value in private pools",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Internet Measurement Conference",
+      "authors": "B. Weintraub, C. F. Torres, C. Nita-Rotaru, and R. State"
+    },
+    {
+      "index": 28,
+      "title": "Twap oracle attacks: Easier done than said?",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE International Conference on Blockchain and Cryptocurrency (ICBC)",
+      "authors": "T. Mackinga, T. Nadahalli, and R. Wattenhofer"
+    },
+    {
+      "index": 29,
+      "title": "Mitigating frontrunning attacks in ethereum",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM International Symposium on Blockchain and Secure Critical Infrastructure",
+      "authors": "M. Varun, B. Palanisamy, and S. Sural"
+    },
+    {
+      "index": 30,
+      "title": "DeFiRanger: Detecting Price Manipulation Attacks on DeFi Applications",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "S. Wu, D. Wang, J. He, Y. Zhou, L. Wu, X. Yuan, Q. He, and K. Ren",
+      "orig_title": "Defiranger: Detecting price manipulation attacks on defi applications",
+      "paper_id": "2104.15068v1"
+    },
+    {
+      "index": 31,
+      "title": "Fairness Notions in DAG-based DLTs",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Conference on Blockchain Research & Applications for Innovative Networks and Services (BRAINS)",
+      "authors": "M. Raikwar, N. Polyanskii, and S. Müller",
+      "orig_title": "Fairness notions in dag-based dlts",
+      "paper_id": "2308.04831v2"
+    },
+    {
+      "index": 32,
+      "title": "Buying time: Latency racing vs. bidding for transaction ordering",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Conference on Advances in Financial Technologies (AFT 2023)",
+      "authors": "A. Mamageishvili, M. Kelkar, J. C. Schlegel, and E. W. Felten"
+    },
+    {
+      "index": 33,
+      "title": "Q-rtop: Quantum-secure random transaction ordering protocol for mitigating maximal extractable value attacks in blockchains with a priority gas-fee policy",
+      "abstract": "",
+      "year": "2024",
+      "venue": "IEEE Access",
+      "authors": "N. K. Sinai and H. I. Peter"
+    },
+    {
+      "index": 34,
+      "title": "Incentive mechanism design for mitigating frontrunning and transaction reordering in decentralized exchanges",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Access",
+      "authors": "D. M. Doe, J. Li, N. Dusit, L. Wang, and Z. Han"
+    },
+    {
+      "index": 35,
+      "title": "Fairmm: A fast and frontrunning-resistant crypto market-maker",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Symposium on Cyber Security, Cryptology, and Machine Learning",
+      "authors": "M. Ciampi, M. Ishaq, M. Magdon-Ismail, R. Ostrovsky, and V. Zikas"
+    },
+    {
+      "index": 36,
+      "title": "Lissy: Experimenting with on-chain order books",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Financial Cryptography and Data Security",
+      "authors": "M. Moosavi and J. Clark",
+      "orig_title": "Lissy: Experimenting with on-chain order books",
+      "paper_id": "2101.06291v3"
+    },
+    {
+      "index": 37,
+      "title": "Wendy grows up: More order fairness",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Financial Cryptography and Data Security. FC 2021 International Workshops: CoDecFin, DeFi, VOTING, and WTSC",
+      "authors": "K. Kursawe"
+    },
+    {
+      "index": 38,
+      "title": "A survey of intel sgx and its applications",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Frontiers of Computer Science",
+      "authors": "W. Zheng, Y. Wu, X. Wu, C. Feng, Y. Sui, X. Luo, and Y. Zhou"
+    },
+    {
+      "index": 39,
+      "title": "Demystifying arm trustzone: A comprehensive survey",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM computing surveys (CSUR)",
+      "authors": "S. Pinto and N. Santos"
+    },
+    {
+      "index": 40,
+      "title": "Universal composable transaction serialization with order fairness",
+      "abstract": "",
+      "year": "2024",
+      "venue": "Annual International Cryptology Conference",
+      "authors": "M. Ciampi, A. Kiayias, and Y. Shen"
+    },
+    {
+      "index": 41,
+      "title": "Order-fairness for byzantine consensus",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Cryptology–CRYPTO 2020: 40th Annual International Cryptology Conference, CRYPTO 2020, Santa Barbara, CA, USA, August 17–21, 2020, Proceedings, Part III",
+      "authors": "M. Kelkar, F. Zhang, S. Goldfeder, and A. Juels"
+    },
+    {
+      "index": 42,
+      "title": "The judgment of solomon: global protections for tradition and the problem of community ownership",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Cultural Analysis",
+      "authors": "D. Noyes"
+    },
+    {
+      "index": 43,
+      "title": "Blindperm: Efficient mev mitigation with an encrypted mempool and permutation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Cryptology ePrint Archive",
+      "authors": "A. Kavousi, D. V. Le, P. Jovanovic, and G. Danezis"
+    },
+    {
+      "index": 44,
+      "title": "Mevade: An mev-resistant blockchain design",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE International Conference on Blockchain and Cryptocurrency (ICBC)",
+      "authors": "J. Piet, V. Nair, and S. Subramanian"
+    },
+    {
+      "index": 45,
+      "title": "Revisiting transaction ledger robustness in the miner extractable value era",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Applied Cryptography and Network Security",
+      "authors": "F. Kamphuis, B. Magri, R. Lamberty, and S. Faust"
+    },
+    {
+      "index": 46,
+      "title": "First-price sealed-bid auction for ethereum gas auction under flashbots",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE International Conference on Metaverse Computing, Networking and Applications (MetaCom)",
+      "authors": "C. Jin, T. Wang, Z. Wang, L. Shi, and S. Zhang"
+    },
+    {
+      "index": 47,
+      "title": "The mev saga: Can regulation illuminate the dark forest?",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Advanced Information Systems Engineering",
+      "authors": "S. Ramos and J. Ellul"
+    },
+    {
+      "index": 48,
+      "title": "Dissecting Bitcoin and Ethereum Transactions: On the Lack of Transaction Contention and Prioritization Transparency in Blockchains",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Financial Cryptography and Data Security",
+      "authors": "J. Messias, V. Pahari, B. Chandrasekaran, K. P. Gummadi, and P. Loiseau",
+      "orig_title": "Dissecting bitcoin and ethereum transactions: On the lack of transaction contention and prioritization transparency in blockchains",
+      "paper_id": "2302.06962v2"
+    },
+    {
+      "index": 49,
+      "title": "Lanturn: Measuring economic security of smart contracts through adaptive learning",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "K. Babel, M. Javaheripi, Y. Ji, M. Kelkar, F. Koushanfar, and A. Juels"
+    },
+    {
+      "index": 50,
+      "title": "Simulation of front-running attacks and privacy mitigations in ethereum blockchain",
+      "abstract": "",
+      "year": "2022",
+      "venue": "European Modeling and Simulation Symposium, EMSS",
+      "authors": "Z. Stucke, T. Constantinides, and J. Cartlidge"
+    },
+    {
+      "index": 51,
+      "title": "Time is Money: Strategic Timing Games in Proof-of-Stake Protocols",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Conference on Advances in Financial Technologies",
+      "authors": "C. Schwarz-Schilling, F. Saleh, T. Thiery, J. Pan, N. Shah, and B. Monnot",
+      "orig_title": "Time is money: Strategic timing games in proof-of-stake protocols",
+      "paper_id": "2305.09032v1"
+    },
+    {
+      "index": 52,
+      "title": "Time Moves Faster When There is Nothing You Anticipate: The Role of Time in MEV Rewards",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Workshop on Decentralized Finance and Security",
+      "authors": "B. Öz, B. Kraner, N. Vallarano, B. S. Kruger, F. Matthes, and C. J. Tessone",
+      "orig_title": "Time moves faster when there is nothing you anticipate: The role of time in mev rewards",
+      "paper_id": "2307.05814v1"
+    },
+    {
+      "index": 53,
+      "title": "Strategic peer selection using transaction value and latency",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM CCS Workshop on Decentralized Finance and Security",
+      "authors": "K. Babel and L. Baker"
+    },
+    {
+      "index": 54,
+      "title": "On the Just-In-Time Discovery of Profit-Generating Transactions in DeFi Protocols",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Symposium on Security and Privacy (SP)",
+      "authors": "L. Zhou, K. Qin, A. Cully, B. Livshits, and A. Gervais",
+      "orig_title": "On the just-in-time discovery of profit-generating transactions in defi protocols",
+      "paper_id": "2103.02228v1"
+    },
+    {
+      "index": 55,
+      "title": "Towards quantifying cross-domain maximal extractable value for blockchain decentralisation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Conference on Information and Communications Security",
+      "authors": "J. H. Sjursen, W. Meng, and W.-Y. Chiu"
+    }
+  ]
+}

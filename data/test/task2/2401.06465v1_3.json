@@ -1,0 +1,489 @@
+{
+  "paper_id": "2401.06465v1",
+  "title": "Sanity Checks Revisited: An Exploration to Repair the Model Parameter Randomisation Test",
+  "sections": {
+    "methodological caveats": "In the following, we summarise the concerns that have been raised about various methodological aspects of\nMPRT, specifically its choice of (a) pre-processing, (b) layer-order and (c) similarity measure. For each issue, we put forward a\nsolution. (a) Pre-processing. In the original formulation of MPRT [ref]15, the explanations 𝒆𝒆{\\bm{e}} and 𝒆^^𝒆\\hat{{\\bm{e}}} are normalised using their minimum and maximum values. This is problematic as these statistics are highly variable and almost arbitrary across attributions, complicating meaningful comparison across randomisations [ref]20. Taking absolute attribution values may erase meaningful information [ref]17—a caveat already addressed by the seminal work [ref]15. (Proposed Solution) To maintain the original scale and distribution of the explanation, we recommend normalising 𝐞𝐞{\\bm{e}} by the square root of the average second-moment estimate [ref]20 (see Equation 5 in Supplement) which does not constrain attributions to a fixed range and enhances comparability across methods and randomisations [ref]20. (b) Layer-order. While one might intuitively expect a significant difference in the explanation output upon top-layer randomisation, i.e., ρ​(𝒆,𝒆^)≪1much-less-than𝜌𝒆^𝒆1\\rho({\\bm{e}},\\hat{{\\bm{e}}})\\ll 1 with f^ltsubscriptsuperscript^𝑓𝑡𝑙\\hat{f}^{t}_{l} up to layer l∈[L,L−1,…,1]𝑙𝐿𝐿1…1l\\in[L,L-1,\\ldots,1]; [ref]20 provides evidence to the contrary. As discussed in-depth in the original publication [ref]20, top-down randomisation induces only modest alterations in the forward pass where (i) irrelevant features from lower, non-randomised layers persist in higher, randomised layers, (ii) high activations in lower layers are relatively likely to continue to dominate the network’s response and (iii) architectures with skip connections, e.g., ResNets  maintain a baseline explanation that stays constant even after randomisation, preserving certain features.\nAs such, only a limited degree of change between 𝒆𝒆{\\bm{e}} and 𝒆^^𝒆\\hat{{\\bm{e}}} can be expected from faithful explanation methods post-model randomisation.\n(Proposed Solution) To avoid preserving information in the forward pass, it is advisable to perform bottom-up randomisation (as further discussed in the Supplement 6.2)\nor perform the comparison of explanations only after full randomisation (see Equation 3. (c) Similarity Measures. Another shortcoming identified by [ref]20 is the property of SSIM and other pairwise similarity measures, e.g., Spearman Rank Correlation, to be minimised by statistically uncorrelated random processes. This is problematic since it implies that certain explanation methods with more intrinsic (shattering) noise, e.g., gradient-based methods, will be favoured in ranking comparisons, ultimately biasing evaluation outcomes. (Proposed Solution) While no solution has been proposed to date, we put forward the sMPRT and eMPRT modifications which separately addresses the issues by denoising attributions as a pre-processing step and replacing the pairwise similarity measure with a complexity measure, respectively."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Do backpropagation trained neural networks have normal weight distributions?",
+      "abstract": "",
+      "year": "1993",
+      "venue": "ICANN ’93",
+      "authors": "I. Bellido and E. Fiesler"
+    },
+    {
+      "index": 1,
+      "title": "Framework for Evaluating Faithfulness of Local Explanations",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "S. Dasgupta, N. Frost, and M. Moshkovitz",
+      "orig_title": "Framework for evaluating faithfulness of local explanations",
+      "paper_id": "2202.00734v1"
+    },
+    {
+      "index": 2,
+      "title": "Quantus: An Explainable AI Toolkit for Responsible Evaluation of Neural Network Explanations and Beyond",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "A. Hedström, L. Weber, D. Krakowczyk, D. Bareeva, F. Motzkus, W. Samek, S. Lapuschkin, and M. M.-C. Höhne",
+      "orig_title": "Quantus: An explainable ai toolkit for responsible evaluation of neural network explanations and beyond",
+      "paper_id": "2202.06861v3"
+    },
+    {
+      "index": 3,
+      "title": "Methods for interpreting and understanding deep neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Digit. Signal Process.",
+      "authors": "G. Montavon, W. Samek, and K. Müller"
+    },
+    {
+      "index": 4,
+      "title": "Towards Robust Interpretability with Self-Explaining Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems 31",
+      "authors": "D. Alvarez-Melis and T. S. Jaakkola",
+      "orig_title": "Towards robust interpretability with self-explaining neural networks",
+      "paper_id": "1806.07538v2"
+    },
+    {
+      "index": 5,
+      "title": "On the (In)fidelity and Sensitivity of Explanations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems 32",
+      "authors": "C. Yeh, C. Hsieh, A. S. Suggala, D. I. Inouye, and P. Ravikumar",
+      "orig_title": "On the (in)fidelity and sensitivity of explanations",
+      "paper_id": "1901.09392v4"
+    },
+    {
+      "index": 6,
+      "title": "Evaluating and Aggregating Feature-based Model Explanations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Joint Conference on Artificial Intelligence, IJCAI 2020",
+      "authors": "U. Bhatt, A. Weller, and J. M. F. Moura",
+      "orig_title": "Evaluating and aggregating feature-based model explanations",
+      "paper_id": "2005.00631v1"
+    },
+    {
+      "index": 7,
+      "title": "Rethinking Stability for Attribution-based Explanations",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CoRR",
+      "authors": "C. Agarwal, N. Johnson, M. Pawelczyk, S. Krishna, E. Saxena, M. Zitnik, and H. Lakkaraju",
+      "orig_title": "Rethinking stability for attribution-based explanations",
+      "paper_id": "2203.06877v1"
+    },
+    {
+      "index": 8,
+      "title": "On quantitative aspects of model interpretability",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "A. Nguyen and M. R. Martinez",
+      "orig_title": "On quantitative aspects of model interpretability",
+      "paper_id": "2007.07584v1"
+    },
+    {
+      "index": 9,
+      "title": "On pixel-wise explanations for non-linear classifier decisions by layer-wise relevance propagation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PloS one",
+      "authors": "S. Bach, A. Binder, G. Montavon, F. Klauschen, K.-R. Müller, and W. Samek"
+    },
+    {
+      "index": 10,
+      "title": "Evaluating the visualization of what a Deep Neural Network has learned",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "W. Samek, A. Binder, G. Montavon, S. Lapuschkin, and K. Müller",
+      "orig_title": "Evaluating the visualization of what a deep neural network has learned",
+      "paper_id": "1509.06321v1"
+    },
+    {
+      "index": 11,
+      "title": "Towards better understanding of gradient-based attribution methods for Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations, ICLR 2018",
+      "authors": "M. Ancona, E. Ceolini, C. Öztireli, and M. Gross",
+      "orig_title": "Towards better understanding of gradient-based attribution methods for deep neural networks",
+      "paper_id": "1711.06104v4"
+    },
+    {
+      "index": 12,
+      "title": "IROF: a low resource evaluation metric for explanation methods",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "L. Rieger and L. K. Hansen",
+      "orig_title": "IROF: a low resource evaluation metric for explanation methods",
+      "paper_id": "2003.08747v1"
+    },
+    {
+      "index": 13,
+      "title": "A Consistent and Efficient Evaluation Strategy for Attribution Methods",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning, ICML 2022",
+      "authors": "Y. Rong, T. Leemann, V. Borisov, G. Kasneci, and E. Kasneci",
+      "orig_title": "A consistent and efficient evaluation strategy for attribution methods",
+      "paper_id": "2202.00449v2"
+    },
+    {
+      "index": 14,
+      "title": "Sanity checks for saliency maps",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems 31",
+      "authors": "J. Adebayo, J. Gilmer, M. Muelly, I. J. Goodfellow, M. Hardt, and B. Kim"
+    },
+    {
+      "index": 15,
+      "title": "When Explanations Lie: Why Many Modified BP Attributions Fail",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning, ICML 2020",
+      "authors": "L. Sixt, M. Granz, and T. Landgraf",
+      "orig_title": "When explanations lie: Why many modified BP attributions fail",
+      "paper_id": "1912.09818v7"
+    },
+    {
+      "index": 16,
+      "title": "A Note about: Local Explanation Methods for Deep Neural Networks Lack Sensitivity to Parameter Values",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "M. Sundararajan and A. Taly",
+      "orig_title": "A note about: Local explanation methods for deep neural networks lack sensitivity to parameter values",
+      "paper_id": "1806.04205v1"
+    },
+    {
+      "index": 17,
+      "title": "Investigating Sanity Checks for Saliency Maps with Image and Text Classification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "N. Kokhlikyan, V. Miglani, B. Alsallakh, M. Martin, and O. Reblitz-Richardson",
+      "orig_title": "Investigating sanity checks for saliency maps with image and text classification",
+      "paper_id": "2106.07475v1"
+    },
+    {
+      "index": 18,
+      "title": "Revisiting Sanity Checks for Saliency Maps",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "G. Yona and D. Greenfeld",
+      "orig_title": "Revisiting sanity checks for saliency maps",
+      "paper_id": "2110.14297v1"
+    },
+    {
+      "index": 19,
+      "title": "Shortcomings of Top-Down Randomization-Based Sanity Checks for Evaluations of Deep Neural Network Explanations",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2023",
+      "authors": "A. Binder, L. Weber, S. Lapuschkin, G. Montavon, K. Müller, and W. Samek",
+      "orig_title": "Shortcomings of top-down randomization-based sanity checks for evaluations of deep neural network explanations",
+      "paper_id": "2211.12486v1"
+    },
+    {
+      "index": 20,
+      "title": "SmoothGrad: removing noise by adding noise",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "D. Smilkov, N. Thorat, B. Kim, F. B. Viégas, and M. Wattenberg",
+      "orig_title": "Smoothgrad: removing noise by adding noise",
+      "paper_id": "1706.03825v1"
+    },
+    {
+      "index": 21,
+      "title": "Visualizing and understanding convolutional networks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computer Vision - ECCV 2014",
+      "authors": "M. D. Zeiler and R. Fergus"
+    },
+    {
+      "index": 22,
+      "title": "Axiomatic attribution for deep networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning, ICML 2017",
+      "authors": "M. Sundararajan, A. Taly, and Q. Yan"
+    },
+    {
+      "index": 23,
+      "title": "Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Journal of Computer Vision",
+      "authors": "R. R. Selvaraju, M. Cogswell, A. Das, R. Vedantam, D. Parikh, and D. Batra",
+      "orig_title": "Grad-cam: Visual explanations from deep networks via gradient-based localization",
+      "paper_id": "1610.02391v4"
+    },
+    {
+      "index": 24,
+      "title": "NoiseGrad — Enhancing Explanations by Introducing Stochasticity to Model Weights",
+      "abstract": "",
+      "year": "2022",
+      "venue": "AAAI Conference on Artificial Intelligence, AAAI 2022",
+      "authors": "K. Bykov, A. Hedström, S. Nakajima, and M. M. Höhne",
+      "orig_title": "Noisegrad - enhancing explanations by introducing stochasticity to model weights",
+      "paper_id": "2106.10185v3"
+    },
+    {
+      "index": 25,
+      "title": "Are artificial neural networks black boxes?",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "J. M. Benitez, J. L. Castro, and I. Requena"
+    },
+    {
+      "index": 26,
+      "title": "The Meta-Evaluation Problem in Explainable AI: Identifying Reliable Estimators with MetaQuantus",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Transactions on Machine Learning Research",
+      "authors": "A. Hedström, P. Bommer, K. K. Wickstrøm, W. Samek, S. Lapuschkin, and M. M. C. Höhne",
+      "orig_title": "The meta-evaluation problem in explainable ai: Identifying reliable estimators with metaquantus",
+      "paper_id": "2302.07265v2"
+    },
+    {
+      "index": 27,
+      "title": "Concise Explanations of Neural Networks using Adversarial Training",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning, ICML 2020",
+      "authors": "P. Chalasani, J. Chen, A. R. Chowdhury, X. Wu, and S. Jha",
+      "orig_title": "Concise explanations of neural networks using adversarial training",
+      "paper_id": "1810.06583v9"
+    },
+    {
+      "index": 28,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2016",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 29,
+      "title": "Which Explanation Should I Choose? A Function Approximation Perspective to Characterizing Post Hoc Explanations",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "T. Han, S. Srinivas, and H. Lakkaraju",
+      "orig_title": "Which explanation should I choose? A function approximation perspective to characterizing post hoc explanations",
+      "paper_id": "2206.01254v3"
+    },
+    {
+      "index": 30,
+      "title": "Finding the right XAI method — A Guide for the Evaluation and Ranking of Explainable AI Methods in Climate Science",
+      "abstract": "",
+      "year": "2023",
+      "venue": "CoRR",
+      "authors": "P. Bommer, M. Kretschmer, A. Hedström, D. Bareeva, and M. M. Höhne",
+      "orig_title": "Finding the right XAI method - A guide for the evaluation and ranking of explainable AI methods in climate science",
+      "paper_id": "2303.00652v2"
+    },
+    {
+      "index": 31,
+      "title": "A mathematical theory of communication",
+      "abstract": "",
+      "year": "1948",
+      "venue": "Bell Syst. Tech. J.",
+      "authors": "C. E. Shannon"
+    },
+    {
+      "index": 32,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Learning Representations, ICLR 2015",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 33,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Journal of Computer Vision",
+      "authors": "O. Russakovsky, J. Deng, H. Su, J. Krause, S. Satheesh, S. Ma, Z. Huang, A. Karpathy, A. Khosla, M. S. Bernstein, A. C. Berg, and L. Fei-Fei",
+      "orig_title": "Imagenet large scale visual recognition challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 34,
+      "title": "Visualizing the impact of feature attribution baselines",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Distill",
+      "authors": "P. Sturmfels, S. Lundberg, and S.-I. Lee"
+    },
+    {
+      "index": 35,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems 32",
+      "authors": "A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, T. Killeen, Z. Lin, N. Gimelshein, L. Antiga, A. Desmaison, A. Kopf, E. Yang, Z. DeVito, M. Raison, A. Tejani, S. Chilamkurthy, B. Steiner, L. Fang, J. Bai, and S. Chintala",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 36,
+      "title": "Software for dataset-wide xai: From local explanations to global insights with Zennit, CoRelAy, and ViRelAy",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "C. J. Anders, D. Neumann, W. Samek, K.-R. Müller, and S. Lapuschkin"
+    },
+    {
+      "index": 37,
+      "title": "Captum: A unified and generic model interpretability library for PyTorch",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "N. Kokhlikyan, V. Miglani, M. Martin, E. Wang, B. Alsallakh, J. Reynolds, A. Melnikov, N. Kliushkina, C. Araya, S. Yan, and O. Reblitz-Richardson",
+      "orig_title": "Captum: A unified and generic model interpretability library for pytorch",
+      "paper_id": "2009.07896v1"
+    },
+    {
+      "index": 38,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Krizhevsky, I. Sutskever, and G. E. Hinton"
+    },
+    {
+      "index": 39,
+      "title": "Mnist handwritten digit database",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ATT Labs",
+      "authors": "Y. LeCun, C. Cortes, and C. Burges"
+    },
+    {
+      "index": 40,
+      "title": "Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning Algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "H. Xiao, K. Rasul, and R. Vollgraf",
+      "orig_title": "Fashion-mnist: a novel image dataset for benchmarking machine learning algorithms",
+      "paper_id": "1708.07747v2"
+    },
+    {
+      "index": 41,
+      "title": "Gradient-based learning applied to document recognition",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Proc. IEEE",
+      "authors": "Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner"
+    },
+    {
+      "index": 42,
+      "title": "Visualization of neural networks using saliency maps",
+      "abstract": "",
+      "year": "1995",
+      "venue": "International Conference on Neural Networks (ICNN’95)",
+      "authors": "N. J. S. Morch, U. Kjems, L. K. Hansen, C. Svarer, I. Law, B. Lautrup, S. C. Strother, and K. Rehm"
+    },
+    {
+      "index": 43,
+      "title": "How to explain individual classification decisions",
+      "abstract": "",
+      "year": "2010",
+      "venue": "J. Mach. Learn. Res.",
+      "authors": "D. Baehrens, T. Schroeter, S. Harmeling, M. Kawanabe, K. Hansen, and K. Müller"
+    },
+    {
+      "index": 44,
+      "title": "Deep inside convolutional networks: Visualising image classification models and saliency maps",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conference on Learning Representations, ICLR 2014",
+      "authors": "K. Simonyan, A. Vedaldi, and A. Zisserman"
+    },
+    {
+      "index": 45,
+      "title": "Not just a black box: Learning important features through propagating activation differences",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "A. Shrikumar, P. Greenside, A. Shcherbina, and A. Kundaje"
+    },
+    {
+      "index": 46,
+      "title": "A Unified Approach to Interpreting Model Predictions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems 30",
+      "authors": "S. M. Lundberg and S. Lee",
+      "orig_title": "A unified approach to interpreting model predictions",
+      "paper_id": "1705.07874v2"
+    },
+    {
+      "index": 47,
+      "title": "Striving for Simplicity: The All Convolutional Net",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR (workshop track)",
+      "authors": "J. Springenberg, A. Dosovitskiy, T. Brox, and M. Riedmiller",
+      "orig_title": "Striving for simplicity: The all convolutional net",
+      "paper_id": "1412.6806v3"
+    },
+    {
+      "index": 48,
+      "title": "Explaining NonLinear Classification Decisions with Deep Taylor Decomposition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Pattern Recognit.",
+      "authors": "G. Montavon, S. Lapuschkin, A. Binder, W. Samek, and K. Müller",
+      "orig_title": "Explaining nonlinear classification decisions with deep taylor decomposition",
+      "paper_id": "1512.02479v1"
+    },
+    {
+      "index": 49,
+      "title": "Understanding SSIM",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "J. Nilsson and T. Akenine-Möller"
+    },
+    {
+      "index": 50,
+      "title": "On the histogram as a density estimator: L2 theory",
+      "abstract": "",
+      "year": "1981",
+      "venue": "Z. Wahrscheinlichkeitstheorie verw Gebiete",
+      "authors": "D. Freedman and P. Diaconis"
+    },
+    {
+      "index": 51,
+      "title": "On optimal and data-based histograms",
+      "abstract": "",
+      "year": "1979",
+      "venue": "Biometrika",
+      "authors": "D. W. Scott"
+    }
+  ]
+}

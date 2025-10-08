@@ -1,0 +1,535 @@
+{
+  "paper_id": "2010.04363v3",
+  "title": "Refining Semantic Segmentation with Superpixels using Transparent Initialization and Sparse Encoder",
+  "sections": {
+    "introduction": "Semantic segmentation is an essential task in computer\nvision which requires mapping image pixels of interesting objects to predefined semantic labels.\nApplications include autonomous driving\n, object identification  ,\nimage editing , and scene\nanalysis .\nRecent developments of semantic segmentation are greatly promoted by deep\nlearning on several large-scale datasets  , resulting in effective networks    [ref]8    .\nSemantic segmentation obtained by these methods, however, is not substantially\naligned with object edges. This problem can be alleviated by using qualified edge-preserving\nmethods [ref]28  [ref]8\nor independently learning edges for semantic segmentation\n  .\nNevertheless, those edges are usually incomplete and oversegmented.\nTo solve this problem, denseCRF [ref]28 based methods\naggregate object features over a large and dense range using bilateral\nfilters with high-dimensional lattice computations.\nThis, however, could be more efficient and desirable to learn on locally oversegmented\nareas, such as superpixels that aggregate similar pixels into a higher-order\nclique  . Existing superpixel segmentation approaches are mainly categorized into\ntraditional methods, such as SLIC , LSC ,\nCrisp , BASS , and those\nusing neural networks, such as SSN ,\naffinity loss , and superpixels by FCN [ref]52.\nAlthough those traditional methods have qualified performance on superpixel\nsegmentation, they cannot be easily embedded into neural networks for\nend-to-end learning due to nondifferentiability or large\ncomputational complexity.\nIn contrast,  provides an end-to-end learning for\nsuperpixel semantic segmentation, but the pixel labels in each superpixel are not always consistent.\nSimilarly, [ref]52 uses a fully convolutional network to learn\nsuperpixels for stereo matching, which is the\ncurrent state-of-the-art in superpixel learning.\nHowever, the problem of inconsistent pixel labels in each superpixel will also occur when [ref]52 is applied\nto semantic segmentation. To deal with the problems of edge loss and inconsistent superpixel labelling,\nwe jointly train\nthese networks with additional fully-connected\nlayers using transparent initialization and logit consistency,\nresulting in enhanced object edges in Fig. 1.\nSpecifically, transparent initialization warm starts the training\nby recovering the pretrained network output from its input at initialization, followed by a\ngradual improvement in learning superpixels.\nSimultaneously, logit consistency with sparse encoder enables\nefficient logit averaging to guarantee consistent pixel labels in each superpixel.\nFurthermore, we used the popular performance ratio  and F-measure  5 to evaluate\nthe quality of semantic segmentation edges.\nOur code will be available upon publication.\nThe main contributions of this work are: We jointly learn the state-of-the-art semantic segmentation network and\nsuperpixel network to enhance the labelling performance with\nsharp object edges.\nThe improvement is vivid as demonstrated by evaluating on PASCAL VOC 2012,\nADE20K and PASCAL Context. Transparent initialization is proposed for learning fused features\nwhile adding fully-connected layers to pretrained networks.\nThis helps to join and fine-tune state-of-the-art networks without interrupting\nthe effect of pretrained network parameters.\nThe transparent initialization may also be adapted to fine-tune\nmultiple and deeper pretrained networks for other tasks. Logit consistency, implemented by a sparse encoder with sparse matrix\noperations, ensures consistent semantics for all\npixels in each superpixel.\nThis makes it feasible and efficient to index pixels\nby superpixels, because of greatly reduced computational complexity."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "SLIC superpixels compared to state-of-the-art superpixel methods",
+      "abstract": "",
+      "year": "2012",
+      "venue": "TPAMI",
+      "authors": "R. Achanta, A. Shaji, K. Smith, A. Lucchi, P. Fua, and S. Susstrunk"
+    },
+    {
+      "index": 1,
+      "title": "Superpixels and polygons using simple non-iterative clustering",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "R. Achanta and S. Susstrunk"
+    },
+    {
+      "index": 2,
+      "title": "Efficient Linear Programming for Dense CRFs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "T. Ajanthan, A. Desmaison, R. Rudy, M. Salzmann, P.H.S. Torr, and M.P. Kumar",
+      "orig_title": "Efficient linear programming for dense CRFs",
+      "paper_id": "1611.09718v2"
+    },
+    {
+      "index": 3,
+      "title": "Contour detection and hierarchical image segmentation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "TPAMI",
+      "authors": "P. Arbelaez, M. Maire, C. Fowlkes, and J. Malik"
+    },
+    {
+      "index": 4,
+      "title": "SegNet: A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "TPAMI",
+      "authors": "V. Badrinarayanan, A. Kendall, and R. Cipolla",
+      "orig_title": "SegNet: A deep convolutional encoder-decoder architecture for image segmentation",
+      "paper_id": "1511.00561v3"
+    },
+    {
+      "index": 5,
+      "title": "SEEDS: Superpixels extracted via energydriven sampling",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IJCV",
+      "authors": "M.V. Bergh, X. Boix, G. Roig, and L.V. Gool"
+    },
+    {
+      "index": 6,
+      "title": "Semantic Image Segmentation with Task-Specific Edge Detection Using CNNs and a Discriminatively Trained Domain Transform",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "L.C. Chen, J.T. Barron, G. Papandreou, K Murphy, and A.L. Yuille",
+      "orig_title": "Semantic image segmentation with task-specific edge detection using CNNs and a discriminatively trained domain transform",
+      "paper_id": "1511.03328v2"
+    },
+    {
+      "index": 7,
+      "title": "DeepLab: Semantic image segmentation with deep convolutional nets, atrous convolution,and fully connected CRFs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "TPAMI",
+      "authors": "L.C. Chen, G. Papandreou, I. Kokkinos, K. Murphy, and A.L. Yuille"
+    },
+    {
+      "index": 8,
+      "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "L. Chen, Y. Zhu, G. Papandreou, F. Schroff, and H. Adam",
+      "orig_title": "Encoder-decoder with atrous separable convolution for semantic image segmentation",
+      "paper_id": "1802.02611v3"
+    },
+    {
+      "index": 9,
+      "title": "Net2Net: Accelerating learning via knowledge transfer",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICLR",
+      "authors": "T. Chen, I. Goodfellow, and J. Shlens"
+    },
+    {
+      "index": 10,
+      "title": "𝐴²-Nets: Double Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "Y. Chen, Y. Kalantidis, J. Li, S. Yan, and J. Feng",
+      "orig_title": "A2-nets: Double attention networks",
+      "paper_id": "1810.11579v1"
+    },
+    {
+      "index": 11,
+      "title": "ImageNet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CVPR",
+      "authors": "J. Deng, W. Dong, R. Socher, L.J. Li, K. Li, and F. Li"
+    },
+    {
+      "index": 12,
+      "title": "The pascal visual object classes challenge a retrospective",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IJCV",
+      "authors": "M. Everingham, S.M.A. Eslami, L.V. Gool, C.K.I. Williams, J. Winn, and A. Zisserman"
+    },
+    {
+      "index": 13,
+      "title": "Deep Multi-modal Object Detection and Semantic Segmentation for Autonomous Driving: Datasets, Methods, and Challenges",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Intelligent Transportation systems",
+      "authors": "D. Feng, C.H. Schutz, L. Rosenbaum, H. Hertlein, C. Glaser, F. Tim, W. Wiesbeck, and K. Dietmayer",
+      "orig_title": "Deep multi-model object detection and semantic segmentation for autonomous driving: Datasets, methods, and challenges",
+      "paper_id": "1902.07830v4"
+    },
+    {
+      "index": 14,
+      "title": "Precision-recall-gain curves: Pr analysis done right",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NeurIPS",
+      "authors": "P.A. Flach and M. Kull"
+    },
+    {
+      "index": 15,
+      "title": "Dual attention network for scene segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "J. Fu, J. Liu, H. Tian, Y. Li, Y. Bao, Z. Fang, and H. Lu"
+    },
+    {
+      "index": 16,
+      "title": "Superpixel convolutional networks using bilateral inceptions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "R. Gadde, V. Jampani, M. Kiefel, D. Kappler, and P.V. Gehler"
+    },
+    {
+      "index": 17,
+      "title": "Understanding the difficulty of training deep feedforward neural networks",
+      "abstract": "",
+      "year": "2010",
+      "venue": "AISTATS",
+      "authors": "X. Glorot and Y. Bengio"
+    },
+    {
+      "index": 18,
+      "title": "Superpixel graph label transfer with learned distance metric",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "S. Gould, J. Zhao, X. He, and Y. Zhang"
+    },
+    {
+      "index": 19,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 20,
+      "title": "Visual scene understanding for autonomous driving using semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Explainable AI. LNCS",
+      "authors": "M. Hofmarcher, T. Unterthiner, J.A. Medina, G. Klambauer, S. Hochreiter, and B. Nessler"
+    },
+    {
+      "index": 21,
+      "title": "Learning Hierarchical Semantic Image Manipulation through Structured Representations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "S. Hong, X. Yan, T. Huang, and H. Lee",
+      "orig_title": "Learning hierarchical semantic image manipulation through structured representations",
+      "paper_id": "1808.07535v2"
+    },
+    {
+      "index": 22,
+      "title": "Densely connected convolutional networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "G. Huang, Z. Liu, L.V.D. Maaten, and K.Q. Weinberger"
+    },
+    {
+      "index": 23,
+      "title": "Crisp boundary detection using pointwise mutual information",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "P. Isola, D. Zoran, D. Krishnan, and E.H. Adelson"
+    },
+    {
+      "index": 24,
+      "title": "Superpixel Sampling Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "V. Jampani, D. Sun, M.Y. Liu, M.H. Yang, and J. Kautz",
+      "orig_title": "Superpixel sampling networks",
+      "paper_id": "1807.10174v1"
+    },
+    {
+      "index": 25,
+      "title": "Learning in graphical models",
+      "abstract": "",
+      "year": "1998",
+      "venue": "MIT Press",
+      "authors": "M. Jordan"
+    },
+    {
+      "index": 26,
+      "title": "A fuzzy set approach for edge detection",
+      "abstract": "",
+      "year": "2012",
+      "venue": "International Journal of Image Processing",
+      "authors": "P.A. Khaire and Dr.N.V. Thakur"
+    },
+    {
+      "index": 27,
+      "title": "Efficient inference in fully connected CRFs with Gaussian edge potentials",
+      "abstract": "",
+      "year": "2011",
+      "venue": "NeurIPS",
+      "authors": "P. Krahenbuhl and V. Koltun"
+    },
+    {
+      "index": 28,
+      "title": "Expectation-Maximization Attention Networks for Semantic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "X. Li, Z. Zhong, J. Wu, Y. Yang, Z. Lin, and H. Liu",
+      "orig_title": "Expectation-maximization attention networks for semantic segmentation",
+      "paper_id": "1907.13426v2"
+    },
+    {
+      "index": 29,
+      "title": "Superpixel segmentation using linear spectral clustering",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Z. Li and J. Chen"
+    },
+    {
+      "index": 30,
+      "title": "RefineNet: Multi-Path Refinement Networks for High-Resolution Semantic Segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "G. Lin, A. Milan, C. Shen, and I. Reid",
+      "orig_title": "RefineNet: Multi-path refinement networks for high resolution semantic segmentation",
+      "paper_id": "1611.06612v3"
+    },
+    {
+      "index": 31,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "T.Y. Lin, M. Maire, S. Belongie, L. Bourdev, R. Girshick, J. Hays, P. Perona, D. Ramanan, C.L. Zitnick, and P. Dollar",
+      "orig_title": "Microsoft COCO: Common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 32,
+      "title": "Manifold SLIC: A fast method to compute content-sensitive superpixels",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Y.J. Liu, C.C. Yu, M. Yu, and Y. He"
+    },
+    {
+      "index": 33,
+      "title": "Fully Convolutional Networks for Semantic Segmentation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "J. Long, E. Shelhamer, and T. Darrell",
+      "orig_title": "Fully convolutional networks for semantic segmentation",
+      "paper_id": "1605.06211v1"
+    },
+    {
+      "index": 34,
+      "title": "A database of human segmented natural images and its application to evaluating segmentation algorithms and measuring ecological statistics",
+      "abstract": "",
+      "year": "2001",
+      "venue": "ICCV",
+      "authors": "D. Martin, C. Fowlkes, D. Tal, and J. Malik"
+    },
+    {
+      "index": 35,
+      "title": "The role of context for object detection and semantic segmentation in the wild",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CVPR",
+      "authors": "R. Mottaghi, X. Chen, X. Liu, N.G. Cho, S.W. Lee, S. Fidler, R. Urtasun, and A. Yuille"
+    },
+    {
+      "index": 36,
+      "title": "Superpixel-based semantic segmentation trained by statistical process control",
+      "abstract": "",
+      "year": "2017",
+      "venue": "BMVC",
+      "authors": "H. Park, J. Jeong, Y. Yoo, and N. Kwak",
+      "orig_title": "Superpixel-based semantic segmentation rrained by statistical process control",
+      "paper_id": "1706.10071v2"
+    },
+    {
+      "index": 37,
+      "title": "Simultaneous object detectin and semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International conference on pattern recognition applications and methods (ICPRAM)",
+      "authors": "N.O. Salscheider"
+    },
+    {
+      "index": 38,
+      "title": "Object class segmentation using random forests",
+      "abstract": "",
+      "year": "2008",
+      "venue": "BMVC",
+      "authors": "F. Schroff, A. Criminisi, and A. Zisserman"
+    },
+    {
+      "index": 39,
+      "title": "Efficient semantic image segmentation with superpixel pooling",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1806.02705",
+      "authors": "M. Schuurmans, M. Berman, and M.B. Blaschko",
+      "orig_title": "Efficient semantic image segmentation with superpixel pooling",
+      "paper_id": "1806.02705v1"
+    },
+    {
+      "index": 40,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "K. Simonyan and A. Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 41,
+      "title": "Superpixels: An evaluation of the state-of-the-art",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Computer Vision and Image Understanding",
+      "authors": "D. Stutz, A. Hermans, and B. Leibe"
+    },
+    {
+      "index": 42,
+      "title": "Superpixels: An evaluation of the state-of-the-art",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVIU",
+      "authors": "D. Stutz, A. Hermans, and B. Leibe"
+    },
+    {
+      "index": 43,
+      "title": "On the importance of initialization and momentum in deep learning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ICML",
+      "authors": "I. Sutskever, J. Martens, G. Dahl, and G. Hinton"
+    },
+    {
+      "index": 44,
+      "title": "A Survey of Semantic Segmentation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv:1602.06541",
+      "authors": "M. Thoma",
+      "orig_title": "A survey of semantic segmentation",
+      "paper_id": "1602.06541v2"
+    },
+    {
+      "index": 45,
+      "title": "Learning superpixels with segmentation-aware affinity loss",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "W.C. Tu, M.Y. Liu, V. Jampani, D. Sun, S.Y. Chien, M.H. Yang, and J. Kautz"
+    },
+    {
+      "index": 46,
+      "title": "Bayesian adaptive superpixel segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "R. Uziel, M. Ronen, and O. Freifeld"
+    },
+    {
+      "index": 47,
+      "title": "Structure-sensitive superpixels via geodesic distance",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IJCV",
+      "authors": "P. Wang, G. Zeng, R. Gan, J. Wang, and H. Zha"
+    },
+    {
+      "index": 48,
+      "title": "Color image segmentation using pixel wise support vector machine classification",
+      "abstract": "",
+      "year": "2011",
+      "venue": "pattern recognition",
+      "authors": "X. Wang, T. Wang, and J. Bu"
+    },
+    {
+      "index": 49,
+      "title": "Weakly supervised semantic segmentation with superpixel embedding",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICIP",
+      "authors": "F.Z. Xing, E. Cambria, W.B. Huang, and Y. Xu"
+    },
+    {
+      "index": 50,
+      "title": "Empirical Evaluation of Rectified Activations in Convolution Network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv:1505.00853",
+      "authors": "B. Xu, N. Wang, T. Chen, and M. Li",
+      "orig_title": "Empirical evaluation of rectified activations in convolutional network",
+      "paper_id": "1505.00853v2"
+    },
+    {
+      "index": 51,
+      "title": "Superpixel Segmentation with Fully Convolutional Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "F. Yang, Q. Sun, H. Jin, and Z. Zhou",
+      "orig_title": "Superpixel segmentation with fully convolutional networks",
+      "paper_id": "2003.12929v1"
+    },
+    {
+      "index": 52,
+      "title": "Context Encoding for Semantic Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "H. Zhang, K. Dana, J. Ping, Z. Zhang X. Wang, A. Tyagi, and A. Agrawal",
+      "orig_title": "Context encoding for semantic segmentation",
+      "paper_id": "1803.08904v1"
+    },
+    {
+      "index": 53,
+      "title": "ResNeSt: Split-Attention Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv:2004.08955",
+      "authors": "H. Zhang, C. Wu, Z. Zhang, Y. Zhu, Z. Zhang, H. Lin, Y. Sun, T. He, J. Mueller, R. Manmatha, M. Li, and A. Smola",
+      "orig_title": "ResNeSt: Split-attention networks",
+      "paper_id": "2004.08955v2"
+    },
+    {
+      "index": 54,
+      "title": "Pyramid Scene Parsing Network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "H. Zhao, J. Shi, X. Qi, X. Wang, and J. Jia",
+      "orig_title": "Pyramid scene parsing network",
+      "paper_id": "1612.01105v2"
+    },
+    {
+      "index": 55,
+      "title": "PSANet: Point-wise spatial attention network for scene parsing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "H. Zhao, Y. Zhang, S. Liu, J. Shi, C.C. Loy, D. Lin, and J. Jia"
+    },
+    {
+      "index": 56,
+      "title": "Region Mutual Information Loss for Semantic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "S. Zhao, Y. Wang, Z. Yang, and D. Cai",
+      "orig_title": "Region mutual information loss for semantic segmentation",
+      "paper_id": "1910.12037v1"
+    },
+    {
+      "index": 57,
+      "title": "Conditional random fields as recurrent neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Shuai Zheng, S. Jayasumana, B.R. Paredes, V. Vineet, Z. Su, D. Du, C. Huang, and P.H.S. Torr"
+    },
+    {
+      "index": 58,
+      "title": "Scene parsing through ade20k dataset",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "B. Zhou, H. Zhao, X. Puig, S. Fidler, A. Barriuso, and A. Torralba"
+    },
+    {
+      "index": 59,
+      "title": "Semantic understanding of scenes through ade20k dataset",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IJCV",
+      "authors": "B. Zhou, H. Zhao, X. Puig, T. Xiao, S. Fidler, A. Barriuso, and A. Torralba"
+    }
+  ]
+}

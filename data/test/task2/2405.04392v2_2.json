@@ -1,0 +1,465 @@
+{
+  "paper_id": "2405.04392v2",
+  "title": "BILTS: A novel bi-invariant local trajectory-shape descriptor for rigid-body motion",
+  "sections": {
+    "ii-a similarity measurement approaches": "To deal with motion similarity measurement across diverse contexts, several approaches have been developed in the literature. We divide them into three main categories. 1) Machine learning approaches aim to learn general motion models from different example motions, identifying consistent salient features while disregarding variable contextual features. In these approaches, a motion is deemed similar to the learned model if it shares the same salient features.\nMachine learning approaches are particularly effective when abundant data is available.\nA drawback of these approaches is the limited extrapolation capability of the learned models, hindering generalization to contexts that are not represented in the examples. This issue can be mitigated by providing the learning algorithm with abundant motion examples in various contexts. For example, generalization across different camera viewpoints can be achieved using a multi-camera setup, or by mimicking different viewpoints by artificially rotating the motion examples . Despite the potential, generating abundant motion examples can be laborious, especially within a robot Learning-from-Demonstration (LfD) framework, in which a limited number of demonstrations is highly desired. 2) Context alignment approaches aim to learn motion models by initially aligning the contexts of the example motions and subsequently deriving models from these aligned examples. The similarity between a new motion and the learned model is assessed by first aligning the context of the novel motion with that of the learned model and afterwards comparing the aligned motions. Common alignment methods include spatial alignments to address different viewpoints and locations, and temporal alignments to handle different time scales and time profiles.\nSpatial alignment often relies on finding an affine transformation that optimally maps one motion onto another. For example, the approach in  searches for projection matrices to align 2D motion features, while the approach in  seeks orthogonal transformations to align 3D motion features.\nTemporal alignment involves finding the optimal time-warping path. Common algorithms include Dynamic Time Warping (DTW), Edit Distance, Longest Common Subsequence, and Fréchet Distance, with recent overviews provided in  and . DTW appears to be the most widely used option given its implementation in many recent works          . However, simultaneously aligning both spatial and temporal features poses a complex problem.\nFor example,  addresses aligning two curves under scaling, Euclidean transformation, and occlusion(s), with the proposed alignment method requiring search space pruning and heuristic search methods due to computational challenges. Another drawback is that assessing the similarity of a motion with previously established motion models requires pairwise context alignments with each model. This results in long computation times, particularly when dealing with a large number of motion models.\nHence, context alignment methods are particularly effective when only a small amount of data is available and the total computation cost to assess the similarity between motions is not prohibitive. 3) Invariant descriptor approaches remove the context from the example motions to obtain context-invariant motion descriptors from which an invariant motion model is derived. The similarity between a new motion and the invariant model is assessed by comparing the invariant description of the new motion to this model. An important advantage of this approach is that the invariant descriptor of one example motion can already be considered as a general motion model. This allows to significantly reduce the number of example motions to learn a model that can generalize across diverse contexts. For example, in , the reproduction of numerous motion variants from one individual invariant descriptor is shown. Invariant descriptor methods can be classified in global and local approaches. The global approach aims to find a global data-driven reference frame in which to express the motion data in an invariant way, for example using a singular value decomposition  or least-squares optimization . Global invariant approaches are particularly effective when only a small amount of data is available, the available data is segmented, and a low computation cost to evaluate the similarity between motions is required.\nThe local approach aims to find a local invariant description of the trajectory by describing its local shape.\nLocal approaches are particularly effective when only a small amount of data is available, the data is unsegmented, and they offer versatility for handling occlusions and performing segmentation tasks. A downside of local descriptors is their sensitivity to sensor noise and singularities in the trajectory, such as a straight line part or an inflection point, making them difficult to calculate in these situations. Originally, invariant descriptors were proposed for motion analysis and recognition applications  . Recently, there is more attention to their use for motion reproduction  and adaptation applications. Descriptors that contain sufficient information to reproduce of the original trajectory from the invariant descriptor are also referred to as complete , generative , or bidirectional  descriptors. Their benefit lies in the formulation of similarity measures that are applicable to both motion recognition and generation applications. The above three approaches to measure motion similarity across diverse contexts are not mutually exclusive. A lot of strategies in recent works combine above approaches to cope with some of the mentioned downsides.\nAs a first example, the approaches in  and  use invariant descriptors to decouple the context-alignment problem. That is, the temporal alignment between the curves is first found using features that are invariant to spatial transformations. Afterwards, based on the found temporal correspondence, the spatial alignment is found. As a second example, invariant descriptors are also used for dataset augmentation[ref]25 in machine learning, such as in  and . As a final example, the invariant descriptor approach can also be used for feature engineering, meaning the conversion of raw data into a feature vector containing invariant and contextual features, providing a richer description of the motion compared to raw data. The method in  combined invariant and contextual features and showed an increase in motion recognition performance, especially when motions with similar invariant features had to be distinguished. To conclude, the three approaches (machine learning, context alignment, and invariant descriptor) have their respective requirements, advantages, and drawbacks. In this paper, we focus on the invariant descriptor approach and aim to alleviate some of its drawbacks. The benefit of alleviating the drawbacks of the invariant descriptor approach is twofold. It supports the further application of the invariant descriptor approach for motion recognition and generation in diverse contexts. Additionally, it supports the further combination with other approaches (machine learning, context alignment) to alleviate some of their mentioned drawbacks."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "“Invariant description of rigid body motion trajectories",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Invariant description of rigid body motion trajectories",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ASME Journal of Mechanisms and Robotics",
+      "authors": "J. De Schutter"
+    },
+    {
+      "index": 2,
+      "title": "Theoretical kinematics",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Courier Corporation",
+      "authors": "O. Bottema and B. Roth"
+    },
+    {
+      "index": 3,
+      "title": "Invariant representations to reduce the variability in recognition of rigid body motion trajectories",
+      "abstract": "",
+      "year": "2012",
+      "venue": "2012 IEEE International Conference on Systems, Man, and Cybernetics (SMC)",
+      "authors": "T. Delabie, O. Cigdem, J. F. DeSchutter, R. Matthysen, T. De Laet, and J. De Schutter"
+    },
+    {
+      "index": 4,
+      "title": "Recognition of 6 dof rigid body motion trajectories using a coordinate-free representation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "2011 IEEE International Conference on Robotics and Automation",
+      "authors": "J. De Schutter, E. Di Lello, J. F. De Schutter, R. Matthysen, T. Benoit, and T. De Laet"
+    },
+    {
+      "index": 5,
+      "title": "View-invariant action recognition based on artificial neural networks",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE Trans. on Neural Networks and Learning Systems",
+      "authors": "A. Iosifidis, A. Tefas, and I. Pitas"
+    },
+    {
+      "index": 6,
+      "title": "Action recognition from depth maps using deep convolutional neural networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Trans. on Human-Machine Systems",
+      "authors": "P. Wang, W. Li, Z. Gao, J. Zhang, C. Tang, and P. O. Ogunbona"
+    },
+    {
+      "index": 7,
+      "title": "View-invariant representation and recognition of actions",
+      "abstract": "",
+      "year": "2002",
+      "venue": "International Journal of Computer Vision",
+      "authors": "C. Rao, A. Yilmaz, and M. Shah"
+    },
+    {
+      "index": 8,
+      "title": "Dsrf: A flexible trajectory descriptor for articulated human action recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Pattern Recognition",
+      "authors": "Y. Guo, Y. Li, and Z. Shao"
+    },
+    {
+      "index": 9,
+      "title": "A comparative analysis of trajectory similarity measures",
+      "abstract": "",
+      "year": "2021",
+      "venue": "GIScience & Remote Sensing",
+      "authors": "Y. Tao, A. Both, R. I. Silveira, K. Buchin, S. Sijben, R. S. Purves, P. Laube, D. Peng, K. Toohey, and M. Duckham"
+    },
+    {
+      "index": 10,
+      "title": "A survey of trajectory distance measures and performance evaluation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "VLDB Journal",
+      "authors": "H. Su, S. Liu, B. Zheng, X. Zhou, and K. Zheng"
+    },
+    {
+      "index": 11,
+      "title": "On signature invariants for effective motion trajectory recognition",
+      "abstract": "",
+      "year": "2008",
+      "venue": "International Journal of Robotics Research",
+      "authors": "S. Wu and Y. Li"
+    },
+    {
+      "index": 12,
+      "title": "Flexible signature descriptions for adaptive motion trajectory representation, perception and recognition",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Pattern Recognition",
+      "authors": "S. Wu and Y. F. Li"
+    },
+    {
+      "index": 13,
+      "title": "Comparison of rigid body motion trajectory descriptors for motion representation and recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 IEEE International Conference on Robotics and Automation (ICRA)",
+      "authors": "M. Vochten, T. De Laet, and J. De Schutter"
+    },
+    {
+      "index": 14,
+      "title": "Integral invariants for space motion trajectory matching and recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Pattern Recognition",
+      "authors": "Z. Shao and Y. Li"
+    },
+    {
+      "index": 15,
+      "title": "Motion trajectory reproduction from generalized signature description",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Pattern Recognition",
+      "authors": "S. Wu and Y. Li"
+    },
+    {
+      "index": 16,
+      "title": "Mixed signature: An invariant descriptor for 3d motion trajectory perception and recognition",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Mathematical Problems in Engineering",
+      "authors": "J. Yang, Y. Li, K. Wang, Y. Wu, G. Altieri, and M. Scalia"
+    },
+    {
+      "index": 17,
+      "title": "Rrv: A spatiotemporal descriptor for rigid body motion recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. on Cybernetics",
+      "authors": "Y. Guo, Y. Li, and Z. Shao"
+    },
+    {
+      "index": 18,
+      "title": "Flexible syntactic matching of curves and its application to automatic hierarchical classification of silhouettes",
+      "abstract": "",
+      "year": "1999",
+      "venue": "IEEE Trans. on Pattern Analysis and Machine Intelligence",
+      "authors": "Y. Gdalyahu and D. Weinshall"
+    },
+    {
+      "index": 19,
+      "title": "Generalizing demonstrated motion trajectories using coordinate-free shape descriptors",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Robotics and Autonomous Systems",
+      "authors": "M. Vochten, T. De Laet, and J. De Schutter"
+    },
+    {
+      "index": 20,
+      "title": "A novel procedure for knee flexion angle estimation based on functionally defined coordinate systems and independent of the marker landmarks",
+      "abstract": "",
+      "year": "2023",
+      "venue": "International Journal of Environmental Research and Public Health",
+      "authors": "A. Ancillao, A. Verduyn, M. Vochten, E. Aertbeliën, and J. De Schutter"
+    },
+    {
+      "index": 21,
+      "title": "A 3-d contour segmentation scheme based on curvature and torsion",
+      "abstract": "",
+      "year": "1988",
+      "venue": "IEEE Trans. on Pattern Analysis and Machine Intelligence",
+      "authors": "N. Kehtarnavaz and R. deFigueiredo"
+    },
+    {
+      "index": 22,
+      "title": "Bidirectional invariant representation of rigid body motions and its application to gesture recognition and reproduction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Autonomous Robots",
+      "authors": "D. Lee, R. Soloperto, and M. Saveriano"
+    },
+    {
+      "index": 23,
+      "title": "Robust symbolic representation for shape recognition and retrieval",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Pattern Recognition",
+      "authors": "M. R. Daliri and V. Torre"
+    },
+    {
+      "index": 24,
+      "title": "Invariant representation and matching of space curves",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Journal of Intelligent and Robotic Systems",
+      "authors": "C.-H. Lo and H.-S. Don"
+    },
+    {
+      "index": 25,
+      "title": "Deep Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "MIT press",
+      "authors": "I. Goodfellow, Y. Bengio, and A. Courville",
+      "orig_title": "Deep learning",
+      "paper_id": "1807.07987v2"
+    },
+    {
+      "index": 26,
+      "title": "Extending extrapolation capabilities of probabilistic motion models learned from human demonstrations using shape-preserving virtual demonstrations",
+      "abstract": "",
+      "year": "2022",
+      "venue": "2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "authors": "R. Burlizzi, M. Vochten, J. De Schutter, and E. Aertbeliën"
+    },
+    {
+      "index": 27,
+      "title": "Sur les courbes à double courbure",
+      "abstract": "",
+      "year": "1852",
+      "venue": "Journal de Mathématiques Pures et Appliquées",
+      "authors": "F. Frenet"
+    },
+    {
+      "index": 28,
+      "title": "Mémoire sur une classe d’équations différentielles simultanées qui se rattachent à la théorie des courbes à double courbure",
+      "abstract": "",
+      "year": "1853",
+      "venue": "Journal de Mathématiques Pures et Appliquées",
+      "authors": "J. Serret"
+    },
+    {
+      "index": 29,
+      "title": "La Théorie Des Groupes Finis Et Continus Et La Géométrie Différentielle, Traitées Par La Méthode Du Repère Mobile",
+      "abstract": "",
+      "year": "1937",
+      "venue": "Gauthier-Villars",
+      "authors": "E. Cartan"
+    },
+    {
+      "index": 30,
+      "title": "There is more than one way to frame a curve",
+      "abstract": "",
+      "year": "1975",
+      "venue": "American Mathematical Monthly",
+      "authors": "R. L. Bishop"
+    },
+    {
+      "index": 31,
+      "title": "Distance Metrics on the Rigid-Body Motions with Applications to Mechanism Design",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Journal of Mechanical Design",
+      "authors": "F. C. Park"
+    },
+    {
+      "index": 32,
+      "title": "Robots and screw theory: applications of kinematics and statics to robotics",
+      "abstract": "",
+      "year": "2004",
+      "venue": "J. Mech. Des.",
+      "authors": "J. K. Davidson, K. H. Hunt, and G. R. Pennock"
+    },
+    {
+      "index": 33,
+      "title": "Note sur les propriétés génerales du système de deux corps semblables entr’eux et placés d’une manière quelconque dans l’espace; et sur le déplacement fini ou infiniment petit d’un corps solide libre",
+      "abstract": "",
+      "year": "1830",
+      "venue": "Bulletin des Sciences Mathématiques, Férussac",
+      "authors": "M. Chasles"
+    },
+    {
+      "index": 34,
+      "title": "Instantaneous spatial kinematics and the invariants of the axodes",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Ball 2000 Symposium, Cambridge",
+      "authors": "H. Stachel"
+    },
+    {
+      "index": 35,
+      "title": "Canonical systems and instantaneous invariants in spatial kinematics",
+      "abstract": "",
+      "year": "1967",
+      "venue": "Journal of Mechanisms",
+      "authors": "G. Veldkamp"
+    },
+    {
+      "index": 36,
+      "title": "Integral invariants for shape matching",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Trans. on Pattern Analysis and Machine Intelligence",
+      "authors": "S. Manay, D. Cremers, B. W. Hong, A. J. J. Yezzi, and S. Soatto"
+    },
+    {
+      "index": 37,
+      "title": "Shape matching using multiscale integral invariants",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Trans. on Pattern Analysis and Machine Intelligence",
+      "authors": "B.-W. Hong and S. Soatto"
+    },
+    {
+      "index": 38,
+      "title": "Robust optimization-based calculation of invariant trajectory representations for point and rigid-body motion",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "authors": "M. Vochten, T. De Laet, and J. De Schutter"
+    },
+    {
+      "index": 39,
+      "title": "Invariant Descriptors of Motion and Force Trajectories for Interpreting Object Manipulation Tasks in Contact",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE Trans. on Robotics",
+      "authors": "M. Vochten, A. M. Mohammadi, A. Verduyn, T. De Laet, E. Aertbeliën, and J. De Schutter",
+      "orig_title": "Invariant descriptors of motion and force trajectories for interpreting object manipulation tasks in contact",
+      "paper_id": "2306.10926v2"
+    },
+    {
+      "index": 40,
+      "title": "Numerically invariant signature curves",
+      "abstract": "",
+      "year": "2000",
+      "venue": "International Journal of Computer Vision",
+      "authors": "M. Boutin"
+    },
+    {
+      "index": 41,
+      "title": "A mathematical introduction to robotic manipulation",
+      "abstract": "",
+      "year": "1994",
+      "venue": "CRC press",
+      "authors": "R. M. Murray, Z. Li, and S. S. Sastry"
+    },
+    {
+      "index": 42,
+      "title": "Dynamic programming algorithm optimization for spoken word recognition",
+      "abstract": "",
+      "year": "1978",
+      "venue": "IEEE Trans. on acoustics, speech, and signal processing",
+      "authors": "H. Sakoe and S. Chiba"
+    },
+    {
+      "index": 43,
+      "title": "Using derivatives in time series classification",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Data Mining and Knowledge Discovery",
+      "authors": "T. Górecki and M. Łuczak"
+    },
+    {
+      "index": 44,
+      "title": "First and second derivatives in time series classification using dtw",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Communications in Statistics-Simulation and Computation",
+      "authors": "T. Górecki and M. Łuczak"
+    },
+    {
+      "index": 45,
+      "title": "Multivariate time series classification with parametric derivative dynamic time warping",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Expert Systems with Applications",
+      "authors": "T. Górecki and M. Łuczak"
+    },
+    {
+      "index": 46,
+      "title": "shapeDTW: shape Dynamic Time Warping",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Pattern Recognition",
+      "authors": "J. Zhao and L. Itti",
+      "orig_title": "shapedtw: Shape dynamic time warping",
+      "paper_id": "1606.01601v1"
+    },
+    {
+      "index": 47,
+      "title": "Modern robotics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Cambridge University Press",
+      "authors": "K. M. Lynch and F. C. Park"
+    },
+    {
+      "index": 48,
+      "title": "Matrix computations, 4th ed.",
+      "abstract": "",
+      "year": "2013",
+      "venue": "The Johns Hopkins University Press",
+      "authors": "G. H. Golub and C. F. Van Loan"
+    },
+    {
+      "index": 49,
+      "title": "Nearest neighbor pattern classification",
+      "abstract": "",
+      "year": "1967",
+      "venue": "IEEE transactions on information theory",
+      "authors": "T. Cover and P. Hart"
+    },
+    {
+      "index": 50,
+      "title": "A Dataset of Daily Interactive Manipulation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Journal of Robotics Research",
+      "authors": "Y. Huang and Y. Sun",
+      "orig_title": "A dataset of daily interactive manipulation",
+      "paper_id": "1807.00858v1"
+    },
+    {
+      "index": 51,
+      "title": "Finding geometric invariants from time-based invariants for spherical and spatial motions",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Journal of Mechanical Design",
+      "authors": "B. Roth"
+    },
+    {
+      "index": 52,
+      "title": "Choice of Riemannian Metrics for Rigid Body Kinematics",
+      "abstract": "",
+      "year": "1996",
+      "venue": "International Design Engineering Technical Conferences and Computers and Information in Engineering Conference",
+      "authors": "M. Žefran, V. Kumar, and C. Croke"
+    },
+    {
+      "index": 53,
+      "title": "Geometric skinning with approximate dual quaternion blending",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ACM Trans. on Graphics (TOG)",
+      "authors": "L. Kavan, S. Collins, J. Žára, and C. O’Sullivan"
+    },
+    {
+      "index": 54,
+      "title": "Dynamic time warping (dtw) algorithm in speech: a review",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Journal of Research in Electronics and Computer Engineering",
+      "authors": "M. Yadav and M. A. Alam"
+    },
+    {
+      "index": 55,
+      "title": "Geometrical analysis of compliant mechanisms in robotics (euclidean group, elastic systems, generalized springs)",
+      "abstract": "",
+      "year": "1985",
+      "venue": "Harvard University",
+      "authors": "J. Loncaric"
+    }
+  ]
+}

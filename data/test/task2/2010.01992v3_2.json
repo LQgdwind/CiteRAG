@@ -1,0 +1,541 @@
+{
+  "paper_id": "2010.01992v3",
+  "title": "Improving Few-Shot Learning through Multi-task Representation Learning Theory",
+  "sections": {
+    "introduction": "Even though many machine learning methods now enjoy a solid theoretical justification, some more recent advances in the field are still in their preliminary state which requires the hypotheses put forward by the theoretical studies to be implemented and verified in practice. One such notable example is the success of meta-learning, also called learning to learn (LTL), methods where the goal is to produce a model on data coming from a set of (meta-train) source tasks to use it as a starting point for learning successfully a new previously unseen (meta-test) target task. The success of many meta-learning approaches is directly related to their capacity of learning a good representation  from a set of tasks making it closely related to multi-task representation learning (MTR).\nFor this latter, several theoretical studies     8\nprovided probabilistic learning bounds that require the amount of data in the meta-train source task and the number of meta-train tasks to tend to infinity for it to be efficient. While capturing the underlying general intuition, these bounds do not suggest that all the source data is useful in such learning setup due to the additive relationship between the two terms mentioned above and thus, for instance, cannot explain the empirical success of MTR in few-shot classification (FSC) task. To tackle this drawback, two very recent studies 5 0 aimed at finding deterministic assumptions that lead to faster learning rates allowing MTR algorithms to benefit from all the source data. Contrary to probabilistic bounds that have been used to derive novel learning strategies for meta-learning algorithms  8, there has been no attempt to verify the validity of the assumptions leading to the fastest known learning rates in practice or to enforce them through an appropriate optimization procedure. In this paper, we aim to use the recent advances in MTR theory 0 5 to explore the inner workings of these popular meta-learning methods. Our rationale for such an approach stems from a recent work 2 proving that the optimization problem behind the majority of meta-learning algorithms can be written as an MTR problem.\nThus, we believe that looking at meta-learning algorithms through the recent MTR theory lens, could provide us a better understanding for the capacity to work well in the few-shot regime.\nIn particular, we take a closer look at two families of meta-learning algorithms, notably: gradient-based algorithms     8     including Maml  and metric-based algorithms 4 1      with its most prominent example given by ProtoNet . \nOur main contributions are then two-fold: We empirically show that tracking the validity of assumptions on optimal predictors used in 0 5 reveals a striking difference between the behavior of gradient-based and metric-based methods in how they learn their optimal feature representations. We provide elements of theoretical analysis that explain this behavior and explain the implications of it in practice. Our work is thus complementary to Wang et al. 2 and connects MTR, FSC and Meta-Learning from both theoretical and empirical points of view. Following the most recent advances in the MTR field that leads to faster learning rates, we show that theoretical assumptions mentioned above can be forced through simple yet effective learning constraints which improve performance of the considered algorithms for FSC baselines: gradient- and metric-based methods using episodic training, as well as non-episodic algorithm such as Multi-Task Learning (MTL 2). The rest of the paper is organized as follows. We introduce the MTR problem and the considered meta-learning algorithms in Section 2. In Section 3, we investigate and explain how they behave in practice. We further show that one can force meta-learning algorithms to satisfy such assumptions through adding an appropriate spectral regularization term to their objective function.\nIn Section 4, we provide an experimental evaluation of several state-of-the-art meta-learning and MTR methods.\nWe conclude and outline the future research perspectives in Section 5."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Infinite Mixture Prototypes for Few-Shot Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "36th International Conference on Machine Learning",
+      "authors": "Allen, K., Shelhamer, E., Shin, H., Tenenbaum, J.",
+      "orig_title": "Infinite mixture prototypes for few-shot learning",
+      "paper_id": "1902.04552v1"
+    },
+    {
+      "index": 1,
+      "title": "Meta-Learning by Adjusting Priors Based on Extended PAC-Bayes Theory",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Amit, R., Meir, R.",
+      "orig_title": "Meta-learning by adjusting priors based on extended PAC-Bayes theory",
+      "paper_id": "1711.01244v8"
+    },
+    {
+      "index": 2,
+      "title": "When MAML can adapt fast and how to assist when it cannot",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AISTATS",
+      "authors": "Arnold, S., Iqbal, S., Sha, F."
+    },
+    {
+      "index": 3,
+      "title": "MetaReg: Towards domain generalization using meta-regularization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Balaji, Y., Sankaranarayanan, S., Chellappa, R."
+    },
+    {
+      "index": 4,
+      "title": "A model of inductive bias learning",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Journal of Artificial Intelligence Research",
+      "authors": "Baxter, J."
+    },
+    {
+      "index": 5,
+      "title": "Meta-learning with differentiable closed-form solvers",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Bertinetto, L., Henriques, J.F., Torr, P., Vedaldi, A.",
+      "orig_title": "Meta-learning with differentiable closed-form solvers",
+      "paper_id": "1805.08136v3"
+    },
+    {
+      "index": 6,
+      "title": "A Theoretical Analysis of the Number of Shots in Few-Shot Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Cao, T., Law, M.T., Fidler, S.",
+      "orig_title": "A theoretical analysis of the number of shots in few-shot learning",
+      "paper_id": "1909.11722v2"
+    },
+    {
+      "index": 7,
+      "title": "A closer look at the training strategy for modern meta-learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Chen, J., Wu, X.M., Li, Y., Li, Q., Zhan, L.M., Chung, F.l."
+    },
+    {
+      "index": 8,
+      "title": "A closer look at few-shot classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Chen, W.Y., Wang, Y.C.F., Liu, Y.C., Kira, Z., Huang, J.B."
+    },
+    {
+      "index": 9,
+      "title": "MATE: Plugging in model awareness to task embedding for meta learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Chen, X., Wang, Z., Tang, S., Muandet, K."
+    },
+    {
+      "index": 10,
+      "title": "Nonparametric statistics for the behavioral sciences",
+      "abstract": "",
+      "year": "1956",
+      "venue": "Biometrika",
+      "authors": "David, F.N., Siegel, S."
+    },
+    {
+      "index": 11,
+      "title": "Learning-to-learn stochastic gradient descent with biased regularization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Denevi, G., Ciliberto, C., Grazzi, R., Pontil, M."
+    },
+    {
+      "index": 12,
+      "title": "Incremental Learning-to-Learn with Statistical Guarantees",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conference on Uncertainty in Artificial Intelligence",
+      "authors": "Denevi, G., Ciliberto, C., Stamos, D., Pontil, M.",
+      "orig_title": "Incremental learning-to-learn with statistical guarantees",
+      "paper_id": "1803.08089v1"
+    },
+    {
+      "index": 13,
+      "title": "Learning to learn around a common mean",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Denevi, G., Ciliberto, C., Stamos, D., Pontil, M."
+    },
+    {
+      "index": 14,
+      "title": "Few-Shot Learning via Learning the Representation, Provably",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Du, S.S., Hu, W., Kakade, S.M., Lee, J.D., Lei, Q.",
+      "orig_title": "Few-shot learning via learning the representation, provably",
+      "paper_id": "2002.09434v2"
+    },
+    {
+      "index": 15,
+      "title": "Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Finn, C., Abbeel, P., Levine, S.",
+      "orig_title": "Model-agnostic meta-learning for fast adaptation of deep networks",
+      "paper_id": "1703.03400v3"
+    },
+    {
+      "index": 16,
+      "title": "Dynamic Few-Shot Visual Learning without Forgetting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Gidaris, S., Komodakis, N.",
+      "orig_title": "Dynamic Few-Shot Visual Learning Without Forgetting",
+      "paper_id": "1804.09458v1"
+    },
+    {
+      "index": 17,
+      "title": "Neighbourhood components analysis",
+      "abstract": "",
+      "year": "2005",
+      "venue": "NeurIPS",
+      "authors": "Goldberger, J., Hinton, G.E., Roweis, S., Salakhutdinov, R.R."
+    },
+    {
+      "index": 18,
+      "title": "Unraveling Meta-Learning: Understanding Feature Representations for Few-Shot Tasks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Goldblum, M., Reich, S., Fowl, L., Ni, R., Cherepanova, V., Goldstein, T.",
+      "orig_title": "Unraveling meta-learning: Understanding feature representations for few-shot tasks",
+      "paper_id": "2002.06753v3"
+    },
+    {
+      "index": 19,
+      "title": "A broader study of cross-domain few-shot learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Computer Vision – ECCV 2020",
+      "authors": "Guo, Y., Codella, N.C., Karlinsky, L., Codella, J.V., Smith, J.R., Saenko, K., Rosing, T., Feris, R."
+    },
+    {
+      "index": 20,
+      "title": "Deep metric learning using Triplet network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Similarity-Based Pattern Recognition",
+      "authors": "Hoffer, E., Ailon, N.",
+      "orig_title": "Deep metric learning using triplet network",
+      "paper_id": "1412.6622v4"
+    },
+    {
+      "index": 21,
+      "title": "Task agnostic meta-learning for few-shot learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Jamal, M.A., Qi, G.J."
+    },
+    {
+      "index": 22,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Kingma, D.P., Ba, J."
+    },
+    {
+      "index": 23,
+      "title": "Siamese neural networks for one-shot image recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Conference on Machine Learning deep learning workshop",
+      "authors": "Koch, G., Zemel, R., Salakhutdinov, R."
+    },
+    {
+      "index": 24,
+      "title": "A simple weight decay can improve generalization",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Krogh, A., Hertz, J.A."
+    },
+    {
+      "index": 25,
+      "title": "Fast Rates by Transferring from Auxiliary Hypotheses",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Machine Learning",
+      "authors": "Kuzborskij, I., Orabona, F.",
+      "orig_title": "Fast rates by transferring from auxiliary hypotheses",
+      "paper_id": "1412.1619v3"
+    },
+    {
+      "index": 26,
+      "title": "Human-level concept learning through probabilistic program induction",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Science",
+      "authors": "Lake, B.M., Salakhutdinov, R., Tenenbaum, J.B."
+    },
+    {
+      "index": 27,
+      "title": "Meta-Learning with Differentiable Convex Optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Lee, K., Maji, S., Ravichandran, A., Soatto, S.",
+      "orig_title": "Meta-learning with differentiable convex optimization",
+      "paper_id": "1904.03758v2"
+    },
+    {
+      "index": 28,
+      "title": "Nonsmooth Analysis of Singular Values. Part I: Theory",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Set-Valued Analysis",
+      "authors": "Lewis, A.S., Sendov, H.S."
+    },
+    {
+      "index": 29,
+      "title": "Finding Task-Relevant Features for Few-Shot Learning by Category Traversal",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Li, H., Eigen, D., Dodge, S., Zeiler, M., Wang, X."
+    },
+    {
+      "index": 30,
+      "title": "Meta-SGD: Learning to Learn Quickly for Few-Shot Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv:1707.09835",
+      "authors": "Li, Z., Zhou, F., Chen, F., Li, H.",
+      "orig_title": "Meta-SGD: Learning to Learn Quickly for Few-Shot Learning",
+      "paper_id": "1707.09835v2"
+    },
+    {
+      "index": 31,
+      "title": "The Benefit of Multitask Representation Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Maurer, A., Pontil, M., Romera-Paredes, B.",
+      "orig_title": "The benefit of multitask representation learning",
+      "paper_id": "1505.06279v2"
+    },
+    {
+      "index": 32,
+      "title": "Spectral Normalization for Generative Adversarial Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Miyato, T., Kataoka, T., Koyama, M., Yoshida, Y.",
+      "orig_title": "Spectral normalization for generative adversarial networks",
+      "paper_id": "1802.05957v1"
+    },
+    {
+      "index": 33,
+      "title": "Using deep learning for image-based plant disease detection",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Frontiers in Plant Science",
+      "authors": "Mohanty, S.P., Hughes, D.P., Salathé, M."
+    },
+    {
+      "index": 34,
+      "title": "On First-Order Meta-Learning Algorithms",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv:1803.02999 [cs]",
+      "authors": "Nichol, A., Achiam, J., Schulman, J.",
+      "orig_title": "On first-order meta-learning algorithms",
+      "paper_id": "1803.02999v3"
+    },
+    {
+      "index": 35,
+      "title": "TADAM: Task dependent adaptive metric for improved few-shot learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Oreshkin, B., Rodríguez López, P., Lacoste, A.",
+      "orig_title": "TADAM: Task dependent adaptive metric for improved few-shot learning",
+      "paper_id": "1805.10123v4"
+    },
+    {
+      "index": 36,
+      "title": "Meta-Curvature",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Park, E., Oliva, J.B.",
+      "orig_title": "Meta-curvature",
+      "paper_id": "1902.03356v3"
+    },
+    {
+      "index": 37,
+      "title": "A PAC-Bayesian bound for lifelong learning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Pentina, A., Lampert, C.H."
+    },
+    {
+      "index": 38,
+      "title": "Low-Shot Learning with Imprinted Weights",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Qi, H., Brown, M., Lowe, D.G.",
+      "orig_title": "Low-Shot Learning with Imprinted Weights",
+      "paper_id": "1712.07136v2"
+    },
+    {
+      "index": 39,
+      "title": "Few-Shot Image Recognition by Predicting Parameters from Activations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Qiao, S., Liu, C., Shen, W., Yuille, A.L.",
+      "orig_title": "Few-shot image recognition by predicting parameters from activations",
+      "paper_id": "1706.03466v3"
+    },
+    {
+      "index": 40,
+      "title": "Rapid Learning or Feature Reuse? Towards Understanding the Effectiveness of MAML",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Raghu, A., Raghu, M., Bengio, S., Vinyals, O.",
+      "orig_title": "Rapid learning or feature reuse? Towards understanding the effectiveness of MAML",
+      "paper_id": "1909.09157v2"
+    },
+    {
+      "index": 41,
+      "title": "Optimization as a model for few-shot learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Ravi, S., Larochelle, H."
+    },
+    {
+      "index": 42,
+      "title": "Meta-Learning for Semi-Supervised Few-Shot Classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Ren, M., Triantafillou, E., Ravi, S., Snell, J., Swersky, K., Tenenbaum, J.B., Larochelle, H., Zemel, R.S.",
+      "orig_title": "Meta-learning for semi-supervised few-shot classification",
+      "paper_id": "1803.00676v1"
+    },
+    {
+      "index": 43,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Journal of Computer Vision",
+      "authors": "Russakovsky, O., Deng, J., Su, H., Krause, J., Satheesh, S., Ma, S., Huang, Z., Karpathy, A., Khosla, A., Bernstein, M., Berg, A.C., Fei-Fei, L.",
+      "orig_title": "ImageNet large scale visual recognition challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 44,
+      "title": "Meta-Learning with Latent Embedding Optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Rusu, A.A., Rao, D., Sygnowski, J., Vinyals, O., Pascanu, R., Osindero, S., Hadsell, R.",
+      "orig_title": "Meta-learning with latent embedding optimization",
+      "paper_id": "1807.05960v3"
+    },
+    {
+      "index": 45,
+      "title": "Adaptive Subspaces for Few-Shot Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Simon, C., Koniusz, P., Nock, R., Harandi, M."
+    },
+    {
+      "index": 46,
+      "title": "Prototypical Networks for Few-shot Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Snell, J., Swersky, K., Zemel, R.S.",
+      "orig_title": "Prototypical networks for few-shot learning",
+      "paper_id": "1703.05175v2"
+    },
+    {
+      "index": 47,
+      "title": "Learning to Compare: Relation Network for Few-Shot Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Sung, F., Yang, Y., Zhang, L., Xiang, T., Torr, P.H., Hospedales, T.M.",
+      "orig_title": "Learning to compare: Relation network for few-shot learning",
+      "paper_id": "1711.06025v2"
+    },
+    {
+      "index": 48,
+      "title": "Rethinking Few-Shot Image Classification: a Good Embedding Is All You Need?",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision",
+      "authors": "Tian, Y., Wang, Y., Krishnan, D., Tenenbaum, J.B., Isola, P.",
+      "orig_title": "Rethinking few-shot image classification: a good embedding is all you need?",
+      "paper_id": "2003.11539v2"
+    },
+    {
+      "index": 49,
+      "title": "Provable Meta-Learning of Linear Representations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Tripuraneni, N., Jin, C., Jordan, M.",
+      "orig_title": "Provable meta-learning of linear representations",
+      "paper_id": "2002.11684v5"
+    },
+    {
+      "index": 50,
+      "title": "Matching Networks for One Shot Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Vinyals, O., Blundell, C., Lillicrap, T., Kavukcuoglu, K., Wierstra, D.",
+      "orig_title": "Matching networks for one shot learning",
+      "paper_id": "1606.04080v2"
+    },
+    {
+      "index": 51,
+      "title": "Bridging Multi-Task Learning and Meta-Learning: Towards Efficient Training and Effective Adaptation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "38th International Conference on Machine Learning. Proceedings of Machine Learning Research, PMLR",
+      "authors": "Wang, H., Zhao, H., Li, B.",
+      "orig_title": "Bridging multi-task learning and meta-learning: Towards efficient training and effective adaptation",
+      "paper_id": "2106.09017v1"
+    },
+    {
+      "index": 52,
+      "title": "Understanding Contrastive Representation Learning through Alignment and Uniformity on the Hypersphere",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "Wang, T., Isola, P.",
+      "orig_title": "Understanding contrastive representation learning through alignment and uniformity on the hypersphere",
+      "paper_id": "2005.10242v10"
+    },
+    {
+      "index": 53,
+      "title": "SimpleShot: Revisiting Nearest-Neighbor Classification for Few-Shot Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv:1911.04623",
+      "authors": "Wang, Y., Chao, W.L., Weinberger, K.Q., van der Maaten, L.",
+      "orig_title": "SimpleShot: Revisiting Nearest-Neighbor Classification for Few-Shot Learning",
+      "paper_id": "1911.04623v2"
+    },
+    {
+      "index": 54,
+      "title": "Individual comparisons by ranking methods",
+      "abstract": "",
+      "year": "1945",
+      "venue": "Biometrics Bulletin",
+      "authors": "Wilcoxon, F."
+    },
+    {
+      "index": 55,
+      "title": "How to Train Your MAML to Excel in Few-Shot Classification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Ye, H.J., Chao, W.L.",
+      "orig_title": "How to train your MAML to excel in few-shot classification",
+      "paper_id": "2106.16245v3"
+    },
+    {
+      "index": 56,
+      "title": "Few-Shot Learning via Embedding Adaptation with Set-to-Set Functions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Computer vision and pattern recognition (CVPR)",
+      "authors": "Ye, H.J., Hu, H., Zhan, D.C., Sha, F.",
+      "orig_title": "Few-shot learning via embedding adaptation with set-to-set functions",
+      "paper_id": "1812.03664v6"
+    },
+    {
+      "index": 57,
+      "title": "Meta-learning without memorization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Yin, M., Tucker, G., Zhou, M., Levine, S., Finn, C."
+    }
+  ]
+}

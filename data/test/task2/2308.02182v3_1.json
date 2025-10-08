@@ -1,0 +1,475 @@
+{
+  "paper_id": "2308.02182v3",
+  "title": "AutoML4ETC: Automated Neural Architecture Search for Real-World Encrypted Traffic Classification",
+  "sections": {
+    "ii-b automl for encrypted traffic classification": "A plethora of machine learning models have been suggested for traffic classification since the early 2000s. Numerous classical machine learning models including Naive Bayes, Bayesian Networks, k-Nearest Neighbor, and Random Forests   were shown to effectively classify traffic datasets, including encrypted TOR traffic.\nA survey of these classical models can be found in . The use of time-series features including packet size and direction sequences, first suggested in  as a side channel to attack TOR, was shown to be especially effective across models. With the widespread adoption of deep neural networks, numerous deep architectures were employed for ETC including Multi-Layer Perceptron, Convolutional Neural Networks, Long Short-Term Memory networks, Gated Recurrent Units, Stacked AutoEncoders, and Transformers (      [ref]32 [ref]33) and shown to be effective on private datasets    as well as open research datasets   . By and large, some works such as   [ref]33 primarily focus on designing representations of traffic data for well-known architectures, while others like    [ref]32  focus on designing deep architectures tailored for well-known network traffic data representations. This paper focuses on automating the latter, more precisely, automatically designing an optimized architecture for a specific traffic data representation and a particular dataset. In an attempt to obtain a more realistic evaluation of the proposed ETC models in the literature, including classical and deep models,   performed comparative studies of existing model performances on real-world datasets.  shows that the performances of deep and classical models are close, with 1D-CNN and MLP winning over Random Forest by a small margin.  highlights the importance of parameter tuning and shows that by simply tuning the maximum tree depth, XGBoost can significantly outperform CNN methods. The importance of hyper-parameter tuning is a driving factor in this work, although we take the opposite direction from ’s experiments with XGBoost, and focus on finding the best hyper-parameters and architecture for a CNN. Following our previous work, , in which we highlight the challenges along the way of manually adapting a successful deep architecture to new traffic traces, in this work, we explore a way to automate the manual process, given a dataset and a space of hyper-parameters. AutoML was recently employed for traffic classification in  0. Both  and 0 focus on designing traffic representations for efficient classification performance. While  proposes a normalized packet-level representation, 0 proposes a process for extracting flow-level features from sequences of packet size and directions. They both use the publicly available AutoGluon tool 1. AutoGluon’s approach to AutoML is different from NAS. Rather than opting to find the best model hyperparameters, it creates ensembles of several models by stacking them in layers. It is designed to be fast and simple to use by non-experts. Its base models include classical and deep models. For example,  uses six types of base models including tree-based methods, deep neural networks, and neighbors-based classifiers. A similar ensemble-based method is employed in Mljar 2, a python AutoML package employed in 3 for malware detection. However, Mljar only includes classical machine learning models as base models, hence, 3 is further from our work than the former two."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Mobile encrypted traffic classification using deep learning: Experimental evaluation, lessons learned, and challenges",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Network and Service Management",
+      "authors": "G. Aceto, D. Ciuonzo, A. Montieri, and A. Pescapé"
+    },
+    {
+      "index": 1,
+      "title": "Deep packet: A novel approach for encrypted traffic classification using deep learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Soft Computing",
+      "authors": "M. Lotfollahi, M. Jafari Siavoshani, R. Shirali Hossein Zade, and M. Saberian"
+    },
+    {
+      "index": 2,
+      "title": "Fs-net: A flow sequence network for encrypted traffic classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference On Computer Communications (INFOCOM)",
+      "authors": "C. Liu, L. He, G. Xiong, Z. Cao, and Z. Li"
+    },
+    {
+      "index": 3,
+      "title": "Seq2img: A sequence-to-image based approach towards ip traffic classification using convolutional neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International conference on big data (big data)",
+      "authors": "Z. Chen, K. He, J. Li, and Y. Geng"
+    },
+    {
+      "index": 4,
+      "title": "Traffic classification in an increasingly encrypted web",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Commun. ACM",
+      "authors": "I. Akbari, M. A. Salahuddin, L. Ven, N. Limam, R. Boutaba, B. Mathieu, S. Moteau, and S. Tuffin"
+    },
+    {
+      "index": 5,
+      "title": "Deep inside tor: Exploring website fingerprinting attacks on tor traffic in realistic settings",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conf. on Computer and Knowledge Engineering",
+      "authors": "A. Khajehpour, F. Zandi et al."
+    },
+    {
+      "index": 6,
+      "title": "Fstc: Dynamic category adaptation for encrypted network traffic classification",
+      "abstract": "",
+      "year": "2023",
+      "venue": "2023 IFIP Networking Conference (IFIP Networking)",
+      "authors": "N. Malekghaini, H. Tsang, M. A. Salahuddin, N. Limam, and R. Boutaba"
+    },
+    {
+      "index": 7,
+      "title": "A look behind the curtain: traffic classification in an increasingly encrypted web",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM on Measurement and Analysis of Computing Systems",
+      "authors": "I. Akbari, M. A. Salahuddin, L. Ven, N. Limam, R. Boutaba, B. Mathieu, S. Moteau, and S. Tuffin"
+    },
+    {
+      "index": 8,
+      "title": "Data drift in dl: Lessons learned from encrypted traffic classification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IFIP Networking Conference (IFIP Networking)",
+      "authors": "N. Malekghaini, E. Akbari, M. A. Salahuddin, N. Limam, R. Boutaba, B. Mathieu, S. Moteau, and S. Tuffin"
+    },
+    {
+      "index": 9,
+      "title": "Deep learning for encrypted traffic classification in the face of data drift: An empirical study",
+      "abstract": "",
+      "year": "2023",
+      "venue": "Computer Networks",
+      "authors": "N. Malekghaini, E. Akbari et al."
+    },
+    {
+      "index": 10,
+      "title": "Metalearning",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Scholarpedia",
+      "authors": "T. Schaul and J. Schmidhuber"
+    },
+    {
+      "index": 11,
+      "title": "Learning to learn using gradient descent",
+      "abstract": "",
+      "year": "2001",
+      "venue": "International conference on artificial neural networks",
+      "authors": "S. Hochreiter, A. S. Younger, and P. R. Conwell"
+    },
+    {
+      "index": 12,
+      "title": "Neural Architecture Search: A Survey",
+      "abstract": "",
+      "year": "2019",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "T. Elsken, J. H. Metzen, and F. Hutter",
+      "orig_title": "Neural architecture search: A survey",
+      "paper_id": "1808.05377v3"
+    },
+    {
+      "index": 13,
+      "title": "Neural Architecture Search with Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "5th International Conference on Learning Representations, ICLR 2017, Toulon, France, April 24-26, 2017, Conference Track Proceedings",
+      "authors": "B. Zoph and Q. V. Le",
+      "orig_title": "Neural architecture search with reinforcement learning",
+      "paper_id": "1611.01578v2"
+    },
+    {
+      "index": 14,
+      "title": "Efficient and robust automated machine learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "M. Feurer, A. Klein, K. Eggensperger, J. Springenberg, M. Blum, and F. Hutter"
+    },
+    {
+      "index": 15,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 16,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "A. Krizhevsky, G. Hinton et al."
+    },
+    {
+      "index": 17,
+      "title": "Learning Transferable Architectures for Scalable Image Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "B. Zoph, V. Vasudevan, J. Shlens, and Q. V. Le",
+      "orig_title": "Learning transferable architectures for scalable image recognition",
+      "paper_id": "1707.07012v4"
+    },
+    {
+      "index": 18,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "2009 IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei"
+    },
+    {
+      "index": 19,
+      "title": "Efficient Neural Architecture Search via Parameter Sharing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International conference on machine learning",
+      "authors": "H. Pham, M. Guan, B. Zoph, Q. Le, and J. Dean",
+      "orig_title": "Efficient neural architecture search via parameters sharing",
+      "paper_id": "1802.03268v2"
+    },
+    {
+      "index": 20,
+      "title": "An overview of multi-task learning in deep neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "S. Ruder"
+    },
+    {
+      "index": 21,
+      "title": "Bandit based monte-carlo planning",
+      "abstract": "",
+      "year": "2006",
+      "venue": "European conference on machine learning",
+      "authors": "L. Kocsis and C. Szepesvári"
+    },
+    {
+      "index": 22,
+      "title": "Neural Architecture Search using Deep Neural Networks and Monte Carlo Tree Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "L. Wang, Y. Zhao, Y. Jinnai, Y. Tian, and R. Fonseca",
+      "orig_title": "Neural architecture search using deep neural networks and monte carlo tree search",
+      "paper_id": "1805.07440v5"
+    },
+    {
+      "index": 23,
+      "title": "Large-Scale Evolution of Image Classifiers",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "E. Real, S. Moore, A. Selle, S. Saxena, Y. L. Suematsu, J. Tan, Q. V. Le, and A. Kurakin",
+      "orig_title": "Large-scale evolution of image classifiers",
+      "paper_id": "1703.01041v2"
+    },
+    {
+      "index": 24,
+      "title": "Regularized Evolution for Image Classifier Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI conference on artificial intelligence",
+      "authors": "E. Real, A. Aggarwal, Y. Huang, and Q. V. Le",
+      "orig_title": "Regularized evolution for image classifier architecture search",
+      "paper_id": "1802.01548v7"
+    },
+    {
+      "index": 25,
+      "title": "Website fingerprinting: attacking popular privacy enhancing technologies with the multinomial naïve-bayes classifier",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ACM workshop on Cloud computing security",
+      "authors": "D. Herrmann, R. Wendolsky, and H. Federrath"
+    },
+    {
+      "index": 26,
+      "title": "A preliminary performance comparison of five machine learning algorithms for practical ip traffic flow classification",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ACM SIGCOMM Computer Communication Review",
+      "authors": "N. Williams, S. Zander, and G. Armitage"
+    },
+    {
+      "index": 27,
+      "title": "A comprehensive survey on machine learning for networking: evolution, applications and research opportunities",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of Internet Services and Applications",
+      "authors": "R. Boutaba, M. A. Salahuddin, N. Limam, S. Ayoubi, N. Shahriar, F. Estrada-Solano, and O. M. Caicedo"
+    },
+    {
+      "index": 28,
+      "title": "End-to-end encrypted traffic classification with one-dimensional convolution neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE international conference on intelligence and security informatics (ISI)",
+      "authors": "W. Wang, M. Zhu, J. Wang, X. Zeng, and Z. Yang"
+    },
+    {
+      "index": 29,
+      "title": "Flowpic: Encrypted internet traffic classification is as easy as image recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE INFOCOM 2019 - IEEE Conference on Computer Communications Workshops (INFOCOM WKSHPS)",
+      "authors": "T. Shapira and Y. Shavitt"
+    },
+    {
+      "index": 30,
+      "title": "Fs-net: A flow sequence network for encrypted traffic classification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE INFOCOM 2019-IEEE Conference On Computer Communications",
+      "authors": "C. Liu, L. He, G. Xiong, Z. Cao, and Z. Li"
+    },
+    {
+      "index": 31,
+      "title": "Mimetic: Mobile encrypted traffic classification using multimodal deep learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Computer networks",
+      "authors": "G. Aceto, D. Ciuonzo, A. Montieri, and A. Pescapè"
+    },
+    {
+      "index": 32,
+      "title": "ET-BERT: A Contextualized Datagram Representation with Pre-training Transformers for Encrypted Traffic Classification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Web Conference 2022, WWW ’22",
+      "authors": "X. Lin, G. Xiong, G. Gou, Z. Li, J. Shi, and J. Yu",
+      "orig_title": "Et-bert: A contextualized datagram representation with pre-training transformers for encrypted traffic classification",
+      "paper_id": "2202.06335v2"
+    },
+    {
+      "index": 33,
+      "title": "Large-scale Mobile App Identification Using Deep Learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Access",
+      "authors": "S. Rezaei, B. Kroencke, and X. Liu",
+      "orig_title": "Large-scale mobile app identification using deep learning",
+      "paper_id": "1910.02350v2"
+    },
+    {
+      "index": 34,
+      "title": "Characterization of encrypted and vpn traffic using time-related",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2nd international conference on information systems security and privacy (ICISSP)",
+      "authors": "G. Draper-Gil, A. H. Lashkari, M. S. I. Mamun, and A. A. Ghorbani"
+    },
+    {
+      "index": 35,
+      "title": "Characterization of tor traffic using time based features",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Information Systems Security and Privacy",
+      "authors": "A. H. Lashkari, G. D. Gil, M. S. I. Mamun, and A. A. Ghorbani"
+    },
+    {
+      "index": 36,
+      "title": "How to achieve high classification accuracy with just a few labels: A semi-supervised approach using sampled packets",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1812.09761",
+      "authors": "S. Rezaei and X. Liu"
+    },
+    {
+      "index": 37,
+      "title": "Deep Learning and Zero-Day Traffic Classification: Lessons learned from a commercial-grade dataset",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Network and Service Management",
+      "authors": "L. Yang, A. Finamore, F. Jun, and D. Rossi",
+      "orig_title": "Deep learning and zero-day traffic classification: Lessons learned from a commercial-grade dataset",
+      "paper_id": "2104.03182v2"
+    },
+    {
+      "index": 38,
+      "title": "New directions in automated traffic analysis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM SIGSAC Conference on Computer and Communications Security",
+      "authors": "J. Holland, P. Schmitt, N. Feamster, and P. Mittal"
+    },
+    {
+      "index": 39,
+      "title": "Ggfast: Automating generation of flexible network traffic classifiers",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM SIGCOMM 2023 Conference",
+      "authors": "J. Piet, D. Nwoji, and V. Paxson"
+    },
+    {
+      "index": 40,
+      "title": "AutoGluon-Tabular: Robust and Accurate AutoML for Structured Data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.06505",
+      "authors": "N. Erickson, J. Mueller, A. Shirkov, H. Zhang, P. Larroy, M. Li, and A. Smola",
+      "orig_title": "Autogluon-tabular: Robust and accurate automl for structured data",
+      "paper_id": "2003.06505v1"
+    },
+    {
+      "index": 41,
+      "title": "Mljar: State-of-the-art automated machine learning framework for tabular data. version 0.10.3",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "A. Płońska and P. Płoński"
+    },
+    {
+      "index": 42,
+      "title": "Analyzing learning-based encrypted malware traffic classification with automl",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE International Conference on Communication Technology (ICCT)",
+      "authors": "D. F. Isingizwe, M. Wang, W. Liu, D. Wang, T. Wu, and J. Li"
+    },
+    {
+      "index": 43,
+      "title": "End-to-end encrypted traffic classification with one-dimensional convolution neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "2017 IEEE International Conference on Intelligence and Security Informatics (ISI)",
+      "authors": "W. Wang, M. Zhu, J. Wang, X. Zeng, and Z. Yang"
+    },
+    {
+      "index": 44,
+      "title": "TensorFlow: Large-scale machine learning on heterogeneous systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 45,
+      "title": "Keras",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "F. Chollet et al."
+    },
+    {
+      "index": 46,
+      "title": "Apache spark: A unified engine for big data processing",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Commun. ACM",
+      "authors": "M. Zaharia, R. S. Xin, P. Wendell, T. Das, M. Armbrust, A. Dave, X. Meng, J. Rosen, S. Venkataraman, M. J. Franklin, A. Ghodsi, J. Gonzalez, S. Shenker, and I. Stoica"
+    },
+    {
+      "index": 47,
+      "title": "Hypernets",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "D. IO"
+    },
+    {
+      "index": 48,
+      "title": "TLS Encrypted Client Hello",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Internet Engineering Task Force",
+      "authors": "E. Rescorla, K. Oku, N. Sullivan, and C. A. Wood"
+    },
+    {
+      "index": 49,
+      "title": "Characterization of encrypted and vpn traffic using time-related features",
+      "abstract": "",
+      "year": "2016",
+      "venue": "International Conf. on Information Systems Security and Privacy",
+      "authors": "G. Draper-Gil, A. H. Lashkari et al."
+    },
+    {
+      "index": 50,
+      "title": "Finite-time analysis of the multiarmed bandit problem",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Machine learning",
+      "authors": "P. Auer, N. Cesa-Bianchi, and P. Fischer"
+    },
+    {
+      "index": 51,
+      "title": "Lightgbm: A highly efficient gradient boosting decision tree",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS",
+      "authors": "G. Ke, Q. Meng, T. Finley, T. Wang, W. Chen, W. Ma, Q. Ye, and T.-Y. Liu"
+    },
+    {
+      "index": 52,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in neural information processing systems",
+      "authors": "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 53,
+      "title": "Mt-flowformer: A semi-supervised flow transformer for encrypted traffic classification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM SIGKDD Conference on Knowledge Discovery and Data Mining, KDD ’22",
+      "authors": "R. Zhao, X. Deng, Z. Yan, J. Ma, Z. Xue, and Y. Wang"
+    },
+    {
+      "index": 54,
+      "title": "Understanding and simplifying one-shot architecture search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "G. Bender, P.-J. Kindermans, B. Zoph, V. Vasudevan, and Q. V. Le"
+    }
+  ]
+}

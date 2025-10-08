@@ -1,0 +1,529 @@
+{
+  "paper_id": "2001.01230v1",
+  "title": "Learning fine-grained search space pruning and heuristics for combinatorial optimization 11footnote 1The present manuscript integrates and extends the works [34, 27, 17], which appeared at AAAI’19, the DSO Workshop at IJCAI’19 and CIKM’19, respectively. Part of this work was done while all authors were at Nokia Bell Labs, Ireland.",
+  "abstract": "Abstract\nCombinatorial optimization problems arise naturally in a wide range of applications from diverse domains. Many of these problems are NP-hard and designing efficient heuristics for them requires considerable time, effort and experimentation. On the other hand, the number of optimization problems in the industry continues to grow. In recent years, machine learning techniques have been explored to address this gap. In this paper, we propose a novel framework for leveraging machine learning techniques to scale-up exact combinatorial optimization algorithms.\nIn contrast to the existing approaches based on deep-learning, reinforcement learning and restricted Boltzmann machines that attempt to directly learn the output of the optimization problem from its input (with limited success), our framework learns the relatively simpler task of pruning the elements in order to reduce the size of the problem instances. In addition, our framework uses only interpretable learning models based on intuitive local features and thus the learning process provides deeper insights into the optimization problem and the instance class, that can be used for designing better heuristics.\nFor the classical maximum clique enumeration problem, we show that our framework can prune a large fraction of the input graph (around 99 % of nodes in case of sparse graphs) and still detect almost all of the maximum cliques. This results in several fold speedups of state-of-the-art algorithms. Furthermore, the classification model used in our framework highlights that the chi-squared value of neighborhood degree has a statistically significant correlation with the presence of a node in a maximum clique, particularly in dense graphs which constitute a significant challenge for modern solvers. We leverage this insight to design a novel heuristic for this problem outperforming the state-of-the-art. Our heuristic is also of independent interest for maximum clique detection and enumeration.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "On the relative efficiency of maximal clique enumeration algorithms, with applications to high-throughput computational biology",
+      "abstract": "",
+      "year": "2005",
+      "venue": "International Conference on Research Trends in Science and Technology",
+      "authors": "F. N. Abu-Khzam, N. E. Baldwin, M. A. Langston, and N. F. Samatova"
+    },
+    {
+      "index": 1,
+      "title": "Friends and neighbors on the Web",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Social Networks",
+      "authors": "L. A. Adamic and E. Adar"
+    },
+    {
+      "index": 2,
+      "title": "High performance computational tools for Motif discovery",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Parallel and Distributed Processing Symposium",
+      "authors": "N. E. Baldwin, R. L. Collins, M. A. Langston, M. R. Leuze, C. T. Symons, and B. H. Voy"
+    },
+    {
+      "index": 3,
+      "title": "Spectral sparsification of graphs: Theory and algorithms",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Communications of the ACM",
+      "authors": "J. Batson, D. A. Spielman, N. Srivastava, and S.-H. Teng"
+    },
+    {
+      "index": 4,
+      "title": "Neural Combinatorial Optimization with Reinforcement Learning",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1611.09940",
+      "authors": "I. Bello, H. Pham, Q. V. Le, M. Norouzi, and S. Bengio",
+      "orig_title": "Neural combinatorial optimization with reinforcement learning",
+      "paper_id": "1611.09940v3"
+    },
+    {
+      "index": 5,
+      "title": "Informant accuracy in social network data iv: a comparison of clique-level structure in behavioral and cognitive network data",
+      "abstract": "",
+      "year": "1979",
+      "venue": "Social Networks",
+      "authors": "H. R. Bernard, P. D. Killworth, and L. Sailer"
+    },
+    {
+      "index": 6,
+      "title": "Statistical analysis of financial networks",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Computational Statistics and Data Analysis",
+      "authors": "V. Boginski, S. Butenko, and P. M. Pardalos"
+    },
+    {
+      "index": 7,
+      "title": "Modern graph theory, volume 184",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Springer Science & Business Media",
+      "authors": "B. Bollobás"
+    },
+    {
+      "index": 8,
+      "title": "The Maximum Clique Problem",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Handbook of Combinatorial Optimization",
+      "authors": "I. Bomze, M. Budinich, P. Pardalos, and M. Pelillo"
+    },
+    {
+      "index": 9,
+      "title": "Algorithm 457: finding all cliques of an undirected graph",
+      "abstract": "",
+      "year": "1973",
+      "venue": "Communications of the ACM",
+      "authors": "C. Bron and J. Kerbosch"
+    },
+    {
+      "index": 10,
+      "title": "Clique-detection models in computational biochemistry and genomics",
+      "abstract": "",
+      "year": "2006",
+      "venue": "European Journal of Operational Research",
+      "authors": "S. Butenko and W. Wilhelm"
+    },
+    {
+      "index": 11,
+      "title": "A survey of machine learning for combinatorial optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "30th European Conference on Operational Research",
+      "authors": "G. A. D. Caro"
+    },
+    {
+      "index": 12,
+      "title": "Strong computational lower bounds via parameterized complexity",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Journal of Computer and System Sciences",
+      "authors": "J. Chen, X. Huang, I. A. Kanj, and G. Xia"
+    },
+    {
+      "index": 13,
+      "title": "The igraph software package for complex network research",
+      "abstract": "",
+      "year": "2006",
+      "venue": "InterJournal, Complex Systems",
+      "authors": "G. Csardi and T. Nepusz"
+    },
+    {
+      "index": 14,
+      "title": "Parameterized Algorithms",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer",
+      "authors": "M. Cygan, F. V. Fomin, Ł. Kowalik, D. Lokshtanov, D. Marx, M. Pilipczuk, M. Pilipczuk, and S. Saurabh"
+    },
+    {
+      "index": 15,
+      "title": "Exact parallel maximum clique algorithm for general and protein graphs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Journal of Chemical Information and Modeling",
+      "authors": "M. Depolli, J. Konc, K. Rozman, and J. D."
+    },
+    {
+      "index": 16,
+      "title": "Finding a maximum clique in dense graphs via χ2superscript𝜒2\\chi^{2} statistics",
+      "abstract": "",
+      "year": "2019",
+      "venue": "28th ACM International Conference on Information and Knowledge Management, CIKM ’19",
+      "authors": "S. Dutta and J. Lauri"
+    },
+    {
+      "index": 17,
+      "title": "Neighbor-Aware Search for Approximate Labeled Graph Matching using the Chi-Square Statistics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on World Wide Web (WWW)",
+      "authors": "S. Dutta, P. Nayek, and A. Bhattacharya"
+    },
+    {
+      "index": 18,
+      "title": "The maximum clique problem: Algorithms, applications, and implementations",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "J. D. Eblen"
+    },
+    {
+      "index": 19,
+      "title": "The maximum clique enumeration problem: algorithms, applications, and implementations",
+      "abstract": "",
+      "year": "2012",
+      "venue": "BMC bioinformatics",
+      "authors": "J. D. Eblen, C. A. Phillips, G. L. Rogers, and M. A. Langston"
+    },
+    {
+      "index": 20,
+      "title": "On random graphs, I",
+      "abstract": "",
+      "year": "1959",
+      "venue": "Publicationes Mathematicae (Debrecen)",
+      "authors": "P. Erdös and A. Rényi"
+    },
+    {
+      "index": 21,
+      "title": "Social network analysis: Methods and applications",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Cambridge University Press",
+      "authors": "K. Faust and S. Wasserman"
+    },
+    {
+      "index": 22,
+      "title": "Statistical algorithms and a lower bound for detecting planted cliques",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of the ACM",
+      "authors": "V. Feldman, E. Grigorescu, L. Reyzin, S. S. Vempala, and Y. Xiao"
+    },
+    {
+      "index": 23,
+      "title": "Analytics for an online retailer: Demand forecasting and price optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Manufacturing and Service Operations Management",
+      "authors": "K. Ferreira, B. Lee, and D. Simchi-Levi"
+    },
+    {
+      "index": 24,
+      "title": "Efficient and robust automated machine learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems 28",
+      "authors": "M. Feurer, A. Klein, K. Eggensperger, J. Springenberg, M. Blum, and F. Hutter"
+    },
+    {
+      "index": 25,
+      "title": "Community detection in graphs",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Physics reports",
+      "authors": "S. Fortunato"
+    },
+    {
+      "index": 26,
+      "title": "Learning multi-stage sparsification for maximum clique enumeration",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.00517",
+      "authors": "M. Grassia, J. Lauri, S. Dutta, and D. Ajwani"
+    },
+    {
+      "index": 27,
+      "title": "Large cliques elude the Metropolis process",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Random Structures & Algorithms",
+      "authors": "M. Jerrum"
+    },
+    {
+      "index": 28,
+      "title": "The probabilistic analysis of some combinatorial search algorithms",
+      "abstract": "",
+      "year": "1976",
+      "venue": "Algorithms and complexity: New directions and recent results",
+      "authors": "R. M. Karp"
+    },
+    {
+      "index": 29,
+      "title": "Combinatorial algorithms for dna sequence assembly",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Algorithmica",
+      "authors": "J. C. Kececioglu and E. W. Myers"
+    },
+    {
+      "index": 30,
+      "title": "Learning Combinatorial Optimization Algorithms over Graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "E. Khalil, H. Dai, Y. Zhang, B. Dilkina, and L. Song",
+      "orig_title": "Learning combinatorial optimization algorithms over graphs",
+      "paper_id": "1704.01665v4"
+    },
+    {
+      "index": 31,
+      "title": "Combinatorial optimization, volume 2",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Springer",
+      "authors": "B. Korte, J. Vygen, B. Korte, and J. Vygen"
+    },
+    {
+      "index": 32,
+      "title": "Expected complexity of graph partitioning problems",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "L. Kučera"
+    },
+    {
+      "index": 33,
+      "title": "Fine-grained Search Space Classification for Hard Enumeration Variants of Subset Problems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Thirty-Third AAAI Conference on Artificial Intelligence (AAAI)",
+      "authors": "J. Lauri and S. Dutta",
+      "orig_title": "Fine-grained search space classification for hard enumeration variants of subset problems",
+      "paper_id": "1902.08455v1"
+    },
+    {
+      "index": 34,
+      "title": "A guide to graph colouring, volume 7",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer",
+      "authors": "R. Lewis"
+    },
+    {
+      "index": 35,
+      "title": "On minimization of the number of branches in branch-and-bound algorithms for the maximum clique problem",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Computers and Operations Research",
+      "authors": "C. Li, H. Jiang, and F. Manyàc"
+    },
+    {
+      "index": 36,
+      "title": "On minimization of the number of branches in branch-and-bound algorithms for the maximum clique problem",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Computers & Operations Research",
+      "authors": "C.-M. Li, H. Jiang, and F. Manyà"
+    },
+    {
+      "index": 37,
+      "title": "Finding the maximum clique in massive graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "VLDB",
+      "authors": "C. Lu, J. Yu, H. Wei, and Y. Zhang"
+    },
+    {
+      "index": 38,
+      "title": "Practical graph isomorphism, II",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Journal of Symbolic Computation",
+      "authors": "B. D. McKay and A. Piperno"
+    },
+    {
+      "index": 39,
+      "title": "Learning heuristics over large graphs via deep reinforcement learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "A. Mittal, A. Dhawan, S. Medya, S. Ranu, and A. K. Singh"
+    },
+    {
+      "index": 40,
+      "title": "Scheduling under a non-reversible energy source: An application of piecewise linear bounding of non-linear demand/cost functions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "S. Ngueveu, C. Artigues, and P. Lopez"
+    },
+    {
+      "index": 41,
+      "title": "A fast algorithm for the maximum clique problem",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "P. R. Östergård"
+    },
+    {
+      "index": 42,
+      "title": "Uncovering the overlapping community structure of complex networks in nature and society",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Nature",
+      "authors": "G. Palla, I. Derényi, I. Farkas, and T. Vicsek"
+    },
+    {
+      "index": 43,
+      "title": "Community detection in social media",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Data Mining and Knowledge Discovery",
+      "authors": "S. Papadopoulos, Y. Kompatsiaris, A. Vakali, and P. Spyridonos"
+    },
+    {
+      "index": 44,
+      "title": "Fast Algorithms for the Maximum Clique Problem on Massive Graphs with Applications to Overlapping Community Detection",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Internet Mathematics",
+      "authors": "B. Pattabiraman, M. Patwary, A. Gebremedhin, W. Liao, and A. Choudhary",
+      "orig_title": "Fast algorithms for the maximum clique problem on massive graphs with applications to overlapping community detection",
+      "paper_id": "1411.7460v1"
+    },
+    {
+      "index": 45,
+      "title": "Scalability of using Restricted Boltzmann Machines for Combinatorial Optimization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "European Journal of Operational Research",
+      "authors": "M. Probst, F. Rothlauf, and J. Grahl",
+      "orig_title": "Scalability of using restricted boltzmann machines for combinatorial optimization",
+      "paper_id": "1411.7542v1"
+    },
+    {
+      "index": 46,
+      "title": "Pearson’s χ2superscript𝜒2\\chi^{2} and the likelihood ratio statistic G2superscript𝐺2G^{2}: a comparative review",
+      "abstract": "",
+      "year": "1989",
+      "venue": "International Statistical Review",
+      "authors": "T. Read and N. Cressie"
+    },
+    {
+      "index": 47,
+      "title": "Goodness-of-fit statistics for discrete multivariate data",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Springer Series in Statistics",
+      "authors": "T. R. C. Read and N. A. C. Cressie"
+    },
+    {
+      "index": 48,
+      "title": "Planning as satisfiability: Heuristics",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Artificial Intelligence",
+      "authors": "J. Rintanen"
+    },
+    {
+      "index": 49,
+      "title": "Madagascar: Scalable planning with SAT",
+      "abstract": "",
+      "year": "2014",
+      "venue": "8th International Planning Competition (IPC)",
+      "authors": "J. Rintanen"
+    },
+    {
+      "index": 50,
+      "title": "The network data repository with interactive graph analytics and visualization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Twenty-Ninth AAAI Conference on Artificial Intelligence",
+      "authors": "R. A. Rossi and N. K. Ahmed"
+    },
+    {
+      "index": 51,
+      "title": "Parallel maximum clique algorithms with applications to network analysis",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SIAM Journal on Scientific Computing",
+      "authors": "R. A. Rossi, D. F. Gleich, and A. H. Gebremedhin"
+    },
+    {
+      "index": 52,
+      "title": "A new exact maximum clique algorithm for large and massive sparse graphs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "Computers & Operations Research",
+      "authors": "P. San Segundo, A. Lopez, and P. M. Pardalos"
+    },
+    {
+      "index": 53,
+      "title": "Robust global feature based data association with a sparse bit optimized maximum clique algorithm",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Transactions on Robotics",
+      "authors": "P. San Segundo and D. Rodriguez-Losada"
+    },
+    {
+      "index": 54,
+      "title": "Finding all maximal cliques in dynamic graphs",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Computational Optimization and applications",
+      "authors": "V. Stix"
+    },
+    {
+      "index": 55,
+      "title": "Des valeurs moyennes",
+      "abstract": "",
+      "year": "1867",
+      "venue": "Journal de Mathématiques Pures et Appliquees",
+      "authors": "P. Tchebichef"
+    },
+    {
+      "index": 56,
+      "title": "Combinatorial optimization: exact and approximate algorithms",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Standford University",
+      "authors": "L. Trevisan"
+    },
+    {
+      "index": 57,
+      "title": "Pointer networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "O. Vinyals, M. Fortunato, and N. Jaitly"
+    },
+    {
+      "index": 58,
+      "title": "Exploring graph analytics for cloud troubleshooting",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICAC",
+      "authors": "C. Wang, K. Schwan, B. Laub, M. Kesavan, and A. Gavrilovska"
+    },
+    {
+      "index": 59,
+      "title": "An upper bound for the chromatic number of a graph and its application to timetabling problems",
+      "abstract": "",
+      "year": "1967",
+      "venue": "The Computer Journal",
+      "authors": "D. J. Welsh and M. B. Powell"
+    },
+    {
+      "index": 60,
+      "title": "Run time application repartitioning in dynamic mobile cloud environments",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Cloud Computing",
+      "authors": "L. Yang, J. Cao, S. Tang, D. Han, and N. Suri"
+    },
+    {
+      "index": 61,
+      "title": "A network-aware virtual machine allocation in cloud datacenter",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IFIP International Conference on Network and Parallel Computing",
+      "authors": "Y. Yao, J. Cao, and M. Li"
+    },
+    {
+      "index": 62,
+      "title": "Network motifs in integrated cellular networks of transcription–regulation and protein–protein interaction",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Proceedings of the National Academy of Sciences of the United States of America",
+      "authors": "E. Yeger-Lotem, S. Sattath, N. Kashtan, S. Itzkovitz, R. Milo, R. Y. Pinter, U. Alon, and H. Margalit"
+    },
+    {
+      "index": 63,
+      "title": "Linear degree extractors and the inapproximability of max clique and chromatic number",
+      "abstract": "",
+      "year": "2006",
+      "venue": "38th Annual ACM Symposium on Theory of Computing (STOC)",
+      "authors": "D. Zuckerman"
+    }
+  ]
+}

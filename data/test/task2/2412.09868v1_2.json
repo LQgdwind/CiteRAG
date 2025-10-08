@@ -1,0 +1,379 @@
+{
+  "paper_id": "2412.09868v1",
+  "title": "RP-SLAM: Real-time Photorealistic SLAM with Efficient 3D Gaussian Splatting",
+  "sections": {
+    "ii-c 3d gaussian splatting visual slam": "3DGS has rapidly gained interest within the field of SLAM research due to its rapid rendering capabilities and explicit scene representation. MonoGS4 and SplaTAM represent foundational efforts in coupled GS-SLAM algorithms, pioneering an approach that jointly optimizes Gaussian primitives and camera poses through gradient backpropagation. The concept of sub-maps is introduced by Gaussian-SLAM[ref]36 as a means of mitigating the issue of catastrophic forgetting. LoopSplat builds upon the foundations of Gaussian-SLAM[ref]36 through the utilization of a Gaussian splatting-based loop closure strategy, thereby enhancing the accuracy of poses through the implementation of improved registration techniques. However, a significant obstacle with these methods is that the time-consuming process of estimating the camera pose for each frame using 3DGS places a considerable computational burden, which limits its ability to achieve real-time performance. In order to address this challenge, decoupled 3DGS-based SLAM approaches have been introduced. Splat-SLAM and IG-SLAM employ pre-trained dense bundle adjustment for the purpose of camera pose tracking, while simultaneously utilising proxy depth maps for optimizing map representation. RTG-SLAM integrates frame-to-model ICP for pose tracking and employ the opaque Gaussian primitives for depth rendering. GS-ICP-SLAM attains remarkable speeds by capitalising on the shared covariance between G-ICP and 3DGS. Photo-SLAM6 and CaRtGS0 deploy ORB-SLAM3 for tracking and incorporates a coarse-to-fine approach in map optimization, thereby enhancing system robustness and overall performance. For incremental mapping, these methods often rely on dense pixel sampling to initialize new Gaussian primitives, resulting in redundancy and high storage costs. To optimize scene representation, a common approach selects a fixed number of keyframes, merging them with the latest keyframe into a fixed keyframe window for map optimization. However, this strategy risks local minima and forgetting issues over iterations. In the monocular case, the lack of depth information complicates the accurate addition of new primitives. MonoGS4 initializes primitives using random depths without a geometric foundation, relying entirely on the mapping process for optimization, which hinders precise scene representation. Photo-SLAM6 and CaRtGS0 adopt the spatial gradient-based densification method from the original 3DGS to add primitives. However, the limited iterations fail to optimize these primitives, leading to artifacts caused by mismatches between the geometric and photometric properties of the Gaussian primitives."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Transactions on Robotics",
+      "authors": "C. Campos, R. Elvira, J. J. G. Rodríguez, J. M. Montiel, and J. D. Tardós",
+      "orig_title": "Orb-slam3: An accurate open-source library for visual, visual–inertial, and multimap slam",
+      "paper_id": "2007.11898v2"
+    },
+    {
+      "index": 1,
+      "title": "DROID-SLAM: Deep Visual SLAM for Monocular, Stereo, and RGB-D Cameras",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Z. Teed and J. Deng",
+      "orig_title": "Droid-slam: Deep visual slam for monocular, stereo, and rgb-d cameras",
+      "paper_id": "2108.10869v2"
+    },
+    {
+      "index": 2,
+      "title": "Direct Sparse Odometry",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on pattern analysis and machine intelligence",
+      "authors": "J. Engel, V. Koltun, and D. Cremers",
+      "orig_title": "Direct sparse odometry",
+      "paper_id": "1607.02565v2"
+    },
+    {
+      "index": 3,
+      "title": "Lsd-slam: Large-scale direct monocular slam",
+      "abstract": "",
+      "year": "2014",
+      "venue": "European conference on computer vision",
+      "authors": "J. Engel, T. Schöps, and D. Cremers"
+    },
+    {
+      "index": 4,
+      "title": "NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Communications of the ACM",
+      "authors": "B. Mildenhall, P. P. Srinivasan, M. Tancik, J. T. Barron, R. Ramamoorthi, and R. Ng",
+      "orig_title": "Nerf: Representing scenes as neural radiance fields for view synthesis",
+      "paper_id": "2003.08934v2"
+    },
+    {
+      "index": 5,
+      "title": "iMAP: Implicit Mapping and Positioning in Real-Time",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF international conference on computer vision",
+      "authors": "E. Sucar, S. Liu, J. Ortiz, and A. J. Davison",
+      "orig_title": "imap: Implicit mapping and positioning in real-time",
+      "paper_id": "2103.12352v2"
+    },
+    {
+      "index": 6,
+      "title": "NICE-SLAM: Neural Implicit Scalable Encoding for SLAM",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF conference on computer vision and pattern recognition",
+      "authors": "Z. Zhu, S. Peng, V. Larsson, W. Xu, H. Bao, Z. Cui, M. R. Oswald, and M. Pollefeys",
+      "orig_title": "Nice-slam: Neural implicit scalable encoding for slam",
+      "paper_id": "2112.12130v2"
+    },
+    {
+      "index": 7,
+      "title": "NeRF-SLAM: Real-Time Dense Monocular SLAM with Neural Radiance Fields",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "authors": "A. Rosinol, J. J. Leonard, and L. Carlone",
+      "orig_title": "Nerf-slam: Real-time dense monocular slam with neural radiance fields",
+      "paper_id": "2210.13641v1"
+    },
+    {
+      "index": 8,
+      "title": "NeB-SLAM: Neural Blocks-based Salable RGB-D SLAM for Unknown Scenes",
+      "abstract": "",
+      "year": "2024",
+      "venue": "arXiv preprint arXiv:2405.15151",
+      "authors": "L. Bai, C. Tian, J. Yang, S. Zhang, and W. Liang",
+      "orig_title": "Neb-slam: Neural blocks-based salable rgb-d slam for unknown scenes",
+      "paper_id": "2405.15151v2"
+    },
+    {
+      "index": 9,
+      "title": "Co-SLAM: Joint Coordinate and Sparse Parametric Encodings for Neural Real-Time SLAM",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "H. Wang, J. Wang, and L. Agapito",
+      "orig_title": "Co-slam: Joint coordinate and sparse parametric encodings for neural real-time slam",
+      "paper_id": "2304.14377v1"
+    },
+    {
+      "index": 10,
+      "title": "Instant Neural Graphics Primitives with a Multiresolution Hash Encoding",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM transactions on graphics (TOG)",
+      "authors": "T. Müller, A. Evans, C. Schied, and A. Keller",
+      "orig_title": "Instant neural graphics primitives with a multiresolution hash encoding",
+      "paper_id": "2201.05989v2"
+    },
+    {
+      "index": 11,
+      "title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ACM Trans. Graph.",
+      "authors": "B. Kerbl, G. Kopanas, T. Leimkühler, and G. Drettakis",
+      "orig_title": "3d gaussian splatting for real-time radiance field rendering",
+      "paper_id": "2308.04079v1"
+    },
+    {
+      "index": 12,
+      "title": "Splatam: Splat track & map 3d gaussians for dense rgb-d slam",
+      "abstract": "",
+      "year": "2024",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "N. Keetha, J. Karhade, K. M. Jatavallabhula, G. Yang, S. Scherer, D. Ramanan, and J. Luiten"
+    },
+    {
+      "index": 13,
+      "title": "Gaussian Splatting SLAM",
+      "abstract": "",
+      "year": "2024",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "H. Matsuki, R. Murai, P. H. Kelly, and A. J. Davison",
+      "orig_title": "Gaussian splatting slam",
+      "paper_id": "2312.06741v2"
+    },
+    {
+      "index": 14,
+      "title": "RTG-SLAM: Real-time 3D Reconstruction at Scale Using Gaussian Splatting",
+      "abstract": "",
+      "year": "2024",
+      "venue": "ACM SIGGRAPH 2024 Conference Papers",
+      "authors": "Z. Peng, T. Shao, Y. Liu, J. Zhou, Y. Yang, J. Wang, and K. Zhou",
+      "orig_title": "Rtg-slam: Real-time 3d reconstruction at scale using gaussian splatting",
+      "paper_id": "2404.19706v3"
+    },
+    {
+      "index": 15,
+      "title": "Photo-SLAM: Real-time Simultaneous Localization and Photorealistic Mapping for Monocular, Stereo, and RGB-D Cameras",
+      "abstract": "",
+      "year": "2024",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "H. Huang, L. Li, H. Cheng, and S.-K. Yeung",
+      "orig_title": "Photo-slam: Real-time simultaneous localization and photorealistic mapping for monocular stereo and rgb-d cameras",
+      "paper_id": "2311.16728v2"
+    },
+    {
+      "index": 16,
+      "title": "RGBD GS-ICP SLAM",
+      "abstract": "",
+      "year": "2025",
+      "venue": "European Conference on Computer Vision",
+      "authors": "S. Ha, J. Yeon, and H. Yu",
+      "orig_title": "Rgbd gs-icp slam",
+      "paper_id": "2403.12550v2"
+    },
+    {
+      "index": 17,
+      "title": "Kinectfusion: Real-time dense surface mapping and tracking",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE international symposium on mixed and augmented reality",
+      "authors": "R. A. Newcombe, S. Izadi, O. Hilliges, D. Molyneaux, D. Kim, A. J. Davison, P. Kohi, J. Shotton, S. Hodges, and A. Fitzgibbon"
+    },
+    {
+      "index": 18,
+      "title": "Generalized-icp.",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Robotics: science and systems",
+      "authors": "A. Segal, D. Haehnel, and S. Thrun"
+    },
+    {
+      "index": 19,
+      "title": "CaRtGS: Computational Alignment for Real-Time Gaussian Splatting SLAM",
+      "abstract": "",
+      "year": "2024",
+      "venue": "arXiv preprint arXiv:2410.00486",
+      "authors": "D. Feng, Z. Chen, Y. Yin, S. Zhong, Y. Qi, and H. Chen",
+      "orig_title": "Cartgs: Computational alignment for real-time gaussian splatting slam",
+      "paper_id": "2410.00486v4"
+    },
+    {
+      "index": 20,
+      "title": "A benchmark for the evaluation of rgb-d slam systems",
+      "abstract": "",
+      "year": "2012",
+      "venue": "IEEE/RSJ international conference on intelligent robots and systems",
+      "authors": "J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers"
+    },
+    {
+      "index": 21,
+      "title": "The replica dataset: A digital replica of indoor spaces",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1906.05797",
+      "authors": "J. Straub, T. Whelan, L. Ma, Y. Chen, E. Wijmans, S. Green, J. J. Engel, R. Mur-Artal, C. Ren, S. Verma et al."
+    },
+    {
+      "index": 22,
+      "title": "ScanNet++: A High-Fidelity Dataset of 3D Indoor Scenes",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "C. Yeshwanth, Y.-C. Liu, M. Nießner, and A. Dai",
+      "orig_title": "Scannet++: A high-fidelity dataset of 3d indoor scenes",
+      "paper_id": "2308.11417v1"
+    },
+    {
+      "index": 23,
+      "title": "ORB-SLAM: a Versatile and Accurate Monocular SLAM System",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE transactions on robotics",
+      "authors": "R. Mur-Artal, J. M. M. Montiel, and J. D. Tardos",
+      "orig_title": "Orb-slam: a versatile and accurate monocular slam system",
+      "paper_id": "1502.00956v2"
+    },
+    {
+      "index": 24,
+      "title": "Orb-slam2: An open-source slam system for monocular, stereo, and rgb-d cameras",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on robotics",
+      "authors": "R. Mur-Artal and J. D. Tardós"
+    },
+    {
+      "index": 25,
+      "title": "Dtam: Dense tracking and mapping in real-time",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE international conference on computer vision",
+      "authors": "R. A. Newcombe, S. J. Lovegrove, and A. J. Davison"
+    },
+    {
+      "index": 26,
+      "title": "A volumetric method for building complex models from range images",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Computer graphics and interactive techniques",
+      "authors": "B. Curless and M. Levoy"
+    },
+    {
+      "index": 27,
+      "title": "Real-time 3d reconstruction at scale using voxel hashing",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM Transactions on Graphics (ToG)",
+      "authors": "M. Nießner, M. Zollhöfer, S. Izadi, and M. Stamminger"
+    },
+    {
+      "index": 28,
+      "title": "Very high frame rate volumetric integration of depth images on mobile devices",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "O. Kähler, V. A. Prisacariu, C. Y. Ren, X. Sun, P. Torr, and D. Murray"
+    },
+    {
+      "index": 29,
+      "title": "Scalable real-time volumetric surface reconstruction.",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ACM Trans. Graph.",
+      "authors": "J. Chen, D. Bautembach, and S. Izadi"
+    },
+    {
+      "index": 30,
+      "title": "Octree-based fusion for realtime 3d reconstruction",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Graphical Models",
+      "authors": "M. Zeng, F. Zhao, J. Zheng, and X. Liu"
+    },
+    {
+      "index": 31,
+      "title": "Efficient octree-based volumetric slam supporting signed-distance and occupancy mapping",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Robotics and Automation Letters",
+      "authors": "E. Vespa, N. Nikolov, M. Grimm, L. Nardi, P. H. Kelly, and S. Leutenegger"
+    },
+    {
+      "index": 32,
+      "title": "iNeRF: Inverting Neural Radiance Fields for Pose Estimation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "authors": "L. Yen-Chen, P. Florence, J. T. Barron, A. Rodriguez, P. Isola, and T.-Y. Lin",
+      "orig_title": "inerf: Inverting neural radiance fields for pose estimation",
+      "paper_id": "2012.05877v3"
+    },
+    {
+      "index": 33,
+      "title": "BARF : Bundle-Adjusting Neural Radiance Fields",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF international conference on computer vision",
+      "authors": "C.-H. Lin, W.-C. Ma, A. Torralba, and S. Lucey",
+      "orig_title": "Barf: Bundle-adjusting neural radiance fields",
+      "paper_id": "2104.06405v2"
+    },
+    {
+      "index": 34,
+      "title": "GO-SLAM: Global Optimization for Consistent 3D Instant Reconstruction",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Y. Zhang, F. Tosi, S. Mattoccia, and M. Poggi",
+      "orig_title": "Go-slam: Global optimization for consistent 3d instant reconstruction",
+      "paper_id": "2309.02436v1"
+    },
+    {
+      "index": 35,
+      "title": "Gaussian-SLAM: Photo-realistic Dense SLAM with Gaussian Splatting",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv preprint arXiv:2312.10070",
+      "authors": "V. Yugay, Y. Li, T. Gevers, and M. R. Oswald",
+      "orig_title": "Gaussian-slam: Photo-realistic dense slam with gaussian splatting",
+      "paper_id": "2312.10070v2"
+    },
+    {
+      "index": 36,
+      "title": "LoopSplat: Loop Closure by Registering 3D Gaussian Splats",
+      "abstract": "",
+      "year": "2024",
+      "venue": "arXiv preprint arXiv:2408.10154",
+      "authors": "L. Zhu, Y. Li, E. Sandström, K. Schindler, and I. Armeni",
+      "orig_title": "Loopsplat: Loop closure by registering 3d gaussian splats",
+      "paper_id": "2408.10154v2"
+    },
+    {
+      "index": 37,
+      "title": "Splat-slam: Globally optimized rgb-only slam with 3d gaussians",
+      "abstract": "",
+      "year": "2024",
+      "venue": "arXiv preprint arXiv:2405.16544",
+      "authors": "E. Sandström, K. Tateno, M. Oechsle, M. Niemeyer, L. Van Gool, M. R. Oswald, and F. Tombari"
+    },
+    {
+      "index": 38,
+      "title": "IG-SLAM: Instant Gaussian SLAM",
+      "abstract": "",
+      "year": "2024",
+      "venue": "arXiv preprint arXiv:2408.01126",
+      "authors": "F. A. Sarikamis and A. A. Alatan",
+      "orig_title": "Ig-slam: Instant gaussian slam",
+      "paper_id": "2408.01126v2"
+    },
+    {
+      "index": 39,
+      "title": "Accelerating 3D Deep Learning with PyTorch3D",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv:2007.08501",
+      "authors": "N. Ravi, J. Reizenstein, D. Novotny, T. Gordon, W.-Y. Lo, J. Johnson, and G. Gkioxari",
+      "orig_title": "Accelerating 3d deep learning with pytorch3d",
+      "paper_id": "2007.08501v1"
+    }
+  ]
+}

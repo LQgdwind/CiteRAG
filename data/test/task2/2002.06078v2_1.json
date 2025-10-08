@@ -1,0 +1,367 @@
+{
+  "paper_id": "2002.06078v2",
+  "title": "On the complexity of finding large odd induced subgraphs and odd coloringsWork supported by French projects DEMOGRAPH (ANR-16-CE40-0028), ESIGMA (ANR-17-CE23-0010), and ELIT (ANR-20-CE48-0008-01), the program “Exploration Japon 2017” of the French embassy in Japan, and the JSPS KAKENHI grant number JP18K11157. An extended abstract of this article appeared in the Proceedings of the 46th International Workshop on Graph-Theoretic Concepts in Computer Science (WG), volume 12301 of LNCS, pages 67-79, held online, June 2020. This article is permanently available at https://arxiv.org/abs/2002.06078.",
+  "sections": {
+    "introduction": "Gallai proved, around 60 years ago, that the vertex set of every graph can be partitioned (in polynomial time) into two sets, each of them inducing a subgraph in which all vertices have even degree (cf. [33, Exercise 5.19]). Let us call such a subgraph an even subgraph, and an odd subgraph is defined similarly. Hence, every graph G𝐺G contains an even induced subgraph with at least |V​(G)|/2𝑉𝐺2|V(G)|/2 vertices. The analogous properties for odd subgraphs seem to be more elusive. For a graph G𝐺G, let 𝗆𝗈𝗌​(G)𝗆𝗈𝗌𝐺{\\sf mos}(G) and χ𝗈𝖽𝖽​(G)subscript𝜒𝗈𝖽𝖽𝐺\\chi_{{\\sf odd}}(G) be the order of a largest odd induced subgraph of G𝐺G and the minimum number of odd induced subgraphs of G𝐺G that partition V​(G)𝑉𝐺V(G), respectively. Note that for χ𝗈𝖽𝖽​(G)subscript𝜒𝗈𝖽𝖽𝐺\\chi_{{\\sf odd}}(G) to be well-defined, each connected component of G𝐺G must have even order. Concerning the former parameter, the following long-standing –and still open– conjecture is cited as “part of the graph theory folklore” by Caro : there exists a positive constant c𝑐c such that every graph G𝐺G without isolated vertices satisfies 𝗆𝗈𝗌​(G)≥c⋅|V​(G)|𝗆𝗈𝗌𝐺⋅𝑐𝑉𝐺{\\sf mos}(G)\\geq c\\cdot|V(G)|. In the following discussion we only consider graphs without isolated vertices. Caro  proved that 𝗆𝗈𝗌​(G)≥(1−o​(1))​n/6𝗆𝗈𝗌𝐺1𝑜1𝑛6{\\sf mos}(G)\\geq(1-o(1))\\sqrt{n/6} where n=|V​(G)|𝑛𝑉𝐺n=|V(G)|, and Scott  improved this bound to c​nlog⁡n𝑐𝑛𝑛\\frac{cn}{\\log n} for some c>0𝑐0c>0. The conjecture has been proved for particular graph classes, such as trees , graphs of bounded chromatic number , graphs of maximum degree three , and graphs of tree-width at most two 7, also obtaining best possible constants. As for the complexity of computing 𝗆𝗈𝗌​(G)𝗆𝗈𝗌𝐺{\\sf mos}(G), Cai and Yang  studied, among other problems, two parameterized versions of this problem, and their reductions imply that it is NP-hard. They also prove the NP-hardness of computing the largest size of an even induced subgraph of a graph G𝐺G, denoted 𝗆𝖾𝗌​(G)𝗆𝖾𝗌𝐺{\\sf mes}(G). As a follow-up of , related problems were studied by Cygan et al.  and Goyal et al. . The parameter χ𝗈𝖽𝖽subscript𝜒𝗈𝖽𝖽\\chi_{{\\sf odd}}, which we call the odd chromatic number, has attracted much less interest in the literature. To the best of our knowledge, it has only been considered by Scott , who defined it (using a different notation) and proved that the necessary condition discussed above for χ𝗈𝖽𝖽​(G)subscript𝜒𝗈𝖽𝖽𝐺\\chi_{{\\sf odd}}(G) to be well-defined is also sufficient. He also provided lower and upper bounds on the maximum value of χ𝗈𝖽𝖽​(G)subscript𝜒𝗈𝖽𝖽𝐺\\chi_{{\\sf odd}}(G) over all n𝑛n-vertex graphs. In particular, there are graphs G𝐺G for which χ𝗈𝖽𝖽​(G)=Ω​(n)subscript𝜒𝗈𝖽𝖽𝐺Ω𝑛\\chi_{{\\sf odd}}(G)=\\Omega(\\sqrt{n}). Our contribution. In this article we mostly focus on computational aspects of the parameters 𝗆𝗈𝗌𝗆𝗈𝗌{\\sf mos} and χ𝗈𝖽𝖽subscript𝜒𝗈𝖽𝖽\\chi_{{\\sf odd}}. Note that, given a graph G𝐺G, deciding whether χ𝗈𝖽𝖽​(G)≤1subscript𝜒𝗈𝖽𝖽𝐺1\\chi_{{\\sf odd}}(G)\\leq 1 is trivial. We prove that deciding whether χ𝗈𝖽𝖽​(G)≤qsubscript𝜒𝗈𝖽𝖽𝐺𝑞\\chi_{{\\sf odd}}(G)\\leq q is NP-complete for every q≥3𝑞3q\\geq 3 using a reduction from q𝑞q-Coloring. We obtain a dichotomy on the complexity of computing χ𝗈𝖽𝖽subscript𝜒𝗈𝖽𝖽\\chi_{{\\sf odd}} by showing that deciding whether χ𝗈𝖽𝖽​(G)≤2subscript𝜒𝗈𝖽𝖽𝐺2\\chi_{{\\sf odd}}(G)\\leq 2 can be solved in polynomial time, through a reduction to the existence of a feasible solution to a system of linear equations over GF. Given the NP-hardness of computing both parameters, we are interested in its parameterized complexity  , namely in identifying relevant parameters k𝑘k that allow for FPT algorithms, that is, algorithms running in time f​(k)⋅n𝒪​(1)⋅𝑓𝑘superscript𝑛𝒪1f(k)\\cdot n^{{\\mathcal{O}}(1)} for some computable function f𝑓f. Since the natural parameter, that is, the solution size, for 𝗆𝗈𝗌𝗆𝗈𝗌{\\sf mos} has been studied by Cai and Yang  (and its dual as well), and for χ𝗈𝖽𝖽subscript𝜒𝗈𝖽𝖽\\chi_{{\\sf odd}} the problem is para-NP-hard by our hardness results, we rather focus on structural parameters. Two of the most successful ones are definitely tree-width and clique-width, or its parametrically equivalent parameter rank-width introduced by Oum and Seymour 6. This latter parameter is stronger than tree-width, in the sense that graph classes of bounded tree-width also have bounded rank-width; see Fig 1. We present algorithms running in time 2𝒪​(𝗋𝗐)⋅n𝒪​(1)⋅superscript2𝒪𝗋𝗐superscript𝑛𝒪12^{{\\mathcal{O}}({\\sf rw})}\\cdot n^{{\\mathcal{O}}(1)} for computing 𝗆𝖾𝗌​(G)𝗆𝖾𝗌𝐺{\\sf mes}(G) and 𝗆𝗈𝗌​(G)𝗆𝗈𝗌𝐺{\\sf mos}(G) for an n𝑛n-vertex graph G𝐺G given along with a decomposition tree of width at most 𝗋𝗐𝗋𝗐{\\sf rw}, and an algorithm in time 2𝒪​(q⋅𝗋𝗐)⋅n𝒪​(1)⋅superscript2𝒪⋅𝑞𝗋𝗐superscript𝑛𝒪12^{{\\mathcal{O}}(q\\cdot{\\sf rw})}\\cdot n^{{\\mathcal{O}}(1)} for deciding whether χ𝗈𝖽𝖽​(G)≤qsubscript𝜒𝗈𝖽𝖽𝐺𝑞\\chi_{{\\sf odd}}(G)\\leq q. These algorithms are inspired by the ones of Bui-Xuan et al.   to solve Maximum Independent Set parameterized by rank-width and boolean-width, respectively. To the best of our knowledge, our algorithms are the first ones parameterized by rank-width for an NP-hard problem running in time 2o​(𝗋𝗐2)⋅n𝒪​(1)⋅superscript2𝑜superscript𝗋𝗐2superscript𝑛𝒪12^{o({\\sf rw}^{2})}\\cdot n^{{\\mathcal{O}}(1)}   5 2 3. We also show that the dependency on rank-width of the above algorithms is asymptotically optimal under the Exponential Time Hypothesis (ETH) of Impagliazzo et al. 9 8. For this, it suffices to obtain a linear NP-hardness reduction from a problem for which a subexponential algorithm does not exist under the ETH. While our reduction to decide whether χ𝗈𝖽𝖽​(G)≤qsubscript𝜒𝗈𝖽𝖽𝐺𝑞\\chi_{{\\sf odd}}(G)\\leq q already satisfies this property, the NP-hardness proof of Cai and Yang  for computing 𝗆𝖾𝗌​(G)𝗆𝖾𝗌𝐺{\\sf mes}(G) and 𝗆𝗈𝗌​(G)𝗆𝗈𝗌𝐺{\\sf mos}(G), which is from the Exact Odd Set problem 5, has a quadratic blow-up, so only a lower bound of 2o​(n)superscript2𝑜𝑛2^{o(\\sqrt{n})} can be deduced from it. Motivated by this, we present linear NP-hardness reductions from 2in3-Sat to the problems of computing 𝗆𝖾𝗌​(G)𝗆𝖾𝗌𝐺{\\sf mes}(G) and 𝗆𝗈𝗌​(G)𝗆𝗈𝗌𝐺{\\sf mos}(G). The reduction itself is not very complicated, but the correctness proof requires some non-trivial arguments111We would like to mention that another NP-hardness proof for computing 𝗆𝖾𝗌​(G)𝗆𝖾𝗌𝐺{\\sf mes}(G) has very recently appeared online 0. The proof uses a chain of reductions from Maximum Cut and, although it also involves a quadratic blow-up, it can be avoided by starting from Maximum Cut restricted to graphs of bounded degree.. Finally, motivated by the complexity of computing these parameters, we obtain two tight bounds on their values. We first prove that for every graph G𝐺G with all components of even order, χ𝗈𝖽𝖽​(G)≤𝗍𝗐​(G)+1subscript𝜒𝗈𝖽𝖽𝐺𝗍𝗐𝐺1\\chi_{{\\sf odd}}(G)\\leq{\\sf tw}(G)+1, where 𝗍𝗐​(G)𝗍𝗐𝐺{\\sf tw}(G) denotes the tree-width of G𝐺G. This result improves the best known lower bound on a parameter defined by Hou et al. 7 (cf. Section 5 for the details). On the other hand, we prove that, for every n𝑛n-vertex graph G𝐺G such that V​(G)𝑉𝐺V(G) can be partitioned into two non-empty sets that are complete to each other (i.e., a join), 𝗆𝗈𝗌​(G)≥2⋅⌈n−24⌉𝗆𝗈𝗌𝐺⋅2𝑛24{\\sf mos}(G)\\geq 2\\cdot\\left\\lceil\\frac{n-2}{4}\\right\\rceil.\nIn particular, this proves the conjecture about the linear size of an odd induced subgraph for cographs, which are the graphs of clique-width two. This adds another graph class to the previous ones for which the conjecture is known to be true    7. It is interesting to mention that our proof implies that, for a cograph G𝐺G, χ𝗈𝖽𝖽​(G)≤3subscript𝜒𝗈𝖽𝖽𝐺3\\chi_{{\\sf odd}}(G)\\leq 3, and this bound is also tight. While for cographs, or equivalently P4subscript𝑃4P_{4}-free graphs, we have proved that the odd chromatic number is bounded, we also show that it is unbounded for P5subscript𝑃5P_{5}-free graphs. Organization. We start with some preliminaries in Section 2. In Section 3 we provide the linear NP-hardness reductions and the polynomial-time algorithm for deciding whether χ𝗈𝖽𝖽​(G)≤2subscript𝜒𝗈𝖽𝖽𝐺2\\chi_{{\\sf odd}}(G)\\leq 2. The FPT algorithms by rank-width are presented in Section 4, and the tight bounds in Section 5. We conclude the article in Section 6 with a number of open problems and research directions. Additional results for related problems discussed in the conclusions can be found in Appendix 0.A."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Rank based approach on graphs with structured neighborhood",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "B. Bergougnoux and M. M. Kanté"
+    },
+    {
+      "index": 1,
+      "title": "More Applications of the d𝑑d-Neighbor Equivalence: Connectivity and Acyclicity Constraints",
+      "abstract": "",
+      "year": "2019",
+      "venue": "27th Annual European Symposium on Algorithms (ESA), LIPIcs, 144",
+      "authors": "B. Bergougnoux and M. M. Kanté"
+    },
+    {
+      "index": 2,
+      "title": "Odd induced subgraphs in graphs of maximum degree three",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Australasian Journal of Combinatorics",
+      "authors": "D. M. Berman, H. Wang, and L. Wargo"
+    },
+    {
+      "index": 3,
+      "title": "H𝐻H-join decomposable graphs and algorithms with runtime single exponential in rankwidth",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "B. Bui-Xuan, J. A. Telle, and M. Vatshelle"
+    },
+    {
+      "index": 4,
+      "title": "Boolean-width of graphs",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Theoretical Computer Science",
+      "authors": "B. Bui-Xuan, J. A. Telle, and M. Vatshelle"
+    },
+    {
+      "index": 5,
+      "title": "Fast dynamic programming for locally checkable vertex subset and vertex partitioning problems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Theoretical Computer Science",
+      "authors": "B. Bui-Xuan, J. A. Telle, and M. Vatshelle"
+    },
+    {
+      "index": 6,
+      "title": "Parameterized complexity of even/odd subgraph problems",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of Discrete Algorithms",
+      "authors": "L. Cai and B. Yang"
+    },
+    {
+      "index": 7,
+      "title": "On induced subgraphs with odd degrees",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Discrete Mathematics",
+      "authors": "Y. Caro"
+    },
+    {
+      "index": 8,
+      "title": "The odd domination number of a graph",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Journal of Combinatorial Mathematics and Combinatorial Computing",
+      "authors": "Y. Caro and W. Klostermeyer"
+    },
+    {
+      "index": 9,
+      "title": "Connected odd dominating sets in graphs",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Discussiones Mathematicae Graph Theory",
+      "authors": "Y. Caro, W. Klostermeyer, and R. Yuster"
+    },
+    {
+      "index": 10,
+      "title": "Parameterized Algorithms",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Springer",
+      "authors": "M. Cygan, F. V. Fomin, L. Kowalik, D. Lokshtanov, D. Marx, M. Pilipczuk, M. Pilipczuk, and S. Saurabh"
+    },
+    {
+      "index": 11,
+      "title": "Parameterized Complexity of Eulerian Deletion Problems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Algorithmica",
+      "authors": "M. Cygan, D. Marx, M. Pilipczuk, M. Pilipczuk, and I. Schlotter"
+    },
+    {
+      "index": 12,
+      "title": "Graph Theory, 4th Edition, volume 173 of Graduate texts in mathematics",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Springer",
+      "authors": "R. Diestel"
+    },
+    {
+      "index": 13,
+      "title": "Fundamentals of Parameterized Complexity",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Texts in Computer Science. Springer",
+      "authors": "R. G. Downey and M. R. Fellows"
+    },
+    {
+      "index": 14,
+      "title": "The parametrized complexity of some fundamental problems in coding theory",
+      "abstract": "",
+      "year": "1999",
+      "venue": "SIAM Journal on Computing",
+      "authors": "R. G. Downey, M. R. Fellows, A. Vardy, and G. Whittle"
+    },
+    {
+      "index": 15,
+      "title": "On the complexity of some colorful problems parameterized by treewidth",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Information and Computation",
+      "authors": "M. R. Fellows, F. V. Fomin, D. Lokshtanov, F. A. Rosamond, S. Saurabh, S. Szeider, and C. Thomassen"
+    },
+    {
+      "index": 16,
+      "title": "Parameterized Complexity Theory",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Texts in Theoretical Computer Science. Springer",
+      "authors": "J. Flum and M. Grohe"
+    },
+    {
+      "index": 17,
+      "title": "Intractability of Clique-Width Parameterizations",
+      "abstract": "",
+      "year": "2010",
+      "venue": "SIAM Journal on Computing",
+      "authors": "F. V. Fomin, P. A. Golovach, D. Lokshtanov, and S. Saurabh"
+    },
+    {
+      "index": 18,
+      "title": "Almost optimal lower bounds for problems parameterized by clique-width",
+      "abstract": "",
+      "year": "2014",
+      "venue": "SIAM Journal on Computing",
+      "authors": "F. V. Fomin, P. A. Golovach, D. Lokshtanov, and S. Saurabh"
+    },
+    {
+      "index": 19,
+      "title": "Clique-width III: Hamiltonian Cycle and the Odd Case of Graph Coloring",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM Transactions on Algorithms",
+      "authors": "F. V. Fomin, P. A. Golovach, D. Lokshtanov, S. Saurabh, and M. Zehavi"
+    },
+    {
+      "index": 20,
+      "title": "An orientation theorem with parity conditions",
+      "abstract": "",
+      "year": "1999",
+      "venue": "7th International Conference on Integer Programming and Combinatorial Optimization (IPCO), LNCS, 1610",
+      "authors": "A. Frank, T. Jordán, and Z. Szigeti"
+    },
+    {
+      "index": 21,
+      "title": "Better algorithms for satisfiability problems for formulas of bounded rank-width",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Fundamenta Informaticae",
+      "authors": "R. Ganian, P. Hlinený, and J. Obdrzálek"
+    },
+    {
+      "index": 22,
+      "title": "A unified approach to polynomial algorithms on graphs of bounded (bi-)rank-width",
+      "abstract": "",
+      "year": "2013",
+      "venue": "European Journal of Combinatorics",
+      "authors": "R. Ganian, P. Hlinený, and J. Obdrzálek"
+    },
+    {
+      "index": 23,
+      "title": "Finding Even Subgraphs Even Faster",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of Computer and System Sciences",
+      "authors": "P. Goyal, P. Misra, F. Panolan, G. Philip, and S. Saurabh",
+      "orig_title": "Finding even subgraphs even faster",
+      "paper_id": "1409.4935v1"
+    },
+    {
+      "index": 24,
+      "title": "On weak odd domination and graph-based quantum secret sharing",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Theoretical Computer Science",
+      "authors": "S. Gravier, J. Javelle, M. Mhalla, and S. Perdrix"
+    },
+    {
+      "index": 25,
+      "title": "Mod-2 Independence and Domination in Graphs",
+      "abstract": "",
+      "year": "2000",
+      "venue": "International Journal of Foundations of Computer Science",
+      "authors": "M. M. Halldórsson, J. Kratochvíl, and J. A. Telle"
+    },
+    {
+      "index": 26,
+      "title": "Odd induced subgraphs in graphs with treewidth at most two",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Graphs and Combinatorics",
+      "authors": "X. Hou, L. Yu, J. Li, and B. Liu"
+    },
+    {
+      "index": 27,
+      "title": "On the complexity of SAT",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Journal of Computer and System Sciences",
+      "authors": "R. Impagliazzo and R. Paturi",
+      "orig_title": "On the Complexity of k𝑘k-SAT",
+      "paper_id": "2111.06967v3"
+    },
+    {
+      "index": 28,
+      "title": "Which Problems Have Strongly Exponential Complexity?",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Journal of Computer and System Sciences",
+      "authors": "R. Impagliazzo, R. Paturi, and F. Zane"
+    },
+    {
+      "index": 29,
+      "title": "Treewidth. Computations and Approximations.",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Springer-Verlag LNCS",
+      "authors": "T. Kloks"
+    },
+    {
+      "index": 30,
+      "title": "Known algorithms on graphs of bounded treewidth are probably optimal",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACM Transactions on Algorithms",
+      "authors": "D. Lokshtanov, D. Marx, and S. Saurabh"
+    },
+    {
+      "index": 31,
+      "title": "Slightly superexponential parameterized problems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIAM Journal on Computing",
+      "authors": "D. Lokshtanov, D. Marx, and S. Saurabh"
+    },
+    {
+      "index": 32,
+      "title": "Combinatorial Problems and Exercises",
+      "abstract": "",
+      "year": "1979",
+      "venue": "North-Holland, Amsterdam",
+      "authors": "L. Lovász"
+    },
+    {
+      "index": 33,
+      "title": "Invitation to Fixed-Parameter Algorithms",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Oxford University Press",
+      "authors": "R. Niedermeier"
+    },
+    {
+      "index": 34,
+      "title": "Rank-width: Algorithmic and structural results",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "S. Oum",
+      "orig_title": "Rank-width: Algorithmic and structural results",
+      "paper_id": "1601.03800v2"
+    },
+    {
+      "index": 35,
+      "title": "Approximating clique-width and branch-width",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Journal of Combinatorial Theory, Series B",
+      "authors": "S. Oum and P. D. Seymour"
+    },
+    {
+      "index": 36,
+      "title": "XSAT and NAE-SAT of linear CNF classes",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Discrete Applied Mathematics",
+      "authors": "S. Porschen, T. Schmidt, E. Speckenmeyer, and A. Wotzlaw"
+    },
+    {
+      "index": 37,
+      "title": "Every tree contains a large induced subgraph with all degrees odd",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Discrete Mathematics",
+      "authors": "A. J. Radcliffe and A. D. Scott"
+    },
+    {
+      "index": 38,
+      "title": "MSOL partitioning problems on graphs of bounded treewidth and clique-width",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Theoretical Computer Science",
+      "authors": "M. Rao"
+    },
+    {
+      "index": 39,
+      "title": "https://cstheory.stackexchange.com/questions/45885/complexity-of-finding-the-largest-induced-subgraph-with-all-even-degrees",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "A. Röyskö"
+    },
+    {
+      "index": 40,
+      "title": "Large induced subgraphs with all degrees odd",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Combinatorics, Probability & Computing",
+      "authors": "A. D. Scott"
+    },
+    {
+      "index": 41,
+      "title": "On induced subgraphs with all degrees odd",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Graphs and Combinatorics",
+      "authors": "A. D. Scott"
+    },
+    {
+      "index": 42,
+      "title": "Additive automata on graphs",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Complex Systems",
+      "authors": "K. Sutner"
+    },
+    {
+      "index": 43,
+      "title": "The intractability of computing the minimum distance of a code",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE Transactions on Information Theory",
+      "authors": "A. Vardy"
+    }
+  ]
+}

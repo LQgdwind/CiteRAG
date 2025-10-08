@@ -1,0 +1,447 @@
+{
+  "paper_id": "2002.10091v2",
+  "title": "Towards unique and unbiased causal effect estimation from data with hidden variables",
+  "sections": {
+    "i introduction": "Causal inference   has been widely studied to understand the underlying mechanisms of phenomena in economics, medicine, and social science, to name but a few. One major task for causal inference is causal effect estimation, e.g. estimating the effect of a drug on a disease or the effect of a policy on the employment rate of a certain population. Randomized Controlled Trials (RCTs) are usually used to estimate causal effects. However, RCTs are often not possible to conduct due to ethical concern, cost, or time constraints. It is desirable to estimate causal effect using observational data since the collection of observational data is increasing rapidly. Confounding bias is a major obstacle to causal effect estimation from data. To remove confounding bias, covariate adjustment is commonly used, but it is challenging to determine from data the adjustment set, i.e. the proper covariates for the adjustment.\nGraphical causal modelling provides a theoretical foundation for adjustment set selection    . When a causal DAG (Directed Acyclic Graph) or MAG (Maximal Ancestral Graph) representing the causal mechanism is given, the back-door criterion  or generalised back-door criterion  can be used to determine an adjustment set for estimating causal effect from observational data. However, it is impossible to estimate causal effects from data uniquely without additional constraints. In most real-world applications, the causal graphs are unknown. They must be learned from data, but from data, one cannot discover a unique DAG/MAG. What can be learned from data is an equivalence class of DAGs/MAGs encoding the same conditional independence relationships among variables. This results in uncertainty in the adjustment sets discovered from data and the causal effect estimated using the identified adjustment sets. This is why data-driven causal effect estimation methods often return a set of possible causal effects, i.e. a bound estimation, instead of a unique estimation of the causal effect. For example, a widely used data-driven causal effect estimation method, IDA (Intervention when the DAG is Absent)  provides a multiset of estimated causal effects based on data without hidden variables. For data with hidden variables, Hyttinen et al. proposed a bound estimator, CE-SAT, which uses do-calculate  and SAT-based inference to estimate causal effect from data . Malinsky and Spirtes  have extended IDA to LV-IDA (Latent variable IDA), but it is also a bound estimation method. Cheng et al.  proposed a local causal search method (DICE) for determining an adjustment set from data with hidden variables, which provides a bound estimation too. The uncertainty in the results of bound estimation methods hinders the applicability of data-driven causal effect estimation. The most common way to achieve a unique estimation is to use extra constraints to eliminate the uncertainty. Häggström 0 developed the Bayesian network methods in conjunction with the Covariate Selection algorithms (CovSel for short) 1 to uniquely estimate the causal effect of a treatment on the outcome, with the assumptions that there are no hidden variables, and all other observed variables are pretreatment variables. With the constraint that the data satisfies the unconfoundedness assumption, Shalit et al. 4 have developed a deep learning-based causal defect estimation method, CFRNet. Table I provides a summary of the above discussed data-driven methods. Our proposed method DAVS is included in the bottom right cell of the table. DAVS deals with data with hidden variables and provides unique causal effect estimate. There are three other methods in the same category, and we focus our discussions on the three methods below. Among the three methods in the same category as DAVS in Table I, the GAC (A data-driven method based on the Generalised Adjustment Criterion) method  and IDP algorithm 3 are two recently proposed methods to estimate causal effects based on the Markov equivalence class of MAGs represented by a Partial Ancestral Graph (PAG). Both algorithms are proved to be correct and complete based on a PAG. However, in practice, due to insufficient data and/or unreliable statistical tests, the PAG learned from the data may have errors in edge orientation and thus may not correctly represent the underlying MAG. That is, a number of equivalent PAGs can be learned from the data. Fig. 1 given an example where PAG1, PAG2 and other PAGs in the same equivalence class are indistinguishable in data. If PAG2 is used by GAC and IDP, confounder V3subscript𝑉3V_{3} will be missed, and hence the causal effect estimation will be biased. An inconsistent PAG causes GAC to give a biased estimation, and this results in low performance of the GAC, as shown in our experiments. IDP aims to infer a probability expression formula based on do-calculate applied to a given PAG, and it is a impractical algorithm since the knowledge about the statistical properties of do-calculate is still lacking 5 6. Furthermore, it also bears the same problem of the GAC algorithm, i.e. the edge orientation errors in the learned PAG. To eliminate the uncertainty, we propose to use an anchor node, called a Cause or Spouse of the treatment Only (COSO) variable in this paper, such as node V1subscript𝑉1V_{1} in Fig. 1. By using a COSO variable, we will show that the proper adjustment set will be identified from data, and hence the unbiased causal effect is estimated (The detailed example will be described in Section III-B). The method proposed by Entner et al. 2 i.e. EHS (named after authors’ surnames, Entner, Hoyer, and Spirtes) also makes use of the same anchor node. However, EHS needs the pretreatment variable assumption, and EHS is very inefficient (as shown in our experiment) since it performs an exhaustive search over all the variables. In this paper, we aim to develop efficient algorithms and the supporting theory for obtaining unique and unbiased estimation of causal effect from data with hidden variables, under a practical problem setting. The main contributions of the paper are summarized as follows. We have identified a practical problem setting where causal effects can be estimated uniquely and unbiasedly from data with hidden variables by relaxing the pretreatment variable assumption. We have developed the theorems to support unique and unbiased causal effect estimation from data with hidden variables in the problem setting. We have developed two algorithms for unique and unbiased causal effect estimation. The developed algorithms are efficient and provide more accurate causal effect estimation than existing methods that deal with hidden variables. The developed algorithms identify adjustment sets mainly by dependency tests in data directly. This is in contrast to existing methods, which require a correct PAG. From data, our approach mitigates the risk of discovering an inconsistent PAG in a set of equivalent PAGs."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Causal inference in statistics, social, and biomedical sciences",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Cambridge University Press",
+      "authors": "G. W. Imbens and D. B. Rubin"
+    },
+    {
+      "index": 1,
+      "title": "Causality",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Cambridge university press",
+      "authors": "J. Pearl"
+    },
+    {
+      "index": 2,
+      "title": "A generalized back-door criterion",
+      "abstract": "",
+      "year": "2015",
+      "venue": "The Annals of Statistics",
+      "authors": "M. H. Maathuis, D. Colombo et al."
+    },
+    {
+      "index": 3,
+      "title": "On the validity of covariate adjustment for estimating causal effects",
+      "abstract": "",
+      "year": "2012",
+      "venue": "arXiv preprint arXiv:1203.3515",
+      "authors": "I. Shpitser, T. VanderWeele, and J. M. Robins"
+    },
+    {
+      "index": 4,
+      "title": "Complete graphical characterization and construction of adjustment sets in markov equivalence classes of ancestral graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "The Journal of Machine Learning Research",
+      "authors": "E. Perković, J. Textor, M. Kalisch, and M. H. Maathuis"
+    },
+    {
+      "index": 5,
+      "title": "Estimating high-dimensional intervention effects from observational data",
+      "abstract": "",
+      "year": "2009",
+      "venue": "The Annals of Statistics",
+      "authors": "M. H. Maathuis, M. Kalisch, P. Bühlmann et al."
+    },
+    {
+      "index": 6,
+      "title": "Do-calculus when the true graph is unknown.",
+      "abstract": "",
+      "year": "2015",
+      "venue": "UAI",
+      "authors": "A. Hyttinen, F. Eberhardt, and M. Järvisalo"
+    },
+    {
+      "index": 7,
+      "title": "Estimating bounds on causal effects in high-dimensional and possibly confounded systems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Journal of Approximate Reasoning",
+      "authors": "D. Malinsky and P. Spirtes"
+    },
+    {
+      "index": 8,
+      "title": "Causal query in observational data with hidden variables",
+      "abstract": "",
+      "year": "2020",
+      "venue": "24th European Conference on Artificial Intelligence",
+      "authors": "D. Cheng, J. Li, L. Liu, J. Liu, K. Yu, and T. D. Le"
+    },
+    {
+      "index": 9,
+      "title": "Data-driven confounder selection via markov and bayesian networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Biometrics",
+      "authors": "J. Häggström"
+    },
+    {
+      "index": 10,
+      "title": "Covariate selection for the nonparametric estimation of an average treatment effect",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Biometrika",
+      "authors": "X. De Luna, I. Waernbaum, and T. S. Richardson"
+    },
+    {
+      "index": 11,
+      "title": "Data-driven covariate selection for nonparametric estimation of causal effects",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Artificial Intelligence and Statistics",
+      "authors": "D. Entner, P. Hoyer, and P. Spirtes"
+    },
+    {
+      "index": 12,
+      "title": "Causal identification under markov equivalence: Completeness results",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Machine Learning",
+      "authors": "A. Jaber, J. Zhang, and E. Bareinboim"
+    },
+    {
+      "index": 13,
+      "title": "Estimating individual treatment effect: generalization bounds and algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Machine Learning",
+      "authors": "U. Shalit, F. D. Johansson, and D. Sontag",
+      "orig_title": "Estimating individual treatment effect: generalization bounds and algorithms",
+      "paper_id": "1606.03976v5"
+    },
+    {
+      "index": 14,
+      "title": "On the relative nature of overadjustment and unnecessary adjustment",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Epidemiology",
+      "authors": "T. J. VanderWeele"
+    },
+    {
+      "index": 15,
+      "title": "Separators and adjustment sets in causal graphs: Complete criteria and an algorithmic framework",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Artificial Intelligence",
+      "authors": "B. van der Zander, M. Liśkiewicz, and J. Textor"
+    },
+    {
+      "index": 16,
+      "title": "Causal reasoning with ancestral graphs",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "J. Zhang"
+    },
+    {
+      "index": 17,
+      "title": "Ancestral graph markov models",
+      "abstract": "",
+      "year": "2002",
+      "venue": "The Annals of Statistics",
+      "authors": "T. Richardson, P. Spirtes et al."
+    },
+    {
+      "index": 18,
+      "title": "Causation, prediction, and search",
+      "abstract": "",
+      "year": "2000",
+      "venue": "MIT press",
+      "authors": "P. Spirtes, C. N. Glymour, R. Scheines, D. Heckerman, C. Meek, G. Cooper, and T. Richardson"
+    },
+    {
+      "index": 19,
+      "title": "Markov equivalence for ancestral graphs",
+      "abstract": "",
+      "year": "2009",
+      "venue": "The Annals of Statistics",
+      "authors": "R. A. Ali, T. S. Richardson, P. Spirtes et al."
+    },
+    {
+      "index": 20,
+      "title": "Constructing separators and adjustment sets in ancestral graphs.",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CI@ UAI",
+      "authors": "B. van der Zander, M. Liskiewicz, and J. Textor"
+    },
+    {
+      "index": 21,
+      "title": "Learning high-dimensional directed acyclic graphs with latent and selection variables",
+      "abstract": "",
+      "year": "2012",
+      "venue": "The Annals of Statistics",
+      "authors": "D. Colombo, M. H. Maathuis, M. Kalisch, and T. S. Richardson"
+    },
+    {
+      "index": 22,
+      "title": "Evaluating the econometric evaluations of training programs with experimental data",
+      "abstract": "",
+      "year": "1986",
+      "venue": "The American economic review",
+      "authors": "R. J. LaLonde"
+    },
+    {
+      "index": 23,
+      "title": "Data mining: concepts and techniques",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Elsevier",
+      "authors": "J. Han, J. Pei, and M. Kamber"
+    },
+    {
+      "index": 24,
+      "title": "Causal inference using graphical models with the r package pcalg",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Journal of Statistical Software",
+      "authors": "M. Kalisch, M. Mächler, D. Colombo, M. H. Maathuis, P. Bühlmann et al."
+    },
+    {
+      "index": 25,
+      "title": "Regression standardization with the r package stdreg",
+      "abstract": "",
+      "year": "2016",
+      "venue": "European journal of epidemiology",
+      "authors": "A. Sjölander"
+    },
+    {
+      "index": 26,
+      "title": "Learning sparse causal models is not np-hard",
+      "abstract": "",
+      "year": "2013",
+      "venue": "arXiv preprint arXiv:1309.6824",
+      "authors": "T. Claassen, J. Mooij, and T. Heskes"
+    },
+    {
+      "index": 27,
+      "title": "Matching using estimated propensity scores: relating theory to practice",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Biometrics",
+      "authors": "D. B. Rubin and N. Thomas"
+    },
+    {
+      "index": 28,
+      "title": "Causal inference using potential outcomes: Design, modeling, decisions",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "D. B. Rubin"
+    },
+    {
+      "index": 29,
+      "title": "The central role of the propensity score in observational studies for causal effects",
+      "abstract": "",
+      "year": "1983",
+      "venue": "Biometrika",
+      "authors": "P. R. Rosenbaum and D. B. Rubin"
+    },
+    {
+      "index": 30,
+      "title": "Covariate balancing propensity score",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Journal of the Royal Statistical Society: Series B (Statistical Methodology)",
+      "authors": "K. Imai and M. Ratkovic"
+    },
+    {
+      "index": 31,
+      "title": "Estimation and inference of heterogeneous treatment effects using random forests",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of the American Statistical Association",
+      "authors": "S. Wager and S. Athey"
+    },
+    {
+      "index": 32,
+      "title": "Dagitty: a graphical tool for analyzing causal diagrams",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Epidemiology",
+      "authors": "J. Textor, J. Hardt, and S. Knüppel"
+    },
+    {
+      "index": 33,
+      "title": "Matching as nonparametric preprocessing for reducing model dependence in parametric causal inference",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Political analysis",
+      "authors": "D. E. Ho, K. Imai, G. King, and E. A. Stuart"
+    },
+    {
+      "index": 34,
+      "title": "Learning bayesian networks with the bnlearn r package",
+      "abstract": "",
+      "year": "2009",
+      "venue": "arXiv preprint arXiv:0908.3817",
+      "authors": "M. Scutari"
+    },
+    {
+      "index": 35,
+      "title": "Bayesian nonparametric modeling for causal inference",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of Computational and Graphical Statistics",
+      "authors": "J. L. Hill"
+    },
+    {
+      "index": 36,
+      "title": "The costs of low birth weight",
+      "abstract": "",
+      "year": "2005",
+      "venue": "The Quarterly Journal of Economics",
+      "authors": "D. Almond, K. Y. Chay, and D. S. Lee"
+    },
+    {
+      "index": 37,
+      "title": "Causal Effect Inference with Deep Latent-Variable Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "C. Louizos, U. Shalit, J. M. Mooij, D. Sontag, R. Zemel, and M. Welling",
+      "orig_title": "Causal effect inference with deep latent-variable models",
+      "paper_id": "1705.08821v2"
+    },
+    {
+      "index": 38,
+      "title": "Non-parmetrics for causal inference",
+      "abstract": "",
+      "year": "2016",
+      "venue": "https://github.com/vdorie/npci",
+      "authors": "V. Dorie"
+    },
+    {
+      "index": 39,
+      "title": "Efficient semiparametric estimation of multi-valued treatment effects under ignorability",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Journal of Econometrics",
+      "authors": "M. D. Cattaneo"
+    },
+    {
+      "index": 40,
+      "title": "The effectiveness of right heart catheterization in the initial care of critically iii patients",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Jama",
+      "authors": "A. F. Connors, T. Speroff, N. V. Dawson, C. Thomas, F. E. Harrell, D. Wagner, N. Desbiens, L. Goldman, A. W. Wu, R. M. Califf et al."
+    },
+    {
+      "index": 41,
+      "title": "Confounder selection strategies targeting stable treatment effect estimators",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2001.08971",
+      "authors": "W. W. Loh and S. Vansteelandt"
+    },
+    {
+      "index": 42,
+      "title": "Estimating causal effects of treatments in randomized and nonrandomized studies.",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Journal of educational Psychology",
+      "authors": "D. B. Rubin"
+    },
+    {
+      "index": 43,
+      "title": "Matching on balanced nonlinear representations for treatment effects estimation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "S. Li and Y. Fu"
+    },
+    {
+      "index": 44,
+      "title": "The design versus the analysis of observational studies for causal effects: parallels with the design of randomized trials",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Statistics in medicine",
+      "authors": "D. B. Rubin"
+    },
+    {
+      "index": 45,
+      "title": "Covariate selection strategies for causal inference: Classification and comparison",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Biometrical Journal",
+      "authors": "J. Witte and V. Didelez"
+    },
+    {
+      "index": 46,
+      "title": "Propensity-score matching with competing risks in survival analysis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Statistics in medicine",
+      "authors": "P. C. Austin and J. P. Fine"
+    },
+    {
+      "index": 47,
+      "title": "Recursive partitioning for heterogeneous causal effects",
+      "abstract": "",
+      "year": "2016",
+      "venue": "National Academy of Sciences",
+      "authors": "S. Athey and G. Imbens"
+    },
+    {
+      "index": 48,
+      "title": "Metalearners for estimating heterogeneous treatment effects using machine learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "National Academy of Sciences",
+      "authors": "S. R. Künzel, J. S. Sekhon, P. J. Bickel, and B. Yu"
+    },
+    {
+      "index": 49,
+      "title": "Estimating treatment effect in the wild via differentiated confounder balancing",
+      "abstract": "",
+      "year": "2017",
+      "venue": "23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+      "authors": "K. Kuang, P. Cui, B. Li, M. Jiang, and S. Yang"
+    },
+    {
+      "index": 50,
+      "title": "Representation learning for treatment effect estimation from observational data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "L. Yao, S. Li, Y. Li, M. Huai, J. Gao, and A. Zhang"
+    },
+    {
+      "index": 51,
+      "title": "A Survey of Learning Causality with Data: Problems and Methods",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Computing Surveys (CSUR)",
+      "authors": "R. Guo, L. Cheng, J. Li, P. R. Hahn, and H. Liu",
+      "orig_title": "A survey of learning causality with data: Problems and methods",
+      "paper_id": "1809.09337v4"
+    },
+    {
+      "index": 52,
+      "title": "A unified survey on treatment effect heterogeneity modeling and uplift modeling",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2007.12769",
+      "authors": "W. Zhang, J. Li, and L. Liu"
+    },
+    {
+      "index": 53,
+      "title": "Counterfactual regression with importance sampling weights.",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IJCAI",
+      "authors": "N. Hassanpour and R. Greiner"
+    }
+  ]
+}

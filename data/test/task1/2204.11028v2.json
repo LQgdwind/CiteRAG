@@ -1,0 +1,559 @@
+{
+  "paper_id": "2204.11028v2",
+  "title": "Reinforced Causal Explainer for Graph Neural Networks",
+  "abstract": "Abstract\nExplainability is crucial for probing graph neural networks (GNNs), answering questions like “Why the GNN model makes a certain prediction?”.\nFeature attribution is a prevalent technique of highlighting the explanatory subgraph in the input graph, which plausibly leads the GNN model to make its prediction.\nVarious attribution methods have been proposed to exploit gradient-like or attention scores as the attributions of edges, then select the salient edges with top attribution scores as the explanation.\nHowever, most of these works make an untenable assumption — the selected edges are linearly independent — thus leaving the dependencies among edges largely unexplored, especially their coalition effect.\nWe demonstrate unambiguous drawbacks of this assumption — making the explanatory subgraph unfaithful and verbose.\nTo address this challenge, we propose a reinforcement learning agent, Reinforced Causal Explainer (RC-Explainer).\nIt frames the explanation task as a sequential decision process — an explanatory subgraph is successively constructed by adding a salient edge to connect the previously selected subgraph.\nTechnically, its policy network predicts the action of edge addition, and gets a reward that quantifies the action’s causal effect on the prediction.\nSuch reward accounts for the dependency of the newly-added edge and the previously-added edges, thus reflecting whether they collaborate together and form a coalition to pursue better explanations.\nIt is trained via policy gradient to optimize the reward stream of edge sequences.\nAs such, RC-Explainer is able to generate faithful and concise explanations, and has a better generalization power to unseen graphs.\nWhen explaining different GNNs on three graph classification datasets, RC-Explainer achieves better or comparable performance to state-of-the-art approaches w.r.t. two quantitative metrics: predictive accuracy, contrastivity, and safely passes sanity checks and visual inspections.\nCodes and datasets are available at https://github.com/xiangwang1223/reinforced_causal_explainer.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Inductive Representation Learning on Large Graphs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "W. L. Hamilton, Z. Ying, and J. Leskovec",
+      "orig_title": "Inductive representation learning on large graphs",
+      "paper_id": "1706.02216v4"
+    },
+    {
+      "index": 1,
+      "title": "Benchmarking Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "V. P. Dwivedi, C. K. Joshi, T. Laurent, Y. Bengio, and X. Bresson",
+      "orig_title": "Benchmarking graph neural networks",
+      "paper_id": "2003.00982v5"
+    },
+    {
+      "index": 2,
+      "title": "XGNN: Towards Model-Level Explanations of Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "KDD",
+      "authors": "H. Yuan, J. Tang, X. Hu, and S. Ji",
+      "orig_title": "XGNN: towards model-level explanations of graph neural networks",
+      "paper_id": "2006.02587v1"
+    },
+    {
+      "index": 3,
+      "title": "On Explainability of Graph Neural Networks via Subgraph Explorations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "H. Yuan, H. Yu, J. Wang, K. Li, and S. Ji",
+      "orig_title": "On explainability of graph neural networks via subgraph explorations",
+      "paper_id": "2102.05152v2"
+    },
+    {
+      "index": 4,
+      "title": "Shadewatcher: Recommendation-guided cyber threat analysis using system audit records",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Symposium on Security and Privacy",
+      "authors": "J. Zeng, X. Wang, J. Liu, Y. Chen, Z. Liang, T. Chua, and Z. L. Chua"
+    },
+    {
+      "index": 5,
+      "title": "Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Nature Machine Intelligence",
+      "authors": "C. Rudin"
+    },
+    {
+      "index": 6,
+      "title": "“Why Should I Trust You?” Explaining the Predictions of Any Classifier",
+      "abstract": "",
+      "year": "2016",
+      "venue": "KDD",
+      "authors": "M. T. Ribeiro, S. Singh, and C. Guestrin",
+      "orig_title": "“why should I trust you?”: Explaining the predictions of any classifier",
+      "paper_id": "1602.04938v3"
+    },
+    {
+      "index": 7,
+      "title": "Learning important features through propagating activation differences",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "A. Shrikumar, P. Greenside, and A. Kundaje"
+    },
+    {
+      "index": 8,
+      "title": "Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "R. R. Selvaraju, M. Cogswell, A. Das, R. Vedantam, D. Parikh, and D. Batra",
+      "orig_title": "Grad-cam: Visual explanations from deep networks via gradient-based localization",
+      "paper_id": "1610.02391v4"
+    },
+    {
+      "index": 9,
+      "title": "Axiomatic attribution for deep networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "M. Sundararajan, A. Taly, and Q. Yan"
+    },
+    {
+      "index": 10,
+      "title": "Neural Network Attributions: A Causal Perspective",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "A. Chattopadhyay, P. Manupriya, A. Sarkar, and V. N. Balasubramanian",
+      "orig_title": "Neural network attributions: A causal perspective",
+      "paper_id": "1902.02302v4"
+    },
+    {
+      "index": 11,
+      "title": "Towards better understanding of gradient-based attribution methods for Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "M. Ancona, E. Ceolini, C. Öztireli, and M. Gross",
+      "orig_title": "Towards better understanding of gradient-based attribution methods for deep neural networks",
+      "paper_id": "1711.06104v4"
+    },
+    {
+      "index": 12,
+      "title": "Explainability Techniques for Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "F. Baldassarre and H. Azizpour",
+      "orig_title": "Explainability techniques for graph convolutional networks",
+      "paper_id": "1905.13686v1"
+    },
+    {
+      "index": 13,
+      "title": "Explainability methods for graph convolutional neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "P. E. Pope, S. Kolouri, M. Rostami, C. E. Martin, and H. Hoffmann"
+    },
+    {
+      "index": 14,
+      "title": "Higher-Order Explanations of Graph Neural Networks via Relevant Walks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv",
+      "authors": "T. Schnake, O. Eberle, J. Lederer, S. Nakajima, K. T. Schutt, K.-R. Muller, and G. Montavon",
+      "orig_title": "Higher-order explanations of graph neural networks via relevant walks.",
+      "paper_id": "2006.03589v3"
+    },
+    {
+      "index": 15,
+      "title": "GNNExplainer: Generating Explanations for Graph Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Z. Ying, D. Bourgeois, J. You, M. Zitnik, and J. Leskovec",
+      "orig_title": "Gnnexplainer: Generating explanations for graph neural networks",
+      "paper_id": "1903.03894v4"
+    },
+    {
+      "index": 16,
+      "title": "Parameterized Explainer for Graph Neural Network",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "D. Luo, W. Cheng, D. Xu, W. Yu, B. Zong, H. Chen, and X. Zhang",
+      "orig_title": "Parameterized explainer for graph neural network",
+      "paper_id": "2011.04573v1"
+    },
+    {
+      "index": 17,
+      "title": "Towards multi-grained explainability for graph neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "X. Wang, Y. Wu, A. Zhang, X. He, and T.-S. Chua"
+    },
+    {
+      "index": 18,
+      "title": "PGM-Explainer: Probabilistic Graphical Model Explanations for Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "M. N. Vu and M. T. Thai",
+      "orig_title": "Pgm-explainer: Probabilistic graphical model explanations for graph neural networks",
+      "paper_id": "2010.05788v1"
+    },
+    {
+      "index": 19,
+      "title": "CXPlain: Causal Explanations for Model Interpretation under Uncertainty",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "P. Schwab and W. Karlen",
+      "orig_title": "Cxplain: Causal explanations for model interpretation under uncertainty",
+      "paper_id": "1910.12336v1"
+    },
+    {
+      "index": 20,
+      "title": "Causal interpretability for machine learning-problems, methods and evaluation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIGKDD Explorations",
+      "authors": "R. Moraffah, M. Karami, R. Guo, A. Raglin, and H. Liu"
+    },
+    {
+      "index": 21,
+      "title": "Theoretical Impediments to Machine Learning With Seven Sparks from the Causal Revolution",
+      "abstract": "",
+      "year": "2018",
+      "venue": "WSDM",
+      "authors": "J. Pearl",
+      "orig_title": "Theoretical impediments to machine learning with seven sparks from the causal revolution",
+      "paper_id": "1801.04016v1"
+    },
+    {
+      "index": 22,
+      "title": "How Powerful are Graph Neural Networks?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "K. Xu, W. Hu, J. Leskovec, and S. Jegelka",
+      "orig_title": "How powerful are graph neural networks?",
+      "paper_id": "1810.00826v3"
+    },
+    {
+      "index": 23,
+      "title": "A Unified Approach to Interpreting Model Predictions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "S. M. Lundberg and S. Lee",
+      "orig_title": "A unified approach to interpreting model predictions",
+      "paper_id": "1705.07874v2"
+    },
+    {
+      "index": 24,
+      "title": "Shapley-based explainability on the data manifold",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "C. Frye, D. de Mijolla, L. Cowton, M. Stanley, and I. Feige"
+    },
+    {
+      "index": 25,
+      "title": "Local causal and markov blanket induction for causal discovery and feature selection for classification part i: Algorithms and empirical evaluation.",
+      "abstract": "",
+      "year": "2010",
+      "venue": "JMLR",
+      "authors": "C. F. Aliferis, A. Statnikov, I. Tsamardinos, S. Mani, and X. D. Koutsoukos"
+    },
+    {
+      "index": 26,
+      "title": "Causality.",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Cambridge university press",
+      "authors": "J. Pearl"
+    },
+    {
+      "index": 27,
+      "title": "Causality: Models, Reasoning, and Inference.",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Cambridge University Press",
+      "authors": "——"
+    },
+    {
+      "index": 28,
+      "title": "Discovering Invariant Rationales for Graph Neural Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICLR",
+      "authors": "Y. Wu, X. Wang, A. Zhang, X. He, and T. seng Chua",
+      "orig_title": "Discovering invariant rationales for graph neural networks",
+      "paper_id": "2201.12872v1"
+    },
+    {
+      "index": 29,
+      "title": "Invariant Grounding for Video Question Answering",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Y. Li, X. Wang, J. Xiao, W. Ji, and T. seng Chua",
+      "orig_title": "Invariant grounding for video question answering",
+      "paper_id": "2206.02349v1"
+    },
+    {
+      "index": 30,
+      "title": "Deep inside convolutional networks: Visualising image classification models and saliency maps",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ICLR",
+      "authors": "K. Simonyan, A. Vedaldi, and A. Zisserman"
+    },
+    {
+      "index": 31,
+      "title": "On pixel-wise explanations for non-linear classifier decisions by layer-wise relevance propagation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "PloS one",
+      "authors": "S. Bach, A. Binder, G. Montavon, F. Klauschen, K.-R. Müller, and W. Samek"
+    },
+    {
+      "index": 32,
+      "title": "Learning to Explain: An Information-Theoretic Perspective on Model Interpretation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "J. Chen, L. Song, M. J. Wainwright, and M. I. Jordan",
+      "orig_title": "Learning to explain: An information-theoretic perspective on model interpretation",
+      "paper_id": "1802.07814v2"
+    },
+    {
+      "index": 33,
+      "title": "Explaining a black-box using deep variational information bottleneck approach",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv",
+      "authors": "S. Bang, P. Xie, H. Lee, W. Wu, and E. Xing"
+    },
+    {
+      "index": 34,
+      "title": "GraphLIME:Local Interpretable Model Explanations for Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "Q. Huang, M. Yamada, Y. Tian, D. Singh, D. Yin, and Y. Chang",
+      "orig_title": "Graphlime: Local interpretable model explanations for graph neural networks",
+      "paper_id": "2001.06216v2"
+    },
+    {
+      "index": 35,
+      "title": "Neural Message Passing for Quantum Chemistry",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "J. Gilmer, S. S. Schoenholz, P. F. Riley, O. Vinyals, and G. E. Dahl",
+      "orig_title": "Neural message passing for quantum chemistry",
+      "paper_id": "1704.01212v2"
+    },
+    {
+      "index": 36,
+      "title": "Graph Attention Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "P. Velickovic, G. Cucurull, A. Casanova, A. Romero, P. Liò, and Y. Bengio",
+      "orig_title": "Graph attention networks",
+      "paper_id": "1710.10903v3"
+    },
+    {
+      "index": 37,
+      "title": "Causal inference in statistics: A primer.",
+      "abstract": "",
+      "year": "2016",
+      "venue": "John Wiley & Sons",
+      "authors": "J. Pearl, M. Glymour, and N. P. Jewell"
+    },
+    {
+      "index": 38,
+      "title": "Elements of Information Theory.",
+      "abstract": "",
+      "year": "2001",
+      "venue": "Wiley",
+      "authors": "T. M. Cover and J. A. Thomas"
+    },
+    {
+      "index": 39,
+      "title": "Mutual Information Neural Estimation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "M. I. Belghazi, A. Baratin, S. Rajeswar, S. Ozair, Y. Bengio, R. D. Hjelm, and A. C. Courville",
+      "orig_title": "Mutual information neural estimation",
+      "paper_id": "1801.04062v5"
+    },
+    {
+      "index": 40,
+      "title": "Causal Discovery with Reinforcement Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "S. Zhu, I. Ng, and Z. Chen",
+      "orig_title": "Causal discovery with reinforcement learning",
+      "paper_id": "1906.04477v4"
+    },
+    {
+      "index": 41,
+      "title": "Algorithms for large scale markov blanket discovery",
+      "abstract": "",
+      "year": "2003",
+      "venue": "FLAIRS",
+      "authors": "I. Tsamardinos, C. F. Aliferis, and A. R. Statnikov"
+    },
+    {
+      "index": 42,
+      "title": "Graph Convolutional Policy Network for Goal-Directed Molecular Graph Generation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "J. You, B. Liu, Z. Ying, V. S. Pande, and J. Leskovec",
+      "orig_title": "Graph convolutional policy network for goal-directed molecular graph generation",
+      "paper_id": "1806.02473v3"
+    },
+    {
+      "index": 43,
+      "title": "Mastering the game of go with deep neural networks and tree search",
+      "abstract": "",
+      "year": "2016",
+      "venue": "nature",
+      "authors": "D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. Van Den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam, M. Lanctot et al."
+    },
+    {
+      "index": 44,
+      "title": "Constrained Graph Variational Autoencoders for Molecule Design",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "Q. Liu, M. Allamanis, M. Brockschmidt, and A. L. Gaunt",
+      "orig_title": "Constrained graph variational autoencoders for molecule design",
+      "paper_id": "1805.09076v2"
+    },
+    {
+      "index": 45,
+      "title": "Policy gradient methods for reinforcement learning with function approximation",
+      "abstract": "",
+      "year": "1999",
+      "venue": "NeurIPS",
+      "authors": "R. S. Sutton, D. A. McAllester, S. P. Singh, and Y. Mansour"
+    },
+    {
+      "index": 46,
+      "title": "Feature Removal Is A Unifying Principle For Model Explanation Methods",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "I. Covert, S. M. Lundberg, and S. Lee",
+      "orig_title": "Feature removal is a unifying principle for model explanation methods",
+      "paper_id": "2011.03623v2"
+    },
+    {
+      "index": 47,
+      "title": "Graphs over time: densification laws, shrinking diameters and possible explanations",
+      "abstract": "",
+      "year": "2005",
+      "venue": "KDD",
+      "authors": "J. Leskovec, J. M. Kleinberg, and C. Faloutsos"
+    },
+    {
+      "index": 48,
+      "title": "Size-Invariant Graph Representations for Graph Classification Extrapolations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "B. Bevilacqua, Y. Zhou, and B. Ribeiro",
+      "orig_title": "Size-invariant graph representations for graph classification extrapolations",
+      "paper_id": "2103.05045v2"
+    },
+    {
+      "index": 49,
+      "title": "Derivation and validation of toxicophores for mutagenicity prediction",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Journal of medicinal chemistry",
+      "authors": "J. Kazius, R. McGuire, and R. Bursi"
+    },
+    {
+      "index": 50,
+      "title": "Iam graph database repository for graph based pattern recognition and machine learning",
+      "abstract": "",
+      "year": "2008",
+      "venue": "SPR and SSPR",
+      "authors": "K. Riesen and H. Bunke"
+    },
+    {
+      "index": 51,
+      "title": "Strategies for Pre-training Graph Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "W. Hu, B. Liu, J. Gomes, M. Zitnik, P. Liang, V. S. Pande, and J. Leskovec",
+      "orig_title": "Strategies for pre-training graph neural networks",
+      "paper_id": "1905.12265v3"
+    },
+    {
+      "index": 52,
+      "title": "Deep graph kernels",
+      "abstract": "",
+      "year": "2015",
+      "venue": "KDD",
+      "authors": "P. Yanardag and S. V. N. Vishwanathan"
+    },
+    {
+      "index": 53,
+      "title": "Weisfeiler and Leman Go Neural: Higher-order Graph Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "C. Morris, M. Ritzert, M. Fey, W. L. Hamilton, J. E. Lenssen, G. Rattan, and M. Grohe",
+      "orig_title": "Weisfeiler and leman go neural: Higher-order graph neural networks",
+      "paper_id": "1810.02244v5"
+    },
+    {
+      "index": 54,
+      "title": "Visual genome: Connecting language and vision using crowdsourced dense image annotations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCV",
+      "authors": "R. Krishna, Y. Zhu, O. Groth, J. Johnson, K. Hata, J. Kravitz, S. Chen, Y. Kalantidis, L. Li, D. A. Shamma, M. S. Bernstein, and L. Fei-Fei"
+    },
+    {
+      "index": 55,
+      "title": "Predict then propagate: Graph neural networks meet personalized pagerank",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "J. Klicpera, A. Bojchevski, and S. Günnemann"
+    },
+    {
+      "index": 56,
+      "title": "Adversarial infidelity learning for model interpretation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "KDD",
+      "authors": "J. Liang, B. Bai, Y. Cao, K. Bai, and F. Wang"
+    },
+    {
+      "index": 57,
+      "title": "Sanity checks for saliency maps",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "J. Adebayo, J. Gilmer, M. Muelly, I. J. Goodfellow, M. Hardt, and B. Kim"
+    },
+    {
+      "index": 58,
+      "title": "Structure-activity relationship of mutagenic aromatic and heteroaromatic nitro compounds. correlation with molecular orbital energies and hydrophobicity",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Journal of medicinal chemistry",
+      "authors": "A. K. Debnath, R. L. Lopez de Compadre, G. Debnath, A. J. Shusterman, and C. Hansch"
+    },
+    {
+      "index": 59,
+      "title": "ASAP: adaptive structure aware pooling for learning hierarchical graph representations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "E. Ranjan, S. Sanyal, and P. P. Talukdar"
+    },
+    {
+      "index": 60,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "T. N. Kipf and M. Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    }
+  ]
+}

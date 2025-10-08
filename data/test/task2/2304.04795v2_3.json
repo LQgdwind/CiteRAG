@@ -1,0 +1,383 @@
+{
+  "paper_id": "2304.04795v2",
+  "title": "Revisiting Test Time Adaptation under Online Evaluation",
+  "sections": {
+    "introduction": "In recent years, Deep Neural Networks (DNNs) have demonstrated remarkable success in various tasks [ref]12 thanks to their ability to learn from large datasets .\nHowever, a significant limitation of DNNs is their low performance when tested on out-of-distribution data, which violates the i.i.d. assumption  [ref]14  (the training and testing data are from the same distribution).\nSuch failure cases are concerning, since distribution shifts are common in real-world applications, e.g. image corruptions [ref]14, changing weather conditions , or security breaches . Test Time Adaptation (TTA)     has demonstrated promising results for solving the above problem.\nTTA leverages the unlabeled data that arrives at test time by adapting the forward pass of pre-trained DNNs according to some proxy task  .\nThough recent methods have made significant progress at improving accuracy under distribution shifts   [ref]8, many of them incur high computational overhead.\nFor instance, some methods require self-supervised fine-tuning on the data , while others perform a diffusion process per input [ref]8. The computational overhead of TTA methods can decrease their inference speed, which is a critical property in many real-world applications that require the TTA method to produce predictions at the speed of the stream itself.\nThis property, however, is overlooked in the current evaluation protocols for TTA methods.\nIn particular, these protocols assume an offline setting, which neglects how\nevents constantly unfold regardless of the model’s speed, causing the model to miss incoming samples when it is busy processing previous ones.\nFor TTA methods that adapt using test data, missing samples has a direct effect on the method’s accuracy, as it will have fewer samples for adaptation.\nThat is, the slower the TTA method, the fewer samples it can leverage for adapting to the distribution shift.\nThus, the current offline protocol for evaluating TTA methods\nis not suitable for assessing their efficacy\nin\nreal-world deployment. In this work, we propose a novel online evaluation protocol that factors in inference speed to assess the real-world applicability of TTA methods.\nOur evaluation protocol is inspired by Online Learning settings   and mimics real-world scenarios by exposing all TTA methods\nto a constant-speed stream of data.\nUnder this setup, the performance of slow TTA methods is intrinsically penalized, as the time spent adapting to a sample implies the method misses other samples that could have been useful for adaptation.\nSpecifically, our protocol dictates that if a method gslowsubscript𝑔slowg_{\\text{slow}} is k𝑘k times slower than the stream, then\nit may only use every kthsuperscript𝑘thk^{\\text{th}} sample for adaptation.\nIn contrast, a method gfastsubscript𝑔fastg_{\\text{fast}} that is as fast as the stream is allowed to adapt to every sample.\nFigure 1 shows the effect of evaluating several methods under our online protocol, where slower methods (e.g. SAR ) are penalized and faster but simpler methods become better alternatives (e.g. SHOT  and AdaBN ). We apply our proposed evaluation protocol to benchmark several TTA methods on multiple datasets, and provide a fair assessment of their performance subject to the realistic consequences of slower inference speeds.\nOur experimental results highlight the importance of developing TTA methods that adapt to distribution shifts with minimal impacts on inference speed.\nOur contributions are two-fold: We propose an online evaluation protocol for TTA methods that penalizes slower methods by providing them with fewer samples for adaptation. Our approach is\neffective at assessing\nTTA methods’ efficacy in scenarios where data arrives as a constant-speed stream. Following our proposed protocol, we provide a comprehensive experimental analysis of 15 TTA methods evaluated on 3 large-scale datasets and under 3 different evaluation scenarios.\nThese scenarios consider adaptation to a single domain and continual adaptation to several domains.\nOur analysis shows that, when inference speed is accounted for, simple (but faster) approaches can benefit from adapting to more data, and thus outperform more sophisticated (but slower) methods.\nFigure 1 demonstrates this for four TTA methods.\nWe hope our evaluation scheme inspires future TTA methods to consider inference speed as a critical dimension that affects their real-world performance."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Combating Adversaries with Anti-Adversaries",
+      "abstract": "",
+      "year": "2022",
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "authors": "Motasem Alfarra, Juan C Pérez, Ali Thabet, Adel Bibi, Philip HS Torr, and Bernard Ghanem",
+      "orig_title": "Combating adversaries with anti-adversaries",
+      "paper_id": "2103.14347v2"
+    },
+    {
+      "index": 1,
+      "title": "Pitfalls of In-Domain Uncertainty Estimation and Ensembling in Deep Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv",
+      "authors": "Arsenii Ashukha, Alexander Lyzhov, Dmitry Molchanov, and Dmitry Vetrov",
+      "orig_title": "Pitfalls of in-domain uncertainty estimation and ensembling in deep learning",
+      "paper_id": "2002.06470v4"
+    },
+    {
+      "index": 2,
+      "title": "Parameter-free Online Test-time Adaptation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Malik Boudiaf, Romain Mueller, Ismail Ben Ayed, and Luca Bertinetto",
+      "orig_title": "Parameter-free online test-time adaptation",
+      "paper_id": "2201.05718v2"
+    },
+    {
+      "index": 3,
+      "title": "Online Continual Learning with Natural Distribution Shifts: An Empirical Study with Visual Data",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Zhipeng Cai, Ozan Sener, and Vladlen Koltun",
+      "orig_title": "Online continual learning with natural distribution shifts: An empirical study with visual data",
+      "paper_id": "2108.09020v2"
+    },
+    {
+      "index": 4,
+      "title": "Contrastive Test-Time Adaptation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Dian Chen, Dequan Wang, Trevor Darrell, and Sayna Ebrahimi",
+      "orig_title": "Contrastive test-time adaptation",
+      "paper_id": "2204.10377v1"
+    },
+    {
+      "index": 5,
+      "title": "Evaluating the Adversarial Robustness of Adaptive Test-time Defenses",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Francesco Croce, Sven Gowal, Thomas Brunner, Evan Shelhamer, Matthias Hein, and Taylan Cemgil",
+      "orig_title": "Evaluating the adversarial robustness of adaptive test-time defenses",
+      "paper_id": "2202.13711v2"
+    },
+    {
+      "index": 6,
+      "title": "Imagenet: A large-scale hierarchical image database",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei"
+    },
+    {
+      "index": 7,
+      "title": "Back to the source: Diffusion-driven test-time adaptation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv",
+      "authors": "Jin Gao, Jialing Zhang, Xihui Liu, Trevor Darrell, Evan Shelhamer, and Dequan Wang"
+    },
+    {
+      "index": 8,
+      "title": "Unsupervised Representation Learning by Predicting Image Rotations",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv",
+      "authors": "Spyros Gidaris, Praveer Singh, and Nikos Komodakis",
+      "orig_title": "Unsupervised representation learning by predicting image rotations",
+      "paper_id": "1803.07728v1"
+    },
+    {
+      "index": 9,
+      "title": "Note: Robust continual test-time adaptation against temporal correlation",
+      "abstract": "",
+      "year": "",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Taesik Gong, Jongheon Jeong, Taewon Kim, Yewon Kim, Jinwoo Shin, and Sung-Ju Lee"
+    },
+    {
+      "index": 10,
+      "title": "Explaining and Harnessing Adversarial Examples",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv",
+      "authors": "Ian J Goodfellow, Jonathon Shlens, and Christian Szegedy",
+      "orig_title": "Explaining and harnessing adversarial examples",
+      "paper_id": "1412.6572v3"
+    },
+    {
+      "index": 11,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 12,
+      "title": "The Many Faces of Robustness: A Critical Analysis of Out-of-Distribution Generalization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Dan Hendrycks, Steven Basart, Norman Mu, Saurav Kadavath, Frank Wang, Evan Dorundo, Rahul Desai, Tyler Zhu, Samyak Parajuli, Mike Guo, Dawn Song, Jacob Steinhardt, and Justin Gilmer",
+      "orig_title": "The many faces of robustness: A critical analysis of out-of-distribution generalization",
+      "paper_id": "2006.16241v3"
+    },
+    {
+      "index": 13,
+      "title": "Benchmarking Neural Network Robustness to Common Corruptions and Perturbations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Dan Hendrycks and Thomas Dietterich",
+      "orig_title": "Benchmarking neural network robustness to common corruptions and perturbations",
+      "paper_id": "1903.12261v1"
+    },
+    {
+      "index": 14,
+      "title": "Denoising Diffusion Probabilistic Models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Jonathan Ho, Ajay Jain, and Pieter Abbeel",
+      "orig_title": "Denoising diffusion probabilistic models",
+      "paper_id": "2006.11239v2"
+    },
+    {
+      "index": 15,
+      "title": "Test-time classifier adjustment module for model-agnostic domain generalization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Yusuke Iwasawa and Yutaka Matsuo"
+    },
+    {
+      "index": 16,
+      "title": "3D Common Corruptions and Data Augmentation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Oğuzhan Fatih Kar, Teresa Yeo, Andrei Atanov, and Amir Zamir",
+      "orig_title": "3d common corruptions and data augmentation",
+      "paper_id": "2203.01441v3"
+    },
+    {
+      "index": 17,
+      "title": "Overcoming catastrophic forgetting in neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "national academy of sciences",
+      "authors": "James Kirkpatrick, Razvan Pascanu, Neil Rabinowitz, Joel Veness, Guillaume Desjardins, Andrei A Rusu, Kieran Milan, John Quan, Tiago Ramalho, Agnieszka Grabska-Barwinska, et al.",
+      "orig_title": "Overcoming catastrophic forgetting in neural networks",
+      "paper_id": "1612.00796v2"
+    },
+    {
+      "index": 18,
+      "title": "Robustifying Vision Transformer without Retraining from Scratch by Test-Time Class-Conditional Feature Alignment",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv",
+      "authors": "Takeshi Kojima, Yutaka Matsuo, and Yusuke Iwasawa",
+      "orig_title": "Robustifying vision transformer without retraining from scratch by test-time class-conditional feature alignment",
+      "paper_id": "2206.13951v1"
+    },
+    {
+      "index": 19,
+      "title": "Pseudo-label: The simple and efficient semi-supervised learning method for deep neural networks",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Workshop on challenges in representation learning, ICML",
+      "authors": "Dong-Hyun Lee et al."
+    },
+    {
+      "index": 20,
+      "title": "Revisiting Batch Normalization For Practical Domain Adaptation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv",
+      "authors": "Yanghao Li, Naiyan Wang, Jianping Shi, Jiaying Liu, and Xiaodi Hou",
+      "orig_title": "Revisiting batch normalization for practical domain adaptation",
+      "paper_id": "1603.04779v4"
+    },
+    {
+      "index": 21,
+      "title": "Do We Really Need to Access the Source Data? Source Hypothesis Transfer for Unsupervised Domain Adaptation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Machine Learning",
+      "authors": "Jian Liang, Dapeng Hu, and Jiashi Feng",
+      "orig_title": "Do we really need to access the source data? source hypothesis transfer for unsupervised domain adaptation",
+      "paper_id": "2002.08546v6"
+    },
+    {
+      "index": 22,
+      "title": "Ttt++: When does self-supervised test-time training fail or thrive?",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Yuejiang Liu, Parth Kothari, Bastien Van Delft, Baptiste Bellot-Gurlet, Taylor Mordan, and Alexandre Alahi"
+    },
+    {
+      "index": 23,
+      "title": "Kitting in the wild through online domain adaptation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "authors": "Massimiliano Mancini, Hakan Karaoguz, Elisa Ricci, Patric Jensfelt, and Barbara Caputo"
+    },
+    {
+      "index": 24,
+      "title": "The Norm Must Go On: Dynamic Unsupervised Domain Adaptation by Normalization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "M Jehanzeb Mirza, Jakub Micorek, Horst Possegger, and Horst Bischof",
+      "orig_title": "The norm must go on: dynamic unsupervised domain adaptation by normalization",
+      "paper_id": "2112.00463v2"
+    },
+    {
+      "index": 25,
+      "title": "ActMAD: Activation Matching to Align Distributions for Test-Time-Training",
+      "abstract": "",
+      "year": "2022",
+      "venue": "",
+      "authors": "Muhammad Jehanzeb Mirza, Pol Jané Soneira, Wei Lin, Mateusz Kozinski, Horst Possegger, and Horst Bischof",
+      "orig_title": "Actmad: Activation matching to align distributions for test-time-training",
+      "paper_id": "2211.12870v2"
+    },
+    {
+      "index": 26,
+      "title": "Efficient Test-Time Model Adaptation without Forgetting",
+      "abstract": "",
+      "year": "2022",
+      "venue": "International conference on machine learning",
+      "authors": "Shuaicheng Niu, Jiaxiang Wu, Yifan Zhang, Yaofo Chen, Shijian Zheng, Peilin Zhao, and Mingkui Tan",
+      "orig_title": "Efficient test-time model adaptation without forgetting",
+      "paper_id": "2204.02610v2"
+    },
+    {
+      "index": 27,
+      "title": "Towards Stable Test-time Adaptation in Dynamic Wild World",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Shuaicheng Niu14, Jiaxiang Wu, Yifan Zhang, Zhiquan Wen, Yaofo Chen, Peilin Zhao, and Mingkui Tan15",
+      "orig_title": "Towards stable test-time adaptation in dynamic wild world",
+      "paper_id": "2302.12400v1"
+    },
+    {
+      "index": 28,
+      "title": "Enhancing adversarial robustness via test-time transformation ensembling",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Juan C Pérez, Motasem Alfarra, Guillaume Jeanneret, Laura Rueda, Ali Thabet, Bernard Ghanem, and Pablo Arbeláez"
+    },
+    {
+      "index": 29,
+      "title": "Adapting visual category models to new domains",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Computer Vision–ECCV 2010",
+      "authors": "Kate Saenko, Brian Kulis, Mario Fritz, and Trevor Darrell"
+    },
+    {
+      "index": 30,
+      "title": "ACDC: The Adverse Conditions Dataset with Correspondences for Semantic Driving Scene Understanding",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE/CVF International Conference on Computer Vision",
+      "authors": "Christos Sakaridis, Dengxin Dai, and Luc Van Gool",
+      "orig_title": "Acdc: The adverse conditions dataset with correspondences for semantic driving scene understanding",
+      "paper_id": "2104.13395v4"
+    },
+    {
+      "index": 31,
+      "title": "Improving robustness against common corruptions by covariate shift adaptation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Steffen Schneider, Evgenia Rusak, Luisa Eck, Oliver Bringmann, Wieland Brendel, and Matthias Bethge"
+    },
+    {
+      "index": 32,
+      "title": "Online learning and online convex optimization",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Foundations and Trends® in Machine Learning",
+      "authors": "Shai Shalev-Shwartz et al."
+    },
+    {
+      "index": 33,
+      "title": "Revisiting Realistic Test-Time Training: Sequential Inference and Adaptation by Anchored Clustering",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv",
+      "authors": "Yongyi Su, Xun Xu, and Kui Jia",
+      "orig_title": "Revisiting realistic test-time training: Sequential inference and adaptation by anchored clustering",
+      "paper_id": "2206.02721v2"
+    },
+    {
+      "index": 34,
+      "title": "Test-Time Training with Self-Supervision for Generalization under Distribution Shifts",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International conference on machine learning",
+      "authors": "Yu Sun, Xiaolong Wang, Zhuang Liu, John Miller, Alexei Efros, and Moritz Hardt",
+      "orig_title": "Test-time training with self-supervision for generalization under distribution shifts",
+      "paper_id": "1909.13231v3"
+    },
+    {
+      "index": 35,
+      "title": "Unbiased look at dataset bias",
+      "abstract": "",
+      "year": "2011",
+      "venue": "CVPR 2011",
+      "authors": "Antonio Torralba and Alexei A Efros"
+    },
+    {
+      "index": 36,
+      "title": "Adversarial Discriminative Domain Adaptation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE conference on computer vision and pattern recognition",
+      "authors": "Eric Tzeng, Judy Hoffman, Kate Saenko, and Trevor Darrell",
+      "orig_title": "Adversarial discriminative domain adaptation",
+      "paper_id": "1702.05464v1"
+    },
+    {
+      "index": 37,
+      "title": "Tent: Fully Test-Time Adaptation by Entropy Minimization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv",
+      "authors": "Dequan Wang, Evan Shelhamer, Shaoteng Liu, Bruno Olshausen, and Trevor Darrell",
+      "orig_title": "Tent: Fully test-time adaptation by entropy minimization",
+      "paper_id": "2006.10726v3"
+    },
+    {
+      "index": 38,
+      "title": "Continual test-time domain adaptation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Qin Wang, Olga Fink, Luc Van Gool, and Dengxin Dai"
+    },
+    {
+      "index": 39,
+      "title": "MEMO: Test Time Robustness via Adaptation and Augmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv",
+      "authors": "Marvin Zhang, Sergey Levine, and Chelsea Finn",
+      "orig_title": "Memo: Test time robustness via adaptation and augmentation",
+      "paper_id": "2110.09506v3"
+    }
+  ]
+}

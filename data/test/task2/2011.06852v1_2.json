@@ -1,0 +1,549 @@
+{
+  "paper_id": "2011.06852v1",
+  "title": "Discriminative Feature Representaion with Spatio-temporal Cues for Vehicle Re-identification",
+  "sections": {
+    "i introduction": "With increasing demand for public security and the rapid growth of vehicles, vehicle re-identification (re-ID) has become one of the most pivotal technologies for intelligent urban surveillance. It also has a wide range of potential applications including multi-target multi-camera tracking, traffic flow modeling   .\nThe main task of vehicle re-ID is to locate vehicles accurately and identify the same vehicle over multiple cameras with particular perspectives. A similar topic is person re-identification (re-ID), but it is totally different from vehicle re-ID in terms of the facing challenges.\nCompared to person re-ID, vehicle re-ID suffers from much smaller inter-class variations and larger intra-class variations, as shown in Fig. 1.\nIn the top rectangle, each column represents a near-duplicate pair of vehicles with different identities. Due to diversified viewpoints, illuminations, and orientations of vehicle images, they only differ in slight as highlighted.\nConcretely, vehicles with distinct labels can be of the same model and the same color. Two different vehicles of the same model and color only differ in minor details, e.g. brands, individual decorations and scratches.\nAdditionally, the same vehicle’s images with various orientations, such as front, side, and rear, only share little visual overlap. As human sizes are smaller than vehicles, the images of one specific person with diverse viewpoints retain more appearance similarities.\n Considering the sophisticated relationship between intra-class and inter-class discrepancies,\nconventional methods typically focus on hand-craft features   , including geometric attributes, color histograms, and textures. Their major disadvantage lies to the insensitivity to background clutter and large variations of light conditions and viewpoints, thus leading to restricted applications in practical situations.\nRecently, deep features have dominated many computer vision tasks, such as object detection    0, semantic segmentation 1 and action recognition 2 3 4.\nHence, researchers have embraced deep features into vehicle re-ID to construct a more efficient feature representation based on two strategies: 1) visual representation and 2) multi-modal representation. The first strategy exploits the visual representation of vehicles. Refs. 5 6 7 devote to establish a global description of vehicle images.\nHowever, the global features have limited performance when dealing with inevitable visual ambiguities among different vehicles and dramatic changes of uncontrolled variations of the same vehicle. This inspired\nseveral works 8 9 0 to seek helpful visual clues for distinguishing subtle differences between vehicle images.\nHowever, these methods mainly focus on informative region localization instead of how local regions are assigned the importances to distinct degrees. To solve this problem, we develop a discriminative feature representation method to explore more fine-grained features by introducing an appearance module with two streams,\ni.e., the coarse-grained and the fine-grained feature streams respectively, to describe visual information of different granularities. The coarse-grained feature stream extracts deep features from the global network, presenting a macroscopic impression of images. Besides, the fine-grained feature stream pulls the samples of the same class up together while pushing those of different classes away in the feature embedding.\n The second strategy aims to discover and utilize multi-modal information to improve the performance of vehicle re-ID algorithms. Because visual appearance is not always reliable, especially in unconstrained environments with excessively dynamical changes,\nincluding license plates 5 and vehicle models 5 1 2 3. As aforementioned, license plate recognition is vulnerable and involves privacy problems. Moreover, vehicle models require manually annotated labels, which are laborious and uneconomical. Contrastly, the spatio-temporal information of vehicle re-ID problem is usually available due to the universalness of video monitoring systems.\nRefs. 7 4 8 5 6 employ the spatio-temporal information as the refinement of appearance features. Ref. 7 defines a spatio-temporal similarity between image pairs based on the approximate statistics of datasets. Ref. 4 uses Chain of Markov Random Field to model visual spatio-temporal paths. However, the missed detections of vehicles on passed spatio-temporal paths would degrade the vehicle re-ID algorithm’s overall performance. Moreover, ref. 5 constructs spatio-temporal constraints and refines the matching problem by a transfer time matrix. However, the acquisition of timestamps in 5 requires the preprocess of a multi-camera multi-target tracking task, which injures the method’s adaptability and extendibility.\nAdditionally, a group of works for person re-ID also explore spatio-temporal information, which can be mainly divided into two manners. One is to excavate implicit spatial-temporal information in videos 7 8. The other is to use explicit spatio-temporal information as physical constraints to reduce the complexity of the matching algorithm 9 0. The spatio-temporal model for person re-ID can not be straightforwardly used to vehicle re-ID due to severe performance degradation.\nIn particular, since vehicles move much faster than people, the assumption of constrained location prediction 0 is not rational any more. To solve the above problem, we propose a spatio-temporal module to obtain a more robust model for identifying vehicles. Specifically, the distances between camera pairs and the time intervals are modeled as a distribution rather than a transfer matrix 5, spatio-temporal constraints 6 or visual spatio-temporal paths 4. By modeling the camera locations’ distance and the discrepancy of timestamps as random variables, we formulate the spatio-temporal relationship in a simple yet effective manner quantitively. By adding the spatio-temporal module, we observe an evident performance improvement. In summary, we propose a novel discriminative representation with spatio-temporal information (DFR-ST) to establish a robust feature embedding with multi-modal cues for vehicle re-ID.\nThe main contributions of DFR-ST are three-fold:\n The proposed DFR-ST constructs the appearance representation by the two-stream architecture to extract the coarse-grained and the fine-grained features. Besides, the combination of an attention mechanism and division operations drives the fine-grained visual representation to focus on more salient and informative regions. The spatio-temporal module is proposed to form a complementary representation with the visual appearance by taking multi-modal cues into sufficient considerations. Extensive experiments on two large-scale benchmarks indicate the effectiveness and robustness of the proposed DFR-ST and it achieves the state-of-the-art performance. The rest of this article is organized as follows.\nSection II refers to the related works of vehicle re-ID and person re-ID.\nSection III introduces the proposed DFR-ST method while Section IV presents the experimental results and analyses. Section V concludes this article."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Multi-target multi-camera tracking by tracklet-to-target assignment",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "Y. He, X. Wei, X. Hong et al."
+    },
+    {
+      "index": 1,
+      "title": "Vr-proud: Vehicle re-identification using progressive unsupervised deep architecture",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Pattern Recognition",
+      "authors": "R. Bashir, M. Shahzad, and M. Fraz"
+    },
+    {
+      "index": 2,
+      "title": "Scalable semi-automatic annotation for multi-camera person tracking",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "J. O. N. Castaneda, A. F. Velazquez, N. B. Bo et al."
+    },
+    {
+      "index": 3,
+      "title": "Person re-identification by local maximal occurrence representation and metric learning",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "S. Liao, Y. Hu, X. Zhu, and S. Li"
+    },
+    {
+      "index": 4,
+      "title": "Scalable person re-identification: A benchmark",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "L. Zheng, L. Shen, L. Tian et al."
+    },
+    {
+      "index": 5,
+      "title": "Vehicle re-identification for automatic video traffic surveillance",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "D. Zapletal and A. Herout"
+    },
+    {
+      "index": 6,
+      "title": "Reverse attention-based residual network for salient object detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "S. Chen, X. Tan, B. Wang et al."
+    },
+    {
+      "index": 7,
+      "title": "Residual learning for salient object detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "M. Feng, H. Lu, and Y. Yu"
+    },
+    {
+      "index": 8,
+      "title": "Me r-cnn: Multi-expert r-cnn for object detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "H. Lee, S. Eum, and H. Kwon"
+    },
+    {
+      "index": 9,
+      "title": "Deep salient object detection with contextual information guidance",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "Y. Liu, J. Han, Q. Zhang, and C. Shan"
+    },
+    {
+      "index": 10,
+      "title": "Joint Stereo Video Deblurring, Scene Flow Estimation and Moving Object Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "L. Pan, Y. Dai, M. Liu et al.",
+      "orig_title": "Joint stereo video deblurring, scene flow estimation and moving object segmentation",
+      "paper_id": "1910.02442v1"
+    },
+    {
+      "index": 11,
+      "title": "View-invariant deep architecture for human action recognition using two-stream motion and shape temporal dynamics",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "C. Dhiman and D. K. Vishwakarma"
+    },
+    {
+      "index": 12,
+      "title": "Deep image-to-video adaptation and fusion networks for action recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "Y. Ji, Y. Zhan, Y. Yang et al."
+    },
+    {
+      "index": 13,
+      "title": "Sta-cnn: Convolutional spatial-temporal attention learning for action recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "H. Yang, C. Yuan, and L. Zhang"
+    },
+    {
+      "index": 14,
+      "title": "A deep learning-based approach to progressive vehicle re-identification for urban surveillance",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "X. Liu, W. Liu, T. Mei et al."
+    },
+    {
+      "index": 15,
+      "title": "Large-scale vehicle re-identification in urban surveillance videos",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICME",
+      "authors": "X. Liu, W. Liu, and H. Ma"
+    },
+    {
+      "index": 16,
+      "title": "Provid: Progressive and multimodal vehicle reidentification for large-scale urban surveillance",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Multimedia",
+      "authors": "X. Liu, W. Liu, T. Mei, and H. Ma"
+    },
+    {
+      "index": 17,
+      "title": "Orientation invariant feature embedding and spatial temporal regularization for vehicle re-identification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Z. Wang, L. Tang, X. Liu et al."
+    },
+    {
+      "index": 18,
+      "title": "Part-regularized near-duplicate vehicle re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "B. He, J. Li, Y. Zhao et al."
+    },
+    {
+      "index": 19,
+      "title": "Partition and reunion: A two-branch neural network for vehicle re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "H. Chen, B. Lagadec, and F. Bremond"
+    },
+    {
+      "index": 20,
+      "title": "Learning coarse-to-fine structured feature embedding for vehicle re-identification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "H. Guo, C. Zhao, Z. Liu et al."
+    },
+    {
+      "index": 21,
+      "title": "Coarse-to-fine: A rnn-based hierarchical attention model for vehicle re-identification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ACCV",
+      "authors": "X. S. Wei, C. L. Zhang, L. Liu et al."
+    },
+    {
+      "index": 22,
+      "title": "Multi-task mutual learning for vehicle re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "G. Rajamanoharan, A. Kanaci, M. Li et al."
+    },
+    {
+      "index": 23,
+      "title": "Learning Deep Neural Networks for Vehicle Re-ID with Visual-spatio-temporal Path Proposals",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Y. Shen, T. Xiao, H. Li et al.",
+      "orig_title": "Learning deep neural networks for vehicle re-id with visual-spatio-temporal path proposals",
+      "paper_id": "1708.03918v1"
+    },
+    {
+      "index": 24,
+      "title": "Vehicle re-identification with location and time stamps",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "K. Lv, H. Du, Y. Hou et al."
+    },
+    {
+      "index": 25,
+      "title": "Multi-camera vehicle tracking and re-identification based on visual and spatial-temporal features",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "X. Tan, Z. Wang, M. Jiang et al."
+    },
+    {
+      "index": 26,
+      "title": "P2snet: Can an image match a video for person re-identification in an end-to-end way?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Circuits Syst. Video Technol. (TCSVT)",
+      "authors": "G. Wang, J. Lai, and X. Xie"
+    },
+    {
+      "index": 27,
+      "title": "Diversity Regularized Spatiotemporal Attention for Video-based Person Re-identification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "S. Li, S. Bak, P. Carr, and X. Wang",
+      "orig_title": "Diversity regularized spatio-temporal attention for video-based person re-identification",
+      "paper_id": "1803.09882v1"
+    },
+    {
+      "index": 28,
+      "title": "Joint Person Re-identification and Camera Network Topology Inference in Multiple Cameras",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Comput. Vis. Image Underst.",
+      "authors": "Y. Cho, S. Kim, J. Park et al.",
+      "orig_title": "Joint person re-identification and camera network topology inference in multiple cameras",
+      "paper_id": "1710.00983v1"
+    },
+    {
+      "index": 29,
+      "title": "Unsupervised Cross-dataset Person Re-identification by Transfer Learning of Spatial-Temporal Patterns",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "J. L. abd W. Chen, Q. Li, and C. Yang",
+      "orig_title": "Unsupervised cross-dataset person re-identification by transfer learning of spatial-temporal patterns",
+      "paper_id": "1803.07293v1"
+    },
+    {
+      "index": 30,
+      "title": "The devil is in the channels: Mutual-channel loss for fine-grained image classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "D. Chang, Y. Ding, J. Xie et al."
+    },
+    {
+      "index": 31,
+      "title": "Constrained discriminative projection learning for image classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "M. Meng, M. Lan, J. Yu et al."
+    },
+    {
+      "index": 32,
+      "title": "Supervised deep sparse coding networks for image classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "X. Sun, N. M. Nasrabadi, and T. D. Tran"
+    },
+    {
+      "index": 33,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 34,
+      "title": "Alignedreid++: Dynamically matching local information for person re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Pattern Recognition",
+      "authors": "H. Luo, W. Jiang, X. Zhang et al."
+    },
+    {
+      "index": 35,
+      "title": "CDPM: Convolutional Deformable Part Models for Semantically Aligned Person Re-identification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "K. Wang, C. Ding, S. J. Maybank, and D. Tao",
+      "orig_title": "Cdpm: Convolutional deformable part models for semantically aligned person re-identification",
+      "paper_id": "1906.04976v2"
+    },
+    {
+      "index": 36,
+      "title": "A multi-scale spatial-temporal attention model for person re-identification in videos",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "W. Zhang, X. He, X. Yu et al."
+    },
+    {
+      "index": 37,
+      "title": "FaceNet: A Unified Embedding for Face Recognition and Clustering",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "F. Schroff, D. Kalenichenko, and J. Philbin",
+      "orig_title": "Facenet: A unified embedding for face recognition and clustering",
+      "paper_id": "1503.03832v3"
+    },
+    {
+      "index": 38,
+      "title": "Video-based person re-identification by simultaneously learning intra-video and inter-video distance metrics",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "X. Zhu, X. Y. Jing, X. You et al."
+    },
+    {
+      "index": 39,
+      "title": "Fine-grained spatial alignment model for person re-identification with focal triplet loss",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "Q. Zhu, B. Zhong, X. Lan et al."
+    },
+    {
+      "index": 40,
+      "title": "Uniform and variational deep learning for rgb-d object recognition and person re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "L. Ren, J. Lu, J. Feng, and J. Zhou"
+    },
+    {
+      "index": 41,
+      "title": "PaMM: Pose-aware Multi-shot Matching for Improving Person Re-identification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "Y. J. Cho and K. J. Yoon",
+      "orig_title": "Pamm: Pose-aware multi-shot matching for improving person re-identification",
+      "paper_id": "1705.06011v1"
+    },
+    {
+      "index": 42,
+      "title": "Improve person re-identification with part awareness learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "H. Huang, W. Yang, L. J et al."
+    },
+    {
+      "index": 43,
+      "title": "Bag of Tricks and A Strong Baseline for Deep Person Re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "X. L. H. Luo, Y. Gu et al.",
+      "orig_title": "Bag of tricks and a strong baseline for deep person re-identification",
+      "paper_id": "1903.07071v3"
+    },
+    {
+      "index": 44,
+      "title": "Alignedreid++: Dynamically matching local information for person re-identification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Pattern Recognition",
+      "authors": "H. Luo, W. Jiang, X. Zhang et al."
+    },
+    {
+      "index": 45,
+      "title": "Rethinking the inception architecture for computer vision",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CoRR",
+      "authors": "C. Szegedy, V. Vanhoucke, S. Ioffe et al."
+    },
+    {
+      "index": 46,
+      "title": "Deep relative distance learning: Tell the difference between similar vehicles",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "H. Liu, Y. Tian, Y. Wang et al."
+    },
+    {
+      "index": 47,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "K. He, X. Zhang, S. Ren, and J. Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 48,
+      "title": "Re-ranking person re-identification with k-reciprocal encoding",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Z. Zhong, L. Zheng, D. Cao, and S. Li"
+    },
+    {
+      "index": 49,
+      "title": "Common-near-neighbor analysis for person re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICIP",
+      "authors": "W. Li, Y. Wu, M. Mukunoki, and M. Minoh"
+    },
+    {
+      "index": 50,
+      "title": "Comparative study of various losses for vehicle re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "A. Shankar, A. Poojary, V. Kollerathu et al."
+    },
+    {
+      "index": 51,
+      "title": "Vehicle re-identification by deep hidden multi-view inference",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "Y. Zhou, L. Liu, and L. Shao"
+    },
+    {
+      "index": 52,
+      "title": "Viewpoint-aware attentive multi-view inference for vehicle re-identification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Y. Zhou and L. Shao"
+    },
+    {
+      "index": 53,
+      "title": "Embedding adversarial learning for vehicle re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "Y. Lou, Y. Bai, J. Liu et al."
+    },
+    {
+      "index": 54,
+      "title": "Group-group loss-based global-regional feature learning for vehicle re-identification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "X. Liu, S. Zhang, X. Wang et al."
+    },
+    {
+      "index": 55,
+      "title": "Vehicle Re-identification Using Quadruple Directional Deep Learning Features",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. on Intell. Transp. Syst.",
+      "authors": "J. Zhu, H. Zeng, J. Huang et al.",
+      "orig_title": "Vehicle re-identification using quadruple directional deep learning features",
+      "paper_id": "1811.05163v1"
+    },
+    {
+      "index": 56,
+      "title": "Orientation-aware Vehicle Re-identification with Semantics-guided Part Attention Network",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "T. Chen, C. Liu, C. Wu, and S. Chien",
+      "orig_title": "Orientation-aware vehicle re-identification with semantics-guided part attention network",
+      "paper_id": "2008.11423v2"
+    },
+    {
+      "index": 57,
+      "title": "The devil is in the details: Self-supervised attention for vehicle re-identification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "P. Khorramshahi, N. Peri, J. Chen, and R. Chellappa"
+    },
+    {
+      "index": 58,
+      "title": "Exploring Spatial Significance via Hybrid Pyramidal Graph Network for Vehicle Re-identification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CoRR",
+      "authors": "F. Shen, J. Zhu, X. Zhu et al.",
+      "orig_title": "Exploring spatial significance via hybrid pyramidal graph network for vehicle re-identification",
+      "paper_id": "2005.14684v2"
+    },
+    {
+      "index": 59,
+      "title": "Learning color names for real-world applications",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "J. V. D. Weijer, C. Schmid, J. Verbeek, and D. Larlus"
+    },
+    {
+      "index": 60,
+      "title": "Densely connected convolutional networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "G. Huang, Z. Liu, L. Maaten, and K. Q. Weinberger"
+    },
+    {
+      "index": 61,
+      "title": "Two-level attention network with multi-grain ranking loss for vehicle re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Trans. Image Processing",
+      "authors": "H. Guo, K. Zhu, M. Tang, and J. Wang"
+    },
+    {
+      "index": 62,
+      "title": "Group-sensitive triplet embedding for vehicle reidentification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Multimedia",
+      "authors": "Y. Bai, Y. Lou, F. Gao et al."
+    },
+    {
+      "index": 63,
+      "title": "Supervised joint domain learning for vehicle re-identification",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "C. T. Liu, M. Y. Lee, and C. W. Wu"
+    }
+  ]
+}

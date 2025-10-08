@@ -1,0 +1,431 @@
+{
+  "paper_id": "2003.12857v3",
+  "title": "NPENAS: Neural Predictor Guided Evolution for Neural Architecture Search",
+  "sections": {
+    "ii-b search strategy for nas": "Search strategy plays a critical role in efficiently exploring the search space for NAS. The commonly used search strategies include reinforcement learning (RL)    6, gradient-based methods     , Bayesian optimization [ref]3 [ref]4, evolutionary algorithms,      and predictor-based methods 6   . RL for NAS takes a recurrent neural network (RNN) as a controller to generate neural architectures sequentially. As NAS is essentially an optimization problem and RL is a more difficult problem than optimization [ref]3, the RL search strategy always needs thousands of GPU days to train the controller. Gradient-based methods adopt a single super-network to represent NAS’s search space and architecture in the search space can be realized by sampling a sub-network via an architecture distribution from the super-network. All the sampled architectures share weights in the same super-network, which can speed up the evaluation of each sampled architecture. This kind of method can also be categorized as weight sharing method from the perspective of architecture evaluation. Some previous research has reported that the gradient-based methods typically incur a large bias and suffer from instability   . Bayesian optimization utilizes an acquisition function defined from a surrogate model to sample the potential optimal solution . NASBOT [ref]3 adopted a Gaussian process as the surrogate model and presented a distance metric to calculate the kernel function, which involved a computationally intensive matrix inversion operation. BANANAS [ref]4 employed a collection of identical meta neural networks to predict the accuracy of candidate architectures, which avoided the inverse matrix operation. BANANAS outperformed a variety of NAS methods and achieve state-of-the-art error on NASBench-101 . However, the ensemble of meta neural networks prohibits the end-to-end training of neural predictors. Due to the superior performance of BANANAS, we choose BANANAS as the baseline for comparison in this paper. Previous EA-based methods      for NAS mainly focused on the design of architecture encoding, parent selection, and mutation strategies. All of them adopted one-to-one mutation operation, i.e., one parent generates one offspring. Due to the locality of the search space, a property by which the architectures that are “close by” tend to have similar performance metrics , and the phenomenon that EA usually generates offspring close to their parents , the searching overheads of EA are always enormous. Predictor-based NAS utilizes an approximated performance predictor to find promising architectures for further evaluating. Liu et al. 6 designed a neural predictor to guide the heuristic search to search the space of cell structures, starting with shallow models and progressing to complex ones. AlphaX  explored the search space via Monte Carlo Tree Search (MCTS) and proposed a Meta-Deep Neural Network as a neural predictor to speed up the exploration. Wen et al.  adopted a complicated cascade neural predictor to rank all the architectures in search space, select the top-k architectures to fully evaluate, the architecture with the best performance from the evaluated architectures is reported. Ning et al.  proposed a graph-based neural architecture encoding scheme as a neural predictor and illustrated its performance by utilizing the neural predictor to integrate with existing NAS methods. In this paper, we propose to adopt the one-to-many mutation strategy, i.e., one parent generates multiple candidate architectures, to enhance the exploration ability of EA for NAS. In order to alleviate the computational burden of candidate architectures evaluation, we propose to utilize a neural predictor to rank the candidate architectures. Our study focuses on the design of the neural predictor and its integration with EA for NAS. Because of our proposed neural predictors’ superior performance, that may be of independent interest beyond the combining with EA for NAS."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "A Comprehensive Survey of Neural Architecture Search: Challenges and Solutions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ArXiv",
+      "authors": "P. Ren, Y. Xiao, X. Chang, P. Huang, Z. Li, X. Chen, and X. Wang",
+      "orig_title": "A comprehensive survey of neural architecture search: Challenges and solutions",
+      "paper_id": "2006.02903v3"
+    },
+    {
+      "index": 1,
+      "title": "NAS-bench-101: Towards reproducible neural architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "36th International Conference on Machine Learning",
+      "authors": "C. Ying, A. Klein, E. Christiansen, E. Real, K. Murphy, and F. Hutter"
+    },
+    {
+      "index": 2,
+      "title": "Neural architecture search with bayesian optimisation and optimal transport",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "K. Kandasamy, W. Neiswanger, J. Schneider, B. Poczos, and E. P. Xing"
+    },
+    {
+      "index": 3,
+      "title": "BANANAS: Bayesian Optimization with Neural Architectures for Neural Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ArXiv",
+      "authors": "C. White, W. Neiswanger, and Y. Savani",
+      "orig_title": "Bananas: Bayesian optimization with neural architectures for neural architecture search",
+      "paper_id": "1910.11858v3"
+    },
+    {
+      "index": 4,
+      "title": "Large-Scale Evolution of Image Classifiers",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "E. Real, S. Moore, A. Selle, S. Saxena, Y. L. Suematsu, J. Tan, Q. V. Le, and A. Kurakin",
+      "orig_title": "Large-scale evolution of image classifiers",
+      "paper_id": "1703.01041v2"
+    },
+    {
+      "index": 5,
+      "title": "Regularized Evolution for Image Classifier Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "E. Real, A. Aggarwal, Y. Huang, and Q. V. Le",
+      "orig_title": "Regularized evolution for image classifier architecture search",
+      "paper_id": "1802.01548v7"
+    },
+    {
+      "index": 6,
+      "title": "Automatically designing cnn architectures using the genetic algorithm for image classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Cybernetics",
+      "authors": "Y. Sun, B. Xue, M. Zhang, G. G. Yen, and J. Lv"
+    },
+    {
+      "index": 7,
+      "title": "Completely automated cnn architecture design based on blocks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+      "authors": "Y. Sun, B. Xue, M. Zhang, and G. G. Yen"
+    },
+    {
+      "index": 8,
+      "title": "Evolving Deep Convolutional Neural Networks for Image Classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Evolutionary Computation",
+      "authors": "——",
+      "orig_title": "Evolving deep convolutional neural networks for image classification",
+      "paper_id": "1710.10741v3"
+    },
+    {
+      "index": 9,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CoRR",
+      "authors": "D. P. Kingma and J. Ba"
+    },
+    {
+      "index": 10,
+      "title": "NAS-Bench-201: Extending the Scope of Reproducible Neural Architecture Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "8th International Conference on Learning Representations, ICLR 2020",
+      "authors": "X. Dong and Y. Yang",
+      "orig_title": "Nas-bench-201: Extending the scope of reproducible neural architecture search",
+      "paper_id": "2001.00326v2"
+    },
+    {
+      "index": 11,
+      "title": "Neural predictor for neural architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "W. Wen, H. Liu, H. Li, Y. Chen, G. Bender, and P. Kindermans"
+    },
+    {
+      "index": 12,
+      "title": "DARTS: Differentiable architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "H. Liu, K. Simonyan, and Y. Yang"
+    },
+    {
+      "index": 13,
+      "title": "Neural Architecture Search using Deep Neural Networks and Monte Carlo Tree Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Thirty-Fourth AAAI Conference on Artificial Intelligence, AAAI 2020",
+      "authors": "L. Wang, Y. Zhao, Y. Jinnai, Y. Tian, and R. Fonseca",
+      "orig_title": "Neural architecture search using deep neural networks and monte carlo tree search",
+      "paper_id": "1805.07440v5"
+    },
+    {
+      "index": 14,
+      "title": "A Generic Graph-based Neural Architecture Encoding Scheme for Predictor-based NAS",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "X. Ning, Y. Zheng, T. Zhao, Y. Wang, and H. Yang",
+      "orig_title": "A generic graph-based neural architecture encoding scheme for predictor-based NAS",
+      "paper_id": "2004.01899v3"
+    },
+    {
+      "index": 15,
+      "title": "Bayesnas: A bayesian approach for neural architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "H. Zhou, M. Yang, J. Wang, and W. Pan"
+    },
+    {
+      "index": 16,
+      "title": "Accelerating neural architecture search using performance prediction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "6th International Conference on Learning Representations, ICLR 2018",
+      "authors": "B. Baker, O. Gupta, R. Raskar, and N. Naik"
+    },
+    {
+      "index": 17,
+      "title": "Neural Architecture Search with Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "International Conference on Learning Representations (ICLR)",
+      "authors": "B. Zoph and Q. V. Le",
+      "orig_title": "Neural architecture search with reinforcement learning",
+      "paper_id": "1611.01578v2"
+    },
+    {
+      "index": 18,
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ArXiv",
+      "authors": "T. Kipf and M. Welling",
+      "orig_title": "Semi-supervised classification with graph convolutional networks",
+      "paper_id": "1609.02907v4"
+    },
+    {
+      "index": 19,
+      "title": "The emerging field of signal processing on graphs: Extending high-dimensional data analysis to networks and other irregular domains",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Signal Process. Mag.",
+      "authors": "D. I. Shuman, S. K. Narang, P. Frossard, A. Ortega, and P. Vandergheynst"
+    },
+    {
+      "index": 20,
+      "title": "Simplifying Graph Convolutional Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "36th International Conference on Machine Learning, ICML 2019",
+      "authors": "F. Wu, A. H. S. Jr., T. Zhang, C. Fifty, T. Yu, and K. Q. Weinberger",
+      "orig_title": "Simplifying graph convolutional networks",
+      "paper_id": "1902.07153v2"
+    },
+    {
+      "index": 21,
+      "title": "How Powerful are Graph Neural Networks?",
+      "abstract": "",
+      "year": "2019",
+      "venue": "7th International Conference on Learning Representations, ICLR 2019",
+      "authors": "K. Xu, W. Hu, J. Leskovec, and S. Jegelka",
+      "orig_title": "How powerful are graph neural networks?",
+      "paper_id": "1810.00826v3"
+    },
+    {
+      "index": 22,
+      "title": "Neural Message Passing for Quantum Chemistry",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ArXiv",
+      "authors": "J. Gilmer, S. S. Schoenholz, P. F. Riley, O. Vinyals, and G. E. Dahl",
+      "orig_title": "Neural message passing for quantum chemistry",
+      "paper_id": "1704.01212v2"
+    },
+    {
+      "index": 23,
+      "title": "Efficient Neural Architecture Search via Parameter Sharing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "H. Pham, M. Y. Guan, B. Zoph, Q. V. Le, and J. Dean",
+      "orig_title": "Efficient neural architecture search via parameter sharing",
+      "paper_id": "1802.03268v2"
+    },
+    {
+      "index": 24,
+      "title": "Learning Transferable Architectures for Scalable Image Recognition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "B. Zoph, V. Vasudevan, J. Shlens, and Q. V. Le",
+      "orig_title": "Learning transferable architectures for scalable image recognition",
+      "paper_id": "1707.07012v4"
+    },
+    {
+      "index": 25,
+      "title": "Progressive neural architecture search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Computer Vision – ECCV 2018",
+      "authors": "C. Liu, B. Zoph, M. Neumann, J. Shlens, W. Hua, L.-J. Li, L. Fei-Fei, A. Yuille, J. Huang, and K. Murphy"
+    },
+    {
+      "index": 26,
+      "title": "SNAS: stochastic neural architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Learning Representations",
+      "authors": "S. Xie, H. Zheng, C. Liu, and L. Lin",
+      "orig_title": "SNAS: stochastic neural architecture search",
+      "paper_id": "1812.09926v3"
+    },
+    {
+      "index": 27,
+      "title": "Progressive differentiable architecture search: Bridging the depth gap between search and evaluation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "authors": "X. Chen, L. Xie, J. Wu, and Q. Tian"
+    },
+    {
+      "index": 28,
+      "title": "PC-DARTS: Partial Channel Connections for Memory-Efficient Architecture Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "Y. Xu, L. Xie, X. Zhang, X. Chen, G.-J. Qi, Q. Tian, and H. Xiong",
+      "orig_title": "PC-DARTS: Partial channel connections for memory-efficient architecture search",
+      "paper_id": "1907.05737v4"
+    },
+    {
+      "index": 29,
+      "title": "Neural Architecture Search: A Survey",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Journal of Machine Learning research",
+      "authors": "T. Elsken, J. H. Metzen, and F. Hutter",
+      "orig_title": "Neural architecture search: A survey",
+      "paper_id": "1808.05377v3"
+    },
+    {
+      "index": 30,
+      "title": "Random Search and Reproducibility for Neural Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ArXiv",
+      "authors": "L. Li and A. Talwalkar",
+      "orig_title": "Random search and reproducibility for neural architecture search",
+      "paper_id": "1902.07638v3"
+    },
+    {
+      "index": 31,
+      "title": "Evaluating The Search Phase of Neural Architecture Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Learning Representations",
+      "authors": "K. Yu, C. Sciuto, M. Jaggi, C. Musat, and M. Salzmann",
+      "orig_title": "Evaluating the search phase of neural architecture search",
+      "paper_id": "1902.08142v3"
+    },
+    {
+      "index": 32,
+      "title": "Taking the human out of the loop: A review of bayesian optimization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE",
+      "authors": "B. Shahriari, K. Swersky, Z. Wang, R. P. Adams, and N. de Freitas"
+    },
+    {
+      "index": 33,
+      "title": "A tutorial on bayesian optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "P. I. Frazier"
+    },
+    {
+      "index": 34,
+      "title": "A Tutorial on Thompson Sampling",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Foundations and Trends in Machine Learning",
+      "authors": "D. Russo, B. V. Roy, A. Kazerouni, and I. Osband",
+      "orig_title": "A tutorial on thompson sampling",
+      "paper_id": "1707.02038v3"
+    },
+    {
+      "index": 35,
+      "title": "Pattern recognition and machine learning",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Springer",
+      "authors": "C. M. Bishop"
+    },
+    {
+      "index": 36,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, T. Killeen, Z. Lin, N. Gimelshein, L. Antiga, A. Desmaison, A. Köpf, E. Yang, Z. DeVito, M. Raison, A. Tejani, S. Chilamkurthy, B. Steiner, L. Fang, J. Bai, and S. Chintala",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 37,
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR Workshop on Representation Learning on Graphs and Manifolds",
+      "authors": "M. Fey and J. E. Lenssen",
+      "orig_title": "Fast graph representation learning with PyTorch Geometric",
+      "paper_id": "1903.02428v3"
+    },
+    {
+      "index": 38,
+      "title": "Code for NPENAS",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "C. Wei"
+    },
+    {
+      "index": 39,
+      "title": "Learning multiple layers of features from tiny images",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "A. Krizhevsky"
+    },
+    {
+      "index": 40,
+      "title": "Continuously Differentiable Exponential Linear Units",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ArXiv",
+      "authors": "J. T. Barron",
+      "orig_title": "Continuously differentiable exponential linear units",
+      "paper_id": "1704.07483v1"
+    },
+    {
+      "index": 41,
+      "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ArXiv",
+      "authors": "S. Ioffe and C. Szegedy"
+    },
+    {
+      "index": 42,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CACM",
+      "authors": "A. Krizhevsky, I. Sutskever, and G. E. Hinton"
+    },
+    {
+      "index": 43,
+      "title": "SGDR: Stochastic Gradient Descent with Warm Restarts",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "I. Loshchilov and F. Hutter",
+      "orig_title": "Sgdr: Stochastic gradient descent with warm restarts",
+      "paper_id": "1608.03983v5"
+    },
+    {
+      "index": 44,
+      "title": "Improved Regularization of Convolutional Neural Networks with Cutout",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ArXiv",
+      "authors": "T. Devries and G. W. Taylor",
+      "orig_title": "Improved regularization of convolutional neural networks with cutout",
+      "paper_id": "1708.04552v2"
+    },
+    {
+      "index": 45,
+      "title": "Neural Architecture Optimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "R. Luo, F. Tian, T. Qin, and T.-Y. Liu",
+      "orig_title": "Neural architecture optimization",
+      "paper_id": "1808.07233v5"
+    }
+  ]
+}

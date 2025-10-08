@@ -1,0 +1,461 @@
+{
+  "paper_id": "2010.06037v3",
+  "title": "Streaming enumeration on nested documents",
+  "sections": {
+    "visibly pushdown transducers and main result": "In this section, we present the definition of visibly pushdown transducers  (), which are an extension of visibly pushdown automata to produce outputs. We use as our computational model to represent queries with output. This model is general enough to include any query language for nested documents, like XML or JSON, whose expressive power is in MSO.\nAfter the setting is formalized, we state the main result of the paper. A visibly pushdown transducer () is a tuple T=(Q,Σ,Γ,Ω,Δ,I,F)TQΣΓΩΔIF\\pazocal{T}\\!=(Q,\\Sigma,\\Gamma,\\Omega,\\Delta,I,F) where Q𝑄Q, ΣΣ\\Sigma, ΓΓ\\Gamma, I𝐼I, and F𝐹F are the same as for VPA, ΩΩ\\Omega is the output alphabet with ε∉Ω𝜀Ω\\varepsilon\\notin\\Omega, and\nΔ⊆(Q×Σ<×(Ω∪{ε})×Q×Γ)∪(Q×Σ>×(Ω∪{ε})×Γ×Q)∪(Q×Σ|×(Ω∪{ε})×Q)Δ𝑄superscriptΣ<Ω𝜀𝑄Γ𝑄superscriptΣ>Ω𝜀Γ𝑄𝑄superscriptΣ|Ω𝜀𝑄\\Delta\\subseteq(Q\\times\\Sigma^{\\texttt{<}}\\times(\\Omega\\cup\\{\\varepsilon\\})\\times Q\\times\\Gamma)\\cup(Q\\times\\Sigma^{\\texttt{>}}\\times(\\Omega\\cup\\{\\varepsilon\\})\\times\\Gamma\\times Q)\\cup(Q\\times\\Sigma^{\\texttt{|}}\\times(\\Omega\\cup\\{\\varepsilon\\})\\times Q)\nis the transition relation. As usual for transducers, a symbol s∈Σ<∪Σ>∪Σ|𝑠superscriptΣ<superscriptΣ>superscriptΣ|s\\in\\Sigma^{\\texttt{<}}\\cup\\Sigma^{\\texttt{>}}\\cup\\Sigma^{\\texttt{|}} is an input symbol that the machine reads and o\n\n\n\n⌣\n\n∈Ω∪{ε}o\n\n\n\n⌣\n\nΩ𝜀\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}}\\in\\Omega\\cup\\{\\varepsilon\\} is a symbol that the machine prints in an output tape. Furthermore, ε𝜀\\varepsilon represents that no symbol is printed for that transition.\nA run ρ𝜌\\rho of TT\\pazocal{T}\\! over a well-nested word w=s1​s2​⋯​sn∈Σ<*>𝑤subscript𝑠1subscript𝑠2⋯subscript𝑠𝑛superscriptΣ<*>w=s_{1}s_{2}\\cdots s_{n}\\in\\Sigma^{\\texttt{<*>}} is a sequence of the form\nρ=(q1,σ1)→s1/o\n\n\n\n⌣\n\n1…→sn/o\n\n\n\n⌣\n\nn(qn+1,σn+1)𝜌subscript𝑞1subscript𝜎1subscript𝑠1subscripto\n\n\n\n⌣\n\n1→…subscript𝑠𝑛subscripto\n\n\n\n⌣\n\n𝑛→subscript𝑞𝑛1subscript𝜎𝑛1\\rho=(q_{1},\\sigma_{1})\\xrightarrow{s_{1}/\\!\\operatorname{\\scriptsize{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.60275pt}{\\scalebox{0.7}{$\\ \\,\\boldsymbol{\\smallsmile}$}}}}}}_{1}}\\ldots\\xrightarrow{s_{n}/\\!\\operatorname{\\scriptsize{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.60275pt}{\\scalebox{0.7}{$\\ \\,\\boldsymbol{\\smallsmile}$}}}}}}_{n}}(q_{n+1},\\sigma_{n+1})\nwhere qi∈Qsubscript𝑞𝑖𝑄q_{i}\\in Q, σi∈Γ∗subscript𝜎𝑖superscriptΓ\\sigma_{i}\\in\\Gamma^{*}, q1∈Isubscript𝑞1𝐼q_{1}\\in I, σ1=εsubscript𝜎1𝜀\\sigma_{1}=\\varepsilon and for every i∈[1,n]𝑖1𝑛i\\in[1,n] the following holds:\n(1) if si∈Σ<subscript𝑠𝑖superscriptΣ<s_{i}\\in\\Sigma^{\\texttt{<}}, then (qi,si,o\n\n\n\n⌣\n\ni,qi+1,γ)∈Δsubscript𝑞𝑖subscript𝑠𝑖subscripto\n\n\n\n⌣\n\n𝑖subscript𝑞𝑖1𝛾Δ(q_{i},s_{i},\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}}_{i},q_{i+1},\\gamma)\\in\\Delta for some γ∈Γ𝛾Γ\\gamma\\in\\Gamma and σi+1=γ​σisubscript𝜎𝑖1𝛾subscript𝜎𝑖\\sigma_{i+1}=\\gamma\\sigma_{i},\n(2) if si∈Σ>subscript𝑠𝑖superscriptΣ>s_{i}\\in\\Sigma^{\\texttt{>}}, then (qi,si,o\n\n\n\n⌣\n\ni,γ,qi+1)∈Δsubscript𝑞𝑖subscript𝑠𝑖subscripto\n\n\n\n⌣\n\n𝑖𝛾subscript𝑞𝑖1Δ(q_{i},s_{i},\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}}_{i},\\gamma,q_{i+1})\\in\\Delta for some γ∈Γ𝛾Γ\\gamma\\in\\Gamma and σi=γ​σi+1subscript𝜎𝑖𝛾subscript𝜎𝑖1\\sigma_{i}=\\gamma\\sigma_{i+1}, and\n(3) if si∈Σ|subscript𝑠𝑖superscriptΣ|s_{i}\\in\\Sigma^{\\texttt{|}}, then (pi,si,o\n\n\n\n⌣\n\ni,qi+1)∈Δsubscript𝑝𝑖subscript𝑠𝑖subscripto\n\n\n\n⌣\n\n𝑖subscript𝑞𝑖1Δ(p_{i},s_{i},\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}}_{i},q_{i+1})\\in\\Delta and σi=σi+1subscript𝜎𝑖subscript𝜎𝑖1\\sigma_{i}=\\sigma_{i+1}. We say that the run is accepting if qn+1∈Fsubscript𝑞𝑛1𝐹q_{n+1}\\in F.\nWe call a pair (qi,σi)subscript𝑞𝑖subscript𝜎𝑖(q_{i},\\sigma_{i}) a configuration of ρ𝜌\\rho.\nFinally, the output of an accepting run ρ𝜌\\rho is defined as:\nout​(ρ)=out​(o\n\n\n\n⌣\n\n1,1)⋅…⋅out​(o\n\n\n\n⌣\n\nn,n)out𝜌⋅outsubscripto\n\n\n\n⌣\n\n11…outsubscripto\n\n\n\n⌣\n\n𝑛𝑛\\textsf{out}(\\rho)=\\textsf{out}(\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}}_{1},1)\\cdot\\ldots\\cdot\\textsf{out}(\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}}_{n},n)\nwhere out​(o\n\n\n\n⌣\n\n,i)=εouto\n\n\n\n⌣\n\n𝑖𝜀\\textsf{out}(\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}},i)=\\varepsilon when o\n\n\n\n⌣\n\n=εo\n\n\n\n⌣\n\n𝜀\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}}=\\varepsilon and (o\n\n\n\n⌣\n\n,i)o\n\n\n\n⌣\n\n𝑖(\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}},i) otherwise. Note that in o\n\n\n\n⌣\n\n1⁡⋯​o\n\n\n\n⌣\n\nnsubscripto\n\n\n\n⌣\n\n1⋯subscripto\n\n\n\n⌣\n\n𝑛\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}}_{1}\\cdots\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}}_{n} we use ε𝜀\\varepsilon as a symbol, and in out​(ρ)out𝜌\\textsf{out}(\\rho) we use ε𝜀\\varepsilon as the empty string. Given a TT\\pazocal{T}\\! and a w∈Σ<*>𝑤superscriptΣ<*>w\\in\\Sigma^{\\texttt{<*>}}, we define the set ⟦T⟧(w)\\llbracket\\pazocal{T}\\!\\mkern 1.0mu\\rrbracket(w) of all outputs of TT\\pazocal{T}\\! over w𝑤w as:\n⟦T⟧(w)={out(ρ)∣ρ is an accepting run of T over w}.\\llbracket\\pazocal{T}\\!\\mkern 1.0mu\\rrbracket(w)=\\{\\textsf{out}(\\rho)\\,\\mid\\,\\text{$\\rho$ is an accepting run of $\\pazocal{T}\\!$ over $w$}\\}. \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n Strictly speaking, our definition of is richer than the one studied in . In our definition of each output element is a tuple (o\n\n\n\n⌣\n\n,i)o\n\n\n\n⌣\n\n𝑖(\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}},i) where o\n\n\n\n⌣\n\no\n\n\n\n⌣\n\n\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}} is the symbol and i𝑖i is the output position, where for a standard   an output element is just the symbol o\n\n\n\n⌣\n\no\n\n\n\n⌣\n\n\\operatorname{\\ooalign{\\raisebox{0.0pt}{$o$}\\cr\\rotatebox[origin={c}]{15.0}{\\raisebox{0.86108pt}{\\scalebox{0.7}{$\\ \\boldsymbol{\\smallsmile}$}}}}}.\nThe extension presented here is indeed important for practical applications like in document spanners   or in XML query evaluation  . \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n \n\n⌣\n A first reasonable question is to understand what is the expressive power of VPT, namely, as a formalism for non-boolean query evaluation over nested words. For the Boolean case, it was shown  that VPA describe the same class of queries as MSO over nested words, called MSOmatchsubscriptMSOmatch\\text{MSO}_{\\textsf{match}}.\nFormally, fix a structured alphabet ΣΣ\\Sigma and let w∈Σ<*>𝑤superscriptΣ<*>w\\in\\Sigma^{\\texttt{<*>}} be a word of length n𝑛n.\nWe encode w𝑤w as a structure: where [1,n]1𝑛[1,n] is the domain, ≤\\leq\nis the total order over [1,n]1𝑛[1,n], Pa={i∣w​[i]=a}subscript𝑃𝑎conditional-set𝑖𝑤delimited-[]𝑖𝑎P_{a}=\\{i\\mid w[i]=a\\}, and 𝗆𝖺𝗍𝖼𝗁𝗆𝖺𝗍𝖼𝗁\\sf{match} is a binary relation over [1,n]1𝑛[1,n] that corresponds to the matching relation of open and close symbols: match​(i,j)match𝑖𝑗\\textsf{match}(i,j) is true iff w​[i]𝑤delimited-[]𝑖w[i] is an open symbol and w​[j]𝑤delimited-[]𝑗w[j] is its matching close symbol.\nBy some abuse of notation, we also use w𝑤w to denote its corresponding logical structure.\nA MSOmatchsubscriptMSOmatch\\text{MSO}_{\\textsf{match}} formula φ𝜑\\varphi over ΣΣ\\Sigma is given by: where a∈Σ𝑎Σa\\in\\Sigma, x𝑥x and y𝑦y are first-order variables and X𝑋X is a monadic second order (MSO) variable.\nWe write φ​(X1,…,Xn)𝜑subscript𝑋1…subscript𝑋𝑛\\varphi(X_{1},\\ldots,X_{n}) where X1,…,Xnsubscript𝑋1…subscript𝑋𝑛X_{1},\\ldots,X_{n} are the free MSO variables of φ𝜑\\varphi (first-order variables are a special case of MSO variables).\nThen we write w⊧φ​(A1,…,An)models𝑤𝜑subscript𝐴1…subscript𝐴𝑛w\\models\\varphi(A_{1},\\ldots,A_{n}) for A1,…,An⊆[1,n]subscript𝐴1…subscript𝐴𝑛1𝑛A_{1},\\ldots,A_{n}\\subseteq[1,n] when w𝑤w satisfies φ𝜑\\varphi by replacing each variable Xisubscript𝑋𝑖X_{i} with the set Aisubscript𝐴𝑖A_{i}. Here, we assume the standard semantics for MSO logic [ref]43. Given that VPT is an extension of VPA, it should not be a surprise that we can translate these results to VPT. In particular, the result in  can be easily extended to link VPT with formulas expressible in MSOmatchsubscriptMSOmatch\\text{MSO}_{\\textsf{match}}. Let φ​(X1,…,Xm)𝜑subscript𝑋1…subscript𝑋𝑚\\varphi(X_{1},\\ldots,X_{m}) be a MSOmatchsubscriptMSOmatch\\text{MSO}_{\\textsf{match}} formula with m𝑚m free variables X1,…,Xmsubscript𝑋1…subscript𝑋𝑚X_{1},\\ldots,X_{m}.\nThere is a VPT TT\\pazocal{T}\\! for which there is a one-to-one correspondence between the set\n⟦T⟧(w)\\llbracket\\pazocal{T}\\!\\mkern 1.0mu\\rrbracket(w)\nand the set {(A1,…,Am)∣w⊧φ​(A1,…,Am)}conditional-setsubscript𝐴1…subscript𝐴𝑚models𝑤𝜑subscript𝐴1…subscript𝐴𝑚\\{(A_{1},\\ldots,A_{m})\\mid w\\models\\varphi(A_{1},\\ldots,A_{m})\\} for any word w∈Σ<*>𝑤superscriptΣ<*>w\\in\\Sigma^{\\texttt{<*>}}.\nMoreover, for every VPT TT\\pazocal{T}\\! there is an MSOmatchsubscriptMSOmatch\\text{MSO}_{\\textsf{match}} formula φ​(X1,…,Xm)𝜑subscript𝑋1…subscript𝑋𝑚\\varphi(X_{1},\\ldots,X_{m}) for which the same one-to-one correspondence holds. In other words, VPT has the same expressive power as MSO over nested words. Given that fragments of query languages over nested documents (e.g., navigational XPath 4, JSON Navigational Logic ) are usually included in MSO, this shows that VPT is an expressive formalism for query evaluation over nested documents.\nAs an example, in the appendix we show how to translate some XPath queries into , including QQ\\pazocal{Q}. We say that a T=(Q,Σ,Γ,Ω,Δ,I,F)TQΣΓΩΔIF\\pazocal{T}\\!=(Q,\\Sigma,\\Gamma,\\Omega,\\Delta,I,F) is input/output deterministic (I/O-deterministic for short) if |I|=1𝐼1|I|=1 and ΔΔ\\Delta is a partial function of the form Δ:(Q×Σ<×Ω→Q×Γ)∪(Q×Σ>×Ω×Γ→Q)∪(Q×Σ|×Ω→Q):Δ→𝑄superscriptΣ<Ω𝑄Γ→𝑄superscriptΣ>ΩΓ𝑄→𝑄superscriptΣ|Ω𝑄\\Delta:(Q\\times\\Sigma^{\\texttt{<}}\\times\\Omega\\to Q\\times\\Gamma)\\cup(Q\\times\\Sigma^{\\texttt{>}}\\times\\Omega\\times\\Gamma\\to Q)\\cup(Q\\times\\Sigma^{\\texttt{|}}\\times\\Omega\\to Q).\nOn the other hand, we say that TT\\pazocal{T}\\! is input/output unambiguous (I/O-unambiguous for short) if for every w∈Σ<*>𝑤superscriptΣ<*>w\\in\\Sigma^{\\texttt{<*>}} and every μ∈⟦T⟧(w)\\mu\\in\\llbracket\\pazocal{T}\\!\\mkern 1.0mu\\rrbracket(w) there is exactly one accepting run ρ𝜌\\rho of TT\\pazocal{T}\\! over w𝑤w such that μ=out​(ρ)𝜇out𝜌\\mu=\\textsf{out}(\\rho).\nNotice that an I/O-deterministic is also I/O-unambiguous and in both models for each output there exists at most one run. The definition of I/O-deterministic is in line with the notion of I/O-deterministic variable automata of  and I/O-unambiguous is a generalization of this idea that is enough for the purpose of our enumeration algorithm. One can show that for every TT\\pazocal{T}\\! there exists an equivalent I/O-deterministic and, therefore, an equivalent I/O-unambiguous . For every TT\\pazocal{T}\\! there exists an I/O-deterministic T′superscriptT′\\pazocal{T}\\!^{\\prime} of size O​(2|Q|2​|Γ|)Osuperscript2superscriptQ2Γ\\pazocal{O}(2^{|Q|^{2}|\\Gamma|}) such that ⟦T⟧(w)=⟦T′⟧(w)\\llbracket\\pazocal{T}\\!\\mkern 1.0mu\\rrbracket(w)=\\llbracket\\pazocal{T}\\!^{\\prime}\\mkern 1.0mu\\rrbracket(w) for every w∈Σ<*>𝑤superscriptΣ<*>w\\in\\Sigma^{\\texttt{<*>}}. In this paper, we are interested on the following streaming enumeration problem for . Let CC\\pazocal{C} be a class of (e.g. I/O-deterministic ). \n\n\n\nProblem:\nEnumVPT​[C]EnumVPTdelimited-[]C\\textsc{EnumVPT}[\\pazocal{C}]\n\n\n\nInput:\na T∈CTC\\pazocal{T}\\!\\in\\pazocal{C} and w∈Σ<*>𝑤superscriptΣ<*>w\\in\\Sigma^{\\texttt{<*>}}\n\nOutput:\nEnumerate ⟦T⟧(w)\\llbracket\\pazocal{T}\\!\\mkern 1.0mu\\rrbracket(w)\n\n\n The main result of the paper is that for the class of I/O-unambiguous , the streaming full-enumeration version of this problem can be solved efficiently. The streaming full-enumeration problem of EnumVPT for the class of I/O-unambiguous can be solved with update-time O​(|Q|2​|Δ|)OsuperscriptQ2Δ\\pazocal{O}(|Q|^{2}|\\Delta|) and output-linear delay. For the general class of , it can be solved with update-time O​(2|Q|2​|Δ|)Osuperscript2superscriptQ2Δ\\pazocal{O}(2^{|Q|^{2}|\\Delta|}) and output-linear delay. The result for the class of all is a consequence of Lemma 4.2 and the enumeration algorithm for I/O-unambiguous (see Section 5 and 6). For both cases, if the is fixed (i.e., in data complexity), then the update-time of the streaming algorithm is constant. For the streaming version of EnumVPT, one can have ΔΔ\\Delta-enumeration with a small loss of efficiency by solving the full-enumeration problem. Specifically, one can show that for any I/O-unambiguous TT\\pazocal{T}\\! there is an I/O-unambiguous T′superscriptT′\\pazocal{T}\\!^{\\prime} of linear size with respect to |T|T|\\pazocal{T}\\!| such that ⟦T′⟧(w)=⟦T⟧(w)∖⋃{⟦T⟧(w[1,i])∣i<|w|,w[1,i]∈Σ<*>}\\llbracket\\pazocal{T}\\!^{\\prime}\\mkern 1.0mu\\rrbracket(w)=\\llbracket\\pazocal{T}\\!\\mkern 1.0mu\\rrbracket(w)\\setminus\\bigcup\\,\\{\\llbracket\\pazocal{T}\\!\\mkern 1.0mu\\rrbracket(w[1,i])\\mid i<|w|,w[1,i]\\in\\Sigma^{\\texttt{<*>}}\\} for each w∈Σ<*>𝑤superscriptΣ<*>w\\in\\Sigma^{\\texttt{<*>}}. The streaming ΔΔ\\Delta-enumeration problem of EnumVPT for the class of I/O-unambiguous can be solved with update-time O​(|Q|2​|Δ|)OsuperscriptQ2Δ\\pazocal{O}(|Q|^{2}|\\Delta|) and output-linear delay. For the general class of , it can be solved with update-time O​(2|Q|2​|Δ|)Osuperscript2superscriptQ2Δ\\pazocal{O}(2^{|Q|^{2}|\\Delta|}) and output-linear delay. We could have considered a more general definition of VPT to produce outputs for prefix-nested words. This would be desirable for having some sort of earliest query answering  which is important in practical scenarios. We remark that the algorithm of Theorem 4.3 can be extended for this case at the cost of making the presentation more complicated. For the sake of presentation, we defer this extension to the full version of this paper. Space lower bounds of evaluating a .\nThis subsection deals with the space used by the streaming evaluation algorithm of Theorem 4.3.\nIndeed, this algorithm could use linear space in the worst case. In the following we explore some lower bounds in the space needed by any algorithm, and show that this bound is tight for a certain type of . To study the minimum number of bits needed to solve EnumVPT we need to introduce some definitions.\nFix a TT\\pazocal{T}\\! and w∈prefix​(Σ<*>)𝑤prefixsuperscriptΣ<*>w\\in\\textsf{prefix}(\\Sigma^{\\texttt{<*>}}). Let\n𝗈𝗎𝗍𝗉𝗎𝗍𝗐𝖾𝗂𝗀𝗁𝗍​(T,w)𝗈𝗎𝗍𝗉𝗎𝗍𝗐𝖾𝗂𝗀𝗁𝗍Tw\\mathsf{outputweight}(\\pazocal{T}\\!,w) be the number of positions less than |w|𝑤|w| that appear in some output of ⟦T⟧(w⋅w′)\\llbracket\\pazocal{T}\\!\\mkern 1.0mu\\rrbracket(w\\cdot w^{\\prime}) for some w⋅w′∈Σ<*>⋅𝑤superscript𝑤′superscriptΣ<*>w\\cdot w^{\\prime}\\in\\Sigma^{\\texttt{<*>}}.\nFurthermore, for a well-nested word u𝑢u let 0​p​t​(u)0𝑝𝑡𝑢0pt(u) be the maximum number of nesting pairs inside u𝑢u, formally, 0​p​t​(a)=00𝑝𝑡𝑎00pt(a)=0 for a∈Σ|∪{ε}𝑎superscriptΣ|𝜀a\\in\\Sigma^{\\texttt{|}}\\cup\\{\\varepsilon\\}, 0​p​t​(u1⋅u2)=max⁡{0​p​t​(u1),0​p​t​(u2)}0𝑝𝑡⋅subscript𝑢1subscript𝑢20𝑝𝑡subscript𝑢10𝑝𝑡subscript𝑢20pt(u_{1}\\cdot u_{2})=\\max\\{0pt(u_{1}),0pt(u_{2})\\}, and 0​p​t​(<​a⋅u⋅b​>)=0​p​t​(u)+10𝑝𝑡⋅<𝑎𝑢𝑏>0𝑝𝑡𝑢10pt({\\scriptsize\\texttt{<}}a\\cdot u\\cdot b{\\scriptsize\\texttt{>}})=0pt(u)+1. For w∈prefix​(Σ<*>)𝑤prefixsuperscriptΣ<*>w\\in\\textsf{prefix}(\\Sigma^{\\texttt{<*>}}), we define 0​p​t​(w)=min⁡{0​p​t​(w′)∣w​ is a prefix of ​w′}0𝑝𝑡𝑤conditional0𝑝𝑡superscript𝑤′𝑤 is a prefix of superscript𝑤′0pt(w)=\\min\\{0pt(w^{\\prime})\\mid w\\text{ is a prefix of }w^{\\prime}\\}.\nWe can now state some worst-case space lower bounds for EnumVPT. There exists a TT\\pazocal{T}\\! such that every streaming evaluation algorithm for EnumVPT with input TT\\pazocal{T}\\! and SS\\pazocal{S} requires at least Ω​(0​p​t​(S​[1,n]))Ω0𝑝𝑡S1n\\Omega(0pt(\\pazocal{S}[1,n])) bits of space. There exists a TT\\pazocal{T}\\! such that every streaming evaluation algorithm for EnumVPT with input TT\\pazocal{T}\\! and SS\\pazocal{S} requires at least Ω​(𝗈𝗎𝗍𝗉𝗎𝗍𝗐𝖾𝗂𝗀𝗁𝗍​(T,S​[1,n]))Ω𝗈𝗎𝗍𝗉𝗎𝗍𝗐𝖾𝗂𝗀𝗁𝗍TS1n\\Omega(\\mathsf{outputweight}(\\pazocal{T}\\!,\\pazocal{S}[1,n])) bits of space. In  , the authors provide lower bounds on the amount of space needed for evaluating XPath in terms of the nesting and the concurrency (see  for a definition).\nOne can show that the output weight of TT\\pazocal{T}\\! and w𝑤w is always above the concurrency of TT\\pazocal{T}\\! and w𝑤w. Despite this, one can check that both notions coincide for the space lower bound given in Proposition 4.5. The previous results show that, in the worst case, any streaming evaluation algorithm for VPT will require space of at least the depth of the document or the output weight.\nTo show that Theorem 4.3 is optimal in the worst-case, we need to consider a further assumption of our . We say that a TT\\pazocal{T}\\! is trimmed  if for every w∈prefix​(Σ<*>)𝑤prefixsuperscriptΣ<*>w\\in\\textsf{prefix}(\\Sigma^{\\texttt{<*>}}) and every (partial) run ρ𝜌\\rho of TT\\pazocal{T}\\! over w𝑤w, there exists w′superscript𝑤′w^{\\prime} and an accepting run ρ′superscript𝜌′\\rho^{\\prime} of TT\\pazocal{T}\\! over w⋅w′⋅𝑤superscript𝑤′w\\cdot w^{\\prime} such that ρ𝜌\\rho is a prefix of ρ′superscript𝜌′\\rho^{\\prime}.\nThis notion is the analog of trimmed non-deterministic automata. Similarly to Lemma 4.2, one can show that for every TT\\pazocal{T}\\! there exists a trimmed I/O-deterministic T′superscriptT′\\pazocal{T}\\!^{\\prime} equivalent to TT\\pazocal{T}\\! (i.e., by extending the construction in  to VPT).\nThe next result shows that, if the input to EnumVPT is a trimmed I/O-unambiguous , then the memory footprint is at most the maximum between the depth and output weight of the input. The streaming enumeration problem of EnumVPT for the class of trimmed I/O-unambiguous can be solved with update-time O​(|Q|2​|Δ|)OsuperscriptQ2Δ\\pazocal{O}(|Q|^{2}|\\Delta|), output-linear delay and O​(max⁡{0​p​t​(S​[1,n]),𝗈𝗎𝗍𝗉𝗎𝗍𝗐𝖾𝗂𝗀𝗁𝗍​(T,S​[1,n])}×|Q|2​|Δ|)O0ptS1n𝗈𝗎𝗍𝗉𝗎𝗍𝗐𝖾𝗂𝗀𝗁𝗍TS1nsuperscriptQ2Δ\\pazocal{O}(\\max\\{0pt(\\pazocal{S}[1,n]),\\mathsf{outputweight}(\\pazocal{T}\\!,\\pazocal{S}[1,n])\\}\\times|Q|^{2}|\\Delta|) space for every stream SS\\pazocal{S}. Unfortunately, the algorithm provided in Theorem 4.3 is not instance optimal, in the sense of using the lowest number of bits needed for each specific (see the appendix).\nNote that an instance optimal algorithm for the streaming enumeration problem of VPT will imply a solution to the weak evaluation problem, stated by Segoufin and Vianu 2. This is an open problem in the area (see  for some recent results), so we leave this for future work."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "The Design and Analysis of Computer Algorithms",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Addison-Wesley",
+      "authors": "Alfred V. Aho, John E. Hopcroft, and Jeffrey D. Ullman"
+    },
+    {
+      "index": 1,
+      "title": "Compilers, principles, techniques",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Addison wesley",
+      "authors": "Alfred V Aho, Ravi Sethi, and Jeffrey D Ullman"
+    },
+    {
+      "index": 2,
+      "title": "Efficient filtering of XML documents for selective dissemination of information",
+      "abstract": "",
+      "year": "2000",
+      "venue": "VLDB",
+      "authors": "Mehmet Altınel and Michael J Franklin"
+    },
+    {
+      "index": 3,
+      "title": "Streamable regular transductions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "Rajeev Alur, Dana Fisman, Konstantinos Mamouras, Mukund Raghothaman, and Caleb Stanford"
+    },
+    {
+      "index": 4,
+      "title": "Invisible pushdown languages",
+      "abstract": "",
+      "year": "2004",
+      "venue": "STOC",
+      "authors": "Rajeev Alur and P. Madhusudan",
+      "orig_title": "Visibly pushdown languages",
+      "paper_id": "1511.00289v1"
+    },
+    {
+      "index": 5,
+      "title": "A circuit-based approach to efficient enumeration",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICALP",
+      "authors": "Antoine Amarilli, Pierre Bourhis, Louis Jachiet, and Stefan Mengel"
+    },
+    {
+      "index": 6,
+      "title": "Constant-delay enumeration for nondeterministic document spanners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICDT",
+      "authors": "Antoine Amarilli, Pierre Bourhis, Stefan Mengel, and Matthias Niewerth"
+    },
+    {
+      "index": 7,
+      "title": "Enumeration on trees with tractable combined complexity and efficient updates",
+      "abstract": "",
+      "year": "2019",
+      "venue": "PODS",
+      "authors": "Antoine Amarilli, Pierre Bourhis, Stefan Mengel, and Matthias Niewerth"
+    },
+    {
+      "index": 8,
+      "title": "Efficient logspace classes for enumeration, counting, and uniform generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "PODS",
+      "authors": "Marcelo Arenas, Luis Alberto Croquevielle, Rajesh Jayaram, and Cristian Riveros"
+    },
+    {
+      "index": 9,
+      "title": "Models and issues in data stream systems",
+      "abstract": "",
+      "year": "2002",
+      "venue": "SIGMOD",
+      "authors": "Brian Babcock, Shivnath Babu, Mayur Datar, Rajeev Motwani, and Jennifer Widom"
+    },
+    {
+      "index": 10,
+      "title": "MSO queries on tree decomposable structures are computable with linear delay",
+      "abstract": "",
+      "year": "2006",
+      "venue": "CSL",
+      "authors": "Guillaume Bagan"
+    },
+    {
+      "index": 11,
+      "title": "On acyclic conjunctive queries and constant delay enumeration",
+      "abstract": "",
+      "year": "2007",
+      "venue": "CSL",
+      "authors": "Guillaume Bagan, Arnaud Durand, and Etienne Grandjean"
+    },
+    {
+      "index": 12,
+      "title": "Buffering in query evaluation over XML streams",
+      "abstract": "",
+      "year": "2005",
+      "venue": "PODS",
+      "authors": "Ziv Bar-Yossef, Marcus Fontoura, and Vanja Josifovski"
+    },
+    {
+      "index": 13,
+      "title": "On the memory requirements of XPath evaluation over XML streams",
+      "abstract": "",
+      "year": "2007",
+      "venue": "J. Comput. Syst. Sci.",
+      "authors": "Ziv Bar-Yossef, Marcus Fontoura, and Vanja Josifovski"
+    },
+    {
+      "index": 14,
+      "title": "Stackless processing of streamed trees",
+      "abstract": "",
+      "year": "2021",
+      "venue": "PODS",
+      "authors": "Corentin Barloy, Filip Murlak, and Charles Paperman"
+    },
+    {
+      "index": 15,
+      "title": "Constant delay enumeration for conjunctive queries: a tutorial",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM SIGLOG News",
+      "authors": "Christoph Berkholz, Fabian Gerhardt, and Nicole Schweikardt"
+    },
+    {
+      "index": 16,
+      "title": "Answering conjunctive queries under updates",
+      "abstract": "",
+      "year": "2017",
+      "venue": "PODS",
+      "authors": "Christoph Berkholz, Jens Keppeler, and Nicole Schweikardt"
+    },
+    {
+      "index": 17,
+      "title": "JSON: Data model and query languages",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Inf. Syst.",
+      "authors": "Pierre Bourhis, Juan L. Reutter, and Domagoj Vrgoc"
+    },
+    {
+      "index": 18,
+      "title": "Trimming visibly pushdown automata",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "Mathieu Caralp, Pierre-Alain Reynier, and Jean-Marc Talbot"
+    },
+    {
+      "index": 19,
+      "title": "An efficient XPath query processor for XML streams",
+      "abstract": "",
+      "year": "2006",
+      "venue": "ICDE",
+      "authors": "Yi Chen, Susan B. Davidson, and Yifeng Zheng"
+    },
+    {
+      "index": 20,
+      "title": "Materialized views",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Found. Trends Databases",
+      "authors": "Rada Chirkova and Jun Yang"
+    },
+    {
+      "index": 21,
+      "title": "Linear delay enumeration and monadic second-order logic",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Discret. Appl. Math.",
+      "authors": "Bruno Courcelle"
+    },
+    {
+      "index": 22,
+      "title": "Making data structures persistent",
+      "abstract": "",
+      "year": "1986",
+      "venue": "STOC",
+      "authors": "James R Driscoll, Neil Sarnak, Daniel Dominic Sleator, and Robert Endre Tarjan"
+    },
+    {
+      "index": 23,
+      "title": "First-order queries on structures of bounded degree are computable with constant delay",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ACM Trans. Comput. Log.",
+      "authors": "Arnaud Durand and Etienne Grandjean"
+    },
+    {
+      "index": 24,
+      "title": "Document spanners: A formal approach to information extraction",
+      "abstract": "",
+      "year": "2015",
+      "venue": "J. ACM",
+      "authors": "Ronald Fagin, Benny Kimelfeld, Frederick Reiss, and Stijn Vansummeren"
+    },
+    {
+      "index": 25,
+      "title": "Streamability of nested word transductions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "LMCS",
+      "authors": "Emmanuel Filiot, Olivier Gauwin, Pierre-Alain Reynier, and Frédéric Servais"
+    },
+    {
+      "index": 26,
+      "title": "Visibly pushdown transducers",
+      "abstract": "",
+      "year": "2018",
+      "venue": "JCSS",
+      "authors": "Emmanuel Filiot, Jean-François Raskin, Pierre-Alain Reynier, Frédéric Servais, and Jean-Marc Talbot"
+    },
+    {
+      "index": 27,
+      "title": "Efficient enumeration algorithms for regular document spanners",
+      "abstract": "",
+      "year": "2020",
+      "venue": "TODS",
+      "authors": "Fernando Florenzano, Cristian Riveros, Martín Ugarte, Stijn Vansummeren, and Domagoj Vrgoc"
+    },
+    {
+      "index": 28,
+      "title": "A logic for document spanners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Theory Comput. Syst.",
+      "authors": "Dominik D. Freydenberger"
+    },
+    {
+      "index": 29,
+      "title": "Joining Extractions of Regular Expressions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "PODS",
+      "authors": "Dominik D. Freydenberger, Benny Kimelfeld, and Liat Peterfreund",
+      "orig_title": "Joining extractions of regular expressions",
+      "paper_id": "1703.10350v1"
+    },
+    {
+      "index": 30,
+      "title": "Streaming tree automata",
+      "abstract": "",
+      "year": "2008",
+      "venue": "Inf. Process. Lett.",
+      "authors": "Olivier Gauwin, Joachim Niehren, and Yves Roos"
+    },
+    {
+      "index": 31,
+      "title": "Bounded delay and concurrency for earliest query answering",
+      "abstract": "",
+      "year": "2009",
+      "venue": "LATA",
+      "authors": "Olivier Gauwin, Joachim Niehren, and Sophie Tison"
+    },
+    {
+      "index": 32,
+      "title": "Earliest query answering for deterministic nested word automata",
+      "abstract": "",
+      "year": "2009",
+      "venue": "FCT",
+      "authors": "Olivier Gauwin, Joachim Niehren, and Sophie Tison"
+    },
+    {
+      "index": 33,
+      "title": "Efficient algorithms for evaluating XPath over streams",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIGMOD",
+      "authors": "Gang Gou and Rada Chirkova"
+    },
+    {
+      "index": 34,
+      "title": "Processing XML streams with deterministic automata and stream indexes",
+      "abstract": "",
+      "year": "2004",
+      "venue": "ACM Trans. Database Syst.",
+      "authors": "Todd J. Green, Ashish Gupta, Gerome Miklau, Makoto Onizuka, and Dan Suciu"
+    },
+    {
+      "index": 35,
+      "title": "Towards streaming evaluation of queries with correlation in complex event processing",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICDT",
+      "authors": "Alejandro Grez and Cristian Riveros"
+    },
+    {
+      "index": 36,
+      "title": "A formal framework for complex event processing",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICDT",
+      "authors": "Alejandro Grez, Cristian Riveros, and Martín Ugarte"
+    },
+    {
+      "index": 37,
+      "title": "The dynamic Yannakakis algorithm: Compact and efficient query processing under updates",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIGMOD",
+      "authors": "Muhammad Idris, Martín Ugarte, and Stijn Vansummeren"
+    },
+    {
+      "index": 38,
+      "title": "Random generation of combinatorial structures from a uniform distribution",
+      "abstract": "",
+      "year": "1986",
+      "venue": "Theor. Comput. Sci.",
+      "authors": "Mark Jerrum, Leslie G. Valiant, and Vijay V. Vazirani"
+    },
+    {
+      "index": 39,
+      "title": "Querying XML streams",
+      "abstract": "",
+      "year": "2005",
+      "venue": "VLDB J.",
+      "authors": "Vanja Josifovski, Marcus Fontoura, and Attila Barta"
+    },
+    {
+      "index": 40,
+      "title": "Trade-offs in Static and Dynamic Evaluation of Hierarchical Queries",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PODS",
+      "authors": "Ahmet Kara, Milos Nikolic, Dan Olteanu, and Haozhe Zhang",
+      "orig_title": "Trade-offs in static and dynamic evaluation of hierarchical queries",
+      "paper_id": "1907.01988v7"
+    },
+    {
+      "index": 41,
+      "title": "Visibly pushdown automata for streaming XML",
+      "abstract": "",
+      "year": "2007",
+      "venue": "WWW",
+      "authors": "Viraj Kumar, P. Madhusudan, and Mahesh Viswanathan"
+    },
+    {
+      "index": 42,
+      "title": "Elements of finite model theory, volume 41",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Springer",
+      "authors": "Leonid Libkin"
+    },
+    {
+      "index": 43,
+      "title": "Document Spanners for Extracting Incomplete Information: Expressiveness and Complexity",
+      "abstract": "",
+      "year": "2018",
+      "venue": "PODS",
+      "authors": "Francisco Maturana, Cristian Riveros, and Domagoj Vrgoc",
+      "orig_title": "Document spanners for extracting incomplete information: Expressiveness and complexity",
+      "paper_id": "1707.00827v2"
+    },
+    {
+      "index": 44,
+      "title": "Incremental view maintenance with triple lock factorization benefits",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SIGMOD",
+      "authors": "Milos Nikolic and Dan Olteanu"
+    },
+    {
+      "index": 45,
+      "title": "SPEX: Streamed and progressive evaluation of XPath",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE Trans. Knowl. Data Eng.",
+      "authors": "Dan Olteanu"
+    },
+    {
+      "index": 46,
+      "title": "An efficient single-pass query evaluator for XML data streams",
+      "abstract": "",
+      "year": "2004",
+      "venue": "SAC",
+      "authors": "Dan Olteanu, Tim Furche, and François Bry"
+    },
+    {
+      "index": 47,
+      "title": "Size bounds for factorised representations of query results",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACM TODS",
+      "authors": "Dan Olteanu and Jakub Závodný"
+    },
+    {
+      "index": 48,
+      "title": "Grammars for document spanners",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICDT",
+      "authors": "Liat Peterfreund"
+    },
+    {
+      "index": 49,
+      "title": "Recursive Programs for Document Spanners",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICDT",
+      "authors": "Liat Peterfreund, Balder ten Cate, Ronald Fagin, and Benny Kimelfeld",
+      "orig_title": "Recursive programs for document spanners",
+      "paper_id": "1712.08198v3"
+    },
+    {
+      "index": 50,
+      "title": "Enumerating with constant delay the answers to a query",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ICDT",
+      "authors": "Luc Segoufin"
+    },
+    {
+      "index": 51,
+      "title": "Validating streaming XML documents",
+      "abstract": "",
+      "year": "2002",
+      "venue": "PODS",
+      "authors": "Luc Segoufin and Victor Vianu"
+    },
+    {
+      "index": 52,
+      "title": "The space complexity of processing XML twig queries over indexed documents",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ICDE",
+      "authors": "Mirit Shalem and Ziv Bar-Yossef"
+    },
+    {
+      "index": 53,
+      "title": "Navigational XPath: calculus and algebra",
+      "abstract": "",
+      "year": "2007",
+      "venue": "SIGMOD Record",
+      "authors": "Balder ten Cate and Maarten Marx"
+    },
+    {
+      "index": 54,
+      "title": "Aggregate Queries on Sparse Databases",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PODS",
+      "authors": "Szymon Torunczyk",
+      "orig_title": "Aggregate queries on sparse databases",
+      "paper_id": "1912.12338v1"
+    }
+  ]
+}

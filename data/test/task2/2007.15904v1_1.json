@@ -1,0 +1,445 @@
+{
+  "paper_id": "2007.15904v1",
+  "title": "Kyrix-S: Authoring Scalable Scatterplot Visualizations of Big Data",
+  "sections": {
+    "introduction": "Scatterplots are an important type of visualization used extensively in data science and visual analytic systems. Objects in a dataset are visualized on a 2D Cartesian plane, with the dimensions being two quantitative attributes from the objects. Each object can be represented as a point, polygon or other mark. Aggregation-based marks (e.g. pie chart, heatmap) can also be used to represent groups of objects. The user of a scatterplot can perform a variety of tasks to provide insights into the underlying data, such as discovering global trends, inspecting individual objects or characterizing distributions. Despite the usefulness of static scatterplots, they suffer from significant overdraw problem on big datasets[ref]43 . Here, we focus on scatterplots with millions to billions of objects, where significant overlap of marks is unavoidable, making the visualization ineffective. To address this issue in scatterplots, there has been substantial research    on devising aggregation-based scatterplots using visual aggregates such as contours or hexagon bins. While avoiding visual clutter, these approaches do not support inspecting individual objects, which is a fundamental scatterplot task. Prior works also used transparency , animation and displacements of objects   to ease the overdraw problem. However, due to limited screen resolution, these methods have scalability limits. On the other hand, the use of zooming in scatterplots has the potential to effectively mitigate visual clutter. By expanding the 2D Cartesian plane into a series of zoom levels with different scales, more screen resolution becomes available, allowing for object layouts that avoid occlusion and excessive density. Inspecting large amounts of objects thus becomes feasible. Aggregation-based marks such as circles or heatmaps can still be used to visualize groups of objects.\nFigure Kyrix-S: Authoring Scalable Scatterplot Visualizations of Big Data shows such a visualization created by the system we introduce in this paper, which shows one billion comments made by users on Reddit.com, where X𝑋X is the posting time and Y𝑌Y is the number of characters in the comments. Additional examples are in Figure 1. For simplicity, we term such visualizations scalable scatterplot visualizations, or SSV. There has been significant work on building systems/toolkits to aid the creation of SSVs (e.g.  [ref]23 ). Specifically, prior systems can be classified into two categories: general pan/zoom systems and specialized SSV systems.\nGeneral pan/zoom systems are typically expressive, supporting not only SSVs, but also pan/zoom visualizations of other types of data (e.g. hierarchical and temporal data) or that connect multiple 2D semantic spaces111A 2D semantic space consists of zoom levels sharing the same coordinate system and visualizing the same type of objects. An SSV has only one semantic space. General pan/zoom systems typically allow “semantic jumping” from one semantic space to another  (e.g. from a space of Reddit comments to a space of Reddit forums). .\nSpecialized SSV systems (e.g. [ref]23 ), on the other hand, generally have a narrow focus on SSVs. While these systems have been shown to be effective, they can suffer from some drawbacks that limit their ability to support general SSV authoring at scale. In particular, limited scalability is a common drawback of both types of systems. As often as not, implementations assume all objects reside in the main memory of a computer   [ref]23    . General pan/zoom systems, while being flexible, generally incur too much developer work due to their low-level nature. When authoring an SSV, the developer needs to manually generate the layout of visual marks on zoom levels. In very large datasets, there will be many levels (e.g. Google Maps has 20). Individually specifying the layout of a set of levels is tedious and error-prone. In particular, big or skewed data can make it challenging for the developer to specify a layout that avoids occlusion and excessive density in the visualization. Another drawback of specialized SSV systems is low flexibility.\nOftentimes systems are hardcoded for specific scenarios (e.g., supporting specific types of visual marks such as heatmaps[ref]43  or points , enforcing a density budget but not removing overlap, etc.) and are not extensible to general use cases. The developer cannot make free design choices when using these systems, and is forced to constantly switch tools for different application requirements. In this paper, we describe Kyrix-S 222The birth of Kyrix-S is driven by the limitations we see when we use Kyrix, a general pan/zoom system we have developed, to build real-world SSV-based applications. The name Kyrix-S here suggests that we implement Kyrix-S as an extension of Kyrix for SSVs, rather than a replacement. S may suggest scale, scatterplots or spatial partitioning. More detailed discussion on the relationship between the two systems can be found in Sections 2 and 7. , a system for SSV authoring at scale which addresses all issues of existing systems.\nTo enable rapid authoring, we present a high-level declarative grammar for SSVs. We abstract away low-level details such as rendering of visual marks so that the developer can author a complex SSV in a few tens of lines of JSON. We show that compared to a state-of-the-art system, this is 4X–9X reduction in specification on several examples. In addition, we build a gallery of SSVs to show that our grammar is expressive and that the developer can easily extend it to add his/her own visual marks. This grammar for SSVs is supported by an algorithm that automatically chooses the layout of visual marks on all zoom levels, thereby freeing the developer from writing custom code.\nWe store objects in a multi-node parallel database using multi-node spatial indexing. As we show in Section 8, this allows us to respond to any pan/zoom action in under 500ms on datasets with billions of objects. To summarize, we make the following contributions: An integrated system called Kyrix-S for declarative authoring and rendering of SSVs at scale.333Code available at https://github.com/tracyhenry/kyrix A concise and expressive declarative grammar for describing SSVs (Section 4). A framework for offline database indexing and online serving that enables interactive browsing of large SSVs (Sections 5 and 6)."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Leaflet markercluster plugin",
+      "abstract": "",
+      "year": "2019",
+      "venue": "GitHub",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "Postgresql generalized search tree",
+      "abstract": "",
+      "year": "2020",
+      "venue": "PostgreSQL Documentation",
+      "authors": ""
+    },
+    {
+      "index": 2,
+      "title": "Vega-lite javascript api",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ObservableHQ",
+      "authors": ""
+    },
+    {
+      "index": 3,
+      "title": "Dynamic Prefetching of Data Tiles for Interactive Visualization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "2016 International Conference on Management of Data, SIGMOD '16",
+      "authors": "L. Battle, R. Chang, and M. Stonebraker"
+    },
+    {
+      "index": 4,
+      "title": "Pad++: a zooming graphical interface for exploring alternate interface physics",
+      "abstract": "",
+      "year": "1994",
+      "venue": "7th annual ACM symposium on User interface software and technology",
+      "authors": "B. Bederson and J. Hollan"
+    },
+    {
+      "index": 5,
+      "title": "Jazz: an extensible zoomable user interface graphics toolkit in java",
+      "abstract": "",
+      "year": "2003",
+      "venue": "The Craft of Information Visualization",
+      "authors": "B. Bederson, J. Meyer, and L. Good"
+    },
+    {
+      "index": 6,
+      "title": "A linear-time algorithm for the aggregation and visualization of big spatial point data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "25th ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems",
+      "authors": "C. Beilschmidt, T. Fober, M. Mattig, and B. Seeger"
+    },
+    {
+      "index": 7,
+      "title": "K-d trees for semidynamic point sets",
+      "abstract": "",
+      "year": "1990",
+      "venue": "sixth annual symposium on Computational geometry",
+      "authors": "J. L. Bentley"
+    },
+    {
+      "index": 8,
+      "title": "Protovis: A graphical toolkit for visualization",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Trans. Visualization & Comp. Graphics (InfoVis)",
+      "authors": "M. Bostock and J. Heer"
+    },
+    {
+      "index": 9,
+      "title": "D3 data-driven documents",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "M. Bostock, V. Ogievetsky, and J. Heer"
+    },
+    {
+      "index": 10,
+      "title": "Visual abstraction and exploration of multi-class scatterplots",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "H. Chen, W. Chen, H. Mei, Z. Liu, K. Zhou, W. Chen, W. Gu, and K.-L. Ma"
+    },
+    {
+      "index": 11,
+      "title": "Using animation to alleviate overdraw in multiclass scatterplot matrices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 CHI Conference on Human Factors in Computing Systems",
+      "authors": "H. Chen, S. Engle, A. Joshi, E. D. Ragan, B. F. Yuksel, and L. Harrison"
+    },
+    {
+      "index": 12,
+      "title": "A recursive subdivision technique for sampling multi-class scatterplots",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "X. Chen, T. Ge, J. Zhang, B. Chen, C.-W. Fu, O. Deussen, and Y. Wang"
+    },
+    {
+      "index": 13,
+      "title": "Measuring data abstraction quality in multiresolution visualizations",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "Q. Cui, M. Ward, E. Rundensteiner, and J. Yang"
+    },
+    {
+      "index": 14,
+      "title": "Efficient spatial sampling of large geographical tables",
+      "abstract": "",
+      "year": "2012",
+      "venue": "2012 ACM SIGMOD International Conference on Management of Data",
+      "authors": "A. Das Sarma, H. Lee, H. Gonzalez, J. Madhavan, and A. Halevy"
+    },
+    {
+      "index": 15,
+      "title": "Vizualizing large spatial datasets in interactive maps",
+      "abstract": "",
+      "year": "2010",
+      "venue": "2010 Second International Conference on Advanced Geographic Information Systems, Applications, and Services",
+      "authors": "J.-Y. Delort"
+    },
+    {
+      "index": 16,
+      "title": "Constant density displays using diversity sampling",
+      "abstract": "",
+      "year": "2003",
+      "venue": "IEEE Symposium on Information Visualization 2003",
+      "authors": "M. Derthick, M. G. Christel, A. G. Hauptmann, and H. D. Wactlar"
+    },
+    {
+      "index": 17,
+      "title": "By chance enhancing interaction with large data sets through statistical sampling",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Working Conference on Advanced Visual Interfaces",
+      "authors": "A. Dix and G. Ellis"
+    },
+    {
+      "index": 18,
+      "title": "Disc diversity: result diversification based on dissimilarity and coverage",
+      "abstract": "",
+      "year": "2012",
+      "venue": "VLDB Endowment",
+      "authors": "M. Drosou and E. Pitoura"
+    },
+    {
+      "index": 19,
+      "title": "A taxonomy of clutter reduction for information visualisation",
+      "abstract": "",
+      "year": "2007",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "G. Ellis and A. Dix"
+    },
+    {
+      "index": 20,
+      "title": "Hierarchical aggregation for information visualization: Overview, techniques, and design guidelines",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "N. Elmqvist and J.-D. Fekete"
+    },
+    {
+      "index": 21,
+      "title": "Interactive information visualization of a million items",
+      "abstract": "",
+      "year": "2002",
+      "venue": "IEEE Symposium on Information Visualization, INFOVIS 2002",
+      "authors": "J.-D. Fekete and C. Plaisant"
+    },
+    {
+      "index": 22,
+      "title": "Efficient selection of geospatial data on maps for interactive and visualized exploration",
+      "abstract": "",
+      "year": "2018",
+      "venue": "2018 International Conference on Management of Data",
+      "authors": "T. Guo, K. Feng, G. Cong, and Z. Bao"
+    },
+    {
+      "index": 23,
+      "title": "Visual Designs for Binned Aggregation of Multi-Class Scatterplots",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1810.02445",
+      "authors": "F. Heimerl, C.-C. Chang, A. Sarikaya, and M. Gleicher",
+      "orig_title": "Visual designs for binned aggregation of multi-class scatterplots",
+      "paper_id": "1810.02445v2"
+    },
+    {
+      "index": 24,
+      "title": "A declarative rendering model for multiclass density maps",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "J. Jo, F. Vernier, P. Dragicevic, and J.-D. Fekete"
+    },
+    {
+      "index": 25,
+      "title": "Critical zones in desert fog: aids to multiscale navigation",
+      "abstract": "",
+      "year": "1998",
+      "venue": "11th annual ACM symposium on User interface software and technology",
+      "authors": "S. Jul and G. W. Furnas"
+    },
+    {
+      "index": 26,
+      "title": "Declarative cartography: In-database map generalization of geospatial datasets",
+      "abstract": "",
+      "year": "2014",
+      "venue": "2014 IEEE 30th International Conference on Data Engineering",
+      "authors": "P. K. Kefaloukos, M. V. Salles, and M. Zachariasen"
+    },
+    {
+      "index": 27,
+      "title": "The gridfit algorithm: An efficient and effective approach to visualizing large amounts of spatial data",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE",
+      "authors": "D. A. Keim and A. Herrmann"
+    },
+    {
+      "index": 28,
+      "title": "Backus normal form vs. backus naur form",
+      "abstract": "",
+      "year": "1964",
+      "venue": "Communications of the ACM",
+      "authors": "D. E. Knuth"
+    },
+    {
+      "index": 29,
+      "title": "Focus+ context taken literally",
+      "abstract": "",
+      "year": "2002",
+      "venue": "IEEE Computer Graphics and Applications",
+      "authors": "R. Kosara, S. Miksch, and H. Hauser"
+    },
+    {
+      "index": 30,
+      "title": "Pattern-driven navigation in 2d multiscale visualizations with scalable insets",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "F. Lekschas, M. Behrisch, B. Bach, P. Kerpedjiev, N. Gehlenborg, and H. Pfister"
+    },
+    {
+      "index": 31,
+      "title": "Cluster-based visual abstraction for multivariate scatterplots",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "H. Liao, Y. Wu, L. Chen, and W. Chen"
+    },
+    {
+      "index": 32,
+      "title": "Nanocubes for real-time exploration of spatiotemporal datasets",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "authors": "L. Lins, J. T. Klosowski, and C. Scheidegger"
+    },
+    {
+      "index": 33,
+      "title": "Smartcube: An adaptive data management architecture for the real-time visualization of spatiotemporal datasets",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "C. Liu, C. Wu, H. Shao, and X. Yuan"
+    },
+    {
+      "index": 34,
+      "title": "The effects of interactive latency on exploratory visual analysis",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "Z. Liu and J. Heer"
+    },
+    {
+      "index": 35,
+      "title": "immens: Real-time visual querying of big data",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Computer Graphics Forum",
+      "authors": "Z. Liu, B. Jiang, and J. Heer"
+    },
+    {
+      "index": 36,
+      "title": "Splatterplots: Overcoming overdraw in scatter plots",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "A. Mayorga and M. Gleicher"
+    },
+    {
+      "index": 37,
+      "title": "Topkube: a rank-aware data cube for real-time exploration of spatiotemporal data",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on visualization and computer graphics",
+      "authors": "F. Miranda, L. Lins, J. T. Klosowski, and C. T. Silva"
+    },
+    {
+      "index": 38,
+      "title": "Falcon: Balancing interactive latency and resolution sensitivity for scalable linked visualizations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "2019 CHI Conference on Human Factors in Computing Systems",
+      "authors": "D. Moritz, B. Howe, and J. Heer"
+    },
+    {
+      "index": 39,
+      "title": "Multiresolution select-distinct queries on large geographic point sets",
+      "abstract": "",
+      "year": "2012",
+      "venue": "20th International Conference on Advances in Geographic Information Systems",
+      "authors": "S. Nutanong, M. D. Adelfio, and H. Samet"
+    },
+    {
+      "index": 40,
+      "title": "Hashedcubes: Simple, low memory, real-time visual exploration of big data",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "C. A. Pahins, S. A. Stephens, C. Scheidegger, and J. L. Comba"
+    },
+    {
+      "index": 41,
+      "title": "Atom: A grammar for unit visualizations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "D. Park, S. M. Drucker, R. Fernandez, and N. Elmqvist"
+    },
+    {
+      "index": 42,
+      "title": "Large interactive visualization of density functions on big data infrastructure",
+      "abstract": "",
+      "year": "2015",
+      "venue": "2015 IEEE 5th Symposium on large Data Analysis and Visualization (lDAV)",
+      "authors": "A. Perrot, R. Bourqui, N. Hanusse, F. Lalanne, and D. Auber"
+    },
+    {
+      "index": 43,
+      "title": "Cartolabe: A Web-Based Scalable Visualization of Large Document Collections",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.00975",
+      "authors": "C. Philippe, R. Jonas, F. Jean-Daniel, L. Anne-Catherine, and S. Michèle",
+      "orig_title": "Cartolabe: A web-based scalable visualization of large document collections",
+      "paper_id": "2003.00975v2"
+    },
+    {
+      "index": 44,
+      "title": "A toolkit for addressing hci issues in visual language environments",
+      "abstract": "",
+      "year": "2005",
+      "venue": "null",
+      "authors": "E. Pietriga"
+    },
+    {
+      "index": 45,
+      "title": "Scatterplots: Tasks, data, and designs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE transactions on visualization and computer graphics",
+      "authors": "A. Sarikaya and M. Gleicher"
+    },
+    {
+      "index": 46,
+      "title": "Vega-lite: A grammar of interactive graphics",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans. Visualization & Comp. Graphics (InfoVis)",
+      "authors": "A. Satyanarayan, D. Moritz, K. Wongsuphasawat, and J. Heer"
+    },
+    {
+      "index": 47,
+      "title": "Declarative interaction design for data visualization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM User Interface Software & Technology (UIST)",
+      "authors": "A. Satyanarayan, K. Wongsuphasawat, and J. Heer"
+    },
+    {
+      "index": 48,
+      "title": "Kyrix: Interactive pan/zoom visualizations at scale",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Computer Graphics Forum",
+      "authors": "W. Tao, X. Liu, Y. Wang, L. Battle, Ç. Demiralp, R. Chang, and M. Stonebraker"
+    },
+    {
+      "index": 49,
+      "title": "Intelligently resolving point occlusion",
+      "abstract": "",
+      "year": "2003",
+      "venue": "IEEE Symposium on Information Visualization 2003",
+      "authors": "M. Trutschl, G. Grinstein, and U. Cvek"
+    },
+    {
+      "index": 50,
+      "title": "Mobile liquid 2d scatter space (ml2dss)",
+      "abstract": "",
+      "year": "2004",
+      "venue": "Eighth International Conference on Information Visualisation, IV 2004",
+      "authors": "C. Waldeck and D. Balfanz"
+    },
+    {
+      "index": 51,
+      "title": "ggplot2: Elegant Graphics for Data Analysis",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Springer-Verlag New York",
+      "authors": "H. Wickham"
+    },
+    {
+      "index": 52,
+      "title": "A layered grammar of graphics",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Journal of Computational and Graphical Statistics",
+      "authors": "H. Wickham"
+    },
+    {
+      "index": 53,
+      "title": "Interactive hierarchical displays: a general framework for visualization and exploration of large multivariate data sets",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Computers & Graphics",
+      "authors": "J. Yang, M. O. Ward, and E. A. Rundensteiner"
+    }
+  ]
+}

@@ -1,0 +1,501 @@
+{
+  "paper_id": "2209.11679v2",
+  "title": "Rethinking Missing Data: Aleatoric Uncertainty-Aware Recommendation",
+  "sections": {
+    "experimental settings": "Datasets. \nWe conduct experiments on four benchmark datasets, namely Yelp2018, Amazon-book, Adressa, and MovieLens-10M, which we abbreviate as Yelp, Amazon, Adressa, and ML-10M, respectively. For Yelp and Amazon, we follow the same setting as LightGCN  to filter users and items and split each dataset into training and testing sets. For Adressa and ML-10M, we adopt the setting of MACR  to filter the datasets. To evaluate the performance of tail item recommendation, we define tail items as items with fewer interactions and make sure that they comprise 50% of all interactions in the corresponding dataset. The remaining items are treated as head items. On Yelp and Amazon, 86.3% and 84% of the items were tail items, respectively. As for the Adressa and ML-10M datasets, approximately 85% of the items were tail items. Evaluation Protocols. \nTo measure the recommendation performance, we adopt two widely-used evaluation metrics: R​e​c​a​l​l​@​K𝑅𝑒𝑐𝑎𝑙𝑙@𝐾Recall@K and N​D​C​G​@​K𝑁𝐷𝐶𝐺@𝐾NDCG@K (K=20​o​r​ 50𝐾20𝑜𝑟50K=20\\,or\\,50). To evaluate both the overall recommendation and tail item recommendation performance, we define three evaluation protocols to rank items and compute the above metrics, as following: Overall evaluation. In this protocol, we conduct all-ranking  – all items that are not interacted by a user are the candidates and report the normal Recall and NDCG. Indeed, it measures the trade-off between recommendation of head items and tail items. Tail Absolute evaluation. In this protocol, we focus on measuring the accuracy of recommending tail items when both head and tail items are candidates. We still conduct all-ranking, but just take the positive tail items in the testing set as ground-truth. We adjust the evaluation metrics,\ne.g., R​e​c​a​l​l​@​K=1|𝒰|​∑u|𝒯u∩ℛuK||𝒯u|𝑅𝑒𝑐𝑎𝑙𝑙@𝐾1𝒰subscript𝑢subscript𝒯𝑢subscriptsuperscriptℛ𝐾𝑢subscript𝒯𝑢Recall@K=\\frac{1}{|\\mathcal{U}|}\\sum_{u}\\frac{|\\mathcal{T}_{u}\\cap\\mathcal{R}^{K}_{u}|}{|\\mathcal{T}_{u}|},\nwhere Tusubscript𝑇𝑢T_{u} denotes the set of tail items that are interacted by the user u𝑢u in the testing set. ℛuKsubscriptsuperscriptℛ𝐾𝑢\\mathcal{R}^{K}_{u} denotes the top-K𝐾K recommended items among all candidates in the all-ranking protocol, and |⋅||\\cdot| denotes the size of the corresponding set. Tail Relative evaluation. Refer to , it also evaluates the tail recommendation performance but focuses on the ranking of tail items where all tail items not interacted by a user are the candidates. Correspondingly, we adjust the metric\nR​e​c​a​l​l​@​K=1|𝒰|​∑u|𝒯u∩ℛ′uK||𝒯u|𝑅𝑒𝑐𝑎𝑙𝑙@𝐾1𝒰subscript𝑢subscript𝒯𝑢subscriptsuperscriptsuperscriptℛ′𝐾𝑢subscript𝒯𝑢Recall@K=\\frac{1}{|\\mathcal{U}|}\\sum_{u}\\frac{|\\mathcal{T}_{u}\\cap{\\mathcal{R}^{{}^{\\prime}}}^{K}_{u}|}{|\\mathcal{T}_{u}|},\nwhere ℛ′uKsubscriptsuperscriptsuperscriptℛ′𝐾𝑢{\\mathcal{R}^{{}^{\\prime}}}^{K}_{u} denotes the top-K𝐾{K} recommended tail items. Compared Methods. The proposed AUR generates recommendations with the consideration of uncertainties. To verify the effectiveness of the AUR framework, we implement AUR with three backbone models (MF, LGCN, and VAE), and compare AUR with corresponding backbone models that generate recommendations just based on expectations. MF [ref]8. This refers to the Matrix Factorization method, which predicts user preference on an item as the inner product of user and item embedding. LGCN  refers to LightGCN, which takes the simplified graph convolution networks (GCN) to better capture the collaborative information in the user-item interaction graph. We fix the number of GCN layers to 333 due to its good performance on both Yelp and Amazon . VAE [ref]16 refers to MultiVAE. This is an item-based CF method built with the variational autoencoder (VAE).\nWe set the network architecture as: 1024→512→1024→1024512→10241024\\to 512\\to 1024 and take Equation (5)\nas the optimization objective. MF-AUR/LGCN-AUR/VAE-AUR, refer to the AUR with MF, LGCN, and VAE as the expectation estimator, respectively. We set the network size of qisubscript𝑞𝑖q_{i} and pisubscript𝑝𝑖p_{i} in the uncertainty estimator as 1024 to fairly compare with VAE. To verify the ability of AUR to mitigate the popularity bias, we also compare MF-AUR with the following methods designed for addressing popularity bias applied to MF: IPS . This is a famous de-biasing method — inverse propensity scoring, which re-weights training samples to improve the tail recommendation.\n MACR . This is a SOTA method to eliminate the popularity bias in recommendation. It takes the counterfactual inference to remove the influence of popularity on recommendations, promoting the recommendation of tail items. We use the code released by the authors and tune hyperparameters in the same range as the MACR paper. PopBias . This is a method to reduce the model bias to achieve both high accuracy and high debias performance. It extends the existing BPR Loss with a new regularization term which regulates the score differences within positive and negative items. In our experiments, we choose the Z​e​r​o​S​u​m𝑍𝑒𝑟𝑜𝑆𝑢𝑚ZeroSum around all variations proposed in the paper. Moreover, we compare MF-AUR with two well-known probabilistic recommender models: PMF , which assumes that latent features and labels obey different Gaussian distributions. The variance of each distribution is treated as a hyper-parameter.\nFor fair comparison, we implement PMF with the same mini-batch strategy as AUR and tune all hyper-parameters in the ranges taken by the PMF paper. ExpoMF .\nExpoMF incorporates user exposure to items into collaborative filtering. It could avoid suppressing potential positive but mislabeled samples by decreasing the weights of negative samples exposed with lower probabilities. Regarding the exposure model of ExpoMF, we follow the ’per-item’ strategy to implement exposure covariates, i.e., encoding exposure via item popularity. Hyper-parameter Settings. \nWe optimize all models with Adam  and use the default learning rate 1​e​-​41𝑒-41e\\text{-}4 and default mini-batch size 323232. The L2subscript𝐿2L_{2} regularization coefficient is searched in the range of {1​e​-​4,1​e​-​3,1​e​-​2,1​e​-​1}1𝑒-41𝑒-31𝑒-21𝑒-1\\{1e\\text{-}4,1e\\text{-}3,1e\\text{-}2,1e\\text{-}1\\}. For baselines with embedding layers (MF, LGCN, IPS, and MACR) and the expectation estimators of MF-AUR and LGCN-AUR, the embedding size is fixed to 128128128. For MF, LGCN, VAE and all the expectation estimators of AUR, we take use of the same training strategy described in Section 2.2.1, and the sampling rate μ𝜇\\mu of this strategy is searched in the range of {0.01,0.1,0.2,0.4}0.010.10.20.4\\{0.01,0.1,0.2,0.4\\}, and in most case the optimal value of μ𝜇\\mu is 0.10.10.1. For AUR, γ𝛾\\gamma is searched in the range of {1​e​-​3,1​e​-​2}1𝑒-31𝑒-2\\{1e\\text{-}3,1e\\text{-}2\\}, and the best values are 1​e​-​31𝑒-31e\\text{-}3 and 1​e​-​21𝑒-21e\\text{-}2 for Yelp and Amazon, respectively; β𝛽\\beta is fixed to 1​e​-​21𝑒-21e\\text{-}2, and α𝛼\\alpha is searched in the range of {1,2,3,4,5}12345\\{1,2,3,4,5\\} and the default choice is 111; λ𝜆\\lambda is searched from {0,0.2,0.4,0.6,0.8,1.0}00.20.40.60.81.0\\{0,0.2,0.4,0.6,0.8,1.0\\}."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Embedding-based news recommendation for millions of users",
+      "abstract": "",
+      "year": "2017",
+      "venue": "KDD",
+      "authors": "S. Okura, Y. Tagami, S. Ono, and A. Tajima"
+    },
+    {
+      "index": 1,
+      "title": "Billion-scale Commodity Embedding for E-commerce Recommendation in Alibaba",
+      "abstract": "",
+      "year": "2018",
+      "venue": "KDD",
+      "authors": "J. Wang, P. Huang, H. Zhao, Z. Zhang, B. Zhao, and D. L. Lee",
+      "orig_title": "Billion-scale commodity embedding for e-commerce recommendation in alibaba",
+      "paper_id": "1803.02349v2"
+    },
+    {
+      "index": 2,
+      "title": "The youtube video recommendation system",
+      "abstract": "",
+      "year": "2010",
+      "venue": "RecSys",
+      "authors": "J. Davidson, B. Liebald, J. Liu, P. Nandy, T. V. Vleet, U. Gargi, S. Gupta, Y. He, M. Lambert, B. Livingston, and D. Sampath"
+    },
+    {
+      "index": 3,
+      "title": "Data sparsity issues in the collaborative filtering framework",
+      "abstract": "",
+      "year": "2005",
+      "venue": "WebKDD",
+      "authors": "M. Grcar, D. Mladenic, B. Fortuna, and M. Grobelnik"
+    },
+    {
+      "index": 4,
+      "title": "Causal intervention for leveraging popularity bias in recommendation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "SIGIR",
+      "authors": "Y. Zhang, F. Feng, X. He, T. Wei, C. Song, G. Ling, and Y. Zhang"
+    },
+    {
+      "index": 5,
+      "title": "One-class collaborative filtering",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ICDM",
+      "authors": "R. Pan, Y. Zhou, B. Cao, N. N. Liu, R. M. Lukose, M. Scholz, and Q. Yang"
+    },
+    {
+      "index": 6,
+      "title": "BPR: bayesian personalized ranking from implicit feedback",
+      "abstract": "",
+      "year": "2009",
+      "venue": "UAI",
+      "authors": "S. Rendle, C. Freudenthaler, Z. Gantner, and L. Schmidt-Thieme"
+    },
+    {
+      "index": 7,
+      "title": "Collaborative filtering for implicit feedback datasets",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ICDM",
+      "authors": "Y. Hu, Y. Koren, and C. Volinsky"
+    },
+    {
+      "index": 8,
+      "title": "Modeling User Exposure in Recommendation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "WWW",
+      "authors": "D. Liang, L. Charlin, J. McInerney, and D. M. Blei",
+      "orig_title": "Modeling user exposure in recommendation",
+      "paper_id": "1510.07025v2"
+    },
+    {
+      "index": 9,
+      "title": "Unbiased recommender learning from missing-not-at-random implicit feedback",
+      "abstract": "",
+      "year": "2020",
+      "venue": "WSDM",
+      "authors": "Y. Saito, S. Yaginuma, Y. Nishino, H. Sakata, and K. Nakata"
+    },
+    {
+      "index": 10,
+      "title": "What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NIPS",
+      "authors": "A. Kendall and Y. Gal",
+      "orig_title": "What uncertainties do we need in bayesian deep learning for computer vision?",
+      "paper_id": "1703.04977v2"
+    },
+    {
+      "index": 11,
+      "title": "Rectifying Pseudo Label Learning via Uncertainty Estimation for Domain Adaptive Semantic Segmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Int. J. Comput. Vis.",
+      "authors": "Z. Zheng and Y. Yang",
+      "orig_title": "Rectifying pseudo label learning via uncertainty estimation for domain adaptive semantic segmentation",
+      "paper_id": "2003.03773v3"
+    },
+    {
+      "index": 12,
+      "title": "A Review of Uncertainty Quantification in Deep Learning: Techniques, Applications and Challenges",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Inf. Fusion",
+      "authors": "M. Abdar, F. Pourpanah, S. Hussain, D. Rezazadegan, L. Liu, M. Ghavamzadeh, P. W. Fieguth, X. Cao, A. Khosravi, U. R. Acharya, V. Makarenkov, and S. Nahavandi",
+      "orig_title": "A review of uncertainty quantification in deep learning: Techniques, applications and challenges",
+      "paper_id": "2011.06225v4"
+    },
+    {
+      "index": 13,
+      "title": "Scalable recommendation with poisson factorization",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "P. Gopalan, J. M. Hofman, and D. M. Blei"
+    },
+    {
+      "index": 14,
+      "title": "Matrix factorization techniques for recommender systems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Computer",
+      "authors": "Y. Koren, R. M. Bell, and C. Volinsky"
+    },
+    {
+      "index": 15,
+      "title": "Variational Autoencoders for Collaborative Filtering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "WWW",
+      "authors": "D. Liang, R. G. Krishnan, M. D. Hoffman, and T. Jebara",
+      "orig_title": "Variational autoencoders for collaborative filtering",
+      "paper_id": "1802.05814v1"
+    },
+    {
+      "index": 16,
+      "title": "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIGIR",
+      "authors": "X. He, K. Deng, X. Wang, Y. Li, Y. Zhang, and M. Wang",
+      "orig_title": "Lightgcn: Simplifying and powering graph convolution network for recommendation",
+      "paper_id": "2002.02126v4"
+    },
+    {
+      "index": 17,
+      "title": "Probabilistic matrix factorization",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Curran Associates Inc.",
+      "authors": "R. Salakhutdinov"
+    },
+    {
+      "index": 18,
+      "title": "Factorization meets the neighborhood: a multifaceted collaborative filtering model",
+      "abstract": "",
+      "year": "2008",
+      "venue": "KDD",
+      "authors": "Y. Koren"
+    },
+    {
+      "index": 19,
+      "title": "Sampler Design for Implicit Feedback Data by Noisy-label Robust Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIGIR",
+      "authors": "W. Yu and Z. Qin",
+      "orig_title": "Sampler design for implicit feedback data by noisy-label robust learning",
+      "paper_id": "2007.07204v1"
+    },
+    {
+      "index": 20,
+      "title": "Statistical inference",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Cengage Learning",
+      "authors": "G. Casella and R. L. Berger"
+    },
+    {
+      "index": 21,
+      "title": "Improving one-class collaborative filtering by incorporating rich user information",
+      "abstract": "",
+      "year": "2010",
+      "venue": "CIKM",
+      "authors": "Y. Li, J. Hu, C. Zhai, and Y. Chen"
+    },
+    {
+      "index": 22,
+      "title": "Model-Agnostic Counterfactual Reasoning for Eliminating Popularity Bias in Recommender System",
+      "abstract": "",
+      "year": "2021",
+      "venue": "KDD",
+      "authors": "T. Wei, F. Feng, J. Chen, Z. Wu, J. Yi, and X. He",
+      "orig_title": "Model-agnostic counterfactual reasoning for eliminating popularity bias in recommender system",
+      "paper_id": "2010.15363v2"
+    },
+    {
+      "index": 23,
+      "title": "Challenging the long tail recommendation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "arXiv preprint arXiv:1205.6700",
+      "authors": "H. Yin, B. Cui, J. Li, J. Yao, and C. Chen"
+    },
+    {
+      "index": 24,
+      "title": "Causal inference for recommendation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "UAI",
+      "authors": "D. Liang, L. Charlin, and D. M. Blei"
+    },
+    {
+      "index": 25,
+      "title": "Countering popularity bias by regularizing score differences",
+      "abstract": "",
+      "year": "2022",
+      "venue": "RecSys",
+      "authors": "W. Rhee, S. M. Cho, and B. Suh"
+    },
+    {
+      "index": 26,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Computer Science",
+      "authors": "D. Kingma and J. Ba"
+    },
+    {
+      "index": 27,
+      "title": "The feasibility of ludgate’s analytical machine.",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "D. McQuillan"
+    },
+    {
+      "index": 28,
+      "title": "Aleatoric and epistemic uncertainty in machine learning: A tutorial introduction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "E. Hüllermeier and W. Waegeman"
+    },
+    {
+      "index": 29,
+      "title": "Aleatoric uncertainty estimation with test-time augmentation for medical image segmentation with convolutional neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neurocomputing",
+      "authors": "G. Wang, W. Li, M. Aertsen, J. Deprest, S. Ourselin, and T. Vercauteren",
+      "orig_title": "Aleatoric uncertainty estimation with test-time augmentation for medical image segmentation with convolutional neural networks",
+      "paper_id": "1807.07356v3"
+    },
+    {
+      "index": 30,
+      "title": "Deep-learning-based neural network training for state estimation enhancement: Application to attitude estimation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Trans. Instrum. Meas.",
+      "authors": "M. K. Al-Sharman, Y. H. Zweiri, M. A. K. Jaradat, R. Al-Husari, D. Gan, and L. D. Seneviratne"
+    },
+    {
+      "index": 31,
+      "title": "Leveraging uncertainty information from deep neural networks for disease detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Scientific reports",
+      "authors": "C. Leibig, V. Allken, M. S. Ayhan, P. Berens, and S. Wahl"
+    },
+    {
+      "index": 32,
+      "title": "Uncertainty-Aware Learning Against Label Noise on Imbalanced Datasets",
+      "abstract": "",
+      "year": "2022",
+      "venue": "AAAI",
+      "authors": "Y. Huang, B. Bai, S. Zhao, K. Bai, and F. Wang",
+      "orig_title": "Uncertainty-aware learning against label noise on imbalanced datasets",
+      "paper_id": "2207.05471v1"
+    },
+    {
+      "index": 33,
+      "title": "Deep density networks and uncertainty in recommender systems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Y. Zeldes, S. Theodorakis, E. Solodnik, A. Rotman, G. Chamiel, and D. Friedman",
+      "orig_title": "Deep density networks and uncertainty in recommender systems",
+      "paper_id": "1711.02487v3"
+    },
+    {
+      "index": 34,
+      "title": "Bayesian deep learning based exploration-exploitation for personalized recommendations",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICTAI",
+      "authors": "X. Wang and S. Kadioglu"
+    },
+    {
+      "index": 35,
+      "title": "M2GRL: A Multi-task Multi-view Graph Representation Learning Framework for Web-scale Recommender Systems",
+      "abstract": "",
+      "year": "2020",
+      "venue": "KDD",
+      "authors": "M. Wang, Y. Lin, G. Lin, K. Yang, and X. Wu",
+      "orig_title": "M2GRL: A multi-task multi-view graph representation learning framework for web-scale recommender systems",
+      "paper_id": "2005.10110v3"
+    },
+    {
+      "index": 36,
+      "title": "Personalised context-aware re-ranking in recommender system",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Connection Science",
+      "authors": "X. Liu, G. Wang, and M. Z. A. Bhuiyan"
+    },
+    {
+      "index": 37,
+      "title": "Modeling Sequences as Distributions with Uncertainty for Sequential Recommendation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "Z. Fan, Z. Liu, L. Zheng, S. Wang, and P. S. Yu",
+      "orig_title": "Modeling sequences as distributions with uncertainty for sequential recommendation",
+      "paper_id": "2106.06165v1"
+    },
+    {
+      "index": 38,
+      "title": "Convolutional Gaussian Embeddings for Personalized Recommendation with Uncertainty",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IJCAI",
+      "authors": "J. Jiang, D. Yang, Y. Xiao, and C. Shen",
+      "orig_title": "Convolutional gaussian embeddings for personalized recommendation with uncertainty",
+      "paper_id": "2006.10932v1"
+    },
+    {
+      "index": 39,
+      "title": "Metaedl: Meta evidential learning for uncertainty-aware cold-start recommendations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICDM",
+      "authors": "K. P. Neupane, E. Zheng, and Q. Yu"
+    },
+    {
+      "index": 40,
+      "title": "Ukd: Debiasing conversion rate estimation via uncertainty-regularized knowledge distillation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "WWW",
+      "authors": "Z. Xu, P. Wei, W. Zhang, S. Liu, L. Wang, and B. Zheng"
+    },
+    {
+      "index": 41,
+      "title": "Multi-output Gaussian Processes for Uncertainty-aware Recommender Systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Uncertainty in Artificial Intelligence",
+      "authors": "Y. Yang and F. Buettner",
+      "orig_title": "Multi-output gaussian processes for uncertainty-aware recommender systems",
+      "paper_id": "2106.04221v2"
+    },
+    {
+      "index": 42,
+      "title": "AutoDebias: Learning to Debias for Recommendation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "SIGIR",
+      "authors": "J. Chen, H. Dong, Y. Qiu, X. He, X. Xin, L. Chen, G. Lin, and K. Yang",
+      "orig_title": "Autodebias: Learning to debias for recommendation",
+      "paper_id": "2105.04170v5"
+    },
+    {
+      "index": 43,
+      "title": "Dual unbiased recommender learning for implicit feedback",
+      "abstract": "",
+      "year": "2021",
+      "venue": "SIGIR",
+      "authors": "J. Lee, S. Park, and J. Lee"
+    },
+    {
+      "index": 44,
+      "title": "Recommendations as treatments: Debiasing learning and evaluation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML",
+      "authors": "T. Schnabel, A. Swaminathan, A. Singh, N. Chandak, and T. Joachims"
+    },
+    {
+      "index": 45,
+      "title": "Be Causal: De-biasing Social Network Confounding in Recommendation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "TKDD",
+      "authors": "Q. Li, X. Wang, Z. Wang, and G. Xu",
+      "orig_title": "Be causal: De-biasing social network confounding in recommendation",
+      "paper_id": "2105.07775v2"
+    },
+    {
+      "index": 46,
+      "title": "A general knowledge distillation framework for counterfactual recommendation via uniform data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "SIGIR",
+      "authors": "D. Liu, P. Cheng, Z. Dong, X. He, W. Pan, and Z. Ming"
+    },
+    {
+      "index": 47,
+      "title": "Disentangling User Interest and Conformity for Recommendation with Causal Embedding",
+      "abstract": "",
+      "year": "2021",
+      "venue": "WWW",
+      "authors": "Y. Zheng, C. Gao, X. Li, X. He, Y. Li, and D. Jin",
+      "orig_title": "Disentangling user interest and conformity for recommendation with causal embedding",
+      "paper_id": "2006.11011v2"
+    },
+    {
+      "index": 48,
+      "title": "Managing Popularity Bias in Recommender Systems with Personalized Re-ranking",
+      "abstract": "",
+      "year": "2019",
+      "venue": "The thirty-second international flairs conference",
+      "authors": "H. Abdollahpouri, R. Burke, and B. Mobasher",
+      "orig_title": "Managing popularity bias in recommender systems with personalized re-ranking",
+      "paper_id": "1901.07555v4"
+    },
+    {
+      "index": 49,
+      "title": "Popularity-opportunity bias in collaborative filtering",
+      "abstract": "",
+      "year": "2021",
+      "venue": "WSDM",
+      "authors": "Z. Zhu, Y. He, X. Zhao, Y. Zhang, J. Wang, and J. Caverlee"
+    },
+    {
+      "index": 50,
+      "title": "Training and testing of recommender systems on data missing not at random",
+      "abstract": "",
+      "year": "2010",
+      "venue": "KDD",
+      "authors": "H. Steck"
+    },
+    {
+      "index": 51,
+      "title": "Personalized ranking for non-uniformly sampled items",
+      "abstract": "",
+      "year": "2012",
+      "venue": "KDD Cup 2011",
+      "authors": "Z. Gantner, L. Drumond, C. Freudenthaler, and L. Schmidt-Thieme"
+    },
+    {
+      "index": 52,
+      "title": "Fast Adaptively Weighted Matrix Factorization for Recommendation with Implicit Feedback",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "J. Chen, C. Wang, S. Zhou, Q. Shi, J. Chen, Y. Feng, and C. Chen",
+      "orig_title": "Fast adaptively weighted matrix factorization for recommendation with implicit feedback",
+      "paper_id": "2003.01892v1"
+    },
+    {
+      "index": 53,
+      "title": "Improving top- n recommendation performance using missing data",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Mathematical Problems in Engineering",
+      "authors": "X. Zhao, Z. Niu, K. Wang, N. Ke, and Z. Liu"
+    },
+    {
+      "index": 54,
+      "title": "PU Learning for Matrix Completion",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICML",
+      "authors": "C.-J. Hsieh, N. Natarajan, and I. Dhillon",
+      "orig_title": "Pu learning for matrix completion",
+      "paper_id": "1411.6081v1"
+    },
+    {
+      "index": 55,
+      "title": "Addressing confounding feature issue for causal recommendation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Trans. Inf. Syst.",
+      "authors": "X. He, Y. Zhang, F. Feng, C. Song, L. Yi, G. Ling, and Y. Zhang"
+    }
+  ]
+}

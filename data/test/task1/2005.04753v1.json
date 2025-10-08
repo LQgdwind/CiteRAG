@@ -1,0 +1,1207 @@
+{
+  "paper_id": "2005.04753v1",
+  "title": "Improving Phase Change Memory Performance with Data Content Aware Access",
+  "abstract": "Abstract.\nPhase change memory (PCM) is a scalable non-volatile memory technology that has low access latency (like DRAM) and high capacity (like Flash).\nWriting to PCM incurs significantly higher latency and energy penalties compared to reading its content.\nA prominent characteristic of PCM’s write operation is that its latency and energy are sensitive to the data to be written as well as the content that is overwritten.\nWe observe that overwriting unknown memory content can incur significantly higher latency and energy compared to overwriting known all-zeros or all-ones content.\nThis is because all-zeros or all-ones content is overwritten by programming the PCM cells only in one direction, i.e., using either SET or RESET operations, not both.\nIn this paper, we propose data content aware PCM writes (DATACON), a new mechanism that reduces the latency and energy of PCM writes by redirecting these requests to overwrite memory locations containing all-zeros or all-ones. DATACON operates in three steps.\nFirst, it estimates how much a PCM write access would benefit from overwriting known content (e.g., all-zeros, or all-ones) by comprehensively considering the number of set bits in the data to be written, and the energy-latency trade-offs for SET and RESET operations in PCM.\nSecond, it translates the write address to a physical address within memory that contains the best type of content to overwrite, and records this translation in a table for future accesses. We exploit data access locality in workloads to minimize the address translation overhead.\n\nThird, it re-initializes unused memory locations with known all-zeros or all-ones content in a manner that does not interfere with regular read and write accesses.\n\nDATACON overwrites unknown content only when it is absolutely necessary to do so.\n\nWe evaluate DATACON with workloads from state-of-the-art machine learning applications, SPEC CPU2017, and NAS Parallel Benchmarks.\n\nResults demonstrate that DATACON improves the effective access latency by 31%, overall system performance by 27%, and total memory system energy consumption by 43% compared to the best of performance-oriented state-of-the-art techniques.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "TensorFlow models and datasets",
+      "abstract": "",
+      "year": "2020",
+      "venue": "https://www.tensorflow.org/resources/models-datasets",
+      "authors": ""
+    },
+    {
+      "index": 1,
+      "title": "A scalable processing-in-memory accelerator for parallel graph processing",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISCA",
+      "authors": "J. Ahn, S. Hong, S. Yoo, O. Mutlu, and K. Choi"
+    },
+    {
+      "index": 2,
+      "title": "PIM-enabled instructions: a low-overhead, locality-aware processing-in-memory architecture",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISCA",
+      "authors": "J. Ahn, S. Yoo, O. Mutlu, and K. Choi"
+    },
+    {
+      "index": 3,
+      "title": "Highly reliable 50nm contact cell technology for 256Mb PRAM",
+      "abstract": "",
+      "year": "2005",
+      "venue": "VLSI Technology",
+      "authors": "S. J. Ahn, Y. N. Hwang, Y. J. Song, S. H. Lee, S. Y. Lee, J. H. Park, C. W. Jeong, K. C. Ryoo, J. M. Shin, Y. Fai, J. H. Oh, G. H. Koh, G. T. Jeong, S. H. Joo, S. H. Choi, Y. H. Son, J. C. Shin, Y. T. Kim, H. S. Jeong, and Kinam Kim"
+    },
+    {
+      "index": 4,
+      "title": "Resistive random access memory (ReRAM) based on metal oxides",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE",
+      "authors": "H. Akinaga and H. Shima"
+    },
+    {
+      "index": 5,
+      "title": "Lazy persistency: A high-performing and write-efficient software persistency technique",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ISCA",
+      "authors": "M. Alshboul, J. Tuck, and Y. Solihin"
+    },
+    {
+      "index": 6,
+      "title": "PCM applications and an outlook to the future",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Phase Change Memory",
+      "authors": "G. Atwood"
+    },
+    {
+      "index": 7,
+      "title": "Obfusmem: A low-overhead access obfuscation for trusted memories",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISCA",
+      "authors": "A. Awad, Y. Wang, D. Shands, and Y. Solihin"
+    },
+    {
+      "index": 8,
+      "title": "Triad-NVM: Persistency for integrity-protected and encrypted non-volatile memories",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ISCA",
+      "authors": "A. Awad, M. Ye, Y. Solihin, L. Njilla, and K. A. Zubair"
+    },
+    {
+      "index": 9,
+      "title": "The NAS parallel benchmarks",
+      "abstract": "",
+      "year": "1991",
+      "venue": "Supercomputing Applications",
+      "authors": "D. Bailey, E. Barszcz, J. Barton, D. Browning, R. Carter, L. Dagum, R. Fatoohi, P. Frederickson, T. Lasinski, R. Schreiber, H. Simon, V. Venkatakrishnan, and S. Weeratunga"
+    },
+    {
+      "index": 10,
+      "title": "Chalcogenide PCM: A memory technology for next decade",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IEDM",
+      "authors": "R. Bez"
+    },
+    {
+      "index": 11,
+      "title": "Analyzing the impact of useless write-backs on the endurance and energy consumption of PCM main memory",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ISPASS",
+      "authors": "S. Bock, B. Childers, R. Melhem, D. Mosse, and Y. Zhang"
+    },
+    {
+      "index": 12,
+      "title": "Concurrent page migration for mobile systems with OS-managed hybrid memory",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CF",
+      "authors": "S. Bock, B. R. Childers, R. Melhem, and D. Mossé"
+    },
+    {
+      "index": 13,
+      "title": "Characterizing the overhead of software-managed hybrid main memory",
+      "abstract": "",
+      "year": "2015",
+      "venue": "MASCOTS",
+      "authors": "S. Bock, B. R. Childers, R. Melhem, and D. Mossé"
+    },
+    {
+      "index": 14,
+      "title": "HMMSim: A simulator for hardware-software co-design of hybrid main memory",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NVMSA",
+      "authors": "S. Bock, B. R. Childers, R. Melhem, and D. Mosse"
+    },
+    {
+      "index": 15,
+      "title": "Understanding the limiting factors of page migration in hybrid main memory",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CF",
+      "authors": "S. Bock, B. R. Childers, R. Melhem, and D. Mossé"
+    },
+    {
+      "index": 16,
+      "title": "Concurrent migration of multiple pages in software-managed hybrid main memory",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICCD",
+      "authors": "S. Bock, B. R. Childers, R. Melhem, and D. Mossé"
+    },
+    {
+      "index": 17,
+      "title": "Ferroelectronic RAM memory family for critical data storage",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Ferroelectrics",
+      "authors": "D. Bondurant"
+    },
+    {
+      "index": 18,
+      "title": "LazyPIM: An efficient cache coherence mechanism for processing-in-memory",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CAL",
+      "authors": "A. Boroumand, S. Ghose, M. Patel, H. Hassan, B. Lucia, K. Hsieh, K. T. Malladi, H. Zheng, and O. Mutlu"
+    },
+    {
+      "index": 19,
+      "title": "Google workloads for consumer devices: Mitigating data movement bottlenecks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ASPLOS",
+      "authors": "A. Boroumand, S. Ghose, Y. Kim, R. Ausavarungnirun, E. Shiu, R. Thakur, D. Kim, A. Kuusela, A. Knies, P. Ranganathan et al."
+    },
+    {
+      "index": 20,
+      "title": "Has Intel created a universal memory technology?",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Spectrum",
+      "authors": "K. Bourzac"
+    },
+    {
+      "index": 21,
+      "title": "SPEC CPU2017: Next-generation compute benchmark",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICPE",
+      "authors": "J. Bucek, K.-D. Lange, and J. v. Kistowski"
+    },
+    {
+      "index": 22,
+      "title": "Overview of candidate device technologies for storage-class memory",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IBM JRD",
+      "authors": "G. W. Burr, B. N. Kurdi, J. C. Scott, C. H. Lam, K. Gopalakrishnan, and R. S. Shenoy"
+    },
+    {
+      "index": 23,
+      "title": "Phase change memory technology",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Vacuum Science & Technology B",
+      "authors": "G. W. Burr, M. J. Breitwisch, M. Franceschini, D. Garetto, K. Gopalakrishnan, B. Jackson, B. Kurdi, C. Lam, L. A. Lastras, A. Padilla, B. Rajendran, S. Raoux, and R. S. Shenoy"
+    },
+    {
+      "index": 24,
+      "title": "Error characterization, mitigation, and recovery in flash-memory-based solid-state drives",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE",
+      "authors": "Y. Cai, S. Ghose, E. F. Haratsch, Y. Luo, and O. Mutlu"
+    },
+    {
+      "index": 25,
+      "title": "DRAMPower: Open-source DRAM power & energy estimation tool",
+      "abstract": "",
+      "year": "2012",
+      "venue": "http://www.drampower.info",
+      "authors": "K. Chandrasekar, C. Weis, Y. Li, B. Akesson, N. Wehn, and K. Goossens"
+    },
+    {
+      "index": 26,
+      "title": "Understanding reduced-voltage operation in modern DRAM devices: Experimental characterization, analysis, and mechanisms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "SIGMETRICS",
+      "authors": "K. K. Chang, A. G. Yağlıkçı, S. Ghose, A. Agrawal, N. Chatterjee, A. Kashyap, D. Lee, M. O’Connor, H. Hassan, and O. Mutlu"
+    },
+    {
+      "index": 27,
+      "title": "Real-time garbage collection for flash-memory storage systems of real-time embedded systems",
+      "abstract": "",
+      "year": "2004",
+      "venue": "TECS",
+      "authors": "L.-P. Chang, T.-W. Kuo, and S.-W. Lo"
+    },
+    {
+      "index": 28,
+      "title": "Endurance improvement of Ge2Sb2Te5-based phase change memory",
+      "abstract": "",
+      "year": "2009",
+      "venue": "IMW",
+      "authors": "C. Chen, A. Schrott, M. H. Lee, S. Raoux, Y. H. Shih, M. Breitwisch, F. H. Baumann, E. K. Lai, T. M. Shaw, P. Flaitz, R. Cheek, E. A. Joseph, S. H. Chen, B. Rajendran, H. L. Lung, and C. Lam"
+    },
+    {
+      "index": 29,
+      "title": "rpram: Exploring redundancy techniques to improve lifetime of PCM-based main memory",
+      "abstract": "",
+      "year": "2011",
+      "venue": "PACT",
+      "authors": "J. Chen, Z. Winter, G. Venkataramani, and H. H. Huang"
+    },
+    {
+      "index": 30,
+      "title": "Energy-aware writes to non-volatile main memory",
+      "abstract": "",
+      "year": "2012",
+      "venue": "OSR",
+      "authors": "J. Chen, R. C. Chiang, H. H. Huang, and G. Venkataramani"
+    },
+    {
+      "index": 31,
+      "title": "i-NVMM: A secure non-volatile main memory system with incremental encryption",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ISCA",
+      "authors": "S. Chhabra and Y. Solihin"
+    },
+    {
+      "index": 32,
+      "title": "Flip-N-Write: a simple deterministic technique to improve PRAM write performance, energy and endurance",
+      "abstract": "",
+      "year": "2009",
+      "venue": "MICRO",
+      "authors": "S. Cho and H. Lee"
+    },
+    {
+      "index": 33,
+      "title": "Pointer cache assisted prefetching",
+      "abstract": "",
+      "year": "2002",
+      "venue": "MICRO",
+      "authors": "J. Collins, S. Sair, B. Calder, and D. M. Tullsen"
+    },
+    {
+      "index": 34,
+      "title": "PDRAM: A hybrid PRAM and DRAM main memory system",
+      "abstract": "",
+      "year": "2009",
+      "venue": "DAC",
+      "authors": "G. Dhiman, R. Ayoub, and T. Rosing"
+    },
+    {
+      "index": 35,
+      "title": "Accelerating graph and machine learning workloads using a shared memory multicore architecture with auxiliary support for in-hardware explicit messaging",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IPDPS",
+      "authors": "H. Dogan, F. Hijaz, M. Ahmad, B. Kahne, P. Wilson, and O. Khan"
+    },
+    {
+      "index": 36,
+      "title": "Bit mapping for balanced PCM cell programming",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISCA",
+      "authors": "Y. Du, M. Zhou, B. R. Childers, D. Mossé, and R. Melhem"
+    },
+    {
+      "index": 37,
+      "title": "Techniques for bandwidth-efficient prefetching of linked data structures in hybrid prefetching systems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "HPCA",
+      "authors": "E. Ebrahimi, O. Mutlu, and Y. N. Patt"
+    },
+    {
+      "index": 38,
+      "title": "SoftPCM: Enhancing energy efficiency and lifetime of phase change memory in video applications via approximate write",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ATS",
+      "authors": "Y. Fang, H. Li, and X. Li"
+    },
+    {
+      "index": 39,
+      "title": "Increasing PCM main memory lifetime",
+      "abstract": "",
+      "year": "2010",
+      "venue": "DATE",
+      "authors": "A. P. Ferreira, M. Zhou, S. Bock, B. Childers, R. Melhem, and D. Mossé"
+    },
+    {
+      "index": 40,
+      "title": "TRRespass: Exploiting the Many Sides of Target Row Refresh",
+      "abstract": "",
+      "year": "2020",
+      "venue": "S&P",
+      "authors": "P. Frigo, E. Vannacci, H. Hassan, V. van der Veen, O. Mutlu, C. Giuffrida, H. Bos, and K. Razavi",
+      "orig_title": "TRRespass: Exploiting the Many Sides of Target Row Refresh",
+      "paper_id": "2004.01807v1"
+    },
+    {
+      "index": 41,
+      "title": "Memory encryption for general-purpose processors",
+      "abstract": "",
+      "year": "2016",
+      "venue": "S&P",
+      "authors": "S. Gueron"
+    },
+    {
+      "index": 42,
+      "title": "Software persistent memory",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ATC",
+      "authors": "J. Guerra, L. Mármol, D. Campello, C. Crespo, R. Rangaswami, and J. Wei"
+    },
+    {
+      "index": 43,
+      "title": "DFTL: A flash translation layer employing demand-based selective caching of page-level address mappings",
+      "abstract": "",
+      "year": "2009",
+      "venue": "ASPLOS",
+      "authors": "A. Gupta, Y. Kim, and B. Urgaonkar"
+    },
+    {
+      "index": 44,
+      "title": "Disintegrated control for energy-efficient and heterogeneous memory systems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "HPCA",
+      "authors": "T. J. Ham, B. K. Chelepalli, N. Xue, and B. C. Lee"
+    },
+    {
+      "index": 45,
+      "title": "Accelerating dependent cache misses with an enhanced memory controller",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ISCA",
+      "authors": "M. Hashemi, Khubaib, E. Ebrahimi, O. Mutlu, and Y. N. Patt"
+    },
+    {
+      "index": 46,
+      "title": "Memory encryption: A survey of existing techniques",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CSUR",
+      "authors": "M. Henson and S. Taylor"
+    },
+    {
+      "index": 47,
+      "title": "Double circular caching scheme for DRAM/PRAM hybrid cache",
+      "abstract": "",
+      "year": "2012",
+      "venue": "RTCSA",
+      "authors": "J.-W. Hsieh and Y.-H. Kuan"
+    },
+    {
+      "index": 48,
+      "title": "Accelerating pointer chasing in 3D-stacked memory: Challenges, mechanisms, evaluation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICCD",
+      "authors": "K. Hsieh, S. Khan, N. Vijaykumar, K. K. Chang, A. Boroumand, S. Ghose, and O. Mutlu"
+    },
+    {
+      "index": 49,
+      "title": "Write activity reduction on non-volatile main memories for embedded chip multiprocessors",
+      "abstract": "",
+      "year": "2013",
+      "venue": "TECS",
+      "authors": "J. Hu, C. J. Xue, Q. Zhuge, W.-C. Tseng, and E. H.-M. Sha"
+    },
+    {
+      "index": 50,
+      "title": "Register allocation for write activity minimization on non-volatile main memory",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ASP-DAC",
+      "authors": "Y. Huang, T. Liu, and C. J. Xue"
+    },
+    {
+      "index": 51,
+      "title": "“Hmmsched: Hybrid main memory-aware task scheduling on multicore systems",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 52,
+      "title": "“A unified 7.5nm dash-type confined cell for high performance PRAM device",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 53,
+      "title": "“Coset coding to extend the lifetime of memory",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 54,
+      "title": "“VAIL: A victim-aware cache policy for improving lifetime of hybrid memory",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 55,
+      "title": "“FPB: Fine-grained power budgeting to improve write throughput of multi-level cell phase change memory",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 56,
+      "title": "“Hardware-assisted cooperative integration of wear-leveling and salvaging for phase change memory",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 57,
+      "title": "“Mitigating write disturbance in super-dense phase change memories",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 58,
+      "title": "“CMOS compatible nanoscale nonvolatile resistance switching memory",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 59,
+      "title": "“Energy-and endurance-aware design of phase change memory caches",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 60,
+      "title": "“PRAM cell technology and characterization in 20nm node size",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 61,
+      "title": "“Co-architecting controllers and DRAM to enhance DRAM process scaling",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 62,
+      "title": "“Energy aware persistence: Reducing energy overheads of memory-based persistence in NVMs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 63,
+      "title": "“A prefetching technique for irregular accesses to linked data structures",
+      "abstract": "",
+      "year": "2000",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 64,
+      "title": "“A space-efficient flash translation layer for CompactFlash systems",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 65,
+      "title": "“A case for exploiting subarray-level parallelism (SALP) in DRAM",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 66,
+      "title": "“Flipping bits in memory without accessing them: An experimental study of DRAM disturbance errors",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 67,
+      "title": "“Ramulator: A fast and extensible DRAM simulator.” CAL",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 68,
+      "title": "“Multi-chain prefetching: Effective exploitation of inter-chain memory parallelism for pointer-chasing codes",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 69,
+      "title": "A. Sivasubramaniam",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 70,
+      "title": "“Conductive bridging RAM (CBRAM): An emerging non-volatile memory technology scalable to sub 20nm",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 71,
+      "title": "“Current status of the phase change memory and its future",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 72,
+      "title": "“Non-volatile memory technologies: The quest for ever lower cost",
+      "abstract": "",
+      "year": "2008",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 73,
+      "title": "“Non-volatile dual in-line memory module (NVDIMM) multichip package",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 74,
+      "title": "“Block erase for phase change memory",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 75,
+      "title": "“Phase-change technology and the future of main memory",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 76,
+      "title": "“Architecting phase change memory as a scalable DRAM alternative",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 77,
+      "title": "“Phase change memory architecture and the quest for scalability",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 78,
+      "title": "“DRAM-aware last-level cache writeback: Reducing write-caused interference in memory systems",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 79,
+      "title": "“Highly scalable phase change memory with CVD GeSbTe for sub 50nm generation",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 80,
+      "title": "“Utility-based hybrid memory management",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 81,
+      "title": "“Nano-crystalline phase change memory with composite Si-Sb-Te film for better data retention and lower operation current",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 82,
+      "title": "“Crash consistency in encrypted non-volatile main memory systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 83,
+      "title": "“Loose-ordering consistency for persistent memory",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 84,
+      "title": "“Pin: Building customized program analysis tools with dynamic instrumentation",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 85,
+      "title": "“A double-data-rate 2 (DDR2) interface phase-change memory with 533MB/s read-write data rate and 37",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 86,
+      "title": "“A survey of address translation technologies for flash memories",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 87,
+      "title": "“Design-technology co-optimization for OxRRAM-based synaptic processing unit",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 88,
+      "title": "“Challenges and future directions for the scaling of dynamic random-access memory (DRAM)",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 89,
+      "title": "“Persistent memcached: Bringing legacy code to byte-addressable persistent memory",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 90,
+      "title": "“Enabling efficient and scalable hybrid memories using fine-granularity DRAM cache management",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 91,
+      "title": "“A case for efficient hardware/software cooperative management of storage and memory",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 92,
+      "title": "“Coding-based energy minimization for phase change memory",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 93,
+      "title": "“Doped In-Ge-Te phase change memory featuring stable operation and good data retention",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 94,
+      "title": "“Memory scaling: A systems architecture perspective",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 95,
+      "title": "The RowHammer Problem and Other Issues We May Face as Memory Becomes Denser",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“The RowHammer problem and other issues we may face as memory becomes denser",
+      "paper_id": "1703.00626v1"
+    },
+    {
+      "index": 96,
+      "title": "“Rowhammer: A retrospective",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 97,
+      "title": "“Research problems and opportunities in memory systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 98,
+      "title": "“Graphpim: Enabling instruction-level pim offloading in graph computing frameworks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 99,
+      "title": "“Full integration of highly manufacturable 512Mb PRAM based on 90nm technology",
+      "abstract": "",
+      "year": "2006",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 100,
+      "title": "“Reversible electrical switching phenomena in disordered structures",
+      "abstract": "",
+      "year": "1968",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 101,
+      "title": "“A neural network prefetcher for arbitrary memory access patterns",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 102,
+      "title": "“Reliability study of phase-change nonvolatile memories",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 103,
+      "title": "“Nvmain 2.0: A user-friendly memory simulator to model (non-) volatile memory systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 104,
+      "title": "“WALL: A writeback-aware LLC management for PCM-based main memory systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 105,
+      "title": "“Pay-As-You-Go: Low-overhead hard-error correction for phase change memories",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 106,
+      "title": "“Scalable high performance main memory system using phase-change memory technology",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 107,
+      "title": "“Morphable memory system: A robust architecture for exploiting multi-level phase change memories",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 108,
+      "title": "“Improving read performance of phase change memories via write cancellation and write pausing",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 109,
+      "title": "“PreSET: Improving performance of phase change memories by exploiting asymmetry in write times",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 110,
+      "title": "“ThyNVM: Enabling software-transparent crash consistency in persistent memory systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 111,
+      "title": "“IBM Power9 processor architecture",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 112,
+      "title": "“Morphable counters: Enabling compact integrity trees for low-overhead secure memories",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 113,
+      "title": "“Synergy: Rethinking secure-memory design for error-correcting memories",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 114,
+      "title": "O. Cojocaru-Mirédin",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 115,
+      "title": "Temporal correlation detection using computational phase-change memory",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“Temporal correlation detection using computational phase-change memory",
+      "paper_id": "1706.00511v1"
+    },
+    {
+      "index": 116,
+      "title": "“Flux–charge memristor model for phase change memory",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 117,
+      "title": "“Security Refresh: Prevent malicious wear-out and increase durability for phase-change memory with dynamically randomized address mapping",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 118,
+      "title": "“The dirty-block index",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 119,
+      "title": "GraphR: Accelerating Graph Processing Using ReRAM",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "",
+      "orig_title": "“GraphR: Accelerating graph processing using ReRAM",
+      "paper_id": "1708.06248v4"
+    },
+    {
+      "index": 120,
+      "title": "“Enabling and exploiting partition-level parallelism (PALP) in phase change memories",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 121,
+      "title": "“The virtual write queue: Coordinating DRAM and last-level cache policies",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 122,
+      "title": "“Secret: Smartly encrypted energy efficient non-volatile memories",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 123,
+      "title": "“PCM array architecture and management",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 124,
+      "title": "“A 45nm 1Gb 1.8 V phase-change memory",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 125,
+      "title": "“Mnemosyne: Lightweight persistent memory",
+      "abstract": "",
+      "year": "2011",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 126,
+      "title": "“Exploit imbalanced cell writes to mitigate write disturbance in dense phase change memory",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 127,
+      "title": "“Scandium doped Ge2Sb2Te5 for high-speed and low-power-consumption phase change memory",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 128,
+      "title": "“WADE: Writeback-aware dynamic cache management for NVM-based main memory system",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 129,
+      "title": "“Stream-based memory access specialization for general purpose processors",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 130,
+      "title": "“The memory gap and the future of high performance memories",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 131,
+      "title": "“Phase change memory",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 132,
+      "title": "“Metal–oxide RRAM",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 133,
+      "title": "“Phase-change materials for rewriteable data storage",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 134,
+      "title": "“DWC: Dynamic write consolidation for phase change memory systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 135,
+      "title": "“100GB rewritable triple-layer optical disk having Ge-Sb-Te films",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 136,
+      "title": "“A low power phase-change random access memory using a data-comparison write scheme",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 137,
+      "title": "“Improving memory encryption performance in secure processors",
+      "abstract": "",
+      "year": "2005",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 138,
+      "title": "“Osiris: A low-cost mechanism to enable restoration of secure non-volatile memories",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 139,
+      "title": "R. Ausavarungnirun",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 140,
+      "title": "N. Muralimanohar",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 141,
+      "title": "“Accelerating write by exploiting PCM asymmetries",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 142,
+      "title": "“Mellow writes: Extending lifetime in resistive memories through selective slow write backs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 143,
+      "title": "“Te-free SiSb phase change material for high data retention phase change memory application",
+      "abstract": "",
+      "year": "2007",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 144,
+      "title": "“Mojim: A reliable and highly-available non-volatile memory system",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 145,
+      "title": "“FIRM: Fair and high-performance memory control for persistent memory systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 146,
+      "title": "“Writeback-aware partitioning and replacement for last-level caches in phase change main memory systems",
+      "abstract": "",
+      "year": "2012",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 147,
+      "title": "“Writeback-aware bandwidth partitioning for multi-core systems with PCM",
+      "abstract": "",
+      "year": "2013",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 148,
+      "title": "“A durable and energy efficient main memory using phase change memory technology",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": ""
+    }
+  ]
+}

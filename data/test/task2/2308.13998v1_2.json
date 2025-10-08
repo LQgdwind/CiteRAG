@@ -1,0 +1,4137 @@
+{
+  "paper_id": "2308.13998v1",
+  "title": "Computation-efficient Deep Learning for Computer Vision: A Survey",
+  "sections": {
+    "introduction": "Over the past decade, the field of computer vision has experienced significant advancements in deep learning. Innovations in model architectures and learning algorithms [ref]1 [ref]2 [ref]3     have allowed deep networks to approach or even exceed human-level performance on benchmark competition datasets for a wide range of visual tasks, such as image recognition  , object detection , image segmentation  , video understanding  , and 3D perception . This considerable progress has stimulated interest in deploying deep models in practical applications, including self-driving cars, mobile devices, robotics, unmanned aerial vehicles, and internet of things devices   . However, the demands of real-world applications are distinct from those of competitions. Models achieving state-of-the-art accuracy in competitions often exhibit computational intensity and resource requirements during inference. In contrast, computation is typically equivalent to practical latency, power consumption, and carbon emissions. Low-latency or real-time inference is crucial for ensuring security and enhancing user experience    . Deep learning systems must prioritize low power consumption to improve battery life or reduce energy costs    . Minimizing carbon emissions is also essential for environmental considerations  . Motivated by these practical challenges, a substantial portion of recent literature focuses on achieving a balance between effectiveness and computational efficiency. Ideally, deep learning models should yield accurate predictions while minimizing the computational cost during inference. This topic has given rise to numerous intriguing research questions and garnered significant attention from both academic and industrial sectors. In light of these developments, this survey presents a comprehensive and systematic review of the exploration towards computationally efficient deep learning. Our aim is to provide an overview of this rapidly evolving field, summarize recent advances, and identify important challenges and potential directions for future research. Specifically, we will discuss existing works from the perspective of the following five directions: 1) Efficient Backbone Models.\nDesigning light-weighted backbone networks that effectively extract discriminative deep representations from images, videos or 3D scenes with minimal computation by optimizing both efficient network micro-architectures (e.g., operators, modules, and layers)    and improving the system-level organization of micro-architectures  . Recent advances in neural architecture search (NAS)   have further enabled the automatic design of backbones. 2) Dynamic Deep Networks.\nDeveloping dynamic networks is an important emerging research direction for improving computational efficiency. These networks break the limits of static computational graphs and propose adapting their structures or parameters to the input during inference . For example, the model can selectively activate certain model components (e.g., layers , channels , and sub-networks ) based on each test input or allocate less computation to less informative spatial/temporal regions    of each input. 3) Task-specialized Efficient Models.\nNumerous works focus on building task-specific heads on top of the features from light-weighted static/dynamic backbones to efficiently accomplish specific computer vision tasks. Examples include fast one-stage models for real-time object detection 0 1 2 3, the efficient multi-branch architecture for semantic segmentation 4, and end-to-end instance segmentation frameworks 5 6. 4) Model Compression Techniques.\nOrthogonal to network architecture design, many algorithms have been proposed to compress relatively large models with minimal accuracy loss. This can be achieved by pruning less important network components 7 8, quantizing parameters 9 0, or distilling knowledge from large models to smaller models of interest 1 2. 5) Efficient Deployment on Hardware.\nTo achieve high practical efficiency, it is necessary to consider hardware requirements when developing deep learning applications. Reducing latency on specific hardware devices is usually treated as an objective in network design 3 4 or algorithm-hardware co-design 5 6. Additionally, several acceleration tools have been developed for efficient deployment of deep learning models 7 8 9. While some relevant surveys exist  0, our survey is more up-to-date and comprehensive in several crucial aspects: 1) we systematically review model design techniques for images, videos, and 3D vision; 2) we summarize the recent works on designing dynamic deep neural networks for efficient inference; and 3) we thoroughly discuss the specialized models for accomplishing the most common and challenging computer vision tasks, e.g., object detection and image segmentation. The rest of this survey is organized as follows (see Figure 1 for the overview). In Sec. 2 and 3, we introduce the design of efficient static and dynamic backbone networks, respectively. In Sec. 4, the methodology for designing task-specialized efficient models is reviewed. The techniques for compressing deep learning models are investigated in Sec. 5. Efficient hardware deployment approaches are summarized in Sec. 6. Lastly, we discuss existing challenges and future directions in Sec. 7."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Imagenet classification with deep convolutional neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Communications of the ACM",
+      "authors": "Alex Krizhevsky, Ilya Sutskever, and Geoffrey E Hinton"
+    },
+    {
+      "index": 1,
+      "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Karen Simonyan and Andrew Zisserman",
+      "orig_title": "Very deep convolutional networks for large-scale image recognition",
+      "paper_id": "1409.1556v6"
+    },
+    {
+      "index": 2,
+      "title": "Going deeper with convolutions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "CVPR",
+      "authors": "Christian Szegedy, Wei Liu, Yangqing Jia, Pierre Sermanet, Scott Reed, Dragomir Anguelov, Dumitru Erhan, Vincent Vanhoucke, and Andrew Rabinovich",
+      "orig_title": "Going deeper with convolutions",
+      "paper_id": "1409.4842v1"
+    },
+    {
+      "index": 3,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 4,
+      "title": "Convolutional Networks with Dense Connectivity",
+      "abstract": "",
+      "year": "2019",
+      "venue": "TPAMI",
+      "authors": "Gao Huang, Zhuang Liu, Geoff Pleiss, Laurens Van Der Maaten, and Kilian Q Weinberger",
+      "orig_title": "Convolutional networks with dense connectivity",
+      "paper_id": "2001.02394v1"
+    },
+    {
+      "index": 5,
+      "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, et al.",
+      "orig_title": "An image is worth 16x16 words: Transformers for image recognition at scale",
+      "paper_id": "2010.11929v2"
+    },
+    {
+      "index": 6,
+      "title": "Swin transformer: Hierarchical vision transformer using shifted windows",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Ze Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng Zhang, Stephen Lin, and Baining Guo"
+    },
+    {
+      "index": 7,
+      "title": "Object detection in 20 years: A survey",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE",
+      "authors": "Zhengxia Zou, Keyan Chen, Zhenwei Shi, Yuhong Guo, and Jieping Ye"
+    },
+    {
+      "index": 8,
+      "title": "Image Segmentation Using Deep Learning: A Survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "TPAMI",
+      "authors": "Shervin Minaee, Yuri Y Boykov, Fatih Porikli, Antonio J Plaza, Nasser Kehtarnavaz, and Demetri Terzopoulos",
+      "orig_title": "Image segmentation using deep learning: A survey",
+      "paper_id": "2001.05566v5"
+    },
+    {
+      "index": 9,
+      "title": "A Survey on Deep Learning Technique for Video Segmentation",
+      "abstract": "",
+      "year": "2023",
+      "venue": "TPAMI",
+      "authors": "Tianfei Zhou, Fatih Porikli, David J Crandall, Luc Van Gool, and Wenguan Wang",
+      "orig_title": "A survey on deep learning technique for video segmentation",
+      "paper_id": "2107.01153v4"
+    },
+    {
+      "index": 10,
+      "title": "Human Action Recognition and Prediction: A Survey",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IJCV",
+      "authors": "Yu Kong and Yun Fu",
+      "orig_title": "Human action recognition and prediction: A survey",
+      "paper_id": "1806.11230v3"
+    },
+    {
+      "index": 11,
+      "title": "Human action recognition from various data modalities: A review",
+      "abstract": "",
+      "year": "2022",
+      "venue": "TPAMI",
+      "authors": "Zehua Sun, Qiuhong Ke, Hossein Rahmani, Mohammed Bennamoun, Gang Wang, and Jun Liu"
+    },
+    {
+      "index": 12,
+      "title": "Deep Learning for 3D Point Clouds: A Survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "TPAMI",
+      "authors": "Yulan Guo, Hanyun Wang, Qingyong Hu, Hao Liu, Li Liu, and Mohammed Bennamoun",
+      "orig_title": "Deep learning for 3d point clouds: A survey",
+      "paper_id": "1912.12033v2"
+    },
+    {
+      "index": 13,
+      "title": "Deep learning with edge computing: A review",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE",
+      "authors": "Jiasi Chen and Xukan Ran"
+    },
+    {
+      "index": 14,
+      "title": "Deep learning on mobile devices: a review",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Mobile Multimedia/Image Processing, Security, and Applications 2019",
+      "authors": "Yunbin Deng"
+    },
+    {
+      "index": 15,
+      "title": "Deep learning on computational-resource-limited platforms: a survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Mobile Information Systems",
+      "authors": "Chunlei Chen, Peng Zhang, Huixiang Zhang, Jiangyan Dai, Yugen Yi, Huihui Zhang, and Yonghui Zhang"
+    },
+    {
+      "index": 16,
+      "title": "Deep learning for safe autonomous driving: Current challenges and future directions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems",
+      "authors": "Khan Muhammad, Amin Ullah, Jaime Lloret, Javier Del Ser, and Victor Hugo C de Albuquerque"
+    },
+    {
+      "index": 17,
+      "title": "End to End Learning for Self-Driving Cars",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1604.07316",
+      "authors": "Mariusz Bojarski, Davide Del Testa, Daniel Dworakowski, Bernhard Firner, Beat Flepp, Prasoon Goyal, Lawrence D Jackel, Mathew Monfort, Urs Muller, Jiakai Zhang, et al.",
+      "orig_title": "End to end learning for self-driving cars",
+      "paper_id": "1604.07316v1"
+    },
+    {
+      "index": 18,
+      "title": "A Survey of Deep Learning Techniques for Autonomous Driving",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Journal of Field Robotics",
+      "authors": "Sorin Grigorescu, Bogdan Trasnea, Tiberiu Cocias, and Gigel Macesanu",
+      "orig_title": "A survey of deep learning techniques for autonomous driving",
+      "paper_id": "1910.07738v2"
+    },
+    {
+      "index": 19,
+      "title": "Deep Learning in Mobile and Wireless Networking: A Survey",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Communications surveys & tutorials",
+      "authors": "Chaoyun Zhang, Paul Patras, and Hamed Haddadi",
+      "orig_title": "Deep learning in mobile and wireless networking: A survey",
+      "paper_id": "1803.04311v3"
+    },
+    {
+      "index": 20,
+      "title": "Deep Learning for IoT Big Data and Streaming Analytics: A Survey",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Communications Surveys & Tutorials",
+      "authors": "Mehdi Mohammadi, Ala Al-Fuqaha, Sameh Sorour, and Mohsen Guizani",
+      "orig_title": "Deep learning for iot big data and streaming analytics: A survey",
+      "paper_id": "1712.04301v2"
+    },
+    {
+      "index": 21,
+      "title": "Learning iot in edge: Deep learning for the internet of things with edge computing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE network",
+      "authors": "He Li, Kaoru Ota, and Mianxiong Dong"
+    },
+    {
+      "index": 22,
+      "title": "A review of deep learning methods and applications for unmanned aerial vehicles",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Journal of Sensors",
+      "authors": "Adrian Carrio, Carlos Sampedro, Alejandro Rodriguez-Ramos, and Pascual Campoy"
+    },
+    {
+      "index": 23,
+      "title": "Once-for-all: Train one network and specialize it for efficient deployment",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Han Cai, Chuang Gan, Tianzhe Wang, Zhekai Zhang, and Song Han"
+    },
+    {
+      "index": 24,
+      "title": "A Survey on Green Deep Learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2111.05193",
+      "authors": "Jingjing Xu, Wangchunshu Zhou, Zhiyi Fu, Hao Zhou, and Lei Li",
+      "orig_title": "A survey on green deep learning",
+      "paper_id": "2111.05193v2"
+    },
+    {
+      "index": 25,
+      "title": "Mobilenets: Efficient convolutional neural networks for mobile vision applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:1704.04861",
+      "authors": "Andrew G Howard, Menglong Zhu, Bo Chen, Dmitry Kalenichenko, Weijun Wang, Tobias Weyand, Marco Andreetto, and Hartwig Adam"
+    },
+    {
+      "index": 26,
+      "title": "MobileNetV2: Inverted Residuals and Linear Bottlenecks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Mark Sandler, Andrew Howard, Menglong Zhu, Andrey Zhmoginov, and Liang-Chieh Chen",
+      "orig_title": "Mobilenetv2: Inverted residuals and linear bottlenecks",
+      "paper_id": "1801.04381v4"
+    },
+    {
+      "index": 27,
+      "title": "Searching for mobilenetv3",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Andrew Howard, Mark Sandler, Grace Chu, Liang-Chieh Chen, Bo Chen, Mingxing Tan, Weijun Wang, Yukun Zhu, Ruoming Pang, Vijay Vasudevan, et al."
+    },
+    {
+      "index": 28,
+      "title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "Mingxing Tan and Quoc Le",
+      "orig_title": "Efficientnet: Rethinking model scaling for convolutional neural networks",
+      "paper_id": "1905.11946v5"
+    },
+    {
+      "index": 29,
+      "title": "Designing Network Design Spaces",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Ilija Radosavovic, Raj Prateek Kosaraju, Ross Girshick, Kaiming He, and Piotr Dollár",
+      "orig_title": "Designing network design spaces",
+      "paper_id": "2003.13678v1"
+    },
+    {
+      "index": 30,
+      "title": "Neural Architecture Search with Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Barret Zoph and Quoc Le.",
+      "orig_title": "Neural architecture search with reinforcement learning",
+      "paper_id": "1611.01578v2"
+    },
+    {
+      "index": 31,
+      "title": "Darts: Differentiable architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Hanxiao Liu, Karen Simonyan, and Yiming Yang."
+    },
+    {
+      "index": 32,
+      "title": "Dynamic Neural Networks: A Survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "TPAMI",
+      "authors": "Yizeng Han, Gao Huang, Shiji Song, Le Yang, Honghui Wang, and Yulin Wang.",
+      "orig_title": "Dynamic neural networks: A survey",
+      "paper_id": "2102.04906v4"
+    },
+    {
+      "index": 33,
+      "title": "Multi-Scale Dense Networks for Resource Efficient Image Classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Gao Huang, Danlu Chen, Tianhong Li, Felix Wu, Laurens Van Der Maaten, and\nKilian Q Weinberger.",
+      "orig_title": "Multi-scale dense networks for resource efficient image classification",
+      "paper_id": "1703.09844v5"
+    },
+    {
+      "index": 34,
+      "title": "Runtime neural pruning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "Ji Lin, Yongming Rao, Jiwen Lu, and Jie Zhou."
+    },
+    {
+      "index": 35,
+      "title": "Hd-cnn: hierarchical deep convolutional neural networks for large scale visual recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Zhicheng Yan, Hao Zhang, Robinson Piramuthu, Vignesh Jagadeesh, Dennis DeCoste,\nWei Di, and Yizhou Yu."
+    },
+    {
+      "index": 36,
+      "title": "AdaFrame: Adaptive Frame Selection for Fast Video Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Zuxuan Wu, Caiming Xiong, Chih-Yao Ma, Richard Socher, and Larry S Davis.",
+      "orig_title": "Adaframe: Adaptive frame selection for fast video recognition",
+      "paper_id": "1811.12432v2"
+    },
+    {
+      "index": 37,
+      "title": "Adaptive Focus for Efficient Video Recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Yulin Wang, Zhaoxi Chen, Haojun Jiang, Shiji Song, Yizeng Han, and Gao Huang.",
+      "orig_title": "Adaptive focus for efficient video recognition",
+      "paper_id": "2105.03245v2"
+    },
+    {
+      "index": 38,
+      "title": "Latency-aware Spatial-wise Dynamic Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Yizeng Han, Zhihang Yuan, Yifan Pu, Chenhao Xue, Shiji Song, Guangyu Sun, and\nGao Huang.",
+      "orig_title": "Latency-aware spatial-wise dynamic networks",
+      "paper_id": "2210.06223v1"
+    },
+    {
+      "index": 39,
+      "title": "You Only Look Once: Unified, Real-Time Object Detection",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Joseph Redmon, Santosh Divvala, Ross Girshick, and Ali Farhadi.",
+      "orig_title": "You only look once: Unified, real-time object detection",
+      "paper_id": "1506.02640v5"
+    },
+    {
+      "index": 40,
+      "title": "SSD: Single Shot MultiBox Detector",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "Wei Liu, Dragomir Anguelov, Dumitru Erhan, Christian Szegedy, Scott Reed,\nCheng-Yang Fu, and Alexander C Berg.",
+      "orig_title": "Ssd: Single shot multibox detector",
+      "paper_id": "1512.02325v5"
+    },
+    {
+      "index": 41,
+      "title": "FCOS: Fully Convolutional One-Stage Object Detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Zhi Tian, Chunhua Shen, Hao Chen, and Tong He.",
+      "orig_title": "Fcos: Fully convolutional one-stage object detection",
+      "paper_id": "1904.01355v5"
+    },
+    {
+      "index": 42,
+      "title": "YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Chien-Yao Wang, Alexey Bochkovskiy, and Hong-Yuan Mark Liao.",
+      "orig_title": "Yolov7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors",
+      "paper_id": "2207.02696v1"
+    },
+    {
+      "index": 43,
+      "title": "BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Changqian Yu, Jingbo Wang, Chao Peng, Changxin Gao, Gang Yu, and Nong Sang.",
+      "orig_title": "Bisenet: Bilateral segmentation network for real-time semantic segmentation",
+      "paper_id": "1808.00897v1"
+    },
+    {
+      "index": 44,
+      "title": "Solo: Segmenting objects by locations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Xinlong Wang, Tao Kong, Chunhua Shen, Yuning Jiang, and Lei Li."
+    },
+    {
+      "index": 45,
+      "title": "SOLOv2: Dynamic and Fast Instance Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS, volume 33",
+      "authors": "Xinlong Wang, Rufeng Zhang, Tao Kong, Lei Li, and Chunhua Shen.",
+      "orig_title": "Solov2: Dynamic and fast instance segmentation",
+      "paper_id": "2003.10152v3"
+    },
+    {
+      "index": 46,
+      "title": "Learning Efficient Convolutional Networks through Network Slimming",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Zhuang Liu, Jianguo Li, Zhiqiang Shen, Gao Huang, Shoumeng Yan, and Changshui\nZhang.",
+      "orig_title": "Learning efficient convolutional networks through network slimming",
+      "paper_id": "1708.06519v1"
+    },
+    {
+      "index": 47,
+      "title": "The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Jonathan Frankle and Michael Carbin.",
+      "orig_title": "The lottery ticket hypothesis: Finding sparse, trainable neural networks",
+      "paper_id": "1803.03635v5"
+    },
+    {
+      "index": 48,
+      "title": "BinaryConnect: Training Deep Neural Networks with binary weights during propagations",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NeurIPS",
+      "authors": "Matthieu Courbariaux, Yoshua Bengio, and Jean-Pierre David.",
+      "orig_title": "Binaryconnect: Training deep neural networks with binary weights during propagations",
+      "paper_id": "1511.00363v3"
+    },
+    {
+      "index": 49,
+      "title": "XNOR-Net: ImageNet Classification Using Binary Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ECCV",
+      "authors": "Mohammad Rastegari, Vicente Ordonez, Joseph Redmon, and Ali Farhadi.",
+      "orig_title": "Xnor-net: Imagenet classification using binary convolutional neural networks",
+      "paper_id": "1603.05279v4"
+    },
+    {
+      "index": 50,
+      "title": "Distilling the Knowledge in a Neural Network",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Geoffrey Hinton, Oriol Vinyals, Jeff Dean, et al.",
+      "orig_title": "Distilling the knowledge in a neural network",
+      "paper_id": "1503.02531v1"
+    },
+    {
+      "index": 51,
+      "title": "Knowledge distillation: A survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IJCV, 129(6):",
+      "authors": "Jianping Gou, Baosheng Yu, Stephen J Maybank, and Dacheng Tao."
+    },
+    {
+      "index": 52,
+      "title": "MnasNet: Platform-Aware Neural Architecture Search for Mobile",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Mingxing Tan, Bo Chen, Ruoming Pang, Vijay Vasudevan, Mark Sandler, Andrew\nHoward, and Quoc V Le.",
+      "orig_title": "Mnasnet: Platform-aware neural architecture search for mobile",
+      "paper_id": "1807.11626v3"
+    },
+    {
+      "index": 53,
+      "title": "Proxylessnas: Direct neural architecture search on target task and hardware",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Han Cai, Ligeng Zhu, and Song Han."
+    },
+    {
+      "index": 54,
+      "title": "FPGA/DNN Co-Design: An Efficient Design Methodology for IoT Intelligence on the Edge",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Cong Hao, Xiaofan Zhang, Yuhong Li, Sitao Huang, Jinjun Xiong, Kyle Rupnow,\nWen-mei Hwu, and Deming Chen.",
+      "orig_title": "Fpga/dnn co-design: An efficient design methodology for iot intelligence on the edge",
+      "paper_id": "1904.04421v1"
+    },
+    {
+      "index": 55,
+      "title": "Hardware/Software Co-Exploration of Neural Architectures",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated\nCircuits and Systems",
+      "authors": "Weiwen Jiang, Lei Yang, Edwin Hsing-Mean Sha, Qingfeng Zhuge, Shouzhen Gu,\nSakyasingha Dasgupta, Yiyu Shi, and Jingtong Hu.",
+      "orig_title": "Hardware/software co-exploration of neural architectures",
+      "paper_id": "1907.04650v2"
+    },
+    {
+      "index": 56,
+      "title": "Efficient inference with tensorrt",
+      "abstract": "",
+      "year": "2016",
+      "venue": "GPU Technology Conference",
+      "authors": "Han Vanholder."
+    },
+    {
+      "index": 57,
+      "title": "Introduction to core ml framework",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Beginning Machine Learning in iOS: CoreML Framework",
+      "authors": "Mohit Thakkar and Mohit Thakkar."
+    },
+    {
+      "index": 58,
+      "title": "Tvm: end-to-end optimization stack for deep learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Tianqi Chen, Thierry Moreau, Ziheng Jiang, Haichen Shen, Eddie Q Yan, Leyuan\nWang, Yuwei Hu, Luis Ceze, Carlos Guestrin, and Arvind Krishnamurthy."
+    },
+    {
+      "index": 59,
+      "title": "Deep learning on mobile and embedded devices: State-of-the-art, challenges, and future directions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ACM Computing Surveys (CSUR), 53(4):1–37",
+      "authors": "Yanjiao Chen, Baolin Zheng, Zihan Zhang, Qian Wang, Chao Shen, and Qian Zhang."
+    },
+    {
+      "index": 60,
+      "title": "Aggregated Residual Transformations for Deep Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Saining Xie, Ross Girshick, Piotr Dollár, Zhuowen Tu, and Kaiming He.",
+      "orig_title": "Aggregated residual transformations for deep neural networks",
+      "paper_id": "1611.05431v2"
+    },
+    {
+      "index": 61,
+      "title": "Res2Net: A New Multi-scale Backbone Architecture",
+      "abstract": "",
+      "year": "2019",
+      "venue": "TPAMI, 43(2):652–662",
+      "authors": "Shang-Hua Gao, Ming-Ming Cheng, Kai Zhao, Xin-Yu Zhang, Ming-Hsuan Yang, and\nPhilip Torr.",
+      "orig_title": "Res2net: A new multi-scale backbone architecture",
+      "paper_id": "1904.01169v3"
+    },
+    {
+      "index": 62,
+      "title": "ShuffleNet: An Extremely Efficient Convolutional Neural Network for Mobile Devices",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Xiangyu Zhang, Xinyu Zhou, Mengxiao Lin, and Jian Sun.",
+      "orig_title": "Shufflenet: An extremely efficient convolutional neural network for mobile devices",
+      "paper_id": "1707.01083v2"
+    },
+    {
+      "index": 63,
+      "title": "ShuffleNet V2: Practical Guidelines for Efficient CNN Architecture Design",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Ningning Ma, Xiangyu Zhang, Hai-Tao Zheng, and Jian Sun.",
+      "orig_title": "Shufflenet v2: Practical guidelines for efficient cnn architecture design",
+      "paper_id": "1807.11164v1"
+    },
+    {
+      "index": 64,
+      "title": "Training data-efficient image transformers & distillation through attention",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "Hugo Touvron, Matthieu Cord, Matthijs Douze, Francisco Massa, Alexandre\nSablayrolles, and Hervé Jégou.",
+      "orig_title": "Training data-efficient image transformers & distillation through attention",
+      "paper_id": "2012.12877v2"
+    },
+    {
+      "index": 65,
+      "title": "Selective Kernel Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Xiang Li, Wenhai Wang, Xiaolin Hu, and Jian Yang.",
+      "orig_title": "Selective kernel networks",
+      "paper_id": "1903.06586v2"
+    },
+    {
+      "index": 66,
+      "title": "ResNeSt: Split-Attention Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Hang Zhang, Chongruo Wu, Zhongyue Zhang, Yi Zhu, Haibin Lin, Zhi Zhang, Yue\nSun, Tong He, Jonas Mueller, R Manmatha, et al.",
+      "orig_title": "Resnest: Split-attention networks",
+      "paper_id": "2004.08955v2"
+    },
+    {
+      "index": 67,
+      "title": "Interleaved group convolutions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Ting Zhang, Guo-Jun Qi, Bin Xiao, and Jingdong Wang."
+    },
+    {
+      "index": 68,
+      "title": "Interleaved structured sparse convolutional neural networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Guotian Xie, Jingdong Wang, Ting Zhang, Jianhuang Lai, Richang Hong, and\nGuo-Jun Qi."
+    },
+    {
+      "index": 69,
+      "title": "IGCV3: Interleaved Low-Rank Group Convolutions for Efficient Deep Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "BMVC",
+      "authors": "Ke Sun, Mingjie Li, Dong Liu, and Jingdong Wang.",
+      "orig_title": "Igcv3: Interleaved low-rank group convolutions for efficient deep neural networks",
+      "paper_id": "1806.00178v2"
+    },
+    {
+      "index": 70,
+      "title": "Attention Is All You Need",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS, 30",
+      "authors": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,\nAidan N Gomez, Łukasz Kaiser, and Illia Polosukhin.",
+      "orig_title": "Attention is all you need",
+      "paper_id": "1706.03762v7"
+    },
+    {
+      "index": 71,
+      "title": "Xception: Deep Learning with Depthwise Separable Convolutions",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "François Chollet.",
+      "orig_title": "Xception: Deep learning with depthwise separable convolutions",
+      "paper_id": "1610.02357v3"
+    },
+    {
+      "index": 72,
+      "title": "ESPNetv2: A Light-weight, Power Efficient, and General Purpose Convolutional Neural Network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Sachin Mehta, Mohammad Rastegari, Linda Shapiro, and Hannaneh Hajishirzi.",
+      "orig_title": "Espnetv2: A light-weight, power efficient, and general purpose convolutional neural network",
+      "paper_id": "1811.11431v3"
+    },
+    {
+      "index": 73,
+      "title": "A ConvNet for the 2020s",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Zhuang Liu, Hanzi Mao, Chao-Yuan Wu, Christoph Feichtenhofer, Trevor Darrell,\nand Saining Xie.",
+      "orig_title": "A convnet for the 2020s",
+      "paper_id": "2201.03545v2"
+    },
+    {
+      "index": 74,
+      "title": "CvT: Introducing Convolutions to Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Haiping Wu, Bin Xiao, Noel Codella, Mengchen Liu, Xiyang Dai, Lu Yuan, and Lei\nZhang.",
+      "orig_title": "Cvt: Introducing convolutions to vision transformers",
+      "paper_id": "2103.15808v1"
+    },
+    {
+      "index": 75,
+      "title": "CMT: Convolutional Neural Networks Meet Vision Transformers",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Jianyuan Guo, Kai Han, Han Wu, Yehui Tang, Xinghao Chen, Yunhe Wang, and Chang\nXu.",
+      "orig_title": "Cmt: Convolutional neural networks meet vision transformers",
+      "paper_id": "2107.06263v3"
+    },
+    {
+      "index": 76,
+      "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICML",
+      "authors": "Sergey Ioffe and Christian Szegedy."
+    },
+    {
+      "index": 77,
+      "title": "Rethinking the inception architecture for computer vision",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jon Shlens, and Zbigniew\nWojna."
+    },
+    {
+      "index": 78,
+      "title": "Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI",
+      "authors": "Christian Szegedy, Sergey Ioffe, Vincent Vanhoucke, and Alexander A Alemi.",
+      "orig_title": "Inception-v4, inception-resnet and the impact of residual connections on learning",
+      "paper_id": "1602.07261v2"
+    },
+    {
+      "index": 79,
+      "title": "Inception Transformer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Chenyang Si, Weihao Yu, Pan Zhou, Yichen Zhou, Xinchao Wang, and Shuicheng YAN.",
+      "orig_title": "Inception transformer",
+      "paper_id": "2205.12956v2"
+    },
+    {
+      "index": 80,
+      "title": "HorNet: Efficient High-Order Spatial Interactions with Recursive Gated Convolutions",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Yongming Rao, Wenliang Zhao, Yansong Tang, Jie Zhou, Ser-Nam Lim, and Jiwen Lu.",
+      "orig_title": "Hornet: Efficient high-order spatial interactions with recursive gated convolutions",
+      "paper_id": "2207.14284v3"
+    },
+    {
+      "index": 81,
+      "title": "Efficientnetv2: Smaller models and faster training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "Mingxing Tan and Quoc Le."
+    },
+    {
+      "index": 82,
+      "title": "Rethinking bottleneck structure for efficient mobile network design",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Daquan Zhou, Qibin Hou, Yunpeng Chen, Jiashi Feng, and Shuicheng Yan."
+    },
+    {
+      "index": 83,
+      "title": "Training very deep networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NeurIPS, 28",
+      "authors": "Rupesh K Srivastava, Klaus Greff, and Jürgen Schmidhuber."
+    },
+    {
+      "index": 84,
+      "title": "Densely connected convolutional networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Gao Huang, Zhuang Liu, Laurens Van Der Maaten, and Kilian Q Weinberger."
+    },
+    {
+      "index": 85,
+      "title": "Condensenet: An efficient densenet using learned group convolutions",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Gao Huang, Shichen Liu, Laurens Van der Maaten, and Kilian Q Weinberger."
+    },
+    {
+      "index": 86,
+      "title": "CondenseNet V2: Sparse Feature Reactivation for Deep Networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Le Yang, Haojun Jiang, Ruojin Cai, Yulin Wang, Shiji Song, Gao Huang, and\nQi Tian.",
+      "orig_title": "Condensenet v2: Sparse feature reactivation for deep networks",
+      "paper_id": "2104.04382v1"
+    },
+    {
+      "index": 87,
+      "title": "GhostNets on Heterogeneous Devices via Cheap Operations",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IJCV, 130(4):",
+      "authors": "Kai Han, Yunhe Wang, Chang Xu, Jianyuan Guo, Chunjing Xu, Enhua Wu, and\nQi Tian.",
+      "orig_title": "Ghostnets on heterogeneous devices via cheap operations",
+      "paper_id": "2201.03297v1"
+    },
+    {
+      "index": 88,
+      "title": "GhostNet: More Features from Cheap Operations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Kai Han, Yunhe Wang, Qi Tian, Jianyuan Guo, Chunjing Xu, and Chang Xu.",
+      "orig_title": "Ghostnet: More features from cheap operations",
+      "paper_id": "1911.11907v2"
+    },
+    {
+      "index": 89,
+      "title": "GhostNetV2: Enhance Cheap Operation with Long-Range Attention",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Yehui Tang, Kai Han, Jianyuan Guo, Chang Xu, Chao Xu, and Yunhe Wang.",
+      "orig_title": "Ghostnetv2: Enhance cheap operation with long-range attention",
+      "paper_id": "2211.12905v1"
+    },
+    {
+      "index": 90,
+      "title": "Drop an Octave: Reducing Spatial Redundancy in Convolutional Neural Networks with Octave Convolution",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Yunpeng Chen, Haoqi Fan, Bing Xu, Zhicheng Yan, Yannis Kalantidis, Marcus\nRohrbach, Shuicheng Yan, and Jiashi Feng.",
+      "orig_title": "Drop an octave: Reducing spatial redundancy in convolutional neural networks with octave convolution",
+      "paper_id": "1904.05049v3"
+    },
+    {
+      "index": 91,
+      "title": "Fast Vision Transformers with HiLo Attention",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Zizheng Pan, Jianfei Cai, and Bohan Zhuang.",
+      "orig_title": "Fast vision transformers with hilo attention",
+      "paper_id": "2205.13213v5"
+    },
+    {
+      "index": 92,
+      "title": "Deep high-resolution representation learning for human pose estimation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Ke Sun, Bin Xiao, Dong Liu, and Jingdong Wang."
+    },
+    {
+      "index": 93,
+      "title": "Deep High-Resolution Representation Learning for Visual Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "TPAMI, 43(10):",
+      "authors": "Jingdong Wang, Ke Sun, Tianheng Cheng, Borui Jiang, Chaorui Deng, Yang Zhao,\nDong Liu, Yadong Mu, Mingkui Tan, Xinggang Wang, et al.",
+      "orig_title": "Deep high-resolution representation learning for visual recognition",
+      "paper_id": "1908.07919v2"
+    },
+    {
+      "index": 94,
+      "title": "Hrformer: High-resolution vision transformer for dense predict",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS, 34:",
+      "authors": "Yuhui Yuan, Rao Fu, Lang Huang, Weihong Lin, Chao Zhang, Xilin Chen, and\nJingdong Wang."
+    },
+    {
+      "index": 95,
+      "title": "Pyramid Vision Transformer: A Versatile Backbone for Dense Prediction without Convolutions",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Wenhai Wang, Enze Xie, Xiang Li, Deng-Ping Fan, Kaitao Song, Ding Liang, Tong\nLu, Ping Luo, and Ling Shao.",
+      "orig_title": "Pyramid vision transformer: A versatile backbone for dense prediction without convolutions",
+      "paper_id": "2102.12122v2"
+    },
+    {
+      "index": 96,
+      "title": "PVT v2: Improved Baselines with Pyramid Vision Transformer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Computational Visual Media, 8(3):415–424",
+      "authors": "Wenhai Wang, Enze Xie, Xiang Li, Deng-Ping Fan, Kaitao Song, Ding Liang, Tong\nLu, Ping Luo, and Ling Shao.",
+      "orig_title": "Pvt v2: Improved baselines with pyramid vision transformer",
+      "paper_id": "2106.13797v7"
+    },
+    {
+      "index": 97,
+      "title": "Shunted Self-Attention via Multi-Scale Token Aggregation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Sucheng Ren, Daquan Zhou, Shengfeng He, Jiashi Feng, and Xinchao Wang.",
+      "orig_title": "Shunted self-attention via multi-scale token aggregation",
+      "paper_id": "2111.15193v2"
+    },
+    {
+      "index": 98,
+      "title": "Twins: Revisiting the Design of Spatial Attention in Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS, 34:",
+      "authors": "Xiangxiang Chu, Zhi Tian, Yuqing Wang, Bo Zhang, Haibing Ren, Xiaolin Wei,\nHuaxia Xia, and Chunhua Shen.",
+      "orig_title": "Twins: Revisiting the design of spatial attention in vision transformers",
+      "paper_id": "2104.13840v4"
+    },
+    {
+      "index": 99,
+      "title": "Swin transformer v2: Scaling up capacity and resolution",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Ze Liu, Han Hu, Yutong Lin, Zhuliang Yao, Zhenda Xie, Yixuan Wei, Jia Ning, Yue\nCao, Zheng Zhang, Li Dong, et al."
+    },
+    {
+      "index": 100,
+      "title": "Scaling Local Self-Attention for Parameter Efficient Visual Backbones",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Ashish Vaswani, Prajit Ramachandran, Aravind Srinivas, Niki Parmar, Blake\nHechtman, and Jonathon Shlens.",
+      "orig_title": "Scaling local self-attention for parameter efficient visual backbones",
+      "paper_id": "2103.12731v3"
+    },
+    {
+      "index": 101,
+      "title": "Focal self-attention for local-global interactions in vision transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Jianwei Yang, Chunyuan Li, Pengchuan Zhang, Xiyang Dai, Bin Xiao, Lu Yuan, and\nJianfeng Gao."
+    },
+    {
+      "index": 102,
+      "title": "Cswin transformer: A general vision transformer backbone with cross-shaped windows",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Xiaoyi Dong, Jianmin Bao, Dongdong Chen, Weiming Zhang, Nenghai Yu, Lu Yuan,\nDong Chen, and Baining Guo."
+    },
+    {
+      "index": 103,
+      "title": "Volo: Vision outlooker for visual recognition",
+      "abstract": "",
+      "year": "2022",
+      "venue": "TPAMI",
+      "authors": "Li Yuan, Qibin Hou, Zihang Jiang, Jiashi Feng, and Shuicheng Yan."
+    },
+    {
+      "index": 104,
+      "title": "V2x-vit: Vehicle-to-everything cooperative perception with vision transformer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ECCV",
+      "authors": "Runsheng Xu, Hao Xiang, Zhengzhong Tu, Xin Xia, Ming-Hsuan Yang, and Jiaqi Ma."
+    },
+    {
+      "index": 105,
+      "title": "MaxViT: Multi-Axis Vision Transformer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ECCV",
+      "authors": "Zhengzhong Tu, Hossein Talebi, Han Zhang, Feng Yang, Peyman Milanfar, Alan\nBovik, and Yinxiao Li.",
+      "orig_title": "Maxvit: Multi-axis vision transformer",
+      "paper_id": "2204.01697v4"
+    },
+    {
+      "index": 106,
+      "title": "ConViT: Improving Vision Transformers with Soft Convolutional Inductive Biases",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "Stéphane d’Ascoli, Hugo Touvron, Matthew L Leavitt, Ari S Morcos, Giulio\nBiroli, and Levent Sagun.",
+      "orig_title": "Convit: Improving vision transformers with soft convolutional inductive biases",
+      "paper_id": "2103.10697v2"
+    },
+    {
+      "index": 107,
+      "title": "Locality Guidance for Improving Vision Transformers on Tiny Datasets",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ECCV",
+      "authors": "Kehan Li, Runyi Yu, Zhennan Wang, Li Yuan, Guoli Song, and Jie Chen.",
+      "orig_title": "Locality guidance for improving vision transformers on tiny datasets",
+      "paper_id": "2207.10026v1"
+    },
+    {
+      "index": 108,
+      "title": "MSG-Transformer: Exchanging Local Spatial Information by Manipulating Messenger Tokens",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Jiemin Fang, Lingxi Xie, Xinggang Wang, Xiaopeng Zhang, Wenyu Liu, and Qi Tian.",
+      "orig_title": "Msg-transformer: Exchanging local spatial information by manipulating messenger tokens",
+      "paper_id": "2105.15168v3"
+    },
+    {
+      "index": 109,
+      "title": "Tokens-to-token vit: Training vision transformers from scratch on imagenet",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Li Yuan, Yunpeng Chen, Tao Wang, Weihao Yu, Yujun Shi, Zi-Hang Jiang,\nFrancis EH Tay, Jiashi Feng, and Shuicheng Yan."
+    },
+    {
+      "index": 110,
+      "title": "Transformer in Transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS, 34:",
+      "authors": "Kai Han, An Xiao, Enhua Wu, Jianyuan Guo, Chunjing Xu, and Yunhe Wang.",
+      "orig_title": "Transformer in transformer",
+      "paper_id": "2103.00112v3"
+    },
+    {
+      "index": 111,
+      "title": "Transformers are rnns: Fast autoregressive transformers with linear attention",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "Angelos Katharopoulos, Apoorv Vyas, Nikolaos Pappas, and François\nFleuret."
+    },
+    {
+      "index": 112,
+      "title": "Rethinking attention with performers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Krzysztof Marcin Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song,\nAndreea Gane, Tamas Sarlos, Peter Hawkins, Jared Quincy Davis, Afroz\nMohiuddin, Lukasz Kaiser, David Benjamin Belanger, Lucy J Colwell, and Adrian\nWeller."
+    },
+    {
+      "index": 113,
+      "title": "Nyströmformer: A Nyström-based Algorithm for Approximating Self-Attention",
+      "abstract": "",
+      "year": "2021",
+      "venue": "AAAI",
+      "authors": "Yunyang Xiong, Zhanpeng Zeng, Rudrasis Chakraborty, Mingxing Tan, Glenn Fung,\nYin Li, and Vikas Singh.",
+      "orig_title": "Nyströmformer: A nyström-based algorithm for approximating self-attention",
+      "paper_id": "2102.03902v3"
+    },
+    {
+      "index": 114,
+      "title": "SOFT: Softmax-free Transformer with Linear Complexity",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Jiachen Lu, Jinghan Yao, Junge Zhang, Xiatian Zhu, Hang Xu, Weiguo Gao,\nChunjing Xu, Tao Xiang, and Li Zhang.",
+      "orig_title": "Soft: Softmax-free transformer with linear complexity",
+      "paper_id": "2110.11945v3"
+    },
+    {
+      "index": 115,
+      "title": "Castling-vit: Compressing self-attention via switching towards linear-angular attention during vision transformer inference",
+      "abstract": "",
+      "year": "2023",
+      "venue": "CVPR",
+      "authors": "Haoran You, Yunyang Xiong, Xiaoliang Dai, Bichen Wu, Peizhao Zhang, Haoqi Fan,\nPeter Vajda, and Yingyan Lin."
+    },
+    {
+      "index": 116,
+      "title": "Efficient Architecture Search by Network Transformation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "Han Cai, Tianyao Chen, Weinan Zhang, Yong Yu, and Jun Wang.",
+      "orig_title": "Efficient architecture search by network transformation",
+      "paper_id": "1707.04873v2"
+    },
+    {
+      "index": 117,
+      "title": "FLatten Transformer: Vision Transformer using Focused Linear Attention",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICCV",
+      "authors": "Dongchen Han, Xuran Pan, Yizeng Han, Shiji Song, and Gao Huang.",
+      "orig_title": "Flatten transformer: Vision transformer using focused linear attention",
+      "paper_id": "2308.00442v2"
+    },
+    {
+      "index": 118,
+      "title": "Co-Scale Conv-Attentional Image Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Weijian Xu, Yifan Xu, Tyler Chang, and Zhuowen Tu.",
+      "orig_title": "Co-scale conv-attentional image transformers",
+      "paper_id": "2104.06399v2"
+    },
+    {
+      "index": 119,
+      "title": "MPViT : Multi-Path Vision Transformer for Dense Prediction",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Youngwan Lee, Jonghee Kim, Jeffrey Willette, and Sung Ju Hwang.",
+      "orig_title": "Mpvit: Multi-path vision transformer for dense prediction",
+      "paper_id": "2112.11010v2"
+    },
+    {
+      "index": 120,
+      "title": "Glance-and-Gaze Vision Transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS, 34:",
+      "authors": "Qihang Yu, Yingda Xia, Yutong Bai, Yongyi Lu, Alan L Yuille, and Wei Shen.",
+      "orig_title": "Glance-and-gaze vision transformer",
+      "paper_id": "2106.02277v1"
+    },
+    {
+      "index": 121,
+      "title": "Incorporating Convolution Designs into Visual Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Kun Yuan, Shaopeng Guo, Ziwei Liu, Aojun Zhou, Fengwei Yu, and Wei Wu.",
+      "orig_title": "Incorporating convolution designs into visual transformers",
+      "paper_id": "2103.11816v2"
+    },
+    {
+      "index": 122,
+      "title": "LocalViT: Bringing Locality to Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Yawei Li, Kai Zhang, Jiezhang Cao, Radu Timofte, and Luc Van Gool.",
+      "orig_title": "Localvit: Bringing locality to vision transformers",
+      "paper_id": "2104.05707v2"
+    },
+    {
+      "index": 123,
+      "title": "CoAtNet: Marrying Convolution and Attention for All Data Sizes",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Zihang Dai, Hanxiao Liu, Quoc V Le, and Mingxing Tan.",
+      "orig_title": "Coatnet: Marrying convolution and attention for all data sizes",
+      "paper_id": "2106.04803v2"
+    },
+    {
+      "index": 124,
+      "title": "Early Convolutions Help Transformers See Better",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Tete Xiao, Mannat Singh, Eric Mintun, Trevor Darrell, Piotr Dollár, and\nRoss Girshick.",
+      "orig_title": "Early convolutions help transformers see better",
+      "paper_id": "2106.14881v3"
+    },
+    {
+      "index": 125,
+      "title": "Levit: a vision transformer in convnet’s clothing for faster inference",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Benjamin Graham, Alaaeldin El-Nouby, Hugo Touvron, Pierre Stock, Armand Joulin,\nHervé Jégou, and Matthijs Douze."
+    },
+    {
+      "index": 126,
+      "title": "Mobilevit: Light-weight, general-purpose, and mobile-friendly vision transformer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICLR",
+      "authors": "Sachin Mehta and Mohammad Rastegari."
+    },
+    {
+      "index": 127,
+      "title": "Visformer: The Vision-friendly Transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Zhengsu Chen, Lingxi Xie, Jianwei Niu, Xuefeng Liu, Longhui Wei, and Qi Tian.",
+      "orig_title": "Visformer: The vision-friendly transformer",
+      "paper_id": "2104.12533v5"
+    },
+    {
+      "index": 128,
+      "title": "Rethinking Spatial Dimensions of Vision Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Byeongho Heo, Sangdoo Yun, Dongyoon Han, Sanghyuk Chun, Junsuk Choe, and\nSeong Joon Oh.",
+      "orig_title": "Rethinking spatial dimensions of vision transformers",
+      "paper_id": "2103.16302v2"
+    },
+    {
+      "index": 129,
+      "title": "ViTAE: Vision Transformer Advanced by Exploring Intrinsic Inductive Bias",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS, volume 34",
+      "authors": "Yufei Xu, Qiming Zhang, Jing Zhang, and Dacheng Tao.",
+      "orig_title": "Vitae: Vision transformer advanced by exploring intrinsic inductive bias",
+      "paper_id": "2106.03348v4"
+    },
+    {
+      "index": 130,
+      "title": "Vitaev2: Vision transformer advanced by exploring inductive bias for image recognition and beyond",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IJCV",
+      "authors": "Qiming Zhang, Yufei Xu, Jing Zhang, and Dacheng Tao."
+    },
+    {
+      "index": 131,
+      "title": "Mobile-former: Bridging mobilenet and transformer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Yinpeng Chen, Xiyang Dai, Dongdong Chen, Mengchen Liu, Xiaoyi Dong, Lu Yuan,\nand Zicheng Liu."
+    },
+    {
+      "index": 132,
+      "title": "MixFormer: Mixing Features across Windows and Dimensions",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Qiang Chen, Qiman Wu, Jian Wang, Qinghao Hu, Tao Hu, Errui Ding, Jian Cheng,\nand Jingdong Wang.",
+      "orig_title": "Mixformer: Mixing features across windows and dimensions",
+      "paper_id": "2204.02557v2"
+    },
+    {
+      "index": 133,
+      "title": "Conformer: Local features coupling global representations for recognition and detection",
+      "abstract": "",
+      "year": "2023",
+      "venue": "TPAMI",
+      "authors": "Zhiliang Peng, Zonghao Guo, Wei Huang, Yaowei Wang, Lingxi Xie, Jianbin Jiao,\nQi Tian, and Qixiang Ye."
+    },
+    {
+      "index": 134,
+      "title": "Conformer: Local Features Coupling Global Representations for Visual Recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Zhiliang Peng, Wei Huang, Shanzhi Gu, Lingxi Xie, Yaowei Wang, Jianbin Jiao,\nand Qixiang Ye.",
+      "orig_title": "Conformer: Local features coupling global representations for visual recognition",
+      "paper_id": "2105.03889v1"
+    },
+    {
+      "index": 135,
+      "title": "On Network Design Spaces for Visual Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Ilija Radosavovic, Justin Johnson, Saining Xie, Wan-Yen Lo, and Piotr\nDollár.",
+      "orig_title": "On network design spaces for visual recognition",
+      "paper_id": "1905.13214v1"
+    },
+    {
+      "index": 136,
+      "title": "Fast and accurate model scaling",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Piotr Dollár, Mannat Singh, and Ross Girshick."
+    },
+    {
+      "index": 137,
+      "title": "Model Rubik’s Cube: Twisting Resolution, Depth and Width for TinyNets",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS, 33:",
+      "authors": "Kai Han, Yunhe Wang, Qiulin Zhang, Wei Zhang, Chunjing Xu, and Tong Zhang.",
+      "orig_title": "Model rubik’s cube: Twisting resolution, depth and width for tinynets",
+      "paper_id": "2010.14819v2"
+    },
+    {
+      "index": 138,
+      "title": "Designing Neural Network Architectures using Reinforcement Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Bowen Baker, Otkrist Gupta, Nikhil Naik, and Ramesh Raskar.",
+      "orig_title": "Designing neural network architectures using reinforcement learning",
+      "paper_id": "1611.02167v3"
+    },
+    {
+      "index": 139,
+      "title": "Learning Transferable Architectures for Scalable Image Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Barret Zoph, Vijay Vasudevan, Jonathon Shlens, and Quoc V Le.",
+      "orig_title": "Learning transferable architectures for scalable image recognition",
+      "paper_id": "1707.07012v4"
+    },
+    {
+      "index": 140,
+      "title": "Large-Scale Evolution of Image Classifiers",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "Esteban Real, Sherry Moore, Andrew Selle, Saurabh Saxena, Yutaka Leon Suematsu,\nJie Tan, Quoc V Le, and Alexey Kurakin.",
+      "orig_title": "Large-scale evolution of image classifiers",
+      "paper_id": "1703.01041v2"
+    },
+    {
+      "index": 141,
+      "title": "Genetic cnn",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Lingxi Xie and Alan Yuille."
+    },
+    {
+      "index": 142,
+      "title": "Regularized Evolution for Image Classifier Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "Esteban Real, Alok Aggarwal, Yanping Huang, and Quoc V Le.",
+      "orig_title": "Regularized evolution for image classifier architecture search",
+      "paper_id": "1802.01548v7"
+    },
+    {
+      "index": 143,
+      "title": "Simple and Efficient Architecture Search for Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Thomas Elsken, Jan-Hendrik Metzen, and Frank Hutter.",
+      "orig_title": "Simple and efficient architecture search for convolutional neural networks",
+      "paper_id": "1711.04528v1"
+    },
+    {
+      "index": 144,
+      "title": "Path-Level Network Transformation for Efficient Architecture Search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Han Cai, Jiacheng Yang, Weinan Zhang, Song Han, and Yong Yu.",
+      "orig_title": "Path-level network transformation for efficient architecture search",
+      "paper_id": "1806.02639v1"
+    },
+    {
+      "index": 145,
+      "title": "Hierarchical Representations for Efficient Architecture Search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Hanxiao Liu, Karen Simonyan, Oriol Vinyals, Chrisantha Fernando, and Koray\nKavukcuoglu.",
+      "orig_title": "Hierarchical representations for efficient architecture search",
+      "paper_id": "1711.00436v2"
+    },
+    {
+      "index": 146,
+      "title": "Efficient Neural Architecture Search via Parameter Sharing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Hieu Pham, Melody Guan, Barret Zoph, Quoc Le, and Jeff Dean.",
+      "orig_title": "Efficient neural architecture search via parameters sharing",
+      "paper_id": "1802.03268v2"
+    },
+    {
+      "index": 147,
+      "title": "Understanding and simplifying one-shot architecture search",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICML",
+      "authors": "Gabriel Bender, Pieter-Jan Kindermans, Barret Zoph, Vijay Vasudevan, and Quoc\nLe."
+    },
+    {
+      "index": 148,
+      "title": "SNAS: stochastic neural architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Sirui Xie, Hehui Zheng, Chunxiao Liu, and Liang Lin.",
+      "orig_title": "Snas: stochastic neural architecture search",
+      "paper_id": "1812.09926v3"
+    },
+    {
+      "index": 149,
+      "title": "Searching for A Robust Neural Architecture in Four GPU Hours",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Xuanyi Dong and Yi Yang.",
+      "orig_title": "Searching for a robust neural architecture in four gpu hours",
+      "paper_id": "1910.04465v2"
+    },
+    {
+      "index": 150,
+      "title": "Understanding and Robustifying Differentiable Architecture Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Arber Zela, Thomas Elsken, Tonmoy Saikia, Yassine Marrakchi, Thomas Brox, and\nFrank Hutter.",
+      "orig_title": "Understanding and robustifying differentiable architecture search",
+      "paper_id": "1909.09656v2"
+    },
+    {
+      "index": 151,
+      "title": "Network adjustment: Channel and block search guided by resource utilization ratio",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IJCV, 130(3):820–835",
+      "authors": "Zhengsu Chen, Lingxi Xie, Jianwei Niu, Xuefeng Liu, Longhui Wei, and Qi Tian."
+    },
+    {
+      "index": 152,
+      "title": "Progressive differentiable architecture search: Bridging the depth gap between search and evaluation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Xin Chen, Lingxi Xie, Jun Wu, and Qi Tian."
+    },
+    {
+      "index": 153,
+      "title": "GreedyNAS: Towards Fast One-Shot NAS with Greedy Supernet",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Shan You, Tao Huang, Mingmin Yang, Fei Wang, Chen Qian, and Changshui Zhang.",
+      "orig_title": "Greedynas: Towards fast one-shot nas with greedy supernet",
+      "paper_id": "2003.11236v1"
+    },
+    {
+      "index": 154,
+      "title": "SMASH: One-Shot Model Architecture Search through HyperNetworks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Andrew Brock, Theo Lim, JM Ritchie, and Nick Weston.",
+      "orig_title": "Smash: One-shot model architecture search through hypernetworks",
+      "paper_id": "1708.05344v1"
+    },
+    {
+      "index": 155,
+      "title": "Graph HyperNetworks for Neural Architecture Search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Chris Zhang, Mengye Ren, and Raquel Urtasun.",
+      "orig_title": "Graph hypernetworks for neural architecture search",
+      "paper_id": "1810.05749v3"
+    },
+    {
+      "index": 156,
+      "title": "Single Path One-Shot Neural Architecture Search with Uniform Sampling",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Zichao Guo, Xiangyu Zhang, Haoyuan Mu, Wen Heng, Zechun Liu, Yichen Wei, and\nJian Sun.",
+      "orig_title": "Single path one-shot neural architecture search with uniform sampling",
+      "paper_id": "1904.00420v4"
+    },
+    {
+      "index": 157,
+      "title": "Bignas: Scaling up neural architecture search with big single-stage models",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Jiahui Yu, Pengchong Jin, Hanxiao Liu, Gabriel Bender, Pieter-Jan Kindermans,\nMingxing Tan, Thomas Huang, Xiaodan Song, Ruoming Pang, and Quoc Le."
+    },
+    {
+      "index": 158,
+      "title": "Fbnet: Hardware-aware efficient convnet design via differentiable neural architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Bichen Wu, Xiaoliang Dai, Peizhao Zhang, Yanghan Wang, Fei Sun, Yiming Wu,\nYuandong Tian, Peter Vajda, Yangqing Jia, and Kurt Keutzer."
+    },
+    {
+      "index": 159,
+      "title": "Learning spatiotemporal features with 3d convolutional networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Du Tran, Lubomir Bourdev, Rob Fergus, Lorenzo Torresani, and Manohar Paluri."
+    },
+    {
+      "index": 160,
+      "title": "Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Joao Carreira and Andrew Zisserman.",
+      "orig_title": "Quo vadis, action recognition? a new model and the kinetics dataset",
+      "paper_id": "1705.07750v3"
+    },
+    {
+      "index": 161,
+      "title": "Eco: Efficient convolutional network for online video understanding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Mohammadreza Zolfaghari, Kamaljeet Singh, and Thomas Brox."
+    },
+    {
+      "index": 162,
+      "title": "Rethinking Spatiotemporal Feature Learning: Speed-Accuracy Trade-offs in Video Classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Saining Xie, Chen Sun, Jonathan Huang, Zhuowen Tu, and Kevin Murphy.",
+      "orig_title": "Rethinking spatiotemporal feature learning: Speed-accuracy trade-offs in video classification",
+      "paper_id": "1712.04851v2"
+    },
+    {
+      "index": 163,
+      "title": "Video classification with channel-separated convolutional networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Du Tran, Heng Wang, Lorenzo Torresani, and Matt Feiszli."
+    },
+    {
+      "index": 164,
+      "title": "X3d: Expanding architectures for efficient video recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Christoph Feichtenhofer."
+    },
+    {
+      "index": 165,
+      "title": "A closer look at spatiotemporal convolutions for action recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Du Tran, Heng Wang, Lorenzo Torresani, Jamie Ray, Yann LeCun, and Manohar\nPaluri."
+    },
+    {
+      "index": 166,
+      "title": "Human Action Recognition using Factorized Spatio-Temporal Convolutional Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Lin Sun, Kui Jia, Dit-Yan Yeung, and Bertram E Shi.",
+      "orig_title": "Human action recognition using factorized spatio-temporal convolutional networks",
+      "paper_id": "1510.00562v1"
+    },
+    {
+      "index": 167,
+      "title": "Learning spatio-temporal representation with pseudo-3d residual networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Zhaofan Qiu, Ting Yao, and Tao Mei."
+    },
+    {
+      "index": 168,
+      "title": "TAM: Temporal Adaptive Module for Video Recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Zhaoyang Liu, Limin Wang, Wayne Wu, Chen Qian, and Tong Lu.",
+      "orig_title": "Tam: Temporal adaptive module for video recognition",
+      "paper_id": "2005.06803v3"
+    },
+    {
+      "index": 169,
+      "title": "Temporal Relational Reasoning in Videos",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Bolei Zhou, Alex Andonian, Aude Oliva, and Antonio Torralba.",
+      "orig_title": "Temporal relational reasoning in videos",
+      "paper_id": "1711.08496v2"
+    },
+    {
+      "index": 170,
+      "title": "STM: SpatioTemporal and Motion Encoding for Action Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Boyuan Jiang, MengMeng Wang, Weihao Gan, Wei Wu, and Junjie Yan.",
+      "orig_title": "Stm: Spatiotemporal and motion encoding for action recognition",
+      "paper_id": "1908.02486v2"
+    },
+    {
+      "index": 171,
+      "title": "TEA: Temporal Excitation and Aggregation for Action Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Yan Li, Bin Ji, Xintian Shi, Jianguo Zhang, Bin Kang, and Limin Wang.",
+      "orig_title": "Tea: Temporal excitation and aggregation for action recognition",
+      "paper_id": "2004.01398v1"
+    },
+    {
+      "index": 172,
+      "title": "TSM: Temporal Shift Module for Efficient Video Understanding",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Ji Lin, Chuang Gan, and Song Han.",
+      "orig_title": "Tsm: Temporal shift module for efficient video understanding",
+      "paper_id": "1811.08383v3"
+    },
+    {
+      "index": 173,
+      "title": "Token Shift Transformer for Video Classification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ACM MM",
+      "authors": "Hao Zhang, Yanbin Hao, and Chong-Wah Ngo.",
+      "orig_title": "Token shift transformer for video classification",
+      "paper_id": "2108.02432v1"
+    },
+    {
+      "index": 174,
+      "title": "Gate-Shift Networks for Video Action Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Swathikiran Sudhakaran, Sergio Escalera, and Oswald Lanz.",
+      "orig_title": "Gate-shift networks for video action recognition",
+      "paper_id": "1912.00381v2"
+    },
+    {
+      "index": 175,
+      "title": "SlowFast Networks for Video Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Christoph Feichtenhofer, Haoqi Fan, Jitendra Malik, and Kaiming He.",
+      "orig_title": "Slowfast networks for video recognition",
+      "paper_id": "1812.03982v3"
+    },
+    {
+      "index": 176,
+      "title": "TDN: Temporal Difference Networks for Efficient Action Recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Limin Wang, Zhan Tong, Bin Ji, and Gangshan Wu.",
+      "orig_title": "Tdn: Temporal difference networks for efficient action recognition",
+      "paper_id": "2012.10071v2"
+    },
+    {
+      "index": 177,
+      "title": "ViViT: A Video Vision Transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Anurag Arnab, Mostafa Dehghani, Georg Heigold, Chen Sun, Mario Lučić,\nand Cordelia Schmid.",
+      "orig_title": "Vivit: A video vision transformer",
+      "paper_id": "2103.15691v2"
+    },
+    {
+      "index": 178,
+      "title": "Space-time mixing attention for video transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS, 34:",
+      "authors": "Adrian Bulat, Juan Manuel Perez Rua, Swathikiran Sudhakaran, Brais Martinez,\nand Georgios Tzimiropoulos."
+    },
+    {
+      "index": 179,
+      "title": "Video swin transformer",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Ze Liu, Jia Ning, Yue Cao, Yixuan Wei, Zheng Zhang, Stephen Lin, and Han Hu."
+    },
+    {
+      "index": 180,
+      "title": "UniFormer: Unified Transformer for Efficient Spatiotemporal Representation Learning",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICLR",
+      "authors": "Kunchang Li, Yali Wang, Gao Peng, Guanglu Song, Yu Liu, Hongsheng Li, and\nYu Qiao.",
+      "orig_title": "Uniformer: Unified transformer for efficient spatial-temporal representation learning",
+      "paper_id": "2201.04676v3"
+    },
+    {
+      "index": 181,
+      "title": "Multiview Transformers for Video Recognition",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Shen Yan, Xuehan Xiong, Anurag Arnab, Zhichao Lu, Mi Zhang, Chen Sun, and\nCordelia Schmid.",
+      "orig_title": "Multiview transformers for video recognition",
+      "paper_id": "2201.04288v4"
+    },
+    {
+      "index": 182,
+      "title": "Keeping Your Eye on the Ball: Trajectory Attention in Video Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS, 34:",
+      "authors": "Mandela Patrick, Dylan Campbell, Yuki Asano, Ishan Misra, Florian Metze,\nChristoph Feichtenhofer, Andrea Vedaldi, and João F Henriques.",
+      "orig_title": "Keeping your eye on the ball: Trajectory attention in video transformers",
+      "paper_id": "2106.05392v2"
+    },
+    {
+      "index": 183,
+      "title": "Is Space-Time Attention All You Need for Video Understanding?",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "Gedas Bertasius, Heng Wang, and Lorenzo Torresani.",
+      "orig_title": "Is space-time attention all you need for video understanding?",
+      "paper_id": "2102.05095v4"
+    },
+    {
+      "index": 184,
+      "title": "Video Transformer Network",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Daniel Neimark, Omri Bar, Maya Zohar, and Dotan Asselmann.",
+      "orig_title": "Video transformer network",
+      "paper_id": "2102.00719v3"
+    },
+    {
+      "index": 185,
+      "title": "PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Charles R Qi, Hao Su, Kaichun Mo, and Leonidas J Guibas.",
+      "orig_title": "Pointnet: Deep learning on point sets for 3d classification and segmentation",
+      "paper_id": "1612.00593v2"
+    },
+    {
+      "index": 186,
+      "title": "PointNet++: Deep Hierarchical Feature Learning on Point Sets in a Metric Space",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS, 30",
+      "authors": "Charles Ruizhongtai Qi, Li Yi, Hao Su, and Leonidas J Guibas.",
+      "orig_title": "Pointnet++: Deep hierarchical feature learning on point sets in a metric space",
+      "paper_id": "1706.02413v1"
+    },
+    {
+      "index": 187,
+      "title": "Graph attention convolution for point cloud semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Lei Wang, Yuchun Huang, Yaolin Hou, Shenman Zhang, and Jie Shan."
+    },
+    {
+      "index": 188,
+      "title": "Dynamic Graph CNN for Learning on Point Clouds",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Acm Transactions On Graphics, 38(5):1–12",
+      "authors": "Yue Wang, Yongbin Sun, Ziwei Liu, Sanjay E Sarma, Michael M Bronstein, and\nJustin M Solomon.",
+      "orig_title": "Dynamic graph cnn for learning on point clouds",
+      "paper_id": "1801.07829v2"
+    },
+    {
+      "index": 189,
+      "title": "SpiderCNN: Deep Learning on Point Sets with Parameterized Convolutional Filters",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Yifan Xu, Tianqi Fan, Mingye Xu, Long Zeng, and Yu Qiao.",
+      "orig_title": "Spidercnn: Deep learning on point sets with parameterized convolutional filters",
+      "paper_id": "1803.11527v3"
+    },
+    {
+      "index": 190,
+      "title": "Tangent Convolutions for Dense Prediction in 3D",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Maxim Tatarchenko, Jaesik Park, Vladlen Koltun, and Qian-Yi Zhou.",
+      "orig_title": "Tangent convolutions for dense prediction in 3d",
+      "paper_id": "1807.02443v1"
+    },
+    {
+      "index": 191,
+      "title": "Kpconv: Flexible and deformable convolution for point clouds",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Hugues Thomas, Charles R Qi, Jean-Emmanuel Deschaud, Beatriz Marcotegui,\nFrançois Goulette, and Leonidas J Guibas."
+    },
+    {
+      "index": 192,
+      "title": "PointCNN: Convolution On 𝒳-Transformed Points",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS, 31",
+      "authors": "Yangyan Li, Rui Bu, Mingchao Sun, Wei Wu, Xinhan Di, and Baoquan Chen.",
+      "orig_title": "Pointcnn: Convolution on x-transformed points",
+      "paper_id": "1801.07791v5"
+    },
+    {
+      "index": 193,
+      "title": "Relation-shape convolutional neural network for point cloud analysis",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Yongcheng Liu, Bin Fan, Shiming Xiang, and Chunhong Pan."
+    },
+    {
+      "index": 194,
+      "title": "PointConv: Deep Convolutional Networks on 3D Point Clouds",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Wenxuan Wu, Zhongang Qi, and Li Fuxin.",
+      "orig_title": "Pointconv: Deep convolutional networks on 3d point clouds",
+      "paper_id": "1811.07246v3"
+    },
+    {
+      "index": 195,
+      "title": "A Closer Look at Local Aggregation Operators in Point Cloud Analysis",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Ze Liu, Han Hu, Yue Cao, Zheng Zhang, and Xin Tong.",
+      "orig_title": "A closer look at local aggregation operators in point cloud analysis",
+      "paper_id": "2007.01294v1"
+    },
+    {
+      "index": 196,
+      "title": "Stratified Transformer for 3D Point Cloud Segmentation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Xin Lai, Jianhui Liu, Li Jiang, Liwei Wang, Hengshuang Zhao, Shu Liu, Xiaojuan\nQi, and Jiaya Jia.",
+      "orig_title": "Stratified transformer for 3d point cloud segmentation",
+      "paper_id": "2203.14508v1"
+    },
+    {
+      "index": 197,
+      "title": "Point Transformer",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Hengshuang Zhao, Li Jiang, Jiaya Jia, Philip HS Torr, and Vladlen Koltun.",
+      "orig_title": "Point transformer",
+      "paper_id": "2012.09164v2"
+    },
+    {
+      "index": 198,
+      "title": "PointNeXt: Revisiting PointNet++ with Improved Training and Scaling Strategies",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Guocheng Qian, Yuchen Li, Houwen Peng, Jinjie Mai, Hasan Abed Al Kader Hammoud,\nMohamed Elhoseiny, and Bernard Ghanem.",
+      "orig_title": "Pointnext: Revisiting pointnet++ with improved training and scaling strategies",
+      "paper_id": "2206.04670v2"
+    },
+    {
+      "index": 199,
+      "title": "Voxnet: A 3d convolutional neural network for real-time object recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IROS",
+      "authors": "Daniel Maturana and Sebastian Scherer."
+    },
+    {
+      "index": 200,
+      "title": "3D Semantic Segmentation with Submanifold Sparse Convolutional Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Benjamin Graham, Martin Engelcke, and Laurens Van Der Maaten.",
+      "orig_title": "3d semantic segmentation with submanifold sparse convolutional networks",
+      "paper_id": "1711.10275v1"
+    },
+    {
+      "index": 201,
+      "title": "4d spatio-temporal convnets: Minkowski convolutional neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Christopher Choy, JunYoung Gwak, and Silvio Savarese."
+    },
+    {
+      "index": 202,
+      "title": "Focal Sparse Convolutional Networks for 3D Object Detection",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Yukang Chen, Yanwei Li, Xiangyu Zhang, Jian Sun, and Jiaya Jia.",
+      "orig_title": "Focal sparse convolutional networks for 3d object detection",
+      "paper_id": "2204.12463v1"
+    },
+    {
+      "index": 203,
+      "title": "Pv-rcnn: Point-voxel feature set abstraction for 3d object detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Shaoshuai Shi, Chaoxu Guo, Li Jiang, Zhe Wang, Jianping Shi, Xiaogang Wang, and\nHongsheng Li."
+    },
+    {
+      "index": 204,
+      "title": "PV-RCNN++: Point-Voxel Feature Set Abstraction With Local Vector Representation for 3D Object Detection",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IJCV",
+      "authors": "Shaoshuai Shi, Li Jiang, Jiajun Deng, Zhe Wang, Chaoxu Guo, Jianping Shi,\nXiaogang Wang, and Hongsheng Li.",
+      "orig_title": "Pv-rcnn++: Point-voxel feature set abstraction with local vector representation for 3d object detection",
+      "paper_id": "2102.00463v3"
+    },
+    {
+      "index": 205,
+      "title": "Class-balanced grouping and sampling for point cloud 3d object detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Benjin Zhu, Zhengkai Jiang, Xiangxin Zhou, Zeming Li, and Gang Yu."
+    },
+    {
+      "index": 206,
+      "title": "Point-voxel cnn for efficient 3d deep learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS, volume 32",
+      "authors": "Zhijian Liu, Haotian Tang, Yujun Lin, and Song Han."
+    },
+    {
+      "index": 207,
+      "title": "Searching Efficient 3D Architectures with Sparse Point-Voxel Convolution",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Haotian Tang, Zhijian Liu, Shengyu Zhao, Yujun Lin, Ji Lin, Hanrui Wang, and\nSong Han.",
+      "orig_title": "Searching efficient 3d architectures with sparse point-voxel convolution",
+      "paper_id": "2007.16100v2"
+    },
+    {
+      "index": 208,
+      "title": "Multi-view Convolutional Neural Networks for 3D Shape Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Hang Su, Subhransu Maji, Evangelos Kalogerakis, and Erik Learned-Miller.",
+      "orig_title": "Multi-view convolutional neural networks for 3d shape recognition",
+      "paper_id": "1505.00880v3"
+    },
+    {
+      "index": 209,
+      "title": "View-gcn: View-based graph convolutional network for 3d shape analysis",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Xin Wei, Ruixuan Yu, and Jian Sun."
+    },
+    {
+      "index": 210,
+      "title": "MVTN: Multi-View Transformation Network for 3D Shape Recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Abdullah Hamdi, Silvio Giancola, and Bernard Ghanem.",
+      "orig_title": "Mvtn: Multi-view transformation network for 3d shape recognition",
+      "paper_id": "2011.13244v3"
+    },
+    {
+      "index": 211,
+      "title": "Gift: A real-time and scalable 3d shape search engine",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Song Bai, Xiang Bai, Zhichao Zhou, Zhaoxiang Zhang, and Longin Jan Latecki."
+    },
+    {
+      "index": 212,
+      "title": "Mlvcnn: Multi-loop-view convolutional neural network for 3d shape retrieval",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "Jianwen Jiang, Di Bao, Ziqiang Chen, Xibin Zhao, and Yue Gao."
+    },
+    {
+      "index": 213,
+      "title": "RotationNet: Joint Object Categorization and Pose Estimation Using Multiviews from Unsupervised Viewpoints",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Asako Kanezaki, Yasuyuki Matsushita, and Yoshifumi Nishida.",
+      "orig_title": "Rotationnet: Joint object categorization and pose estimation using multiviews from unsupervised viewpoints",
+      "paper_id": "1603.06208v4"
+    },
+    {
+      "index": 214,
+      "title": "BranchyNet: Fast Inference via Early Exiting from Deep Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICPR",
+      "authors": "Surat Teerapittayanon, Bradley McDanel, and Hsiang-Tsung Kung.",
+      "orig_title": "Branchynet: Fast inference via early exiting from deep neural networks",
+      "paper_id": "1709.01686v1"
+    },
+    {
+      "index": 215,
+      "title": "Adaptive neural networks for efficient inference",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "Tolga Bolukbasi, Joseph Wang, Ofer Dekel, and Venkatesh Saligrama."
+    },
+    {
+      "index": 216,
+      "title": "Resolution Adaptive Networks for Efficient Inference",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Le Yang, Yizeng Han, Xi Chen, Shiji Song, Jifeng Dai, and Gao Huang.",
+      "orig_title": "Resolution adaptive networks for efficient inference",
+      "paper_id": "2003.07326v5"
+    },
+    {
+      "index": 217,
+      "title": "Not All Images are Worth 16x16 Words: Dynamic Transformers for Efficient Image Recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Yulin Wang, Rui Huang, Shiji Song, Zeyi Huang, and Gao Huang.",
+      "orig_title": "Not all images are worth 16x16 words: Dynamic transformers for efficient image recognition",
+      "paper_id": "2105.15075v2"
+    },
+    {
+      "index": 218,
+      "title": "Dynamic Perceiver for Efficient Visual Recognition",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICCV",
+      "authors": "Yizeng Han, Dongchen Han, Zeyu Liu, Yulin Wang, Xuran Pan, Yifan Pu, Chao Deng,\nJunlan Feng, Shiji Song, and Gao Huang.",
+      "orig_title": "Dynamic perceiver for efficient visual recognition",
+      "paper_id": "2306.11248v2"
+    },
+    {
+      "index": 219,
+      "title": "Improved Techniques for Training Adaptive Deep Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Hao Li, Hong Zhang, Xiaojuan Qi, Ruigang Yang, and Gao Huang.",
+      "orig_title": "Improved techniques for training adaptive deep networks",
+      "paper_id": "1908.06294v1"
+    },
+    {
+      "index": 220,
+      "title": "Learning to Weight Samples for Dynamic Early-exiting Networks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ECCV",
+      "authors": "Yizeng Han, Yifan Pu, Zihang Lai, Chaofei Wang, Shiji Song, Junfeng Cao, Wenhui\nHuang, Chao Deng, and Gao Huang.",
+      "orig_title": "Learning to weight samples for dynamic early-exiting networks",
+      "paper_id": "2209.08310v1"
+    },
+    {
+      "index": 221,
+      "title": "Skipnet: Learning dynamic routing in convolutional networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Xin Wang, Fisher Yu, Zi-Yi Dou, Trevor Darrell, and Joseph E Gonzalez."
+    },
+    {
+      "index": 222,
+      "title": "Convolutional Networks with Adaptive Inference Graphs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Andreas Veit and Serge Belongie.",
+      "orig_title": "Convolutional networks with adaptive inference graphs",
+      "paper_id": "1711.11503v3"
+    },
+    {
+      "index": 223,
+      "title": "AdaViT: Adaptive Vision Transformers for Efficient Image Recognition",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Lingchen Meng, Hengduo Li, Bor-Chun Chen, Shiyi Lan, Zuxuan Wu, Yu-Gang Jiang,\nand Ser-Nam Lim.",
+      "orig_title": "Adavit: Adaptive vision transformers for efficient image recognition",
+      "paper_id": "2111.15668v1"
+    },
+    {
+      "index": 224,
+      "title": "Batch-shaping for learning conditional channel gated networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Babak Ehteshami Bejnordi, Tijmen Blankevoort, and Max Welling."
+    },
+    {
+      "index": 225,
+      "title": "Channel selection using Gumbel Softmax",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Charles Herrmann, Richard Strong Bowen, and Ramin Zabih.",
+      "orig_title": "Channel selection using gumbel softmax",
+      "paper_id": "1812.04180v4"
+    },
+    {
+      "index": 226,
+      "title": "Dynamic Slimmable Network",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Changlin Li, Guangrun Wang, Bing Wang, Xiaodan Liang, Zhihui Li, and Xiaojun\nChang.",
+      "orig_title": "Dynamic slimmable network",
+      "paper_id": "2103.13258v1"
+    },
+    {
+      "index": 227,
+      "title": "Adaptive Neural Trees",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICML",
+      "authors": "Ryutaro Tanno, Kai Arulkumaran, Daniel Alexander, Antonio Criminisi, and Aditya\nNori.",
+      "orig_title": "Adaptive neural trees",
+      "paper_id": "1807.06699v5"
+    },
+    {
+      "index": 228,
+      "title": "The tree ensemble layer: Differentiability meets conditional computation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "Hussein Hazimeh, Natalia Ponomareva, Petros Mol, Zhenyu Tan, and Rahul\nMazumder."
+    },
+    {
+      "index": 229,
+      "title": "Condconv: Conditionally parameterized convolutions for efficient inference",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Brandon Yang, Gabriel Bender, Quoc V Le, and Jiquan Ngiam."
+    },
+    {
+      "index": 230,
+      "title": "Adaptive Rotated Convolution for Rotated Object Detection",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICCV",
+      "authors": "Yifan Pu, Yiru Wang, Zhuofan Xia, Yizeng Han, Yulin Wang, Weihao Gan, Zidong\nWang, Shiji Song, and Gao Huang.",
+      "orig_title": "Adaptive rotated convolution for rotated object detection",
+      "paper_id": "2303.07820v2"
+    },
+    {
+      "index": 231,
+      "title": "InstaNAS: Instance-aware Neural Architecture Search",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "An-Chieh Cheng, Chieh Hubert Lin, Da-Cheng Juan, Wei Wei, and Min Sun.",
+      "orig_title": "Instanas: Instance-aware neural architecture search",
+      "paper_id": "1811.10201v3"
+    },
+    {
+      "index": 232,
+      "title": "Learning Dynamic Routing for Semantic Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Yanwei Li, Lin Song, Yukang Chen, Zeming Li, Xiangyu Zhang, Xingang Wang, and\nJian Sun.",
+      "orig_title": "Learning dynamic routing for semantic segmentation",
+      "paper_id": "2003.10401v1"
+    },
+    {
+      "index": 233,
+      "title": "Learning Deep Features for Discriminative Localization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Bolei Zhou, Aditya Khosla, Agata Lapedriza, Aude Oliva, and Antonio Torralba.",
+      "orig_title": "Learning deep features for discriminative localization",
+      "paper_id": "1512.04150v1"
+    },
+    {
+      "index": 234,
+      "title": "More is less: A more complicated network with less inference complexity",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Xuanyi Dong, Junshi Huang, Yi Yang, and Shuicheng Yan."
+    },
+    {
+      "index": 235,
+      "title": "Dynamic Convolutions: Exploiting Spatial Sparsity for Faster Inference",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Thomas Verelst and Tinne Tuytelaars.",
+      "orig_title": "Dynamic convolutions: Exploiting spatial sparsity for faster inference",
+      "paper_id": "1912.03203v3"
+    },
+    {
+      "index": 236,
+      "title": "Spatially Adaptive Inference with Stochastic Feature Sampling and Interpolation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Zhenda Xie, Zheng Zhang, Xizhou Zhu, Gao Huang, and Stephen Lin.",
+      "orig_title": "Spatially adaptive inference with stochastic feature sampling and interpolation",
+      "paper_id": "2003.08866v4"
+    },
+    {
+      "index": 237,
+      "title": "Spatially adaptive feature refinement for efficient inference",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Yizeng Han, Gao Huang, Shiji Song, Le Yang, Yitian Zhang, and Haojun Jiang."
+    },
+    {
+      "index": 238,
+      "title": "Deformable convolutional networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Jifeng Dai, Haozhi Qi, Yuwen Xiong, Yi Li, Guodong Zhang, Han Hu, and Yichen\nWei."
+    },
+    {
+      "index": 239,
+      "title": "Deformable ConvNets v2: More Deformable, Better Results",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Xizhou Zhu, Han Hu, Stephen Lin, and Jifeng Dai.",
+      "orig_title": "Deformable convnets v2: More deformable, better results",
+      "paper_id": "1811.11168v2"
+    },
+    {
+      "index": 240,
+      "title": "InternImage: Exploring Large-Scale Vision Foundation Models with Deformable Convolutions",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Wenhai Wang, Jifeng Dai, Zhe Chen, Zhenhang Huang, Zhiqi Li, Xizhou Zhu,\nXiaowei Hu, Tong Lu, Lewei Lu, Hongsheng Li, et al.",
+      "orig_title": "Internimage: Exploring large-scale vision foundation models with deformable convolutions",
+      "paper_id": "2211.05778v4"
+    },
+    {
+      "index": 241,
+      "title": "Vision Transformer with Deformable Attention",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Zhuofan Xia, Xuran Pan, Shiji Song, Li Erran Li, and Gao Huang.",
+      "orig_title": "Vision transformer with deformable attention",
+      "paper_id": "2201.00520v3"
+    },
+    {
+      "index": 242,
+      "title": "Recurrent models of visual attention",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NeurIPS",
+      "authors": "Volodymyr Mnih, Nicolas Heess, Alex Graves, et al."
+    },
+    {
+      "index": 243,
+      "title": "Dynamic Computational Time for Visual Attention",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCVW",
+      "authors": "Zhichao Li, Yi Yang, Xiao Liu, Feng Zhou, Shilei Wen, and Wei Xu.",
+      "orig_title": "Dynamic computational time for visual attention",
+      "paper_id": "1703.10332v3"
+    },
+    {
+      "index": 244,
+      "title": "Look closer to see better: Recurrent attention convolutional neural network for fine-grained image recognition",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Jianlong Fu, Heliang Zheng, and Tao Mei."
+    },
+    {
+      "index": 245,
+      "title": "Glance and Focus: a Dynamic Approach to Reducing Spatial Redundancy in Image Classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "Yulin Wang, Kangchen Lv, Rui Huang, Shiji Song, Le Yang, and Gao Huang.",
+      "orig_title": "Glance and focus: a dynamic approach to reducing spatial redundancy in image classification",
+      "paper_id": "2010.05300v1"
+    },
+    {
+      "index": 246,
+      "title": "Glance and Focus Networks for Dynamic Visual Recognition",
+      "abstract": "",
+      "year": "2022",
+      "venue": "TPAMI",
+      "authors": "Gao Huang, Yulin Wang, Kangchen Lv, Haojun Jiang, Wenhui Huang, Pengfei Qi, and\nShiji Song.",
+      "orig_title": "Glance and focus networks for dynamic visual recognition",
+      "paper_id": "2201.03014v2"
+    },
+    {
+      "index": 247,
+      "title": "Reinforcement learning: A survey",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Journal of artificial intelligence research",
+      "authors": "Leslie Pack Kaelbling, Michael L Littman, and Andrew W Moore."
+    },
+    {
+      "index": 248,
+      "title": "Scale-Aware Face Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Zekun Hao, Yu Liu, Hongwei Qin, Junjie Yan, Xiu Li, and Xiaolin Hu.",
+      "orig_title": "Scale-aware face detection",
+      "paper_id": "1706.09876v1"
+    },
+    {
+      "index": 249,
+      "title": "Dynamic Resolution Network",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Mingjian Zhu, Kai Han, Enhua Wu, Qiulin Zhang, Ying Nie, Zhenzhong Lan, and\nYunhe Wang.",
+      "orig_title": "Dynamic resolution network",
+      "paper_id": "2106.02898v3"
+    },
+    {
+      "index": 250,
+      "title": "LiteEval: A Coarse-to-Fine Framework for Resource Efficient Video Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Zuxuan Wu, Caiming Xiong, Yu-Gang Jiang, and Larry S Davis.",
+      "orig_title": "Liteeval: A coarse-to-fine framework for resource efficient video recognition",
+      "paper_id": "1912.01601v1"
+    },
+    {
+      "index": 251,
+      "title": "Long short-term memory",
+      "abstract": "",
+      "year": "1997",
+      "venue": "Neural computation",
+      "authors": "Sepp Hochreiter and Jürgen Schmidhuber."
+    },
+    {
+      "index": 252,
+      "title": "AdaFuse: Adaptive Temporal Fusion Network for Efficient Action Recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Yue Meng, Rameswar Panda, Chung-Ching Lin, Prasanna Sattigeri, Leonid\nKarlinsky, Kate Saenko, Aude Oliva, and Rogerio Feris.",
+      "orig_title": "Adafuse: Adaptive temporal fusion network for efficient action recognition",
+      "paper_id": "2102.05775v1"
+    },
+    {
+      "index": 253,
+      "title": "Dynamic Network Quantization for Efficient Video Inference",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Ximeng Sun, Rameswar Panda, Chun-Fu Richard Chen, Aude Oliva, Rogerio Feris,\nand Kate Saenko.",
+      "orig_title": "Dynamic network quantization for efficient video inference",
+      "paper_id": "2108.10394v1"
+    },
+    {
+      "index": 254,
+      "title": "AR-Net: Adaptive Frame Resolution for Efficient Action Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Yue Meng, Chung-Ching Lin, Rameswar Panda, Prasanna Sattigeri, Leonid\nKarlinsky, Aude Oliva, Kate Saenko, and Rogerio Feris.",
+      "orig_title": "Ar-net: Adaptive frame resolution for efficient action recognition",
+      "paper_id": "2007.15796v1"
+    },
+    {
+      "index": 255,
+      "title": "End-to-end Learning of Action Detection from Frame Glimpses in Videos",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Serena Yeung, Olga Russakovsky, Greg Mori, and Li Fei-Fei.",
+      "orig_title": "End-to-end learning of action detection from frame glimpses in videos",
+      "paper_id": "1511.06984v2"
+    },
+    {
+      "index": 256,
+      "title": "Action Search: Spotting Actions in Videos and Its Application to Temporal Action Localization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Humam Alwassel, Fabian Caba Heilbron, and Bernard Ghanem.",
+      "orig_title": "Action search: Spotting actions in videos and its application to temporal action localization",
+      "paper_id": "1706.04269v2"
+    },
+    {
+      "index": 257,
+      "title": "Watching a small portion could be as good as watching all: Towards efficient video classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IJCAI",
+      "authors": "Hehe Fan, Zhongwen Xu, Linchao Zhu, Chenggang Yan, Jianjun Ge, and Yi Yang."
+    },
+    {
+      "index": 258,
+      "title": "Dynamic Inference: A New Approach Toward Efficient Video Action Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPRW",
+      "authors": "Wenhao Wu, Dongliang He, Xiao Tan, Shifeng Chen, Yi Yang, and Shilei Wen.",
+      "orig_title": "Dynamic inference: A new approach toward efficient video action recognition",
+      "paper_id": "2002.03342v1"
+    },
+    {
+      "index": 259,
+      "title": "FrameExit: Conditional Early Exiting for Efficient Video Recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Amir Ghodrati, Babak Ehteshami Bejnordi, and Amirhossein Habibian.",
+      "orig_title": "Frameexit: Conditional early exiting for efficient video recognition",
+      "paper_id": "2104.13400v1"
+    },
+    {
+      "index": 260,
+      "title": "Deep progressive reinforcement learning for skeleton-based action recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Yansong Tang, Yi Tian, Jiwen Lu, Peiyang Li, and Jie Zhou."
+    },
+    {
+      "index": 261,
+      "title": "Multi-Agent Reinforcement Learning Based Frame Sampling for Effective Untrimmed Video Recognition",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Wenhao Wu, Dongliang He, Xiao Tan, Shifeng Chen, and Shilei Wen.",
+      "orig_title": "Multi-agent reinforcement learning based frame sampling for effective untrimmed video recognition",
+      "paper_id": "1907.13369v2"
+    },
+    {
+      "index": 262,
+      "title": "Dynamic Sampling Networks for Efficient Action Recognition in Videos",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Yin-Dong Zheng, Zhaoyang Liu, Tong Lu, and Limin Wang.",
+      "orig_title": "Dynamic sampling networks for efficient action recognition in videos",
+      "paper_id": "2006.15560v1"
+    },
+    {
+      "index": 263,
+      "title": "AdaFocus V2: End-to-End Training of Spatial Dynamic Networks for Video Recognition",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Yulin Wang, Yang Yue, Yuanze Lin, Haojun Jiang, Zihang Lai, Victor Kulikov,\nNikita Orlov, Humphrey Shi, and Gao Huang.",
+      "orig_title": "Adafocus v2: End-to-end training of spatial dynamic networks for video recognition",
+      "paper_id": "2112.14238v2"
+    },
+    {
+      "index": 264,
+      "title": "AdaFocusV3: On Unified Spatial-temporal Dynamic Video Recognition",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ECCV",
+      "authors": "Yulin Wang, Yang Yue, Xinhong Xu, Ali Hassani, Victor Kulikov, Nikita Orlov,\nShiji Song, Humphrey Shi, and Gao Huang.",
+      "orig_title": "Adafocusv3: On unified spatial-temporal dynamic video recognition",
+      "paper_id": "2209.13465v1"
+    },
+    {
+      "index": 265,
+      "title": "Dynamic spatial focus for efficient compressed video action recognition",
+      "abstract": "",
+      "year": "2023",
+      "venue": "IEEE TCSVT",
+      "authors": "Ziwei Zheng, Le Yang, Yulin Wang, Miao Zhang, Lijun He, Gao Huang, and Fan Li."
+    },
+    {
+      "index": 266,
+      "title": "2d or not 2d? adaptive 3d convolution selection for efficient video recognition",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Hengduo Li, Zuxuan Wu, Abhinav Shrivastava, and Larry S Davis."
+    },
+    {
+      "index": 267,
+      "title": "Rich feature hierarchies for accurate object detection and semantic segmentation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "CVPR",
+      "authors": "Ross Girshick, Jeff Donahue, Trevor Darrell, and Jitendra Malik."
+    },
+    {
+      "index": 268,
+      "title": "Region-based convolutional networks for accurate object detection and segmentation",
+      "abstract": "",
+      "year": "2015",
+      "venue": "TPAMI, 38(1):142–158",
+      "authors": "Ross Girshick, Jeff Donahue, Trevor Darrell, and Jitendra Malik."
+    },
+    {
+      "index": 269,
+      "title": "Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "TPAMI, 37(9):",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.",
+      "orig_title": "Spatial pyramid pooling in deep convolutional networks for visual recognition",
+      "paper_id": "1406.4729v4"
+    },
+    {
+      "index": 270,
+      "title": "Fast R-CNN",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICCV",
+      "authors": "Ross Girshick.",
+      "orig_title": "Fast r-cnn",
+      "paper_id": "1504.08083v2"
+    },
+    {
+      "index": 271,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NeurIPS, 28",
+      "authors": "Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun.",
+      "orig_title": "Faster r-cnn: Towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 272,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "TPAMI, 39(06):",
+      "authors": "Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun.",
+      "orig_title": "Faster r-cnn: Towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 273,
+      "title": "R-FCN: Object Detection via Region-based Fully Convolutional Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "NeurIPS, 29",
+      "authors": "Jifeng Dai, Yi Li, Kaiming He, and Jian Sun.",
+      "orig_title": "R-fcn: Object detection via region-based fully convolutional networks",
+      "paper_id": "1605.06409v3"
+    },
+    {
+      "index": 274,
+      "title": "Light-Head R-CNN: In Defense of Two-Stage Object Detector",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Zeming Li, Chao Peng, Gang Yu, Xiangyu Zhang, Yangdong Deng, and Jian Sun.",
+      "orig_title": "Light-head r-cnn: In defense of two-stage object detector",
+      "paper_id": "1711.07264v2"
+    },
+    {
+      "index": 275,
+      "title": "Feature Pyramid Networks for Object Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Tsung-Yi Lin, Piotr Dollár, Ross Girshick, Kaiming He, Bharath Hariharan,\nand Serge Belongie.",
+      "orig_title": "Feature pyramid networks for object detection",
+      "paper_id": "1612.03144v2"
+    },
+    {
+      "index": 276,
+      "title": "Yolov3: An incremental improvement",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Joseph Redmon and Ali Farhadi."
+    },
+    {
+      "index": 277,
+      "title": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Alexey Bochkovskiy, Chien-Yao Wang, and Hong-Yuan Mark Liao.",
+      "orig_title": "Yolov4: Optimal speed and accuracy of object detection",
+      "paper_id": "2004.10934v1"
+    },
+    {
+      "index": 278,
+      "title": "YOLO9000: Better, Faster, Stronger",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Joseph Redmon and Ali Farhadi.",
+      "orig_title": "Yolo9000: better, faster, stronger",
+      "paper_id": "1612.08242v1"
+    },
+    {
+      "index": 279,
+      "title": "You Only Learn One Representation: Unified Network for Multiple Tasks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Chien-Yao Wang, I-Hau Yeh, and Hong-Yuan Mark Liao.",
+      "orig_title": "You only learn one representation: Unified network for multiple tasks",
+      "paper_id": "2105.04206v1"
+    },
+    {
+      "index": 280,
+      "title": "Focal Loss for Dense Object Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and Piotr Dollár.",
+      "orig_title": "Focal loss for dense object detection",
+      "paper_id": "1708.02002v2"
+    },
+    {
+      "index": 281,
+      "title": "CornerNet: Detecting Objects as Paired Keypoints",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Hei Law and Jia Deng.",
+      "orig_title": "Cornernet: Detecting objects as paired keypoints",
+      "paper_id": "1808.01244v2"
+    },
+    {
+      "index": 282,
+      "title": "Bottom-up Object Detection by Grouping Extreme and Center Points",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Xingyi Zhou, Jiacheng Zhuo, and Philipp Krahenbuhl.",
+      "orig_title": "Bottom-up object detection by grouping extreme and center points",
+      "paper_id": "1901.08043v3"
+    },
+    {
+      "index": 283,
+      "title": "Objects as Points",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Xingyi Zhou, Dequan Wang, and Philipp Krähenbühl.",
+      "orig_title": "Objects as points",
+      "paper_id": "1904.07850v2"
+    },
+    {
+      "index": 284,
+      "title": "End-to-end object detection with transformers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Nicolas Carion, Francisco Massa, Gabriel Synnaeve, Nicolas Usunier, Alexander\nKirillov, and Sergey Zagoruyko."
+    },
+    {
+      "index": 285,
+      "title": "Deformable DETR: Deformable Transformers for End-to-End Object Detection",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Xizhou Zhu, Weijie Su, Lewei Lu, Bin Li, Xiaogang Wang, and Jifeng Dai.",
+      "orig_title": "Deformable detr: Deformable transformers for end-to-end object detection",
+      "paper_id": "2010.04159v4"
+    },
+    {
+      "index": 286,
+      "title": "On efficient real-time semantic segmentation: a survey",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Christopher J Holder and Muhammad Shafique."
+    },
+    {
+      "index": 287,
+      "title": "Pyramid Scene Parsing Network",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Hengshuang Zhao, Jianping Shi, Xiaojuan Qi, Xiaogang Wang, and Jiaya Jia.",
+      "orig_title": "Pyramid scene parsing network",
+      "paper_id": "1612.01105v2"
+    },
+    {
+      "index": 288,
+      "title": "SegNet: A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "TPAMI, 39(12):",
+      "authors": "Vijay Badrinarayanan, Alex Kendall, and Roberto Cipolla.",
+      "orig_title": "Segnet: A deep convolutional encoder-decoder architecture for image segmentation",
+      "paper_id": "1511.00561v3"
+    },
+    {
+      "index": 289,
+      "title": "ENet: A Deep Neural Network Architecture for Real-Time Semantic Segmentation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Adam Paszke, Abhishek Chaurasia, Sangpil Kim, and Eugenio Culurciello.",
+      "orig_title": "Enet: A deep neural network architecture for real-time semantic segmentation",
+      "paper_id": "1606.02147v1"
+    },
+    {
+      "index": 290,
+      "title": "LinkNet: Exploiting Encoder Representations for Efficient Semantic Segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "",
+      "authors": "Abhishek Chaurasia and Eugenio Culurciello.",
+      "orig_title": "Linknet: Exploiting encoder representations for efficient semantic segmentation",
+      "paper_id": "1707.03718v1"
+    },
+    {
+      "index": 291,
+      "title": "ESPNet: Efficient Spatial Pyramid of Dilated Convolutions for Semantic Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Sachin Mehta, Mohammad Rastegari, Anat Caspi, Linda Shapiro, and Hannaneh\nHajishirzi.",
+      "orig_title": "Espnet: Efficient spatial pyramid of dilated convolutions for semantic segmentation",
+      "paper_id": "1803.06815v3"
+    },
+    {
+      "index": 292,
+      "title": "SegNeXt: Rethinking Convolutional Attention Design for Semantic Segmentation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Meng-Hao Guo, Cheng-Ze Lu, Qibin Hou, Zhengning Liu, Ming-Ming Cheng, and\nShi-Min Hu.",
+      "orig_title": "Segnext: Rethinking convolutional attention design for semantic segmentation",
+      "paper_id": "2209.08575v1"
+    },
+    {
+      "index": 293,
+      "title": "Erfnet: Efficient residual factorized convnet for real-time semantic segmentation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems,\n19(1):263–272",
+      "authors": "Eduardo Romera, José M Alvarez, Luis M Bergasa, and Roberto Arroyo."
+    },
+    {
+      "index": 294,
+      "title": "DABNet: Depth-wise Asymmetric Bottleneck for Real-time Semantic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "BMVC",
+      "authors": "Gen Li and Joongkyu Kim.",
+      "orig_title": "Dabnet: Depth-wise asymmetric bottleneck for real-time semantic segmentation",
+      "paper_id": "1907.11357v2"
+    },
+    {
+      "index": 295,
+      "title": "Efficient dense modules of asymmetric convolution for real-time semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ACM MM Asia",
+      "authors": "Shao-Yuan Lo, Hsueh-Ming Hang, Sheng-Wei Chan, and Jing-Jhih Lin."
+    },
+    {
+      "index": 296,
+      "title": "Efficient Ladder-style DenseNets for Semantic Segmentation of Large Images",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Intelligent Transportation Systems,\n22(8):",
+      "authors": "Ivan Krešo, Josip Krapac, and Siniša Šegvić.",
+      "orig_title": "Efficient ladder-style densenets for semantic segmentation of large images",
+      "paper_id": "1905.05661v1"
+    },
+    {
+      "index": 297,
+      "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Liang-Chieh Chen, Yukun Zhu, George Papandreou, Florian Schroff, and Hartwig\nAdam.",
+      "orig_title": "Encoder-decoder with atrous separable convolution for semantic image segmentation",
+      "paper_id": "1802.02611v3"
+    },
+    {
+      "index": 298,
+      "title": "Fast-scnn: Fast semantic segmentation network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "BMVC",
+      "authors": "Rudra PK Poudel, Stephan Liwicki, and Roberto Cipolla."
+    },
+    {
+      "index": 299,
+      "title": "ShelfNet for Fast Semantic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCVW",
+      "authors": "Juntang Zhuang, Junlin Yang, Lin Gu, and Nicha Dvornek.",
+      "orig_title": "Shelfnet for fast semantic segmentation",
+      "paper_id": "1811.11254v6"
+    },
+    {
+      "index": 300,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Marin Orsic, Ivan Kreso, Petra Bevandic, and Sinisa Segvic.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 301,
+      "title": "ContextNet: Exploring Context and Detail for Semantic Segmentation in Real-time",
+      "abstract": "",
+      "year": "2018",
+      "venue": "BMVC",
+      "authors": "Rudra PK Poudel, Ujwal Bonde, Stephan Liwicki, and Christopher Zach.",
+      "orig_title": "Contextnet: Exploring context and detail for semantic segmentation in real-time",
+      "paper_id": "1805.04554v4"
+    },
+    {
+      "index": 302,
+      "title": "BiSeNet V2: Bilateral Network with Guided Aggregation for Real-time Semantic Segmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IJCV, 129:",
+      "authors": "Changqian Yu, Changxin Gao, Jingbo Wang, Gang Yu, Chunhua Shen, and Nong Sang.",
+      "orig_title": "Bisenet v2: Bilateral network with guided aggregation for real-time semantic segmentation",
+      "paper_id": "2004.02147v1"
+    },
+    {
+      "index": 303,
+      "title": "Rethinking BiSeNet For Real-time Semantic Segmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Mingyuan Fan, Shenqi Lai, Junshi Huang, Xiaoming Wei, Zhenhua Chai, Junfeng\nLuo, and Xiaolin Wei.",
+      "orig_title": "Rethinking bisenet for real-time semantic segmentation",
+      "paper_id": "2104.13188v1"
+    },
+    {
+      "index": 304,
+      "title": "ICNet for Real-Time Semantic Segmentation on High-Resolution Images",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Hengshuang Zhao, Xiaojuan Qi, Xiaoyong Shen, Jianping Shi, and Jiaya Jia.",
+      "orig_title": "Icnet for real-time semantic segmentation on high-resolution images",
+      "paper_id": "1704.08545v2"
+    },
+    {
+      "index": 305,
+      "title": "LEDNET: a lightweight encoder-decoder network for real-time semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICIP",
+      "authors": "Yu Wang, Quan Zhou, Jia Liu, Jian Xiong, Guangwei Gao, Xiaofu Wu, and\nLongin Jan Latecki.",
+      "orig_title": "Lednet: A lightweight encoder-decoder network for real-time semantic segmentation",
+      "paper_id": "1905.02423v3"
+    },
+    {
+      "index": 306,
+      "title": "DFANet: Deep Feature Aggregation for Real-Time Semantic Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Hanchao Li, Pengfei Xiong, Haoqiang Fan, and Jian Sun.",
+      "orig_title": "Dfanet: Deep feature aggregation for real-time semantic segmentation",
+      "paper_id": "1904.02216v1"
+    },
+    {
+      "index": 307,
+      "title": "Real-time Semantic Segmentation with Fast Attention",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Robotics and Automation Letters, 6(1):263–270",
+      "authors": "Ping Hu, Federico Perazzi, Fabian Caba Heilbron, Oliver Wang, Zhe Lin, Kate\nSaenko, and Stan Sclaroff.",
+      "orig_title": "Real-time semantic segmentation with fast attention",
+      "paper_id": "2007.03815v2"
+    },
+    {
+      "index": 308,
+      "title": "Squeezenas: Fast neural architecture search for faster semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCVW",
+      "authors": "Albert Shaw, Daniel Hunter, Forrest Landola, and Sammy Sidhu."
+    },
+    {
+      "index": 309,
+      "title": "Auto-DeepLab: Hierarchical Neural Architecture Search for Semantic Image Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Chenxi Liu, Liang-Chieh Chen, Florian Schroff, Hartwig Adam, Wei Hua, Alan L\nYuille, and Li Fei-Fei.",
+      "orig_title": "Auto-deeplab: Hierarchical neural architecture search for semantic image segmentation",
+      "paper_id": "1901.02985v2"
+    },
+    {
+      "index": 310,
+      "title": "Fasterseg: Searching for faster real-time semantic segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Wuyang Chen, Xinyu Gong, Xianming Liu, Qian Zhang, Yuan Li, and Zhangyang Wang."
+    },
+    {
+      "index": 311,
+      "title": "Per-Pixel Classification is Not All You Need for Semantic Segmentation",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS, 34:",
+      "authors": "Bowen Cheng, Alex Schwing, and Alexander Kirillov.",
+      "orig_title": "Per-pixel classification is not all you need for semantic segmentation",
+      "paper_id": "2107.06278v2"
+    },
+    {
+      "index": 312,
+      "title": "Rethinking semantic segmentation from a sequence-to-sequence perspective with transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Sixiao Zheng, Jiachen Lu, Hengshuang Zhao, Xiatian Zhu, Zekun Luo, Yabiao Wang,\nYanwei Fu, Jianfeng Feng, Tao Xiang, Philip HS Torr, et al."
+    },
+    {
+      "index": 313,
+      "title": "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS, 34:",
+      "authors": "Enze Xie, Wenhai Wang, Zhiding Yu, Anima Anandkumar, Jose M Alvarez, and Ping\nLuo.",
+      "orig_title": "Segformer: Simple and efficient design for semantic segmentation with transformers",
+      "paper_id": "2105.15203v3"
+    },
+    {
+      "index": 314,
+      "title": "Semantic Segmentation by Early Region Proxy",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Yifan Zhang, Bo Pang, and Cewu Lu.",
+      "orig_title": "Semantic segmentation by early region proxy",
+      "paper_id": "2203.14043v1"
+    },
+    {
+      "index": 315,
+      "title": "Masked-attention mask transformer for universal image segmentation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Bowen Cheng, Ishan Misra, Alexander G Schwing, Alexander Kirillov, and Rohit\nGirdhar."
+    },
+    {
+      "index": 316,
+      "title": "A survey on instance segmentation: Recent advances and challenges",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Int. J. Innov. Comput. Inf. Control, 17:",
+      "authors": "Huiyan Zhang, Hao Sun, Wengang Ao, and Georgi Dimirovski."
+    },
+    {
+      "index": 317,
+      "title": "Mask R-CNN",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick.",
+      "orig_title": "Mask r-cnn",
+      "paper_id": "1703.06870v3"
+    },
+    {
+      "index": 318,
+      "title": "MaskLab: Instance Segmentation by Refining Object Detection with Semantic and Direction Features",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Liang-Chieh Chen, Alexander Hermans, George Papandreou, Florian Schroff, Peng\nWang, and Hartwig Adam.",
+      "orig_title": "Masklab: Instance segmentation by refining object detection with semantic and direction features",
+      "paper_id": "1712.04837v1"
+    },
+    {
+      "index": 319,
+      "title": "Mask Scoring R-CNN",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Zhaojin Huang, Lichao Huang, Yongchao Gong, Chang Huang, and Xinggang Wang.",
+      "orig_title": "Mask scoring r-cnn",
+      "paper_id": "1903.00241v1"
+    },
+    {
+      "index": 320,
+      "title": "Path Aggregation Network for Instance Segmentation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Shu Liu, Lu Qi, Haifang Qin, Jianping Shi, and Jiaya Jia.",
+      "orig_title": "Path aggregation network for instance segmentation",
+      "paper_id": "1803.01534v4"
+    },
+    {
+      "index": 321,
+      "title": "Hybrid Task Cascade for Instance Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Kai Chen, Jiangmiao Pang, Jiaqi Wang, Yu Xiong, Xiaoxiao Li, Shuyang Sun,\nWansen Feng, Ziwei Liu, Jianping Shi, Wanli Ouyang, et al.",
+      "orig_title": "Hybrid task cascade for instance segmentation",
+      "paper_id": "1901.07518v2"
+    },
+    {
+      "index": 322,
+      "title": "YOLACT Real-time Instance Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Daniel Bolya, Chong Zhou, Fanyi Xiao, and Yong Jae Lee.",
+      "orig_title": "Yolact: Real-time instance segmentation",
+      "paper_id": "1904.02689v2"
+    },
+    {
+      "index": 323,
+      "title": "Blendmask: Top-down meets bottom-up for instance segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Hao Chen, Kunyang Sun, Zhi Tian, Chunhua Shen, Yongming Huang, and Youliang\nYan."
+    },
+    {
+      "index": 324,
+      "title": "TensorMask: A Foundation for Dense Object Segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Xinlei Chen, Ross Girshick, Kaiming He, and Piotr Dollár.",
+      "orig_title": "Tensormask: A foundation for dense object segmentation",
+      "paper_id": "1903.12174v2"
+    },
+    {
+      "index": 325,
+      "title": "Smart, secure, yet energy-efficient, internet-of-things sensors",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Multi-Scale Computing Systems,\n4(4):914–930",
+      "authors": "Ayten Ozge Akmandor, YIN Hongxu, and Niraj K Jha."
+    },
+    {
+      "index": 326,
+      "title": "A Survey on Deep Neural Network Compression: Challenges, Overview, and Solutions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Rahul Mishra, Hari Prabhat Gupta, and Tanima Dutta.",
+      "orig_title": "A survey on deep neural network compression: Challenges, overview, and solutions",
+      "paper_id": "2010.03954v1"
+    },
+    {
+      "index": 327,
+      "title": "A Survey of Model Compression and Acceleration for Deep Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Yu Cheng, Duo Wang, Pan Zhou, and Tao Zhang.",
+      "orig_title": "A survey of model compression and acceleration for deep neural networks",
+      "paper_id": "1710.09282v9"
+    },
+    {
+      "index": 328,
+      "title": "Convolutional neural network pruning: A survey",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Sheng Xu, Anran Huang, Lei Chen, and Baochang Zhang."
+    },
+    {
+      "index": 329,
+      "title": "Pruning and Quantization for Deep Neural Network Acceleration: A Survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Neurocomputing, 461:370–403",
+      "authors": "Tailin Liang, John Glossner, Lei Wang, Shaobo Shi, and Xiaotong Zhang.",
+      "orig_title": "Pruning and quantization for deep neural network acceleration: A survey",
+      "paper_id": "2101.09671v3"
+    },
+    {
+      "index": 330,
+      "title": "A survey of quantization methods for efficient neural network inference",
+      "abstract": "",
+      "year": "",
+      "venue": "Low-Power Computer Vision, pages 291–326. Chapman and\nHall/CRC",
+      "authors": "Amir Gholami, Sehoon Kim, Zhen Dong, Zhewei Yao, Michael W Mahoney, and Kurt\nKeutzer."
+    },
+    {
+      "index": 331,
+      "title": "Exploiting Linear Structure Within Convolutional Networks for Efficient Evaluation",
+      "abstract": "",
+      "year": "2014",
+      "venue": "NeurIPS, 27",
+      "authors": "Emily L Denton, Wojciech Zaremba, Joan Bruna, Yann LeCun, and Rob Fergus.",
+      "orig_title": "Exploiting linear structure within convolutional networks for efficient evaluation",
+      "paper_id": "1404.0736v2"
+    },
+    {
+      "index": 332,
+      "title": "Speeding up Convolutional Neural Networks with Low Rank Expansions",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Max Jaderberg, Andrea Vedaldi, and Andrew Zisserman.",
+      "orig_title": "Speeding up convolutional neural networks with low rank expansions",
+      "paper_id": "1405.3866v1"
+    },
+    {
+      "index": 333,
+      "title": "FitNets: Hints for Thin Deep Nets",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Adriana Romero, Nicolas Ballas, Samira Ebrahimi Kahou, Antoine Chassang, Carlo\nGatta, and Yoshua Bengio.",
+      "orig_title": "Fitnets: Hints for thin deep nets",
+      "paper_id": "1412.6550v4"
+    },
+    {
+      "index": 334,
+      "title": "Correlation Congruence for Knowledge Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Baoyun Peng, Xiao Jin, Dongsheng Li, Shunfeng Zhou, Yichao Wu, Jiaheng Liu,\nZhaoning Zhang, and Yu Liu.",
+      "orig_title": "Correlation congruence for knowledge distillation",
+      "paper_id": "1904.01802v1"
+    },
+    {
+      "index": 335,
+      "title": "Weight sharing and deep learning for spectral data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICASSP 2020-2020 IEEE International Conference on Acoustics,\nSpeech and Signal Processing (ICASSP)",
+      "authors": "Jacob Søgaard Larsen and Line Clemmensen."
+    },
+    {
+      "index": 336,
+      "title": "PVANET: Deep but Lightweight Neural Networks for Real-time Object Detection",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Kye-Hyeon Kim, Sanghoon Hong, Byungseok Roh, Yeongjae Cheon, and Minje Park.",
+      "orig_title": "Pvanet: Deep but lightweight neural networks for real-time object detection",
+      "paper_id": "1608.08021v3"
+    },
+    {
+      "index": 337,
+      "title": "Channel Pruning for Accelerating Very Deep Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Yihui He, Xiangyu Zhang, and Jian Sun.",
+      "orig_title": "Channel pruning for accelerating very deep neural networks",
+      "paper_id": "1707.06168v2"
+    },
+    {
+      "index": 338,
+      "title": "Variational convolutional neural network pruning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Chenglong Zhao, Bingbing Ni, Jian Zhang, Qiwei Zhao, Wenjun Zhang, and Qi Tian."
+    },
+    {
+      "index": 339,
+      "title": "ThiNet: A Filter Level Pruning Method for Deep Neural Network Compression",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Jian-Hao Luo, Jianxin Wu, and Weiyao Lin.",
+      "orig_title": "Thinet: A filter level pruning method for deep neural network compression",
+      "paper_id": "1707.06342v1"
+    },
+    {
+      "index": 340,
+      "title": "Deepmon: Mobile gpu-based deep learning framework for continuous vision applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "Proceedings of the 15th Annual International Conference on\nMobile Systems, Applications, and Services",
+      "authors": "Loc N Huynh, Youngki Lee, and Rajesh Krishna Balan."
+    },
+    {
+      "index": 341,
+      "title": "Eie: Efficient inference engine on compressed deep neural network",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM SIGARCH Computer Architecture News, 44(3):243–254",
+      "authors": "Song Han, Xingyu Liu, Huizi Mao, Jing Pu, Ardavan Pedram, Mark A Horowitz, and\nWilliam J Dally."
+    },
+    {
+      "index": 342,
+      "title": "Bayesian Compression for Deep Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS, 30",
+      "authors": "Christos Louizos, Karen Ullrich, and Max Welling.",
+      "orig_title": "Bayesian compression for deep learning",
+      "paper_id": "1705.08665v4"
+    },
+    {
+      "index": 343,
+      "title": "Scnn: An accelerator for compressed-sparse convolutional neural networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM SIGARCH computer architecture news, 45(2):27–40",
+      "authors": "Angshuman Parashar, Minsoo Rhu, Anurag Mukkara, Antonio Puglielli, Rangharajan\nVenkatesan, Brucek Khailany, Joel Emer, Stephen W Keckler, and William J\nDally."
+    },
+    {
+      "index": 344,
+      "title": "Multi-Task Zipping via Layer-wise Neuron Sharing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS, 31",
+      "authors": "Xiaoxi He, Zimu Zhou, and Lothar Thiele.",
+      "orig_title": "Multi-task zipping via layer-wise neuron sharing",
+      "paper_id": "1805.09791v2"
+    },
+    {
+      "index": 345,
+      "title": "Deep Learning with Limited Numerical Precision",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICML",
+      "authors": "Suyog Gupta, Ankur Agrawal, Kailash Gopalakrishnan, and Pritish Narayanan.",
+      "orig_title": "Deep learning with limited numerical precision",
+      "paper_id": "1502.02551v1"
+    },
+    {
+      "index": 346,
+      "title": "Hardware-oriented Approximation of Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Philipp Gysel, Mohammad Motamedi, and Soheil Ghiasi.",
+      "orig_title": "Hardware-oriented approximation of convolutional neural networks",
+      "paper_id": "1604.03168v3"
+    },
+    {
+      "index": 347,
+      "title": "Sparse, quantized, full frame cnn for low power embedded devices",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR Workshops",
+      "authors": "Manu Mathew, Kumar Desappan, Pramod Kumar Swami, and Soyeb Nagori."
+    },
+    {
+      "index": 348,
+      "title": "Binarized neural networks: Training deep neural networks with weights and activations constrained to+ 1 or-1",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Matthieu Courbariaux, Itay Hubara, Daniel Soudry, Ran El-Yaniv, and Yoshua\nBengio."
+    },
+    {
+      "index": 349,
+      "title": "Compressing Deep Convolutional Networks using Vector Quantization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Yunchao Gong, Liu Liu, Ming Yang, and Lubomir Bourdev.",
+      "orig_title": "Compressing deep convolutional networks using vector quantization",
+      "paper_id": "1412.6115v1"
+    },
+    {
+      "index": 350,
+      "title": "Quantized convolutional neural networks for mobile devices",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Jiaxiang Wu, Cong Leng, Yuhang Wang, Qinghao Hu, and Jian Cheng."
+    },
+    {
+      "index": 351,
+      "title": "Compressing Neural Networks with the Hashing Trick",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICML",
+      "authors": "Wenlin Chen, James Wilson, Stephen Tyree, Kilian Weinberger, and Yixin Chen.",
+      "orig_title": "Compressing neural networks with the hashing trick",
+      "paper_id": "1504.04788v1"
+    },
+    {
+      "index": 352,
+      "title": "Deep compression: Compressing deep neural networks with pruning, trained quantization and huffman coding",
+      "abstract": "",
+      "year": "2015",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Song Han, Huizi Mao, and William J Dally."
+    },
+    {
+      "index": 353,
+      "title": "Learning efficient object detection models with knowledge distillation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS, 30",
+      "authors": "Guobin Chen, Wongun Choi, Xiang Yu, Tony Han, and Manmohan Chandraker."
+    },
+    {
+      "index": 354,
+      "title": "Fast Human Pose Estimation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Feng Zhang, Xiatian Zhu, and Mao Ye.",
+      "orig_title": "Fast human pose estimation",
+      "paper_id": "1811.05419v2"
+    },
+    {
+      "index": 355,
+      "title": "Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via Attention Transfer",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Sergey Zagoruyko and Nikos Komodakis.",
+      "orig_title": "Paying more attention to attention: Improving the performance of convolutional neural networks via attention transfer",
+      "paper_id": "1612.03928v3"
+    },
+    {
+      "index": 356,
+      "title": "Learning to specialize with knowledge distillation for visual question answering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS, 31",
+      "authors": "Jonghwan Mun, Kimin Lee, Jinwoo Shin, and Bohyung Han."
+    },
+    {
+      "index": 357,
+      "title": "Paraphrasing Complex Network: Network Compression via Factor Transfer",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS, 31",
+      "authors": "Jangho Kim, SeongUk Park, and Nojun Kwak.",
+      "orig_title": "Paraphrasing complex network: Network compression via factor transfer",
+      "paper_id": "1802.04977v3"
+    },
+    {
+      "index": 358,
+      "title": "Knowledge Distillation via Route Constrained Optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Xiao Jin, Baoyun Peng, Yichao Wu, Yu Liu, Jiaheng Liu, Ding Liang, Junjie Yan,\nand Xiaolin Hu.",
+      "orig_title": "Knowledge distillation via route constrained optimization",
+      "paper_id": "1904.09149v1"
+    },
+    {
+      "index": 359,
+      "title": "Feature normalized knowledge distillation for image classification",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Kunran Xu, Lai Rui, Yishi Li, and Lin Gu."
+    },
+    {
+      "index": 360,
+      "title": "Exclusivity-consistency regularized knowledge distillation for face recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Xiaobo Wang, Tianyu Fu, Shengcai Liao, Shuo Wang, Zhen Lei, and Tao Mei."
+    },
+    {
+      "index": 361,
+      "title": "Towards learning spatially discriminative feature representations",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICCV",
+      "authors": "Chaofei Wang, Jiayu Xiao, Yizeng Han, Qisen Yang, Shiji Song, and Gao Huang."
+    },
+    {
+      "index": 362,
+      "title": "Learn from the past: Experience ensemble knowledge distillation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICPR",
+      "authors": "Chaofei Wang, Shaowei Zhang, Shiji Song, and Gao Huang."
+    },
+    {
+      "index": 363,
+      "title": "A gift from knowledge distillation: Fast optimization, network minimization and transfer learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Junho Yim, Donggyu Joo, Ji-Hoon Bae, and Junmo Kim."
+    },
+    {
+      "index": 364,
+      "title": "Self-supervised Knowledge Distillation Using Singular Value Decomposition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Seung Hyun Lee, Dae Ha Kim, and Byung Cheol Song.",
+      "orig_title": "Self-supervised knowledge distillation using singular value decomposition",
+      "paper_id": "1807.06819v1"
+    },
+    {
+      "index": 365,
+      "title": "Heterogeneous Knowledge Distillation using Information Flow Modeling",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Nikolaos Passalis, Maria Tzelepi, and Anastasios Tefas.",
+      "orig_title": "Heterogeneous knowledge distillation using information flow modeling",
+      "paper_id": "2005.00727v1"
+    },
+    {
+      "index": 366,
+      "title": "Knowledge distillation via instance relationship graph",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Yufan Liu, Jiajiong Cao, Bing Li, Chunfeng Yuan, Weiming Hu, Yangxi Li, and\nYunqiang Duan."
+    },
+    {
+      "index": 367,
+      "title": "Similarity-Preserving Knowledge Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Frederick Tung and Greg Mori.",
+      "orig_title": "Similarity-preserving knowledge distillation",
+      "paper_id": "1907.09682v2"
+    },
+    {
+      "index": 368,
+      "title": "Relational Knowledge Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Wonpyo Park, Dongju Kim, Yan Lu, and Minsu Cho.",
+      "orig_title": "Relational knowledge distillation",
+      "paper_id": "1904.05068v2"
+    },
+    {
+      "index": 369,
+      "title": "Deep Mutual Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Ying Zhang, Tao Xiang, Timothy M. Hospedales, and Huchuan Lu.",
+      "orig_title": "Deep mutual learning",
+      "paper_id": "1706.00384v1"
+    },
+    {
+      "index": 370,
+      "title": "Knowledge Distillation by On-the-Fly Native Ensemble",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS, 31",
+      "authors": "Xiatian Zhu, Shaogang Gong, et al.",
+      "orig_title": "Knowledge distillation by on-the-fly native ensemble",
+      "paper_id": "1806.04606v2"
+    },
+    {
+      "index": 371,
+      "title": "Online knowledge distillation via collaborative learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Qiushan Guo, Xinjiang Wang, Yichao Wu, Zhipeng Yu, Ding Liang, Xiaolin Hu, and\nPing Luo."
+    },
+    {
+      "index": 372,
+      "title": "Online Ensemble Model Compression using Knowledge Distillation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Devesh Walawalkar, Zhiqiang Shen, and Marios Savvides.",
+      "orig_title": "Online ensemble model compression using knowledge distillation",
+      "paper_id": "2011.07449v1"
+    },
+    {
+      "index": 373,
+      "title": "Online Knowledge Distillation with Diverse Peers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI",
+      "authors": "Defang Chen, Jian-Ping Mei, Can Wang, Yan Feng, and Chun Chen.",
+      "orig_title": "Online knowledge distillation with diverse peers",
+      "paper_id": "1912.00350v2"
+    },
+    {
+      "index": 374,
+      "title": "Be Your Own Teacher: Improve the Performance of Convolutional Neural Networks via Self Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Linfeng Zhang, Jiebo Song, Anni Gao, Jingwei Chen, Chenglong Bao, and Kaisheng\nMa.",
+      "orig_title": "Be your own teacher: Improve the performance of convolutional neural networks via self distillation",
+      "paper_id": "1905.08094v1"
+    },
+    {
+      "index": 375,
+      "title": "Learning Lightweight Lane Detection CNNs by Self Attention Distillation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Yuenan Hou, Zheng Ma, Chunxiao Liu, and Chen Change Loy.",
+      "orig_title": "Learning lightweight lane detection cnns by self attention distillation",
+      "paper_id": "1908.00821v1"
+    },
+    {
+      "index": 376,
+      "title": "Snapshot Distillation: Teacher-Student Optimization in One Generation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Chenglin Yang, Lingxi Xie, Chi Su, and Alan L Yuille.",
+      "orig_title": "Snapshot distillation: Teacher-student optimization in one generation",
+      "paper_id": "1812.00123v1"
+    },
+    {
+      "index": 377,
+      "title": "Few-shot image recognition with knowledge transfer",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Zhimao Peng, Zechao Li, Junge Zhang, Yan Li, Guo-Jun Qi, and Jinhui Tang."
+    },
+    {
+      "index": 378,
+      "title": "Efficient Knowledge Distillation from Model Checkpoints",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Chaofei Wang, Qisen Yang, Rui Huang, Shiji Song, and Gao Huang.",
+      "orig_title": "Efficient knowledge distillation from model checkpoints",
+      "paper_id": "2210.06458v1"
+    },
+    {
+      "index": 379,
+      "title": "Tc3kd: Knowledge distillation via teacher-student cooperative curriculum customization",
+      "abstract": "",
+      "year": "2022",
+      "venue": "Neurocomputing, 508:284–292",
+      "authors": "Chaofei Wang, Ke Yang, Shaowei Zhang, Gao Huang, and Shiji Song."
+    },
+    {
+      "index": 380,
+      "title": "Triplet Distillation for Deep Face Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICIP",
+      "authors": "Yushu Feng, Huan Wang, Haoji Roland Hu, Lu Yu, Wei Wang, and Shiyan Wang.",
+      "orig_title": "Triplet distillation for deep face recognition",
+      "paper_id": "1905.04457v2"
+    },
+    {
+      "index": 381,
+      "title": "Modality Distillation with Multiple Stream Networks for Action Recognition",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Nuno C Garcia, Pietro Morerio, and Vittorio Murino.",
+      "orig_title": "Modality distillation with multiple stream networks for action recognition",
+      "paper_id": "1806.07110v2"
+    },
+    {
+      "index": 382,
+      "title": "D3D: Distilled 3D Networks for Video Action Recognition",
+      "abstract": "",
+      "year": "2020",
+      "venue": "WACV",
+      "authors": "Jonathan Stroud, David Ross, Chen Sun, Jia Deng, and Rahul Sukthankar.",
+      "orig_title": "D3d: Distilled 3d networks for video action recognition",
+      "paper_id": "1812.08249v2"
+    },
+    {
+      "index": 383,
+      "title": "Relation distillation networks for video object detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Jiajun Deng, Yingwei Pan, Ting Yao, Wengang Zhou, Houqiang Li, and Tao Mei."
+    },
+    {
+      "index": 384,
+      "title": "General Instance Distillation for Object Detection",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Xing Dai, Zeren Jiang, Zhao Wu, Yiping Bao, Zhicheng Wang, Si Liu, and Erjin\nZhou.",
+      "orig_title": "General instance distillation for object detection",
+      "paper_id": "2103.02340v2"
+    },
+    {
+      "index": 385,
+      "title": "Structured knowledge distillation for semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Yifan Liu, Ke Chen, Chris Liu, Zengchang Qin, Zhenbo Luo, and Jingdong Wang."
+    },
+    {
+      "index": 386,
+      "title": "Geometry-aware distillation for indoor semantic segmentation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Jianbo Jiao, Yunchao Wei, Zequn Jie, Honghui Shi, Rynson WH Lau, and Thomas S\nHuang."
+    },
+    {
+      "index": 387,
+      "title": "Intra-class feature variation distillation for semantic segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Yukang Wang, Wei Zhou, Tao Jiang, Xiang Bai, and Yongchao Xu."
+    },
+    {
+      "index": 388,
+      "title": "Inter-Region Affinity Distillation for Road Marking Segmentation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Yuenan Hou, Zheng Ma, Chunxiao Liu, Tak-Wai Hui, and Chen Change Loy.",
+      "orig_title": "Inter-region affinity distillation for road marking segmentation",
+      "paper_id": "2004.05304v1"
+    },
+    {
+      "index": 389,
+      "title": "Learning Monocular Depth by Distilling Cross-domain Stereo Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Xiaoyang Guo, Hongsheng Li, Shuai Yi, Jimmy Ren, and Xiaogang Wang.",
+      "orig_title": "Learning monocular depth by distilling cross-domain stereo networks",
+      "paper_id": "1808.06586v1"
+    },
+    {
+      "index": 390,
+      "title": "PAD-Net: Multi-Tasks Guided Prediction-and-Distillation Network for Simultaneous Depth Estimation and Scene Parsing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Dan Xu, Wanli Ouyang, Xiaogang Wang, and Nicu Sebe.",
+      "orig_title": "Pad-net: Multi-tasks guided prediction-and-distillation network for simultaneous depth estimation and scene parsing",
+      "paper_id": "1805.04409v1"
+    },
+    {
+      "index": 391,
+      "title": "Learning monocular depth estimation infusing traditional stereo knowledge",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Fabio Tosi, Filippo Aleotti, Matteo Poggi, and Stefano Mattoccia."
+    },
+    {
+      "index": 392,
+      "title": "Refine and distill: Exploiting cycle-inconsistency and knowledge distillation for unsupervised monocular depth estimation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Andrea Pilzer, Stephane Lathuiliere, Nicu Sebe, and Elisa Ricci."
+    },
+    {
+      "index": 393,
+      "title": "Depth distillation: unsupervised metric depth estimation for uavs by finding consensus between kinematics, optical flow and deep learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Mihai Pirvu, Victor Robu, Vlad Licaret, Dragos Costea, Alina Marcu, Emil\nSlusanschi, Rahul Sukthankar, and Marius Leordeanu."
+    },
+    {
+      "index": 394,
+      "title": "Knowledge distillation for fast and accurate monocular depth estimation on mobile devices",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Yiran Wang, Xingyi Li, Min Shi, Ke Xian, and Zhiguo Cao."
+    },
+    {
+      "index": 395,
+      "title": "Feature estimations based correlation distillation for incremental image retrieval",
+      "abstract": "",
+      "year": "2021",
+      "venue": "TMM, 24:",
+      "authors": "Wei Chen, Yu Liu, Nan Pu, Weiping Wang, Li Liu, and Michael S Lew."
+    },
+    {
+      "index": 396,
+      "title": "Deep hash distillation for image retrieval",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ECCV",
+      "authors": "Young Kyun Jang, Geonmo Gu, Byungsoo Ko, Isaac Kang, and Nam Ik Cho."
+    },
+    {
+      "index": 397,
+      "title": "Object Relational Graph with Teacher-Recommended Learning for Video Captioning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Ziqi Zhang, Yaya Shi, Chunfeng Yuan, Bing Li, Peijin Wang, Weiming Hu, and\nZheng-Jun Zha.",
+      "orig_title": "Object relational graph with teacher-recommended learning for video captioning",
+      "paper_id": "2002.11566v1"
+    },
+    {
+      "index": 398,
+      "title": "Spatio-temporal graph for video captioning with knowledge distillation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Boxiao Pan, Haoye Cai, De-An Huang, Kuan-Hui Lee, Adrien Gaidon, Ehsan Adeli,\nand Juan Carlos Niebles."
+    },
+    {
+      "index": 399,
+      "title": "Revisiting knowledge distillation for image captioning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CAAI International Conference on Artificial Intelligence",
+      "authors": "Jingjing Dong, Zhenzhen Hu, and Yuanen Zhou."
+    },
+    {
+      "index": 400,
+      "title": "Better and Faster: Knowledge Transfer from Multiple Self-supervised Learning Tasks via Graph Distillation for Video Classification",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IJCAI",
+      "authors": "Chenrui Zhang and Yuxin Peng.",
+      "orig_title": "Better and faster: Knowledge transfer from multiple self-supervised learning tasks via graph distillation for video classification",
+      "paper_id": "1804.10069v1"
+    },
+    {
+      "index": 401,
+      "title": "Efficient Video Classification Using Fewer Frames",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Shweta Bhardwaj, Mukundhan Srinivasan, and Mitesh M Khapra.",
+      "orig_title": "Efficient video classification using fewer frames",
+      "paper_id": "1902.10640v1"
+    },
+    {
+      "index": 402,
+      "title": "Revisit knowledge distillation: a teacher-free framework",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Li Yuan, Francis EH Tay, Guilin Li, Tao Wang, and Jiashi Feng."
+    },
+    {
+      "index": 403,
+      "title": "Understanding and Improving Knowledge Distillation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Jiaxi Tang, Rakesh Shivanna, Zhe Zhao, Dong Lin, Anima Singh, Ed H Chi, and\nSagar Jain.",
+      "orig_title": "Understanding and improving knowledge distillation",
+      "paper_id": "2002.03532v2"
+    },
+    {
+      "index": 404,
+      "title": "Explaining Knowledge Distillation by Quantifying the Knowledge",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Xu Cheng, Zhefan Rao, Yilan Chen, and Quanshi Zhang.",
+      "orig_title": "Explaining knowledge distillation by quantifying the knowledge",
+      "paper_id": "2003.03622v1"
+    },
+    {
+      "index": 405,
+      "title": "Speeding-up Convolutional Neural Networks Using Fine-tuned CP-Decomposition",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "V Lebedev, Y Ganin, M Rakhuba, I Oseledets, and V Lempitsky.",
+      "orig_title": "Speeding-up convolutional neural networks using fine-tuned cp-decomposition",
+      "paper_id": "1412.6553v3"
+    },
+    {
+      "index": 406,
+      "title": "Convolutional Neural Networks With Low-rank Regularization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICLR",
+      "authors": "Cheng Tai, Tong Xiao, Yi Zhang, Xiaogang Wang, and E Weinan.",
+      "orig_title": "Convolutional neural networks with low-rank regularization",
+      "paper_id": "1511.06067v3"
+    },
+    {
+      "index": 407,
+      "title": "Predicting parameters in deep learning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "NeurIPS, 26",
+      "authors": "Misha Denil, Babak Shakibi, Laurent Dinh, Marc’Aurelio Ranzato, and Nando\nDe Freitas."
+    },
+    {
+      "index": 408,
+      "title": "A tucker deep computation model for mobile multimedia feature learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Transactions on Multimedia Computing, Communications, and\nApplications (TOMM), 13(3s):1–18",
+      "authors": "Qingchen Zhang, Laurence T Yang, Xingang Liu, Zhikui Chen, and Peng Li."
+    },
+    {
+      "index": 409,
+      "title": "Fully-adaptive Feature Sharing in Multi-Task Networks with Applications in Person Attribute Classification",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Yongxi Lu, Abhishek Kumar, Shuangfei Zhai, Yu Cheng, Tara Javidi, and Rogerio\nFeris.",
+      "orig_title": "Fully-adaptive feature sharing in multi-task networks with applications in person attribute classification",
+      "paper_id": "1611.05377v1"
+    },
+    {
+      "index": 410,
+      "title": "Low-rank matrix factorization for deep neural network training with high-dimensional output targets",
+      "abstract": "",
+      "year": "2013",
+      "venue": "2013 IEEE international conference on acoustics, speech and\nsignal processing",
+      "authors": "Tara N Sainath, Brian Kingsbury, Vikas Sindhwani, Ebru Arisoy, and Bhuvana\nRamabhadran."
+    },
+    {
+      "index": 411,
+      "title": "Clip-q: Deep network compression learning by in-parallel pruning-quantization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Frederick Tung and Greg Mori."
+    },
+    {
+      "index": 412,
+      "title": "Model Compression via Distillation and Quantization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Antonio Polino, Razvan Pascanu, and Dan Alistarh.",
+      "orig_title": "Model compression via distillation and quantization",
+      "paper_id": "1802.05668v1"
+    },
+    {
+      "index": 413,
+      "title": "DARTS: Differentiable architecture search",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Hanxiao Liu, Karen Simonyan, and Yiming Yang."
+    },
+    {
+      "index": 414,
+      "title": "FBNetV2: Differentiable Neural Architecture Search for Spatial and Channel Dimensions",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Alvin Wan, Xiaoliang Dai, Peizhao Zhang, Zijian He, Yuandong Tian, Saining Xie,\nBichen Wu, Matthew Yu, Tao Xu, Kan Chen, et al.",
+      "orig_title": "Fbnetv2: Differentiable neural architecture search for spatial and channel dimensions",
+      "paper_id": "2004.05565v1"
+    },
+    {
+      "index": 415,
+      "title": "Once-for-all: Train one network and specialize it for efficient deployment",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Han Cai, Chuang Gan, Tianzhe Wang, Zhekai Zhang, and Song Han."
+    },
+    {
+      "index": 416,
+      "title": "Neural architecture search survey: A hardware perspective",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ACM Computing Surveys",
+      "authors": "Krishna Teja Chitty-Venkata and Arun K Somani."
+    },
+    {
+      "index": 417,
+      "title": "MCUNet: Tiny Deep Learning on IoT Devices",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "Ji Lin, Wei-Ming Chen, Yujun Lin, Chuang Gan, Song Han, et al.",
+      "orig_title": "Mcunet: Tiny deep learning on iot devices",
+      "paper_id": "2007.10319v2"
+    },
+    {
+      "index": 418,
+      "title": "Diannao: A small-footprint high-throughput accelerator for ubiquitous machine-learning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ACM SIGARCH Computer Architecture News",
+      "authors": "Tianshi Chen, Zidong Du, Ninghui Sun, Jia Wang, Chengyong Wu, Yunji Chen, and\nOlivier Temam."
+    },
+    {
+      "index": 419,
+      "title": "Roofline: an insightful visual performance model for multicore architectures",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Communications of the ACM",
+      "authors": "Samuel Williams, Andrew Waterman, and David Patterson."
+    },
+    {
+      "index": 420,
+      "title": "Cnvlutin: Ineffectual-neuron-free deep neural network computing",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM SIGARCH Computer Architecture News",
+      "authors": "Jorge Albericio, Patrick Judd, Tayler Hetherington, Tor Aamodt, Natalie Enright\nJerger, and Andreas Moshovos."
+    },
+    {
+      "index": 421,
+      "title": "An efficient hardware accelerator for sparse convolutional neural networks on fpgas",
+      "abstract": "",
+      "year": "2019",
+      "venue": "FCCM",
+      "authors": "Liqiang Lu, Jiaming Xie, Ruirui Huang, Jiansong Zhang, Wei Lin, and Yun Liang."
+    },
+    {
+      "index": 422,
+      "title": "When neural architecture search meets hardware implementation: from hardware awareness to co-design",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ISVLSI",
+      "authors": "Xinyi Zhang, Weiwen Jiang, Yiyu Shi, and Jingtong Hu."
+    },
+    {
+      "index": 423,
+      "title": "Standing on the Shoulders of Giants: Hardware and Neural Architecture Co-Search with Hot Start",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated\nCircuits and Systems",
+      "authors": "Weiwen Jiang, Lei Yang, Sakyasingha Dasgupta, Jingtong Hu, and Yiyu Shi.",
+      "orig_title": "Standing on the shoulders of giants: Hardware and neural architecture co-search with hot start",
+      "paper_id": "2007.09087v1"
+    },
+    {
+      "index": 424,
+      "title": "Best of both worlds: Automl codesign of a cnn and its hardware accelerator",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Mohamed S Abdelfattah, Łukasz Dudziak, Thomas Chau, Royson Lee, Hyeji Kim,\nand Nicholas D Lane."
+    },
+    {
+      "index": 425,
+      "title": "Mcunetv2: Memory-efficient patch-based inference for tiny deep learning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "NeurIPS",
+      "authors": "Ji Lin, Wei-Ming Chen, Han Cai, Chuang Gan, and Song Han."
+    },
+    {
+      "index": 426,
+      "title": "On-Device Training Under 256KB Memory",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Ji Lin, Ligeng Zhu, Wei-Ming Chen, Wei-Chen Wang, Chuang Gan, and Song Han.",
+      "orig_title": "On-device training under 256kb memory",
+      "paper_id": "2206.15472v4"
+    },
+    {
+      "index": 427,
+      "title": "Boosting the performance of cnn accelerators with dynamic fine-grained channel gating",
+      "abstract": "",
+      "year": "2019",
+      "venue": "MICRO",
+      "authors": "Weizhe Hua, Yuan Zhou, Christopher De Sa, Zhiru Zhang, and G Edward Suh."
+    },
+    {
+      "index": 428,
+      "title": "Drq: dynamic region-based quantization for deep neural network acceleration",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ISCA",
+      "authors": "Zhuoran Song, Bangqi Fu, Feiyang Wu, Zhaoming Jiang, Li Jiang, Naifeng Jing,\nand Xiaoyao Liang."
+    },
+    {
+      "index": 429,
+      "title": "Processor architecture optimization for spatially dynamic neural networks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "VLSI-SoC",
+      "authors": "Steven Colleman, Thomas Verelst, Linyan Mei, Tinne Tuytelaars, and Marian\nVerhelst."
+    },
+    {
+      "index": 430,
+      "title": "Energon: Towards Efficient Acceleration of Transformers Using Dynamic Sparse Attention",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Transactions on Computer-Aided Design of Integrated\nCircuits and Systems",
+      "authors": "Zhe Zhou, Junlin Liu, Zhenyu Gu, and Guangyu Sun.",
+      "orig_title": "Energon: Toward efficient acceleration of transformers using dynamic sparse attention",
+      "paper_id": "2110.09310v2"
+    },
+    {
+      "index": 431,
+      "title": "Image as set of points",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICLR",
+      "authors": "Xu Ma, Yuqian Zhou, Huan Wang, Can Qin, Bin Sun, Chang Liu, and Yun Fu."
+    },
+    {
+      "index": 432,
+      "title": "Sequencer: Deep LSTM for image classification",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Yuki Tatsunami and Masato Taki."
+    },
+    {
+      "index": 433,
+      "title": "Vision GNN: An Image is Worth Graph of Nodes",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Kai Han, Yunhe Wang, Jianyuan Guo, Yehui Tang, and Enhua Wu.",
+      "orig_title": "Vision GNN: An image is worth graph of nodes",
+      "paper_id": "2206.00272v3"
+    },
+    {
+      "index": 434,
+      "title": "Image as a Foreign Language: BEiT Pretraining for All Vision and Vision-Language Tasks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Wenhui Wang, Hangbo Bao, Li Dong, Johan Bjorck, Zhiliang Peng, Qiang Liu, Kriti\nAggarwal, Owais Khan Mohammed, Saksham Singhal, Subhojit Som, et al.",
+      "orig_title": "Image as a foreign language: Beit pretraining for all vision and vision-language tasks",
+      "paper_id": "2208.10442v2"
+    },
+    {
+      "index": 435,
+      "title": "Florence: A New Foundation Model for Computer Vision",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:",
+      "authors": "Lu Yuan, Dongdong Chen, Yi-Ling Chen, Noel Codella, Xiyang Dai, Jianfeng Gao,\nHoudong Hu, Xuedong Huang, Boxin Li, Chunyuan Li, et al.",
+      "orig_title": "Florence: A new foundation model for computer vision",
+      "paper_id": "2111.11432v1"
+    },
+    {
+      "index": 436,
+      "title": "NAS-FPN: Learning Scalable Feature Pyramid Architecture for Object Detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Golnaz Ghiasi, Tsung-Yi Lin, and Quoc V Le.",
+      "orig_title": "Nas-fpn: Learning scalable feature pyramid architecture for object detection",
+      "paper_id": "1904.07392v1"
+    },
+    {
+      "index": 437,
+      "title": "A Unified Sequence Interface for Vision Tasks",
+      "abstract": "",
+      "year": "2022",
+      "venue": "NeurIPS",
+      "authors": "Ting Chen, Saurabh Saxena, Lala Li, Tsung-Yi Lin, David J. Fleet, and Geoffrey\nHinton.",
+      "orig_title": "A unified sequence interface for vision tasks",
+      "paper_id": "2206.07669v2"
+    },
+    {
+      "index": 438,
+      "title": "Deep learning in spiking neural networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Neural networks, 111:47–63",
+      "authors": "Amirhossein Tavanaei, Masoud Ghodrati, Saeed Reza Kheradpisheh, Timothée\nMasquelier, and Anthony Maida."
+    },
+    {
+      "index": 439,
+      "title": "Momentum Contrast for Unsupervised Visual Representation Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Kaiming He, Haoqi Fan, Yuxin Wu, Saining Xie, and Ross Girshick.",
+      "orig_title": "Momentum contrast for unsupervised visual representation learning",
+      "paper_id": "1911.05722v3"
+    },
+    {
+      "index": 440,
+      "title": "Masked autoencoders are scalable vision learners",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, and Ross\nGirshick."
+    },
+    {
+      "index": 441,
+      "title": "Revisiting Locally Supervised Learning: an Alternative to End-to-end Training",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICLR",
+      "authors": "Yulin Wang, Zanlin Ni, Shiji Song, Le Yang, and Gao Huang.",
+      "orig_title": "Revisiting locally supervised learning: an alternative to end-to-end training",
+      "paper_id": "2101.10832v1"
+    },
+    {
+      "index": 442,
+      "title": "Automated Progressive Learning for Efficient Training of Vision Transformers",
+      "abstract": "",
+      "year": "2022",
+      "venue": "CVPR",
+      "authors": "Changlin Li, Bohan Zhuang, Guangrun Wang, Xiaodan Liang, Xiaojun Chang, and\nYi Yang.",
+      "orig_title": "Automated progressive learning for efficient training of vision transformers",
+      "paper_id": "2203.14509v1"
+    },
+    {
+      "index": 443,
+      "title": "Deep Incubation: Training Large Models by Divide-and-Conquering",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ICCV",
+      "authors": "Zanlin Ni, Yulin Wang, Jiangwei Yu, Haojun Jiang, Yue Cao, and Gao Huang.",
+      "orig_title": "Deep incubation: Training large models by divide-and-conquering",
+      "paper_id": "2212.04129v2"
+    },
+    {
+      "index": 444,
+      "title": "EfficientTrain: Exploring Generalized Curriculum Learning for Training Visual Backbones",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ICCV",
+      "authors": "Yulin Wang, Yang Yue, Rui Lu, Tianjiao Liu, Zhao Zhong, Shiji Song, and Gao\nHuang.",
+      "orig_title": "Efficienttrain: Exploring generalized curriculum learning for training visual backbones",
+      "paper_id": "2211.09703v3"
+    }
+  ]
+}

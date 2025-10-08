@@ -1,0 +1,535 @@
+{
+  "paper_id": "2012.07983v2",
+  "title": "On Continuous Local BDD-Based Search for Hybrid SAT SolvingThe author list has been sorted alphabetically by last name; this should not be used to determine the extent of authors’ contributions.",
+  "sections": {
+    "experimental results": "We aim to answer the following research questions:\n\nRQ1. Is the cost for computing gradient reduced by using the BDD-based approach (Algorithm 5) ?\nRQ2. What is the advantages and limitations of GradSAT on randomly generated hybrid Boolean formulas? \nRQ3. Can GradSAT perform well in solving discrete optimization problems, encoded by MaxSAT? \nRQ4. Can MRBDD with nodes sharing significantly reduce the total number of nodes? Solver Competitors.\n1) CDCL solvers including Glucose, cryptoMiniSAT (CMS) and ML-enhanced solver MapleSAT;\n2) DLS solvers, including WalkSATlm , CCAnr and ProbSAT;\n3) PB solvers including CDCL-based MiniSAT+ , Open-WBO , NAPS  and Conflict-Driven-Pseudo-Boolean-Search-based (CDPB) solver RoundingSAT ;\n4) Partial MaxSAT solvers, including Loandra , the best solver of MaxSAT Competition 2019 (incomplete track), WalkSAT (v56) and Mixing Method , an SDP-based solver. Benchmark 1: Hybrid random formulas consisting of disjunctive clauses, XORs, CARDs and PBs. We generate four types of satisfiable random hybrid benchmarks: CNF-XORs (360 instances), XORs-1CARD (270 instances), CARDs (360 instances) and PBs (720 instances) with variable number n∈{50,100,150}𝑛50100150n\\in\\{50,100,150\\} 444A detailed description of benchmarks generation can be found in the supplemental material.. When a type of constraint is not accepted by a traditional CNF solver, we use CNF encodings to resolve the issue. Specifically, we let pySAT  choose the CNF encoding for CARDs and PBs, while using the methods in  to encode XORs. Time limit is set to be 100s. Benchmark 2: MaxSAT problems. We gathered 570 instances from the crafted (198 instances) and random track (377 instances) of MaxSAT Competition 2016-2019. Those instances encode random problems as well as combinatorial problems such as set covering and MaxCut. We set the time limit to 60s. We also used problems from the incomplete track of MaxSAT Competition 2019 as the industrial benchmarks (296 instances). Implementation of GradSAT. We implement GradSAT in C++, with code available in the supplemental material. Each experiment is run on an exclusive node in a Linux cluster with 16-processor cores at 2.63 GHz and 1 GB of RAM per processor. We generated five versions of GradSAT, including using single-core on each of the four optimizers (SLSQP, MMA, CG, BFGS) and using 161616 cores on the optimizer portfolio, with each optimizer getting 444 cores.\n RQ1. Table 2 lists the running time for computing gradient on several instances. Each running time is the average on 100 random points in [−1,1]nsuperscript11𝑛[-1,1]^{n}. The results indicate that\nGradSAT significantly accelerates the computation of gradient compared with FourierSAT. RQ2. We classify the four types of benchmarks in Benchmark 1 into two groups: 1) PBs and CARDs; 2) XORs-1CARD and CNF-XORs; because solvers have similar performance on instances from the same group. We summarize the results in Figure 1 and 2. Figure 1 shows the results on CARDs and PBs instances. Though CDPB-based solver RoundingSAT easily solves all instances, GradSAT on 16 cores is able to solve 732 instances, more than all other CDCL, DLS SAT solvers and CDCL-based PB solvers. From Figure 2, we observe that on benchmarks involving XORs, CDCL solvers, especially CMS, perform better than local-search solvers. GradSAT on 16 cores solves 155 instances, only second to CCAnr (191) among all local search solvers. We conjecture that the solution space shattering [ref]63  brought by XORs might be the reason for the weakness of local search solvers in handling XORs. RQ3. Table 4 showcases the results on MaxSAT benchmarks. We use the incomplete score  and the number of instances where a solver provides the solution with the best cost (#Win) as the metric for evaluation. All five versions of GradSAT achieve better average score and #Win than other solvers. Moreover, GradSAT improves the score of Virtual Best Solver (VBS) with 0.01 and #Win with 321. We also try GradSAT on large-size instances from the industrial MaxSAT problems, which contain both hard and soft clauses. But GradSAT is not able to give an answer for about 2/3232/3 of all instances. On instances which GradSAT successfully solves, an average score of 0.82 is achieved. We conjecture two reasons for the unsatisfactory performance of GradSAT on industrial benchmarks as follows. First, GradSAT sets the weight of hard clauses to be (#soft clauses + 1). It has been shown  that this natural weighting performs poorly without exploiting the structure of partial MaxSAT problems. Second, industrial benchmarks contain a large number of variables, which also the non-stochastic DLS solver, e.g., GSAT, could hardly handle. Thus it is not surprising that GradSAT, as a proof-of-concept implementation demonstrating how to calculate the full gradients simultaneously, is less competitive. We leave handling industrial partial MaxSAT problems by CLS approaches as a future direction. RQ4. Table 3 shows the total number of nodes of individual BDDs and the number of nodes of MRBDD for each type of benchmarks In order to allow more nodes sharing, we use the same variable order for all individual BDDS, corresponding to the original variable indices. We leave planning and applying a better variable order as a future direction. For all tracks of MaxSAT instances in CNF format, using MRBDD significantly reduced the number of nodes, yielding a average reduction ratio from 2.29 to 3.22. However, on non-CNF hybrid SAT instances, nodes sharing in MRBDD is negligible, probably due to relatively large constraint length."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Boolean satisfiability: theory and engineering",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Commun. ACM",
+      "authors": "Moshe Y. Vardi"
+    },
+    {
+      "index": 1,
+      "title": "GRASP: A Search Algorithm For Propositional Satisfiability",
+      "abstract": "",
+      "year": "1999",
+      "venue": "IEEE Transactions on Computers",
+      "authors": "Joao P Marques-Silva and Karem A Sakallah"
+    },
+    {
+      "index": 2,
+      "title": "A Computing Procedure for Quantification Theory",
+      "abstract": "",
+      "year": "1960",
+      "venue": "Journal of the ACM (JACM)",
+      "authors": "Martin Davis and Hilary Putnam"
+    },
+    {
+      "index": 3,
+      "title": "A Machine Program for Theorem-Proving",
+      "abstract": "",
+      "year": "1962",
+      "venue": "Communications of the ACM",
+      "authors": "Martin Davis, George Logemann, and Donald Loveland"
+    },
+    {
+      "index": 4,
+      "title": "Chaff: Engineering an efficient sat solver",
+      "abstract": "",
+      "year": "2001",
+      "venue": "",
+      "authors": "Matthew W. Moskewicz, Conor F. Madigan, Ying Zhao, Lintao Zhang, and Sharad Malik"
+    },
+    {
+      "index": 5,
+      "title": "An Extensible SAT-Solver",
+      "abstract": "",
+      "year": "2003",
+      "venue": "SAT",
+      "authors": "Niklas Eén and Niklas Sörensson"
+    },
+    {
+      "index": 6,
+      "title": "PicoSAT Essentials",
+      "abstract": "",
+      "year": "2008",
+      "venue": "JSAT",
+      "authors": "Armin Biere"
+    },
+    {
+      "index": 7,
+      "title": "Lingeling , Plingeling , PicoSAT and PrecoSAT at SAT Race 2010",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "Armin Biere"
+    },
+    {
+      "index": 8,
+      "title": "Lazy Clause Exchange Policy for Parallel SAT Solvers",
+      "abstract": "",
+      "year": "2014",
+      "venue": "SAT 2014",
+      "authors": "Gilles Audemard and Laurent Simon"
+    },
+    {
+      "index": 9,
+      "title": "Machine Learning for SAT Solvers",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Jia Hui Liang"
+    },
+    {
+      "index": 10,
+      "title": "A New Method for Solving Hard Satisfiability Problems",
+      "abstract": "",
+      "year": "1992",
+      "venue": "",
+      "authors": "Bart Selman, Hector Levesque, and David Mitchell"
+    },
+    {
+      "index": 11,
+      "title": "Local Search Strategies for Satisfiability Testing",
+      "abstract": "",
+      "year": "1999",
+      "venue": "Second DIMACS Implementation Challenge",
+      "authors": "Bart Selman, Henry Kautz, and Bram Cohen"
+    },
+    {
+      "index": 12,
+      "title": "Evidence for Invariants in Local Search",
+      "abstract": "",
+      "year": "1997",
+      "venue": "",
+      "authors": "David McAllester, Bart Selman, and Henry Kautz"
+    },
+    {
+      "index": 13,
+      "title": "Local search algorithms for sat: An empirical evaluation",
+      "abstract": "",
+      "year": "2000",
+      "venue": "J. Automated Reasoning",
+      "authors": "Holger Hoos and Thomas Stützle"
+    },
+    {
+      "index": 14,
+      "title": "Scaling and probabilistic smoothing: Efficient dynamic local search for sat",
+      "abstract": "",
+      "year": "2002",
+      "venue": "CP",
+      "authors": "F. Hutter, Dave A. D. Tompkins, and H. Hoos"
+    },
+    {
+      "index": 15,
+      "title": "Choosing Probability Distributions for Stochastic Local Search and the Role of Make versus Break",
+      "abstract": "",
+      "year": "2012",
+      "venue": "SAT 2012",
+      "authors": "Adrian Balint and Uwe Schöning"
+    },
+    {
+      "index": 16,
+      "title": "Ccanr: A configuration checking based local search solver for non-random satisfiability",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Theory and Applications of Satisfiability Testing – SAT 2015",
+      "authors": "Shaowei Cai, Chuan Luo, and Kaile Su"
+    },
+    {
+      "index": 17,
+      "title": "Computational experience with an interior point algorithm on the satisfiability problem",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Annals of Operations Research",
+      "authors": "A. Kamath, N. Karmarkar, K. G. Ramakrishnan, and M. C. Resende"
+    },
+    {
+      "index": 18,
+      "title": "Global optimization for satisfiability (sat) problem",
+      "abstract": "",
+      "year": "1994",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "Jun Gu"
+    },
+    {
+      "index": 19,
+      "title": "Biclique Cryptanalysis of the Full AES",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ASIACRYPT 2011",
+      "authors": "Andrey Bogdanov, Dmitry Khovratovich, and Christian Rechberger"
+    },
+    {
+      "index": 20,
+      "title": "Graph Coloring with Cardinality Constraints on the Neighborhoods",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Discrete Optimization",
+      "authors": "M.-C. Costa, D. de Werra, C. Picouleau, and B. Ries"
+    },
+    {
+      "index": 21,
+      "title": "The Hardness of 3-Uniform Hypergraph Coloring",
+      "abstract": "",
+      "year": "2005",
+      "venue": "Combinatorica",
+      "authors": "Irit Dinur, Oded Regev, and Clifford Smyth"
+    },
+    {
+      "index": 22,
+      "title": "CNF Encodings, Handbook of Satisfiability: Volume 185 Frontiers in Artificial Intelligence and Applications",
+      "abstract": "",
+      "year": "2009",
+      "venue": "",
+      "authors": "S. Prestwich"
+    },
+    {
+      "index": 23,
+      "title": "Exploiting Cardinality Encodings in Parallel Maximum Satisfiability",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ICTAI",
+      "authors": "R. Martins, V. Manquinho, and I. Lynce"
+    },
+    {
+      "index": 24,
+      "title": "Extending SAT Solvers to Cryptographic Problems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "SAT",
+      "authors": "Mate Soos, Karsten Nohl, and Claude Castelluccia"
+    },
+    {
+      "index": 25,
+      "title": "Pueblo: A hybrid pseudo-boolean sat solver",
+      "abstract": "",
+      "year": "2006",
+      "venue": "JSAT",
+      "authors": "Hossein M. Sheini and Karem A. Sakallah"
+    },
+    {
+      "index": 26,
+      "title": "Generalizing Boolean Satisfiability II: Theory",
+      "abstract": "",
+      "year": "2011",
+      "venue": "arXiv e-prints",
+      "authors": "H. E. Dixon, M. L. Ginsberg, E. M. Luks, and A. J. Parkes"
+    },
+    {
+      "index": 27,
+      "title": "FourierSAT: A Fourier Expansion-Based Algebraic Framework for Solving Hybrid Boolean Constraints",
+      "abstract": "",
+      "year": "2020",
+      "venue": "AAAI 2020",
+      "authors": "Anastasios Kyrillidis, Anshumali Shrivastava, Moshe Y. Vardi, and Zhiwei Zhang"
+    },
+    {
+      "index": 28,
+      "title": "Parallel Weighted Model Counting with Tensor Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv e-prints",
+      "authors": "Jeffrey M. Dudek and Moshe Y. Vardi",
+      "orig_title": "Parallel Weighted Model Counting with Tensor Networks",
+      "paper_id": "2006.15512v2"
+    },
+    {
+      "index": 29,
+      "title": "The complexity of enumeration and reliability problems",
+      "abstract": "",
+      "year": "1979",
+      "venue": "SIAM Journal on Computing",
+      "authors": "Leslie G. Valiant"
+    },
+    {
+      "index": 30,
+      "title": "Binary decision diagrams and beyond: enabling technologies for formal verification",
+      "abstract": "",
+      "year": "1995",
+      "venue": "IEEE International Conference on Computer Aided Design (ICCAD)",
+      "authors": "R. E. Bryant"
+    },
+    {
+      "index": 31,
+      "title": "CUDD: CU Decision Diagram Package Release 3.0.0",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Fabio Somenzi"
+    },
+    {
+      "index": 32,
+      "title": "The Breakout Method for Escaping from Local Minima",
+      "abstract": "",
+      "year": "1993",
+      "venue": "AAAI",
+      "authors": "Paul Morris"
+    },
+    {
+      "index": 33,
+      "title": "A discrete lagrangian-based global-search method for solving satisfiability problems",
+      "abstract": "",
+      "year": "1996",
+      "venue": "J Global Optimization",
+      "authors": "Benjamin Wah and Yi Shang"
+    },
+    {
+      "index": 34,
+      "title": "Incomplete algorithms",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Handbook of Satisfiability",
+      "authors": "Henry A. Kautz, A. Sabharwal, and B. Selman"
+    },
+    {
+      "index": 35,
+      "title": "Analysis of Boolean Functions",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Cambridge University Press",
+      "authors": "Ryan O’Donnell"
+    },
+    {
+      "index": 36,
+      "title": "Non-convex Optimization for Machine Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv e-prints",
+      "authors": "Prateek Jain and Purushottam Kar"
+    },
+    {
+      "index": 37,
+      "title": "Numerical optimization",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Springer Science & Business Media",
+      "authors": "Jorge Nocedal and Stephen Wright"
+    },
+    {
+      "index": 38,
+      "title": "Derivative-free optimization methods",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Acta Numerica",
+      "authors": "Jeffrey Larson, Matt Menickelly, and Stefan M Wild"
+    },
+    {
+      "index": 39,
+      "title": "A theoretical and empirical comparison of gradient approximations in derivative-free optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint",
+      "authors": "Albert S Berahas, Liyuan Cao, Krzysztof Choromanski, and Katya Scheinberg"
+    },
+    {
+      "index": 40,
+      "title": "A survey of non-gradient optimization methods in structural engineering",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Advances in Engineering Software",
+      "authors": "Warren Hare, Julie Nutini, and Solomon Tesfamariam"
+    },
+    {
+      "index": 41,
+      "title": "Efficient spectral coefficient calculation using circuit output probabilities",
+      "abstract": "",
+      "year": "1994",
+      "venue": "Digital Signal Processing",
+      "authors": "M.A. Thornton and V.S.S. Nair"
+    },
+    {
+      "index": 42,
+      "title": "Symbolic techniques in satisfiability solving",
+      "abstract": "",
+      "year": "2006",
+      "venue": "SAT 2005",
+      "authors": "Guoqiang Pan and Moshe Y. Vardi"
+    },
+    {
+      "index": 43,
+      "title": "ADDMC: Weighted Model Counting with Algebraic Decision Diagrams",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv e-prints",
+      "authors": "Jeffrey M. Dudek, Vu H. N. Phan, and Moshe Y. Vardi",
+      "orig_title": "ADDMC: Weighted Model Counting with Algebraic Decision Diagrams",
+      "paper_id": "1907.05000v2"
+    },
+    {
+      "index": 44,
+      "title": "Chapter 4 - belief updating by network propagation",
+      "abstract": "",
+      "year": "1988",
+      "venue": "Probabilistic Reasoning in Intelligent Systems",
+      "authors": "Judea Pearl"
+    },
+    {
+      "index": 45,
+      "title": "Probability propagation",
+      "abstract": "",
+      "year": "1990",
+      "venue": "Ann Math Artif Intell",
+      "authors": "Glenn Shafer and Prakash Shenoy"
+    },
+    {
+      "index": 46,
+      "title": "Representations of Discrete Functions",
+      "abstract": "",
+      "year": "1996",
+      "venue": "Kluwer Academic Publishers",
+      "authors": "Tsutomu Sasao and Masahiro Fujita"
+    },
+    {
+      "index": 47,
+      "title": "Translating pseudo-boolean constraints into cnf",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Theory and Applications of Satisfiability Testing - SAT 2011",
+      "authors": "Amir Aavani"
+    },
+    {
+      "index": 48,
+      "title": "Algorithm 733: Tomp–fortran modules for optimal control calculations",
+      "abstract": "",
+      "year": "1994",
+      "venue": "ACM Trans. Math. Softw.",
+      "authors": "Dieter Kraft"
+    },
+    {
+      "index": 49,
+      "title": "A class of globally convergent optimization methods based on conservative convex separable approximations",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": "Krister,Svanberg"
+    },
+    {
+      "index": 50,
+      "title": "The NLopt nonlinear-optimization package",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Steven G. Johnson"
+    },
+    {
+      "index": 51,
+      "title": "Methods of conjugate gradients for solving linear systems",
+      "abstract": "",
+      "year": "1952",
+      "venue": "Journal of research of the National Bureau of Standards",
+      "authors": "Magnus R. Hestenes and Eduard Stiefel"
+    },
+    {
+      "index": 52,
+      "title": "Practical Methods of Optimization",
+      "abstract": "",
+      "year": "1987",
+      "venue": "Wiley",
+      "authors": "R. Fletcher"
+    },
+    {
+      "index": 53,
+      "title": "Dlib-ml: A machine learning toolkit",
+      "abstract": "",
+      "year": "2009",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "Davis E. King"
+    },
+    {
+      "index": 54,
+      "title": "Improving Walksat for Random k-Satisfiability Problem with k >> 3",
+      "abstract": "",
+      "year": "2013",
+      "venue": "AAAI",
+      "authors": "Shaowei Cai, Kaile Su, and Chuan Luo"
+    },
+    {
+      "index": 55,
+      "title": "Open-wbo: A modular maxsat solver,",
+      "abstract": "",
+      "year": "2014",
+      "venue": "Theory and Applications of Satisfiability Testing – SAT 2014",
+      "authors": "Ruben Martins, Vasco Manquinho, and Inês Lynce"
+    },
+    {
+      "index": 56,
+      "title": "Construction of an robdd for a pb-constraint in band form and related techniques for pb-solvers",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEICE Transactions on Information and Systems",
+      "authors": "Masahiko Sakai and Hidetomo Nabeshima"
+    },
+    {
+      "index": 57,
+      "title": "Divide and Conquer: Towards Faster Pseudo-Boolean Solving",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Jan Elffers and Jakob Nordström"
+    },
+    {
+      "index": 58,
+      "title": "Core-boosted linear search for incomplete maxsat",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Integration of Constraint Programming, Artificial Intelligence, and Operations Research",
+      "authors": "Jeremias Berg, Emir Demirović, and Peter J. Stuckey"
+    },
+    {
+      "index": 59,
+      "title": "The mixing method: coordinate descent for low-rank semidefinite programming",
+      "abstract": "",
+      "year": "2017",
+      "venue": "arXiv preprint",
+      "authors": "Po-Wei Wang, Wei-Cheng Chang, and J. Zico Kolter"
+    },
+    {
+      "index": 60,
+      "title": "PySAT: A Python Toolkit for Prototyping with SAT Oracles",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SAT",
+      "authors": "Alexey Ignatiev, Antonio Morgado, and Joao Marques-Silva"
+    },
+    {
+      "index": 61,
+      "title": "Integrating Equivalency Reasoning into Davis-Putnam Procedure",
+      "abstract": "",
+      "year": "2000",
+      "venue": "AAAI",
+      "authors": "Chu Min Li"
+    },
+    {
+      "index": 62,
+      "title": "Combining the k𝑘k-CNF and XOR Phase-Transitions",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IJCAI",
+      "authors": "Jeffrey M. Dudek, Kuldeep S. Meel, and Moshe Y. Vardi"
+    },
+    {
+      "index": 63,
+      "title": "Phase Transition Behavior of Cardinality and XOR Constraints",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IJCAI-19",
+      "authors": "Yash Pote, Saurabh Joshi, and Kuldeep S. Meel",
+      "orig_title": "Phase Transition Behavior of Cardinality and XOR Constraints",
+      "paper_id": "1910.09755v1"
+    },
+    {
+      "index": 64,
+      "title": "Solving (weighted) partial maxsat by dynamic local search for sat",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Joint Conference on Artificial Intelligence, IJCAI-18",
+      "authors": "Zhendong Lei and Shaowei Cai"
+    }
+  ]
+}

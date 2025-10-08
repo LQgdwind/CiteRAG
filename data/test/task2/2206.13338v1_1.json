@@ -1,0 +1,277 @@
+{
+  "paper_id": "2206.13338v1",
+  "title": "Multi-Agent Car Parking using Reinforcement Learning",
+  "sections": {
+    "deep reinforcement learning": "Despite Q-Learning having attractive optimality guarantees, it is often intractable when applied in practise. Deep learning techniques have successfully been applied to RL, vastly improving its scalability. At present, PPO is a state of the art deep RL algorithm, with the ability to learn extremely high performing policies in MDPs. [ref]22 Q-Learning is often impractical when applied in practise, due to it potentially taking too long to visit all of the state-action pairs, or being too expensive to store the whole Q-Table. Q-Learning’s application cost is proportional to |𝕊×𝔸|𝕊𝔸|\\mathbb{S}\\times\\mathbb{A}| for the MDP on which it is applied, quickly becoming infeasible for complex environments. Thus, deep learning is harnessed to approximate the Q-Function by paramaterising it over weights θ𝜃\\theta: Q​(s,a;θ)≈Q∗​(s,a)𝑄𝑠𝑎𝜃superscript𝑄𝑠𝑎Q(s,a;\\theta)\\approx Q^{*}(s,a), and using a function approximator such as a neural network to optimise a loss function L​(θ)𝐿𝜃L(\\theta) that conforms to the Bellman equation: a technique known as Deep Q-Learning (DQL) [ref]17. The neural network approximating the Q-Function is such that the inputs are a set of real numbers s∈ℝn𝑠superscriptℝ𝑛s\\in\\mathbb{R}^{n} (usually bounded between 0 and 1) corresponding to the state, and the outputs are the values of Q​(s,a)​∀a∈A𝑄𝑠𝑎for-all𝑎𝐴Q(s,a)\\forall a\\in A corresponding to the Q-value of each action for the input state. Encoding the state and the actions in such a way resolves the scalability issues of Q-Learning. By way of example, suppose the state set 𝕊𝕊\\mathbb{S} of an MDP is 𝕊=S1×S2𝕊subscript𝑆1subscript𝑆2\\mathbb{S}=S_{1}\\times S_{2} where S1=S2=ℕ[0,ns)subscript𝑆1subscript𝑆2subscriptℕ0subscript𝑛𝑠S_{1}=S_{2}=\\mathbb{N}_{[0,n_{s})}, and the action set is 𝔸=A1×A2𝔸subscript𝐴1subscript𝐴2\\mathbb{A}=A_{1}\\times A_{2} where |A1|=|A2|=ℕ[0,na)subscript𝐴1subscript𝐴2subscriptℕ0subscript𝑛𝑎|A_{1}|=|A_{2}|=\\mathbb{N}_{[0,n_{a})}. The Q-Table in Q-Learning has |𝕊×𝔸|=ns2∗na2𝕊𝔸superscriptsubscript𝑛𝑠2superscriptsubscript𝑛𝑎2|\\mathbb{S}\\times\\mathbb{A}|=n_{s}^{2}*n_{a}^{2}, which scales poorly and becomes prohibitively large with e.g. ns=1000,na=10⟹|𝕊×𝔸|=100,000,000formulae-sequenceformulae-sequencesubscript𝑛𝑠1000subscript𝑛𝑎10𝕊𝔸100000000n_{s}=1000,n_{a}=10\\implies|\\mathbb{S}\\times\\mathbb{A}|=100,000,000. However, we can map the state (s1,s2)∈𝕊subscript𝑠1subscript𝑠2𝕊(s_{1},s_{2})\\in\\mathbb{S} to two real numbers (s1/ns,s2/ns)subscript𝑠1subscript𝑛𝑠subscript𝑠2subscript𝑛𝑠(s_{1}/n_{s},s_{2}/n_{s}) and the action (a1,a2)∈𝔸subscript𝑎1subscript𝑎2𝔸(a_{1},a_{2})\\in\\mathbb{A} to two real numbers (a1/na,a2/na)subscript𝑎1subscript𝑛𝑎subscript𝑎2subscript𝑛𝑎(a_{1}/n_{a},a_{2}/n_{a}), yielding a neural network approximating the Q-Table with two input neurons and two output neurons (with appropriate hidden units and layers in-between), which is far more tractable. Note how this mapping resolves vertical scalability issues with Q-Learning, as the neural network would have the same number of input and output neurons regardless of the value of nssubscript𝑛𝑠n_{s} and nasubscript𝑛𝑎n_{a}, whereas the Q-Table increases in size proportional to nssubscript𝑛𝑠n_{s} and nasubscript𝑛𝑎n_{a}, eventually becoming intractable. In addition, there are policy-gradient, actor-critic methods such as PPO, which make the policy stochastic π​(a|s;θ)𝜋conditional𝑎𝑠𝜃\\pi(a|s;\\theta) by parameterising over weights θ𝜃\\theta, which are optimised via stochastic gradient ascent methods on a loss function L​(θ)𝐿𝜃L(\\theta) [ref]22. In addition to approximating the agent’s policy, we simultaneously approximate the agent’s value function, which is the value of Q​(s,a)𝑄𝑠𝑎Q(s,a) in Q-Learning. ‘Actor-critic’ refers to the combination of these approximators, where the actor is the approximator of the policy, and the critic is the approximator of the value function: both approximated using neural networks with a loss defined for each. The actor decides which action to take, while the critic tells the actor how good its action was and how it should adjust. . Figure 2.1 shows a diagram of the actor-critic architecture . . PPO’s loss functions are optimised with respect to a learning rate hyperparameter α𝛼\\alpha, and the weights are updated via θ←θ−α​▽θ​L​(θ)←𝜃𝜃𝛼subscript▽𝜃𝐿𝜃\\theta\\leftarrow\\theta-\\alpha\\triangledown_{\\theta}L(\\theta), where the loss function is evaluated in an off-policy fashion over a random batch of trajectories/experiences from the experience buffer 𝔹𝔹\\mathbb{B}, containing tuples of the form (st,at,rt,st+1)subscript𝑠𝑡subscript𝑎𝑡subscript𝑟𝑡subscript𝑠𝑡1(s_{t},a_{t},r_{t},s_{t+1}) . Such a process is repeated a number of times determined by the ‘number of epochs’ hyperparameter. The ‘buffer size’ and ‘batch size’ hyperparameters refer to |𝔹|𝔹|\\mathbb{B}| and the number of random samples from 𝔹𝔹\\mathbb{B} during an epoch, respectively. There are also hyperparameters defining the neural network architectures for the actor and critic approximators: specifically the ‘layers’ and ‘hidden units’ hyperparameters referring to the number of layers and hidden units in each layer of the neural networks respectively. In PPO, trajectories are only added to the buffer once they exceed a minimum size, known as the ‘time horizon’. [ref]22  While PPO has many more hyperparameters, we have briefly discussed the important ones with respect to our study, and henceforth we utilise it mostly as a black-box tool that seeks an optimal policy π∗superscript𝜋\\pi^{*} in our MDP. For more information, the reader is referred to Schulman et al. [ref]22 (2017), building upon earlier work by Schulman et al.  (2015). There are many recommended ranges and baselines for PPO’s hyperparameters , which can be used to tune it via grid-searching techniques. Grid-searching is a basic technique used to optimise a set of n𝑛n parameters by sampling a subset Pi⊂subscriptsuperscript𝑃𝑖P^{\\subset}_{i} of values for each parameter i𝑖i, i.e. Pi⊂⊂Pisubscriptsuperscript𝑃𝑖subscript𝑃𝑖P^{\\subset}_{i}\\subset P_{i} where Pisubscript𝑃𝑖P_{i} is all of the possible values for the parameter i𝑖i, and trying every combination of the parameters P1⊂×…×Pn⊂subscriptsuperscript𝑃1…subscriptsuperscript𝑃𝑛P^{\\subset}_{1}\\times...\\times P^{\\subset}_{n}, picking the combination which performs the best."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "TensorFlow: Large-scale machine learning on heterogeneous systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Abadi, Martín & Agarwal, Ashish & Barham, Paul & Brevdo, Eugene & Chen, Zhifeng & Citro, Craig & Corrado, Greg S. & Davis, Andy & Dean, Jeffrey & Devin, Matthieu & Ghemawat, Sanjay & Goodfellow, Ian & Harp, Andrew & Irving, Geoffrey & Isard, Michael & Jia, Yangqing & Jozefowicz, Rafal & Kaiser, Lukasz & Kudlur, Manjunath & Levenberg, Josh & Mané, Dandelion & Monga, Rajat & Moore, Sherry & Murray, Derek & Olah, Chris & Schuster, Mike & Shlens, Jonathon & Steiner, Benoit & Sutskever, Ilya & Talwar, Kunal & Tucker, Paul & Vanhoucke, Vincent & Vasudevan, Vijay & Viégas, Fernanda & Vinyals, Oriol & Warden, Pete & Wattenberg, Martin & Wicke, Martin & Yu, Yuan & Zheng, Xiaoqiang"
+    },
+    {
+      "index": 1,
+      "title": "A comprehensive survey of multiagent reinforcement learning",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Transactions on Systems, Man, and Cybernetics, Part C (Applications and Reviews)",
+      "authors": "Busoniu, Lucian & Babuska, Robert & De Schutter, Bart"
+    },
+    {
+      "index": 2,
+      "title": "Reinforcement learning-based dynamic obstacle avoidance and integration of path planning",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Intelligent Service Robotics",
+      "authors": "Choi, Jaewan & Lee, Geonhee & Lee, Chibum"
+    },
+    {
+      "index": 3,
+      "title": "Multi-agent deep reinforcement learning for large-scale traffic signal control",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "Chu, Tianshu & Wang, Jie & Codecà, Lara & Li, Zhaojian"
+    },
+    {
+      "index": 4,
+      "title": "Is Independent Learning All You Need in the StarCraft Multi-Agent Challenge?",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "de Witt, Christian Schroeder & Gupta, Tarun & Makoviichuk, Denys & Makoviychuk, Viktor & Torr, Philip H. S. & Sun, Mingfei & Whiteson, Shimon",
+      "orig_title": "Is independent learning all you need in the starcraft multi-agent challenge?",
+      "paper_id": "2011.09533v1"
+    },
+    {
+      "index": 5,
+      "title": "Off-Policy Deep Reinforcement Learning without Exploration",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Fujimoto, Scott & Meger, David & Precup, Doina",
+      "orig_title": "Off-policy deep reinforcement learning without exploration",
+      "paper_id": "1812.02900v3"
+    },
+    {
+      "index": 6,
+      "title": "Deep reinforcement learning for autonomous traffic light control",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE International Conference on Intelligent Transportation Engineering (ICITE)",
+      "authors": "Garg, Deepeka & Chli, Maria & Vogiatzis, George"
+    },
+    {
+      "index": 7,
+      "title": "Multi-agent deep reinforcement learning: a survey",
+      "abstract": "",
+      "year": "2021",
+      "venue": "Artificial Intelligence Review",
+      "authors": "Gronauer, Sven & Dieopold, Klaus"
+    },
+    {
+      "index": 8,
+      "title": "Array Programming with NumPy",
+      "abstract": "",
+      "year": "2020",
+      "venue": "Nature",
+      "authors": "Harris, Charles R. & Millman, K. Jarrod & van der Walt, Stéfan J. & Gommers, Ralf & Virtanen, Pauli & Cournapeau, David & Wieser, Eric & Taylor, Julian & Berg, Sebastian & Smith, Nathaniel J. & Kern, Robert & Picus, Matti & Hoyer, Stephan & van Kerkwijk, Marten H. & Brett, Matthew & Haldane, Allan & del Río, Jaime Fernández & Wiebe, Mark & Peterson, Pearu & Gérard-Marchant, Pierre & Sheppard, Kevin & Reddy, Tyler & Weckesser, Warren & Abbasi, Hameer & Gohlke, Christoph & Oliphant, Travis E.",
+      "orig_title": "Array programming with NumPy",
+      "paper_id": "2006.10256v1"
+    },
+    {
+      "index": 9,
+      "title": "Matplotlib: A 2d graphics environment",
+      "abstract": "",
+      "year": "2007",
+      "venue": "Computing in Science & Engineering",
+      "authors": "Hunter, J. D"
+    },
+    {
+      "index": 10,
+      "title": "Unity: A General Platform for Intelligent Agents",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Juliani, Arthur & Berges, Vincent-Pierre & Teng, Ervin & Cohen, Andrew & Harper, Jonathan & Elion, Chris & Goy, Chris & Gao, Yuan & Henry, Hunter & Mattar, Marwan & Lange, Danny",
+      "orig_title": "Unity: A general platform for intelligent agents",
+      "paper_id": "1809.02627v2"
+    },
+    {
+      "index": 11,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "",
+      "authors": "Kingma, Diederik P. & Ba, Jimmy"
+    },
+    {
+      "index": 12,
+      "title": "Design and use paradigms for gazebo, an open-source multi-robot simulator",
+      "abstract": "",
+      "year": "2004",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "authors": "Koenig, N. & Howard, A."
+    },
+    {
+      "index": 13,
+      "title": "Sumo (simulation of urban mobility); an open-source traffic simulation",
+      "abstract": "",
+      "year": "2002",
+      "venue": "",
+      "authors": "Krajzewicz, Daniel & Hertkorn, Georg & Feld, Christian & Wagner, Peter"
+    },
+    {
+      "index": 14,
+      "title": "Partially observable markov decision processes (pomdps) and robotics",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "Kurniawati, Hanna"
+    },
+    {
+      "index": 15,
+      "title": "Autoparking",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Lai, Leonardo"
+    },
+    {
+      "index": 16,
+      "title": "Playing atari with deep reinforcement learning",
+      "abstract": "",
+      "year": "2013",
+      "venue": "CoRR",
+      "authors": "Mnih, Volodymyr & Kavukcuoglu, Koray & Silver, David & Graves, Alex & Antonoglou, Ioannis & Wierstra, Daan & Riedmiller, Martin A."
+    },
+    {
+      "index": 17,
+      "title": "Multi-Reward Reinforced Summarization with Saliency and Entailment",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Pasunuru, Ramakanth & Bansal, Mohit",
+      "orig_title": "Multi-reward reinforced summarization with saliency and entailment",
+      "paper_id": "1804.06451v2"
+    },
+    {
+      "index": 18,
+      "title": "DORB: Dynamically Optimizing Multiple Rewards with Bandits",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Pasunuru, Ramakanth & Guo, Han & Bansal, Mohit",
+      "orig_title": "Dorb: Dynamically optimizing multiple rewards with bandits",
+      "paper_id": "2011.07635v1"
+    },
+    {
+      "index": 19,
+      "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems 32",
+      "authors": "Paszke, Adam & Gross, Sam & Massa, Francisco & Lerer, Adam & Bradbury, James & Chanan, Gregory & Killeen, Trevor & Lin, Zeming & Gimelshein, Natalia & Antiga, Luca & Desmaison, Alban & Kopf, Andreas & Yang, Edward & DeVito, Zachary & Raison, Martin & Tejani, Alykhan & Chilamkurthy, Sasank & Steiner, Benoit & Fang, Lu & Bai, Junjie & Chintala, Soumith",
+      "orig_title": "Pytorch: An imperative style, high-performance deep learning library",
+      "paper_id": "1912.01703v1"
+    },
+    {
+      "index": 20,
+      "title": "Trust Region Policy Optimization",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "Schulman, John & Levine, Sergey & Moritz, Philipp & Jordan, Michael I. & Abbeel, Pieter",
+      "orig_title": "Trust region policy optimization",
+      "paper_id": "1502.05477v5"
+    },
+    {
+      "index": 21,
+      "title": "Proximal policy optimization algorithms",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "Schulman, John & Wolski, Filip & Dhariwal, Prafulla & Radford, Alec & Klimov, Oleg"
+    },
+    {
+      "index": 22,
+      "title": "Deep Reinforcement Learning using Genetic Algorithm for Parameter Optimization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Sehgal, Adarsh & La, Hung Manh & Louis, Sushil J. & Nguyen, Hai",
+      "orig_title": "Deep reinforcement learning using genetic algorithm for parameter optimization",
+      "paper_id": "1905.04100v1"
+    },
+    {
+      "index": 23,
+      "title": "Reinforcement Learning: An Introduction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "A Bradford Book",
+      "authors": "Sutton, Richard S. & Barto, Andrew G."
+    },
+    {
+      "index": 24,
+      "title": "Probabilistic Robotics (Intelligent Robotics and Autonomous Agents)",
+      "abstract": "",
+      "year": "2005",
+      "venue": "The MIT Press",
+      "authors": "Thrun, Sebastian & Burgard, Wolfram & Fox, Dieter"
+    },
+    {
+      "index": 25,
+      "title": "Self-parking car simulation using reinforcement learning approach for moderate complexity parking scenario",
+      "abstract": "",
+      "year": "2020",
+      "venue": "International Conference on Electrical Engineering/Electronics, Computer, Telecommunications and Information Technology (ECTI-CON)",
+      "authors": "Thunyapoo, Baramee & Ratchadakorntham, Chatree & Siricharoen, Punnarai & Susutti, Wittawin"
+    },
+    {
+      "index": 26,
+      "title": "Q-learning",
+      "abstract": "",
+      "year": "1992",
+      "venue": "Machine Learning",
+      "authors": "Watkins, Christopher J. C. H. & Dayan, Peter"
+    },
+    {
+      "index": 27,
+      "title": "An overview of overfitting and its solutions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Journal of Physics: Conference Series",
+      "authors": "Ying, Xue"
+    },
+    {
+      "index": 28,
+      "title": "Slurm: Simple linux utility for resource management",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Job Scheduling Strategies for Parallel Processing",
+      "authors": "Yoo, Andy B. & Jette, Morris A. & Grondona, Mark"
+    },
+    {
+      "index": 29,
+      "title": "The Surprising Effectiveness of PPO in Cooperative Multi-Agent Games",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CoRR",
+      "authors": "Yu, Chao & Velu, Akash & Vinitsky, Eugene & Wang, Yu & Bayen, Alexandre M. & Wu, Yi",
+      "orig_title": "The surprising effectiveness of MAPPO in cooperative, multi-agent games",
+      "paper_id": "2103.01955v4"
+    },
+    {
+      "index": 30,
+      "title": "Design of an ackermann type steering mechanism",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Journal of Mechanical Engineering Science",
+      "authors": "Zhao, Jing-Shan & Liu, Zhi-Jing & Dai, Jian"
+    }
+  ]
+}

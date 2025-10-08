@@ -1,0 +1,1375 @@
+{
+  "paper_id": "2310.04158v3",
+  "title": "Victima: Drastically Increasing Address Translation Reach by Leveraging Underutilized Cache Resources",
+  "abstract": "Abstract.\nAddress translation is a performance bottleneck in data-intensive workloads due to large datasets and irregular access patterns that lead to frequent high-latency page table walks (PTWs).\nPTWs can be reduced by using (i) large hardware TLBs or (ii) large software-managed TLBs.\nUnfortunately, both solutions have significant drawbacks: increased access latency, power and area (for hardware TLBs), and costly memory accesses, the need for large contiguous memory blocks, and complex OS modifications (for software-managed TLBs).\nWe present Victima, a new software-transparent mechanism that drastically increases the translation reach of the processor by leveraging the underutilized resources of the cache hierarchy.\nThe key idea of Victima is to repurpose L2 cache blocks to store clusters of TLB entries, thereby providing an additional low-latency and high-capacity component that backs up the last-level TLB and thus reduces PTWs.\nVictima has two main components. First, a PTW cost predictor (PTW-CP) identifies costly-to-translate addresses based on the frequency and cost of the PTWs they lead to.\nLeveraging the PTW-CP, Victima uses the valuable cache space only for TLB entries that correspond to costly-to-translate pages, reducing the impact on cached application data. Second,\na TLB-aware cache replacement policy prioritizes keeping TLB entries in the cache hierarchy by considering (i) the translation pressure (e.g., last-level TLB miss rate) and (ii) the reuse characteristics of the TLB entries.\nOur evaluation results show that in native (virtualized) execution environments Victima improves average end-to-end application performance by 7.4% (28.7%)\nover the baseline four-level radix-tree-based page table design and by 6.2% (20.1%) over a state-of-the-art software-managed TLB, across 11 diverse data-intensive workloads.\nVictima delivers similar performance as a system that employs an optimistic 128K-entry L2 TLB, while avoiding the associated area and power overheads.\nVictima (i) is effective in both native and virtualized environments,\n(ii) is completely transparent to application and system software, (iii) unlike large software-managed TLBs, does not require contiguous physical allocations, (iv) is compatible with modern large page mechanisms\nand (iv) incurs very small area and power overheads of 0.04%percent0.040.04\\% and 0.08%percent0.080.08\\%, respectively, on a modern high-end CPU. The source code of Victima is freely available\nat https://github.com/CMU-SAFARI/Victima.",
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Efficient Virtual Memory for Big Memory Servers",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISCA",
+      "authors": "Arkaprava Basu, Jayneel Gandhi, Jichuan Chang, Mark D. Hill, and Michael M. Swift"
+    },
+    {
+      "index": 1,
+      "title": "Performance Analysis of the Memory Management Unit Under Scale-out Workloads",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IISWC",
+      "authors": "Vasileios Karakostas, Osman S. Unsal, Mario Nemirovsky, Adrian Cristal, and Michael Swift"
+    },
+    {
+      "index": 2,
+      "title": "Translation Caching: Skip, Don’t Walk (the Page Table)",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ISCA",
+      "authors": "Thomas W. Barr, Alan L. Cox, and Scott Rixner"
+    },
+    {
+      "index": 3,
+      "title": "5 Level Paging",
+      "abstract": "",
+      "year": "2021",
+      "venue": "",
+      "authors": "Linux"
+    },
+    {
+      "index": 4,
+      "title": "Contiguitas: the Pursuit of Physical Memory Contiguity in Datacenters",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ISCA",
+      "authors": "Kaiyang Zhao, Kaiwen Xue, Ziqi Wang, Dan Schatzberg, Leon Yang, Antonis Manousis, Johannes Weiner, Rik Van Riel, Bikash Sharma, Chunqiang Tang, and Dimitrios Skarlatos"
+    },
+    {
+      "index": 5,
+      "title": "Radiant: Efficient Page Table Management for Tiered Memory Systems",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ISMM",
+      "authors": "Sandeep Kumar, Aravinda Prasad, Smruti R. Sarangi, and Sreenivas Subramoney"
+    },
+    {
+      "index": 6,
+      "title": "Characterizing the TLB Behavior of Emerging Parallel Workloads On Chip Multiprocessors",
+      "abstract": "",
+      "year": "2009",
+      "venue": "PACT",
+      "authors": "Abhishek Bhattacharjee and Margaret Martonosi"
+    },
+    {
+      "index": 7,
+      "title": "Devirtualizing Memory in Heterogeneous Systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ASPLOS",
+      "authors": "Swapnil Haria, Mark D. Hill, and Michael M. Swift"
+    },
+    {
+      "index": 8,
+      "title": "Hash, Don’t Cache (the Page Table)",
+      "abstract": "",
+      "year": "2016",
+      "venue": "SIGMETRICS",
+      "authors": "Idan Yaniv and Dan Tsafrir"
+    },
+    {
+      "index": 9,
+      "title": "Performance ImplicatiOns of Extended Page Tables On Virtualized X86 Processors",
+      "abstract": "",
+      "year": "2016",
+      "venue": "VEE",
+      "authors": "Timothy Merrifield and H. Reza Taheri"
+    },
+    {
+      "index": 10,
+      "title": "A Study of Virtual Memory Usage and Implications for Large Memory",
+      "abstract": "",
+      "year": "2013",
+      "venue": "Univ. of Washington",
+      "authors": "Peter Hornyack, Luis Ceze, Steve Gribble, Dan Ports, and Hank Levy"
+    },
+    {
+      "index": 11,
+      "title": "AMD-V Nested Paging, White Paper",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Advanced Micro Devices"
+    },
+    {
+      "index": 12,
+      "title": "Compute Engine: Enabling Nested Virtualization for VM Instances",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Google, Inc."
+    },
+    {
+      "index": 13,
+      "title": "Shared Last-Level TLBs for Chip Multiprocessors",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ISCA",
+      "authors": "Abhishek Bhattacharjee, Daniel Lustig, and Margaret Martonosi"
+    },
+    {
+      "index": 14,
+      "title": "Scalable Distributed Last-Level TLBs Using Low-Latency Interconnects",
+      "abstract": "",
+      "year": "2018",
+      "venue": "MICRO",
+      "authors": "Srikant Bharadwaj, Guilherme Cox, Tushar Krishna, and Abhishek Bhattacharjee"
+    },
+    {
+      "index": 15,
+      "title": "Improving GPU Multi-tenancy with Page Walk Stealing",
+      "abstract": "",
+      "year": "2021",
+      "venue": "HPCA",
+      "authors": "B. Pratheek, Neha Jawalkar, and Arkaprava Basu"
+    },
+    {
+      "index": 16,
+      "title": "RethInking TLB Designs in Virtualized Environments: A Very Large Part-of-Memory TLB",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISCA",
+      "authors": "Jee Ho Ryoo, Nagendra Gulur, Shuang Song, and Lizy K. John"
+    },
+    {
+      "index": 17,
+      "title": "CSALT: Context Switch Aware Large TLB",
+      "abstract": "",
+      "year": "2017",
+      "venue": "MICRO",
+      "authors": "Yashwant Marathe, Nagendra Gulur, Jee Ho Ryoo, Shuang Song, and Lizy K. John"
+    },
+    {
+      "index": 18,
+      "title": "Comparisons of Memory Virtualization Solutions for Architectures with Software-Managed TLBs",
+      "abstract": "",
+      "year": "2013",
+      "venue": "NAS",
+      "authors": "Yunfang Tai, Wanwei Cai, Qi Liu, Ge Zhang, and Wenzhi Wang"
+    },
+    {
+      "index": 19,
+      "title": "Improving Virtualization in the Presence of Software Managed Translation Lookaside Buffers",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISCA",
+      "authors": "Xiaotao Chang, Hubertus Franke, Yi Ge, Tao Liu, Kun Wang, Jimi Xenidis, Fei Chen, and Yu Zhang"
+    },
+    {
+      "index": 20,
+      "title": "Design Tradeoffs for Software-Managed TLBs",
+      "abstract": "",
+      "year": "1994",
+      "venue": "TOCS",
+      "authors": "Richard Uhlig, David Nagle, Tim Stanley, Trevor Mudge, Stuart Sechrest, and Richard Brown"
+    },
+    {
+      "index": 21,
+      "title": "A Look At Several Memory Management Units, TLB-Refill Mechanisms, and Page Table OrganizAtions",
+      "abstract": "",
+      "year": "1998",
+      "venue": "ASPLOS",
+      "authors": "Bruce L. Jacob and Trevor N. Mudge"
+    },
+    {
+      "index": 22,
+      "title": "Software-Controlled Caches in the VMP Multiprocessor",
+      "abstract": "",
+      "year": "1986",
+      "venue": "ISCA",
+      "authors": "D. R. Cheriton, G. A. Slavenburg, and P. D. Boyle"
+    },
+    {
+      "index": 23,
+      "title": "Design Tradeoffs for Software-managed TLBs",
+      "abstract": "",
+      "year": "1993",
+      "venue": "ISCA",
+      "authors": "David Nagle, Richard Uhlig, Tim Stanley, Stuart Sechrest, Trevor N. Mudge, and Richard B. Brown"
+    },
+    {
+      "index": 24,
+      "title": "Software Prefetching and Caching for Translation Lookaside Buffers",
+      "abstract": "",
+      "year": "1994",
+      "venue": "OSDI",
+      "authors": "Kavita Bala, M. Frans Kaashoek, and William E. Weihl"
+    },
+    {
+      "index": 25,
+      "title": "CACTI 7.0: A Tool to Model Large Caches",
+      "abstract": "",
+      "year": "",
+      "venue": "HP laboratories",
+      "authors": "Naveen Muralimanohar, Rajeev Balasubramonian, and Norman P Jouppi"
+    },
+    {
+      "index": 26,
+      "title": "Criticality Aware Tiered Cache Hierarchy: A Fundamental Relook At Multi-Level Cache Hierarchies",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ISCA",
+      "authors": "Anant Vithal Nori, Jayesh Gaur, Siddharth Rai, Sreenivas Subramoney, and Hong Wang"
+    },
+    {
+      "index": 27,
+      "title": "Clearing the Clouds: A Study of Emerging Scale-Out Workloads On Modern Hardware",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ASPLOS",
+      "authors": "Michael Ferdman, Almutaz Adileh, Onur Kocberber, Stavros Volos, Mohammad Alisafaee, Djordje Jevdjic, Cansu Kaynak, Adrian Daniel Popescu, Anastasia Ailamaki, and Babak Falsafi"
+    },
+    {
+      "index": 28,
+      "title": "Harvesting L2 Caches in Server Processors",
+      "abstract": "",
+      "year": "2023",
+      "venue": "arXiv",
+      "authors": "Majid Jalili and Mattan Erez",
+      "orig_title": "Harvesting L2 Caches in Server Processors",
+      "paper_id": "2301.04228v3"
+    },
+    {
+      "index": 29,
+      "title": "DAMOV: A New Methodology and Benchmark Suite for Evaluating Data Movement Bottlenecks",
+      "abstract": "",
+      "year": "2021",
+      "venue": "IEEE Access",
+      "authors": "Geraldo F. Oliveira, Juan Gómez-Luna, Lois Orosa, Saugata Ghose, Nandita Vijaykumar, Ivan Fernandez, Mohammad Sadrosadati, and Onur Mutlu",
+      "orig_title": "DAMOV: A New Methodology and Benchmark Suite for Evaluating Data Movement Bottlenecks",
+      "paper_id": "2105.03725v6"
+    },
+    {
+      "index": 30,
+      "title": "Domain-Specialized Cache Management for Graph Analytics",
+      "abstract": "",
+      "year": "2020",
+      "venue": "HPCA",
+      "authors": "Priyank Faldu, Jeff Diamond, and Boris Grot",
+      "orig_title": "Domain-specialized Cache Management for Graph Analytics",
+      "paper_id": "2001.09783v2"
+    },
+    {
+      "index": 31,
+      "title": "Analysis and Optimization of the Memory Hierarchy for Graph Processing Workloads",
+      "abstract": "",
+      "year": "2019",
+      "venue": "HPCA",
+      "authors": "A. Basak, S. Li, X. Hu, S. M. Oh, X. Xie, L. Zhao, X. Jiang, and Y. Xie"
+    },
+    {
+      "index": 32,
+      "title": "Many-Core Graph Workload Analysis",
+      "abstract": "",
+      "year": "2018",
+      "venue": "SC",
+      "authors": "Stijn Eyerman, Wim Heirman, Kristof Du Bois, Joshua B. Fryman, and Ibrahim Hur"
+    },
+    {
+      "index": 33,
+      "title": "Hermes: Accelerating Long-Latency Load Requests via Perceptron-Based Off-Chip Load Prediction",
+      "abstract": "",
+      "year": "2022",
+      "venue": "MICRO",
+      "authors": "Rahul Bera, Konstantinos Kanellopoulos, Shankar Balachandran, David Novo, Ataberk Olgun, Mohammad Sadrosadati, and Onur Mutlu",
+      "orig_title": "Hermes: Accelerating Long-Latency Load Requests Via Perceptron-Based Off-Chip Load Prediction",
+      "paper_id": "2209.00188v3"
+    },
+    {
+      "index": 34,
+      "title": "Line Distillation: Increasing Cache Capacity By Filtering Unused Words in Cache Lines",
+      "abstract": "",
+      "year": "2007",
+      "venue": "HPCA",
+      "authors": "Moinuddin K. Qureshi, M. Aater Suleman, and Yale N. Patt"
+    },
+    {
+      "index": 35,
+      "title": "Adaptive Spill-Receive for Robust high-performance Caching in CMPs",
+      "abstract": "",
+      "year": "2009",
+      "venue": "HPCA",
+      "authors": "Moinuddin K. Qureshi"
+    },
+    {
+      "index": 36,
+      "title": "Adaptive Insertion Policies for High Performance Caching",
+      "abstract": "",
+      "year": "2007",
+      "venue": "ISCA",
+      "authors": "Moinuddin K. Qureshi, Aamer Jaleel, Yale N. Patt, Simon C. Steely, and Joel Emer"
+    },
+    {
+      "index": 37,
+      "title": "A Scalable Processing-in-Memory Accelerator for Parallel Graph Processing",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISCA",
+      "authors": "Junwhan Ahn, Sungpack Hong, Sungjoo Yoo, Onur Mutlu, and Kiyoung Choi"
+    },
+    {
+      "index": 38,
+      "title": "Stream-based Memory Access Specialization for General Purpose Processors",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ISCA",
+      "authors": "Zhengrong Wang and Tony Nowatzki"
+    },
+    {
+      "index": 39,
+      "title": "The Dynamic Granularity Memory System",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ISCA",
+      "authors": "D. H. Yoon, M. K. Jeong, M. Sullivan, and M. Erez"
+    },
+    {
+      "index": 40,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "The Linux Kernel",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 41,
+      "title": "Sniper: Exploring the Level of Abstraction for Scalable and Accurate Parallel Multi-Core Simulations",
+      "abstract": "",
+      "year": "2011",
+      "venue": "SC",
+      "authors": "Trevor E. Carlson, Wim Heirman, and Lieven Eeckhout"
+    },
+    {
+      "index": 42,
+      "title": "Victima - Github Repository",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "SAFARI Research Group"
+    },
+    {
+      "index": 43,
+      "title": "GraphBIG: Understanding Graph Computing in the Context of Industrial Solutions",
+      "abstract": "",
+      "year": "2015",
+      "venue": "SC",
+      "authors": "Lifeng Nai, Yinglong Xia, Ilie G. Tanase, Hyesoon Kim, and Ching-Yung Lin"
+    },
+    {
+      "index": 44,
+      "title": "A Simple Synchronous Distributed-Memory Algorithm for the HPCC RandomAccess Benchmark",
+      "abstract": "",
+      "year": "2006",
+      "venue": "Cluster",
+      "authors": "Steven J. Plimpton, Ron Brightwell, Courtenay Vaughan, Keith Underwood, and Mike Davis"
+    },
+    {
+      "index": 45,
+      "title": "XSBench - The Development and Verification of a Performance Abstraction for Monte Carlo Reactor Analysis",
+      "abstract": "",
+      "year": "2014",
+      "venue": "PHYSOR",
+      "authors": "John R Tramm, Andrew R Siegel, Tanzima Islam, and Martin Schulz"
+    },
+    {
+      "index": 46,
+      "title": "Deep Learning Recommendation Model for Personalization and Recommendation Systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": "Maxim Naumov, Dheevatsa Mudigere, Hao-Jun Michael Shi, Jianyu Huang, Narayanan Sundaraman, Jongsoo Park, Xiaodong Wang, Udit Gupta, Carole-Jean Wu, Alisson G. Azzolini, Dmytro Dzhulgakov, Andrey Mallevich, Ilia Cherniavskii, Yinghai Lu, Raghuraman Krishnamoorthi, Ansha Yu, Volodymyr Kondratenko, Stephanie Pereira, Xianjie Chen, Wenlin Chen, Vijay Rao, Bill Jia, Liang Xiong, and Misha Smelyanskiy",
+      "orig_title": "Deep Learning Recommendation Model for Personalization and Recommendation Systems",
+      "paper_id": "1906.00091v1"
+    },
+    {
+      "index": 47,
+      "title": "GenomicsBench: A Benchmark Suite for Genomics",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ISPASS",
+      "authors": "Arun Subramaniyan, Yufeng Gu, Timothy Dunn, Somnath Paul, Md. Vasimuddin, Sanchit Misra, David Blaauw, Satish Narayanasamy, and Reetuparna Das"
+    },
+    {
+      "index": 48,
+      "title": "Agile Paging: Exceeding the Best of Nested and Shadow Paging",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ISCA",
+      "authors": "Jayneel Gandhi, Mark D. Hill, and Michael M. Swift"
+    },
+    {
+      "index": 49,
+      "title": "Intel Raptor Lake",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Wiki Chip"
+    },
+    {
+      "index": 50,
+      "title": "Breaking the Address Translation Wall By Accelerating Memory Replays",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Micro",
+      "authors": "Abhishek Bhattacharjee"
+    },
+    {
+      "index": 51,
+      "title": "Self-Paging in the Nemesis Operating System",
+      "abstract": "",
+      "year": "1999",
+      "venue": "OSDI",
+      "authors": "Steven M Hand."
+    },
+    {
+      "index": 52,
+      "title": "Memory Coherence in Shared Virtual Memory Systems",
+      "abstract": "",
+      "year": "1989",
+      "venue": "TOCS",
+      "authors": "Kai Li and Paul Hudak."
+    },
+    {
+      "index": 53,
+      "title": "Virtual Memory Primitives for User Programs",
+      "abstract": "",
+      "year": "1991",
+      "venue": "ASPLOS",
+      "authors": "Andrew W. Appel and Kai Li."
+    },
+    {
+      "index": 54,
+      "title": "Machine-independent Virtual Memory Management for Paged Uniprocessor and Multiprocessor Architectures",
+      "abstract": "",
+      "year": "1987",
+      "venue": "",
+      "authors": "Richard Rashid, Avadis Tevanian, Michael Young, David Golub, Robert Baron,\nDavid Black, William Bolosky, and Jonathan Chew."
+    },
+    {
+      "index": 55,
+      "title": "Lightweight Recoverable Virtual Memory",
+      "abstract": "",
+      "year": "1993",
+      "venue": "SOSP",
+      "authors": "M. Satyanarayanan, Henry H. Mashburn, Puneet Kumar, David C. Steere, and\nJames J. Kistler."
+    },
+    {
+      "index": 56,
+      "title": "Generic Virtual Memory Management for Operating System Kernels",
+      "abstract": "",
+      "year": "1989",
+      "venue": "SOSP",
+      "authors": "E. Abrossimov, M. Rozier, and M. Shapiro."
+    },
+    {
+      "index": 57,
+      "title": "WSCLOCK – A Simple and Effective Algorithm for Virtual Memory Management",
+      "abstract": "",
+      "year": "1981",
+      "venue": "SOSP",
+      "authors": "Richard W. Carr and John L. Hennessy."
+    },
+    {
+      "index": 58,
+      "title": "CRAMM: Virtual Memory Support for Garbage-Collected Applications",
+      "abstract": "",
+      "year": "2006",
+      "venue": "OSDI",
+      "authors": "Ting Yang, Emery D. Berger, Scott F. Kaplan, and J. Eliot B. Moss."
+    },
+    {
+      "index": 59,
+      "title": "Virtual Memory",
+      "abstract": "",
+      "year": "1970",
+      "venue": "CSUR",
+      "authors": "Peter J. Denning."
+    },
+    {
+      "index": 60,
+      "title": "Virtual Memory System, 1973",
+      "abstract": "",
+      "year": "1973",
+      "venue": "",
+      "authors": "Thomas Ahearn, Robert Capowski, Neal Christensen, Patrick Gannon, Arlin Lee,\nand John Liptay."
+    },
+    {
+      "index": 61,
+      "title": "Survey of Virtual Machine Research",
+      "abstract": "",
+      "year": "1974",
+      "venue": "Computer",
+      "authors": "Robert P Goldberg."
+    },
+    {
+      "index": 62,
+      "title": "A Comparative Study of Set Associative Memory Mapping Algorithms and Their Use for Cache and Main Memory",
+      "abstract": "",
+      "year": "1978",
+      "venue": "IEEE Transactions on Software Engineering",
+      "authors": "A.J. Smith."
+    },
+    {
+      "index": 63,
+      "title": "An In-Cache Address Translation Mechanism",
+      "abstract": "",
+      "year": "1986",
+      "venue": "ISCA",
+      "authors": "D. A. Wood, S. J. Eggers, G. Gibson, M. D. Hill, and J. M. Pendleton."
+    },
+    {
+      "index": 64,
+      "title": "A Simulation Based Study of TLB Performance",
+      "abstract": "",
+      "year": "1992",
+      "venue": "ISCA",
+      "authors": "J Bradley Chen, Anita Borg, and Norman P Jouppi."
+    },
+    {
+      "index": 65,
+      "title": "Architecture Support for Single Address Space Operating Systems",
+      "abstract": "",
+      "year": "1992",
+      "venue": "ASPLOS",
+      "authors": "Eric J. Koldinger, Jeffrey S. Chase, and Susan J. Eggers."
+    },
+    {
+      "index": 66,
+      "title": "The Grand Unified Theory of Address Spaces",
+      "abstract": "",
+      "year": "1995",
+      "venue": "HotOS",
+      "authors": "Anders Lindstrom, John Rosenberg, and Alan Dearle."
+    },
+    {
+      "index": 67,
+      "title": "Virtual Memory in Contemporary Microprocessors",
+      "abstract": "",
+      "year": "1998",
+      "venue": "IEEE Micro",
+      "authors": "Bruce Jacob and Trevor Mudge."
+    },
+    {
+      "index": 68,
+      "title": "AVM: Application-Level Virtual Memory",
+      "abstract": "",
+      "year": "1995",
+      "venue": "HotOS",
+      "authors": "D. R. Engler, S. K. Gupta, and M. F. Kaashoek."
+    },
+    {
+      "index": 69,
+      "title": "Architectural Support for Translation Table Management in Large Address Space Machines",
+      "abstract": "",
+      "year": "1993",
+      "venue": "ISCA",
+      "authors": "Jerry Huck and Jim Hays."
+    },
+    {
+      "index": 70,
+      "title": "The Interaction of Architecture and Operating System Design",
+      "abstract": "",
+      "year": "1991",
+      "venue": "ASPLOS",
+      "authors": "Thomas E. Anderson, Henry M. Levy, Brian N. Bershad, and Edward D. Lazowska."
+    },
+    {
+      "index": 71,
+      "title": "Introduction and Overview of the Multics System",
+      "abstract": "",
+      "year": "1965",
+      "venue": "AFIPS",
+      "authors": "F. J. Corbató and V. A. Vyssotsky."
+    },
+    {
+      "index": 72,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Intel.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 73,
+      "title": "Arm Architecture Reference Manual for A-profile Architecture",
+      "abstract": "",
+      "year": "2021",
+      "venue": "https://developer.arm.com/documentation/ddi",
+      "authors": "ARM."
+    },
+    {
+      "index": 74,
+      "title": "Intel Cascade Lake",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "WikiChip."
+    },
+    {
+      "index": 75,
+      "title": "Trident: Harnessing Architectural Resources for All Page Sizes in X86 Processors",
+      "abstract": "",
+      "year": "2021",
+      "venue": "MICRO",
+      "authors": "Venkat Sri Sai Ram, Ashish Panwar, and Arkaprava Basu."
+    },
+    {
+      "index": 76,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "2011",
+      "venue": "https://lwn.net/Articles/",
+      "authors": "Jonathan Corbet.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 77,
+      "title": "Practical, Transparent Operating System Support for Superpages",
+      "abstract": "",
+      "year": "2002",
+      "venue": "OSDI",
+      "authors": "Juan Navarro, Sitaram Iyer, Peter Druschel, and Alan Cox."
+    },
+    {
+      "index": 78,
+      "title": "Hawkeye: Efficient Fine-grained Os Support for Huge Pages",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ASPLOS",
+      "authors": "Ashish Panwar, Sorav Bansal, and K Gopinath."
+    },
+    {
+      "index": 79,
+      "title": "Translation Ranger: Operating System Support for Contiguity-Aware TLBs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ISCA",
+      "authors": "Zi Yan, Daniel Lustig, David Nellans, and Abhishek Bhattacharjee."
+    },
+    {
+      "index": 80,
+      "title": "Enhancing and Exploiting Contiguity for Fast Memory Virtualization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ISCA",
+      "authors": "Chloe Alverti, Stratos Psomadakis, Vasileios Karakostas, Jayneel Gandhi,\nKonstantinos Nikas, Georgios Goumas, and Nectarios Koziris."
+    },
+    {
+      "index": 81,
+      "title": "TMO: Transparent Memory Offloading in Datacenters",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ASPLOS",
+      "authors": "Johannes Weiner, Niket Agarwal, Dan Schatzberg, Leon Yang, Hao Wang, Blaise\nSanouillet, Bikash Sharma, Tejun Heo, Mayank Jain, Chunqiang Tang, and\nDimitrios Skarlatos."
+    },
+    {
+      "index": 82,
+      "title": "Memtrade: Marketplace for Disaggregated Memory Clouds",
+      "abstract": "",
+      "year": "2023",
+      "venue": "SIGMETRICS",
+      "authors": "Hasan Al Maruf, Yuhong Zhong, Hongyi Wang, Mosharaf Chowdhury, Asaf Cidon, and\nCarl Waldspurger."
+    },
+    {
+      "index": 83,
+      "title": "Software-Defined Far Memory in Warehouse-Scale Computers",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ASPLOS",
+      "authors": "Andres Lagar-Cavilla, Junwhan Ahn, Suleiman Souhlal, Neha Agarwal, Radoslaw\nBurny, Shakeel Butt, Jichuan Chang, Ashwin Chaugule, Nan Deng, Junaid Shahid,\nGreg Thelen, Kamil Adam Yurtsever, Yu Zhao, and Parthasarathy Ranganathan."
+    },
+    {
+      "index": 84,
+      "title": "Elastic Cuckoo Page Tables: Rethinking Virtual Memory Translation for Parallelism",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ASPLOS",
+      "authors": "Dimitrios Skarlatos, Apostolos Kokolis, Tianyin Xu, and Josep Torrellas."
+    },
+    {
+      "index": 85,
+      "title": "Memory-Efficient Hashed Page Tables",
+      "abstract": "",
+      "year": "2023",
+      "venue": "HPCA",
+      "authors": "Jovan Stojkovic, Namrata Mantri, Dimitrios Skarlatos, Tianyin Xu, and Josep\nTorrellas."
+    },
+    {
+      "index": 86,
+      "title": "Every Walk’s a Hit: Making Page Walks Single-Access Cache Hits",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ASPLOS",
+      "authors": "Chang Hyun Park, Ilias Vougioukas, Andreas Sandberg, and David Black-Schaffer."
+    },
+    {
+      "index": 87,
+      "title": "Parallel Virtualized Memory Translation with Nested Elastic Cuckoo Page Tables",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ASPLOS",
+      "authors": "Jovan Stojkovic, Dimitrios Skarlatos, Apostolos Kokolis, Tianyin Xu, and Josep\nTorrellas."
+    },
+    {
+      "index": 88,
+      "title": "ASID in Linux",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Elixir."
+    },
+    {
+      "index": 89,
+      "title": "Graphfire: Synergizing Fetch, Insertion, and Replacement Policies for Graph Analytics",
+      "abstract": "",
+      "year": "2023",
+      "venue": "",
+      "authors": "Aninda Manocha, Juan L. Aragón, and Margaret Martonosi."
+    },
+    {
+      "index": 90,
+      "title": "High Performance Cache Replacement Using Re-Reference Interval Prediction (RRIP)",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ISCA",
+      "authors": "Aamer Jaleel, Kevin B. Theobald, Simon C. Steely, and Joel Emer."
+    },
+    {
+      "index": 91,
+      "title": "Neural Networks: a Comprehensive Foundation",
+      "abstract": "",
+      "year": "1994",
+      "venue": "",
+      "authors": "Simon Haykin."
+    },
+    {
+      "index": 92,
+      "title": "Intel® 64 and ia-32 architectures software developer’s manual volume 2a: Instruction set reference",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 93,
+      "title": "A Case Against (Most) Context Switches",
+      "abstract": "",
+      "year": "2021",
+      "venue": "HotOS",
+      "authors": "Jack Tigar Humphries, Kostis Kaffes, David Mazières, and Christos\nKozyrakis."
+    },
+    {
+      "index": 94,
+      "title": "XPC: Architectural Support for Secure and Efficient Cross Process Call",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ISCA",
+      "authors": "Dong Du, Zhichao Hua, Yubin Xia, Binyu Zang, and Haibo Chen."
+    },
+    {
+      "index": 95,
+      "title": "Latr: Lazy Translation Coherence",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ASPLOS",
+      "authors": "Mohan Kumar Kumar, Steffen Maass, Sanidhya Kashyap, Ján Veselỳ, Zi Yan,\nTaesoo Kim, Abhishek Bhattacharjee, and Tushar Krishna."
+    },
+    {
+      "index": 96,
+      "title": "인공지능 기반 공격 그래프 생성",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Hewlett Packard.",
+      "orig_title": "",
+      "paper_id": "2311.14342v2"
+    },
+    {
+      "index": 97,
+      "title": "Stride Directed Prefetching in Scalar Processors",
+      "abstract": "",
+      "year": "1992",
+      "venue": "MICRO",
+      "authors": "John W. C. Fu, Janak H. Patel, and Bob L. Janssens."
+    },
+    {
+      "index": 98,
+      "title": "Effective Hardware-based Data Prefetching for High-performance Processors",
+      "abstract": "",
+      "year": "1995",
+      "venue": "",
+      "authors": "Tien-Fu Chen and Jean-Loup Baer."
+    },
+    {
+      "index": 99,
+      "title": "Transparent Hugepage Support",
+      "abstract": "",
+      "year": "2010",
+      "venue": "KVM Forum",
+      "authors": "Andrea Arcangeli."
+    },
+    {
+      "index": 100,
+      "title": "Compendia: Reducing Virtual-Memory Costs Via Selective Densification",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ISMM",
+      "authors": "Sam Ainsworth and Timothy M. Jones."
+    },
+    {
+      "index": 101,
+      "title": "Rebooting Virtual Memory with Midgard",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ISCA",
+      "authors": "Siddharth Gupta, Atri Bhattacharyya, Yunho Oh, Abhishek Bhattacharjee, Babak\nFalsafi, and Mathias Payer."
+    },
+    {
+      "index": 102,
+      "title": "Increasing gpu translation reach by leveraging under-utilized on-chip resources",
+      "abstract": "",
+      "year": "2021",
+      "venue": "MICRO",
+      "authors": "Jagadish B. Kotra, Michael LeBeane, Mahmut T. Kandemir, and Gabriel H. Loh."
+    },
+    {
+      "index": 103,
+      "title": "Ducati: High-performance address translation by extending tlb reach of gpu-accelerated systems",
+      "abstract": "",
+      "year": "2019",
+      "venue": "TACO",
+      "authors": "Aamer Jaleel, Eiman Ebrahimi, and Sam Duncan."
+    },
+    {
+      "index": 104,
+      "title": "CHiRP: Control-Flow History Reuse Prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "MICRO",
+      "authors": "Samira Mirbagher-Ajorpaz, Elba Garza, Gilles Pokam, and Daniel A. Jiménez."
+    },
+    {
+      "index": 105,
+      "title": "Prediction-Based Superpage-Friendly TLB Designs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "HPCA",
+      "authors": "Misel-Myrto Papadopoulou, Xin Tong, André Seznec, and Andreas Moshovos."
+    },
+    {
+      "index": 106,
+      "title": "Reducing TLB Power Requirements",
+      "abstract": "",
+      "year": "1997",
+      "venue": "ISLPED",
+      "authors": "Toni Juan, Tomas Lang, and Juan J. Navarro."
+    },
+    {
+      "index": 107,
+      "title": "Reducing TLB and Memory Overhead Using Online Superpage Promotion",
+      "abstract": "",
+      "year": "1995",
+      "venue": "ISCA",
+      "authors": "T.H. Romer, W.H. Ohlrich, A.R. Karlin, and B.N. Bershad."
+    },
+    {
+      "index": 108,
+      "title": "Compiler-directed Physical Address Generation for Reducing dTLB Power",
+      "abstract": "",
+      "year": "2004",
+      "venue": "ISPASS",
+      "authors": "I. Kadayif, P. Nath, M. Kandemir, and A. Sivasubramaniam."
+    },
+    {
+      "index": 109,
+      "title": "SpecTLB: A Mechanism for Speculative Address Translation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "ISCA",
+      "authors": "Thomas W. Barr, Alan L. Cox, and Scott Rixner."
+    },
+    {
+      "index": 110,
+      "title": "SIPT: Speculatively Indexed, Physically Tagged Caches",
+      "abstract": "",
+      "year": "2018",
+      "venue": "HPCA",
+      "authors": "Tianhao Zheng, Haishan Zhu, and Mattan Erez."
+    },
+    {
+      "index": 111,
+      "title": "Concurrent Support of Multiple Page Sizes on a Skewed Associative TLB",
+      "abstract": "",
+      "year": "2004",
+      "venue": "",
+      "authors": "A. Seznec."
+    },
+    {
+      "index": 112,
+      "title": "Exploiting Page Table Locality for Agile TLB Prefetching",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ISCA",
+      "authors": "Georgios Vavouliotis, Lluc Alvarez, Vasileios Karakostas, Konstantinos Nikas,\nNectarios Koziris, Daniel A. Jiménez, and Marc Casas."
+    },
+    {
+      "index": 113,
+      "title": "Morrigan: A Composite Instruction TLB Prefetcher",
+      "abstract": "",
+      "year": "2021",
+      "venue": "MICRO",
+      "authors": "Georgios Vavouliotis, Lluc Alvarez, Boris Grot, Daniel Jiménez, and Marc\nCasas."
+    },
+    {
+      "index": 114,
+      "title": "Prefetched Address Translation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "MICRO",
+      "authors": "Artemiy Margaritov, Dmitrii Ustiugov, Edouard Bugnion, and Boris Grot."
+    },
+    {
+      "index": 115,
+      "title": "Going the Distance for TLB Prefetching: An Application-driven Study",
+      "abstract": "",
+      "year": "2002",
+      "venue": "ISCA",
+      "authors": "Gokul B Kandiraju and Anand Sivasubramaniam."
+    },
+    {
+      "index": 116,
+      "title": "Recency-based TLB Preloading",
+      "abstract": "",
+      "year": "2000",
+      "venue": "ISCA",
+      "authors": "Ashley Saulsbury, Fredrik Dahlgren, and Per Stenström."
+    },
+    {
+      "index": 117,
+      "title": "Large-Reach Memory Management Unit Caches",
+      "abstract": "",
+      "year": "2013",
+      "venue": "MICRO",
+      "authors": "Abhishek Bhattacharjee."
+    },
+    {
+      "index": 118,
+      "title": "Dead Page and Dead Block Predictors: Cleaning TLBs and Caches Together",
+      "abstract": "",
+      "year": "2021",
+      "venue": "HPCA",
+      "authors": "Chandrashis Mazumdar, Prachatos Mitra, and Arkaprava Basu."
+    },
+    {
+      "index": 119,
+      "title": "Exploiting Parallelization On Address Translation: Shared Page Walk Cache",
+      "abstract": "",
+      "year": "2014",
+      "venue": "OMHI",
+      "authors": "Albert Esteve, Maria Engracia Gómez, and Antonio Robles."
+    },
+    {
+      "index": 120,
+      "title": "Pinning Page Structure Entries to Last-Level Cache for Fast Address Translation",
+      "abstract": "",
+      "year": "2022",
+      "venue": "IEEE Access",
+      "authors": "Osang Kwon, Yongho Lee, and Seokin Hong."
+    },
+    {
+      "index": 121,
+      "title": "Address Translation Conscious Caching and Prefetching for High Performance Cache Hierarchy",
+      "abstract": "",
+      "year": "2022",
+      "venue": "ISPASS",
+      "authors": "Vasudha Vasudha and Biswabandan Panda."
+    },
+    {
+      "index": 122,
+      "title": "Devirtualizing Virtual Memory for Heterogeneous Systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ASPLOS",
+      "authors": "Swapnil Haria, Michael M. Swift, and Mark D. Hill."
+    },
+    {
+      "index": 123,
+      "title": "Mosaic Pages: Big TLB Reach with Small Pages",
+      "abstract": "",
+      "year": "2023",
+      "venue": "ASPLOS",
+      "authors": "Krishnan Gosakan, Jaehyun Han, William (Massachusetts Inst. of Technology)\nKuszmaul, Ibrahim Nael Mubarek, Nirjhar Mukherjee, Guido Tagliavini, Evan\nWest, Michael Bender, Abhishek Bhattacharjee, Alex Conway, Martin\nFarach-Colton, Jayneel Gandhi, Rob Johnson, Sudarsun Kannan, and Donald\nPorter."
+    },
+    {
+      "index": 124,
+      "title": "Utopia: Fast and Efficient Address Translation via Hybrid Flexible & Restrictive Virtual-to-Physical Address Mappings",
+      "abstract": "",
+      "year": "2023",
+      "venue": "MICRO",
+      "authors": "Konstantinos Kanellopoulos, Rahul Bera, Kosta Stojiljkovic, F. Nisa Bostanci,\nCan Firtina, Rachata Ausavarungnirun, Rakesh Kumar, Nastaran Hajinazar,\nMohammad Sadrosadati, Nandita Vijaykumar, and Onur Mutlu."
+    },
+    {
+      "index": 125,
+      "title": "Near-Memory Address Translation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "PACT",
+      "authors": "Javier Picorel, Djordje Jevdjic, and Babak Falsafi."
+    },
+    {
+      "index": 126,
+      "title": "Accelerating Pointer Chasing in 3D-stacked Memory: Challenges, Mechanisms, Evaluation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICCD",
+      "authors": "Kevin Hsieh, Samira Khan, Nandita Vijaykumar, Kevin K. Chang, Amirali\nBoroumand, Saugata Ghose, and Onur Mutlu."
+    },
+    {
+      "index": 127,
+      "title": "Mitosis: Transparently Self-Replicating Page-Tables for Large-Memory Machines",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ASPLOS",
+      "authors": "Reto Achermann, Ashish Panwar, Abhishek Bhattacharjee, Timothy Roscoe, and\nJayneel Gandhi.",
+      "orig_title": "Mitosis: Transparently Self-Replicating Page-Tables for Large-Memory Machines",
+      "paper_id": "1910.05398v2"
+    },
+    {
+      "index": 128,
+      "title": "Do-It-Yourself Virtual Memory Translation",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISCA",
+      "authors": "Hanna Alam, Tianhao Zhang, Mattan Erez, and Yoav Etsion."
+    },
+    {
+      "index": 129,
+      "title": "Space Efficient Hash Tables with Worst Case Constant Access Time",
+      "abstract": "",
+      "year": "2003",
+      "venue": "STACS",
+      "authors": "Dimitris Fotakis, Rasmus Pagh, Peter Sanders, and Paul G. Spirakis."
+    },
+    {
+      "index": 130,
+      "title": "Perforated Page: Supporting Fragmented Memory Allocation for Large Pages",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ISCA",
+      "authors": "Chang Hyun Park, Sanghoon Cha, Bokyeong Kim, Youngjin Kwon, David\nBlack-Schaffer, and Jaehyuk Huh."
+    },
+    {
+      "index": 131,
+      "title": "Tailored Page Sizes",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ISCA",
+      "authors": "Faruk Guvenilir and Yale N Patt."
+    },
+    {
+      "index": 132,
+      "title": "Coordinated and Efficient Huge Page Management with Ingens",
+      "abstract": "",
+      "year": "2016",
+      "venue": "OSDI",
+      "authors": "Youngjin Kwon, Hangchen Yu, Simon Peter, Christopher J. Rossbach, and Emmett\nWitchel."
+    },
+    {
+      "index": 133,
+      "title": "Tradeoffs in Supporting Two Page Sizes",
+      "abstract": "",
+      "year": "1992",
+      "venue": "ISCA",
+      "authors": "Madhusudhan Talluri, Shing Kong, Mark D. Hill, and David A. Patterson."
+    },
+    {
+      "index": 134,
+      "title": "Making Huge Pages Actually Useful",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ASPLOS",
+      "authors": "Ashish Panwar, Aravinda Prasad, and K Gopinath."
+    },
+    {
+      "index": 135,
+      "title": "Large Pages and Lightweight Memory Management in Virtualized Environments: Can You Have It Both Ways?",
+      "abstract": "",
+      "year": "2015",
+      "venue": "MICRO",
+      "authors": "Binh Pham, Ján Veselý, Gabriel H. Loh, and Abhishek Bhattacharjee."
+    },
+    {
+      "index": 136,
+      "title": "Mosaic: A GPU Memory Manager with Application-Transparent Support for Multiple Page Sizes",
+      "abstract": "",
+      "year": "2017",
+      "venue": "MICRO",
+      "authors": "Rachata Ausavarungnirun, Joshua Landgraf, Vance Miller, Saugata Ghose, Jayneel\nGandhi, Christopher J. Rossbach, and Onur Mutlu."
+    },
+    {
+      "index": 137,
+      "title": "Reevaluating Online Superpage Promotion with Hardware Support",
+      "abstract": "",
+      "year": "2001",
+      "venue": "HPCA",
+      "authors": "Zhen Fang, Lixin Zhang, J.B. Carter, W.C. Hsieh, and S.A. McKee."
+    },
+    {
+      "index": 138,
+      "title": "Increasing TLB Reach Using Superpages Backed By Shadow Memory",
+      "abstract": "",
+      "year": "1998",
+      "venue": "ISCA",
+      "authors": "Mark Swanson, Leigh Stoller, and John Carter."
+    },
+    {
+      "index": 139,
+      "title": "Supporting Superpages in Non-Contiguous Physical Memory",
+      "abstract": "",
+      "year": "2015",
+      "venue": "HPCA",
+      "authors": "Yu Du, Miao Zhou, Bruce R Childers, Daniel Mossé, and Rami Melhem."
+    },
+    {
+      "index": 140,
+      "title": "Surpassing the TLB Performance of Superpages with Less Operating System Support",
+      "abstract": "",
+      "year": "1994",
+      "venue": "ASPLOS",
+      "authors": "Madhusudhan Talluri and Mark D. Hill."
+    },
+    {
+      "index": 141,
+      "title": "Supporting Superpage Allocation Without Additional Hardware Support",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ISMM",
+      "authors": "Mel Gorman and Patrick Healy."
+    },
+    {
+      "index": 142,
+      "title": "Predicting Execution Times with Partial Simulations in Virtual Memory Research: Why and How",
+      "abstract": "",
+      "year": "2020",
+      "venue": "MICRO",
+      "authors": "Mohammad Agbarya, Idan Yaniv, Jayneel Gandhi, and Dan Tsafrir."
+    },
+    {
+      "index": 143,
+      "title": "General Purpose Operating System Support for Multiple Page Sizes",
+      "abstract": "",
+      "year": "1998",
+      "venue": "",
+      "authors": "Narayanan Ganapathy and Curt Schimmel."
+    },
+    {
+      "index": 144,
+      "title": "Energy-Efficient Address Translation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "HPCA",
+      "authors": "Vasileios Karakostas, Jayneel Gandhi, Adrián Cristal, Mark D. Hill,\nKathryn S. McKinley, Mario Nemirovsky, Michael M. Swift, and Osman S. Unsal."
+    },
+    {
+      "index": 145,
+      "title": "Redundant Memory Mappings for Fast Access to Large Memories",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISCA",
+      "authors": "Vasileios Karakostas, Jayneel Gandhi, Furkan Ayar, Adrián Cristal, Mark D.\nHill, Kathryn S. McKinley, Mario Nemirovsky, Michael M. Swift, and Osman\nÜnsal."
+    },
+    {
+      "index": 146,
+      "title": "Hybrid TLB Coalescing: Improving TLB Translation Coverage Under Diverse Fragmented Memory Allocations",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISCA",
+      "authors": "Chang Hyun Park, Taekyung Heo, Jungi Jeong, and Jaehyuk Huh."
+    },
+    {
+      "index": 147,
+      "title": "FlexPointer: Fast Address TranslatiOn Based On Range TLB and Tagged Pointers",
+      "abstract": "",
+      "year": "2023",
+      "venue": "TACO",
+      "authors": "Dongwei Chen, Dong Tong, Chun Yang, Jiangfang Yi, and Xu Cheng."
+    },
+    {
+      "index": 148,
+      "title": "CoLT: Coalesced Large-Reach TLBs",
+      "abstract": "",
+      "year": "2012",
+      "venue": "MICRO",
+      "authors": "Binh Pham, Viswanathan Vaidyanathan, Aamer Jaleel, and Abhishek Bhattacharjee."
+    },
+    {
+      "index": 149,
+      "title": "Efficient Memory Virtualization: Reducing Dimensionality of Nested Page Walks",
+      "abstract": "",
+      "year": "2014",
+      "venue": "MICRO",
+      "authors": "Jayneel Gandhi, Arkaprava Basu, Mark D. Hill, and Michael M. Swift."
+    },
+    {
+      "index": 150,
+      "title": "Using TLB Speculation to Overcome Page Splintering in Virtual Machines",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Technical Report DCS-TR-713, Rutgers Univ",
+      "authors": "Binh Pham, Jan Vesely, Gabriel H Loh, and Abhishek Bhattacharjee."
+    },
+    {
+      "index": 151,
+      "title": "Accelerating Two-Dimensional Page Walks for Virtualized Systems",
+      "abstract": "",
+      "year": "2008",
+      "venue": "ASPLOS",
+      "authors": "Ravi Bhargava, Benjamin Serebrin, Francesco Spadini, and Srilatha Manne."
+    },
+    {
+      "index": 152,
+      "title": "Hardware Translation Coherence for Virtualized Systems",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISCA",
+      "authors": "Zi Yan, Ján Veselỳ, Guilherme Cox, and Abhishek Bhattacharjee.",
+      "orig_title": "Hardware Translation Coherence for Virtualized Systems",
+      "paper_id": "1701.07517v2"
+    },
+    {
+      "index": 153,
+      "title": "BabelFish: Fusing Address Translations for Containers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ISCA",
+      "authors": "Dimitrios Skarlatos, Umur Darbaz, Bhargava Gopireddy, Nam Sung Kim, and Josep\nTorrellas."
+    },
+    {
+      "index": 154,
+      "title": "PTEMagnet: FIne-graIned Physical Memory Reservation for Faster Page Walks in Public Clouds",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ASPLOS",
+      "authors": "Artemiy Margaritov, Dmitrii Ustiugov, Amna Shahab, and Boris Grot."
+    },
+    {
+      "index": 155,
+      "title": "Fast Local Page-tables for Virtualized Numa Servers with vmitosis",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ASPLOS",
+      "authors": "Ashish Panwar, Reto Achermann, Arkaprava Basu, Abhishek Bhattacharjee,\nK Gopinath, and Jayneel Gandhi."
+    },
+    {
+      "index": 156,
+      "title": "A New Perspective for Efficient Virtual-Cache Coherence",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISCA",
+      "authors": "Stefanos Kaxiras and Alberto Ros."
+    },
+    {
+      "index": 157,
+      "title": "SEESAW: Using Superpages to Improve VIPT Caches",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ISCA",
+      "authors": "Mayank Parasar, Abhishek Bhattacharjee, and Tushar Krishna."
+    },
+    {
+      "index": 158,
+      "title": "Reducing Memory Reference Energy with Opportunistic Virtual Caching",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ISCA",
+      "authors": "Arkaprava Basu, Mark D. Hill, and Michael M. Swift."
+    },
+    {
+      "index": 159,
+      "title": "Virtual-Address Caches Part 1: Problems and Solutions in Uniprocessors",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE Micro",
+      "authors": "Michel Cekleov and Michel Dubois."
+    },
+    {
+      "index": 160,
+      "title": "Coherency for Multiprocessor Virtual Address Caches",
+      "abstract": "",
+      "year": "1987",
+      "venue": "ASPLOS",
+      "authors": "James R. Goodman."
+    },
+    {
+      "index": 161,
+      "title": "Consistency Management for Virtually Indexed Caches",
+      "abstract": "",
+      "year": "1992",
+      "venue": "ASPLOS",
+      "authors": "Bob Wheeler and Brian N. Bershad."
+    },
+    {
+      "index": 162,
+      "title": "Organization and Performance of a Two-Level Virtual-Real Cache Hierarchy",
+      "abstract": "",
+      "year": "1989",
+      "venue": "ISCA",
+      "authors": "W. H. Wang, J.-L. Baer, and H. M. Levy."
+    },
+    {
+      "index": 163,
+      "title": "Enigma: Architectural and Operating System Support for Reducing the Impact of Address Translation",
+      "abstract": "",
+      "year": "2010",
+      "venue": "",
+      "authors": "Lixin Zhang, Evan Speight, Ram Rajamony, and Jiang Lin."
+    },
+    {
+      "index": 164,
+      "title": "The Virtual Block Interface: A Flexible Alternative to the Conventional Virtual Memory Framework",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ISCA",
+      "authors": "Nastaran Hajinazar, Pratyush Patel, Minesh Patel, Konstantinos Kanellopoulos,\nSaugata Ghose, Rachata Ausavarungnirun, Geraldo F. Oliveira, Jonathan\nAppavoo, Vivek Seshadri, and Onur Mutlu.",
+      "orig_title": "The Virtual Block Interface: A Flexible Alternative to the Conventional Virtual Memory Framework",
+      "paper_id": "2005.09748v1"
+    },
+    {
+      "index": 165,
+      "title": "PowerPC Architecture Book 2003",
+      "abstract": "",
+      "year": "2003",
+      "venue": "",
+      "authors": "B Frey."
+    },
+    {
+      "index": 166,
+      "title": "Virtual-Address Caches Part 2: Multiprocessor Issues",
+      "abstract": "",
+      "year": "1997",
+      "venue": "IEEE Micro",
+      "authors": "Michel Cekleov and Michel Dubois."
+    },
+    {
+      "index": 167,
+      "title": "Slurm: Simple Linux Utility for Resource Management",
+      "abstract": "",
+      "year": "2003",
+      "venue": "Workshop on Job Scheduling Strategies",
+      "authors": "Andy B Yoo, Morris A Jette, and Mark Grondona."
+    }
+  ]
+}

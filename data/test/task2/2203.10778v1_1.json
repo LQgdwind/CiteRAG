@@ -1,0 +1,565 @@
+{
+  "paper_id": "2203.10778v1",
+  "title": "Delving into the Estimation Shift of Batch Normalization in a Network",
+  "sections": {
+    "related work": "Batch normalization (BN) suffers from small-batch-size problem, since the estimation of population statistics could be inaccurate.\nTo address this issue, a variety of batch-free normalization (BFN) are proposed [ref]1  , e.g., layer normalization (LN) [ref]1 and group normalization (GN) [ref]1. These works perform the same normalization operation for each sample during training and inference. Another way to reduce the discrepancy between training and inference is to combine the estimated population statistics with mini-batch statistics for normalization during training      .\nThese work may outperform BN trained with a small batch size, where estimation is the main issue  7, but they usually have inferior performance when the batch size is moderate. Some works focus on estimating corrected normalization statistics during inference only, either for domain adaptation , corruption robustness  [ref]31 , or small-batch-size training   . These strategies do not affect the training scheme of the model.\nLi et al.  propose adaptive batch normalization (AdaBN) for domain adaptation, where the estimation of BN statistics for the available target domain is modulated during test. This idea is further exploited to improve robustness under covariate shift of the input data with corruptions  .\nAnother line of works correct the normalization statistics for small-batch-size training by optimizing    the\nsample weight during inference, seeking for that the normalized output by population statistics are similar to those observed using mini-batch statistics during training.\nBesides, there are works considering the prediction-time batch settings  [ref]31 for deep generative model  and preventing covariate shift of the test data [ref]31, where the mini-batch statistics from the test data are used for inference. Compared to the works shown in above, our work focuses on investigating the estimation shift of BN in a network. Our observation, that the estimation shift of BN can be accumulated in a network, provides clues to explain why a network with stacked BNs has significantly degenerated performance under small-batch-size training, and why the population statistics of BN in each layer needs to be adapted if there exists covariate shift for input data during test.\nBesides, we design XBNBlock with BN and BFN mixed to block the accumulation of estimation shift of BNs. Researches have also be conducted to build a normalization module in a layer by combining different normalization strategies.\nLuo et al. propose switchable normalization (SN) 7, which switches among the different normalization methods by learning their importance weights, computed by a softmax function. This idea is further extended by introducing the sparsity constraints , whitening operation , and dynamic calculation of the importance weights . Other methods address the combination of normalization methods in specific scenarios, including image style transfer , image-to-image translation , domain generalization  and meta-learning scenarios . Different from these methods which aim to build a normalization module in a layer, our proposed XBNBlock is a building block with BN and BFN mixed in different layers. Furthermore, our observation, that a BFN can block the accumulation of estimation shift of BNs in a network, provides a new view to explain the successes of above methods combining BN with other normalization methods. Our work is closely related to IBN-Net , which carefully integrates instance normalization (IN)  and BN as building blocks, and can be wrapped into several deep networks to improve their performances.\nNote that IBN-Net carefully designs the position of an IN and its channel number, while the design of our XBNBlock is simplified. Moreover, IBN-Net is motivated by that IN can learn style-invariant features  thus benefiting generalization, while our XBNBlock is motivated by that a BFN can relieve the estimation shift of BN, thus avoiding its degenerated test performance if inaccurate estimation exists.\nHere, we highlight our observation that a BFN (e.g., IN) can block the accumulation of estimation shift of BNs also provide a reasonable explanation to the success of IBN-Net in its test performance, especially in the scenarios with distribution shift ."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Layer normalization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1607.06450",
+      "authors": "Lei Jimmy Ba, Ryan Kiros, and Geoffrey E. Hinton"
+    },
+    {
+      "index": 1,
+      "title": "Revisiting Batch Normalization for Improving Corruption Robustness",
+      "abstract": "",
+      "year": "2021",
+      "venue": "WACV",
+      "authors": "Philipp Benz, Chaoning Zhang, Adil Karjauv, and In So Kweon",
+      "orig_title": "Revisiting batch normalization for improving corruption robustness",
+      "paper_id": "2010.03630v4"
+    },
+    {
+      "index": 2,
+      "title": "Understanding Batch Normalization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "Johan Bjorck, Carla Gomes, and Bart Selman",
+      "orig_title": "Understanding batch normalization",
+      "paper_id": "1806.02375v4"
+    },
+    {
+      "index": 3,
+      "title": "High-performance large-scale image recognition without normalization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "ICML",
+      "authors": "Andy Brock, Soham De, Samuel L Smith, and Karen Simonyan"
+    },
+    {
+      "index": 4,
+      "title": "TaskNorm: Rethinking Batch Normalization for Meta-Learning",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "John Bronskill, Jonathan Gordon, James Requeima, Sebastian Nowozin, and Richard E Turner",
+      "orig_title": "Tasknorm: Rethinking batch normalization for meta-learning",
+      "paper_id": "2003.03284v2"
+    },
+    {
+      "index": 5,
+      "title": "Online Normalization for Training Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Vitaliy Chiley, Ilya Sharapov, Atli Kosson, Urs Koster, Ryan Reece, Sofia Samaniego de la Fuente, Vishal Subbiah, and Michael James",
+      "orig_title": "Online normalization for training neural networks",
+      "paper_id": "1905.05894v3"
+    },
+    {
+      "index": 6,
+      "title": "Natural neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NeurIPS",
+      "authors": "Guillaume Desjardins, Karen Simonyan, Razvan Pascanu, and koray kavukcuoglu"
+    },
+    {
+      "index": 7,
+      "title": "Mask R-CNN",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICCV",
+      "authors": "Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross B. Girshick",
+      "orig_title": "Mask R-CNN",
+      "paper_id": "1703.06870v3"
+    },
+    {
+      "index": 8,
+      "title": "Deep Residual Learning for Image Recognition",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun",
+      "orig_title": "Deep residual learning for image recognition",
+      "paper_id": "1512.03385v1"
+    },
+    {
+      "index": 9,
+      "title": "Bag of Tricks for Image Classification with Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Tong He, Zhi Zhang, Hang Zhang, Zhongyue Zhang, Junyuan Xie, and Mu Li",
+      "orig_title": "Bag of tricks for image classification with convolutional neural networks",
+      "paper_id": "1812.01187v2"
+    },
+    {
+      "index": 10,
+      "title": "Densely connected convolutional networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Gao Huang, Zhuang Liu, and Kilian Q. Weinberger"
+    },
+    {
+      "index": 11,
+      "title": "Normalization Techniques in Training DNNs: Methodology, Analysis and Application",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2009.12836",
+      "authors": "Lei Huang, Jie Qin, Yi Zhou, Fan Zhu, Li Liu, and Ling Shao",
+      "orig_title": "Normalization techniques in training dnns: Methodology, analysis and application",
+      "paper_id": "2009.12836v1"
+    },
+    {
+      "index": 12,
+      "title": "Decorrelated Batch Normalization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Lei Huang, Dawei Yang, Bo Lang, and Jia Deng",
+      "orig_title": "Decorrelated batch normalization",
+      "paper_id": "1804.08450v1"
+    },
+    {
+      "index": 13,
+      "title": "An Investigation into the Stochasticity of Batch Whitening",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Lei Huang, Lei Zhao, Yi Zhou, Fan Zhu, Li Liu, and Ling Shao",
+      "orig_title": "An investigation into the stochasticity of batch whitening",
+      "paper_id": "2003.12327v1"
+    },
+    {
+      "index": 14,
+      "title": "Group Whitening: Balancing Learning Efficiency and Representational Capacity",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Lei Huang, Yi Zhou, Li Liu, Fan Zhu, and Ling Shao",
+      "orig_title": "Group whitening: Balancing learning efficiency and representational capacity",
+      "paper_id": "2009.13333v4"
+    },
+    {
+      "index": 15,
+      "title": "Batch Renormalization: Towards Reducing Minibatch Dependence in Batch-Normalized Models",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS",
+      "authors": "Sergey Ioffe",
+      "orig_title": "Batch renormalization: Towards reducing minibatch dependence in batch-normalized models",
+      "paper_id": "1702.03275v2"
+    },
+    {
+      "index": 16,
+      "title": "Batch normalization: Accelerating deep network training by reducing internal covariate shift",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICML",
+      "authors": "Sergey Ioffe and Christian Szegedy"
+    },
+    {
+      "index": 17,
+      "title": "Averaging Weights Leads to Wider Optima and Better Generalization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1803.05407",
+      "authors": "Pavel Izmailov, Dmitrii Podoprikhin, Timur Garipov, Dmitry Vetrov, and Andrew Gordon Wilson",
+      "orig_title": "Averaging weights leads to wider optima and better generalization",
+      "paper_id": "1803.05407v3"
+    },
+    {
+      "index": 18,
+      "title": "U-GAT-IT: Unsupervised Generative Attentional Networks with Adaptive Layer-Instance Normalization for Image-to-Image Translation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Junho Kim, Minjae Kim, Hyeonwoo Kang, and Kwang Hee Lee",
+      "orig_title": "U-gat-it: Unsupervised generative attentional networks with adaptive layer-instance normalization for image-to-image translation",
+      "paper_id": "1907.10830v4"
+    },
+    {
+      "index": 19,
+      "title": "Efficient backprop",
+      "abstract": "",
+      "year": "1998",
+      "venue": "Neural Networks: Tricks of the Trade",
+      "authors": "Yann LeCun, Leon Bottou, Genevieve B. Orr, and Klaus-Robert Muller"
+    },
+    {
+      "index": 20,
+      "title": "Second order properties of error surfaces",
+      "abstract": "",
+      "year": "1990",
+      "venue": "NeurIPS",
+      "authors": "Yann LeCun, Ido Kanter, and Sara A. Solla"
+    },
+    {
+      "index": 21,
+      "title": "Positional Normalization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "NeurIPS",
+      "authors": "Boyi Li, Felix Wu, Kilian Q Weinberger, and Serge Belongie",
+      "orig_title": "Positional normalization",
+      "paper_id": "1907.04312v2"
+    },
+    {
+      "index": 22,
+      "title": "Revisiting Batch Normalization For Practical Domain Adaptation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1603.04779",
+      "authors": "Yanghao Li, Naiyan Wang, Jianping Shi, Jiaying Liu, and Xiaodi Hou",
+      "orig_title": "Revisiting batch normalization for practical domain adaptation",
+      "paper_id": "1603.04779v4"
+    },
+    {
+      "index": 23,
+      "title": "Feature Pyramid Networks for Object Detection",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Tsung-Yi Lin, Piotr Dollár, Ross B. Girshick, Kaiming He, Bharath Hariharan, and Serge J. Belongie",
+      "orig_title": "Feature pyramid networks for object detection",
+      "paper_id": "1612.03144v2"
+    },
+    {
+      "index": 24,
+      "title": "Microsoft COCO: Common Objects in Context",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ECCV",
+      "authors": "Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva Ramanan, Piotr Dollár, and C. Lawrence Zitnick",
+      "orig_title": "Microsoft coco: Common objects in context",
+      "paper_id": "1405.0312v3"
+    },
+    {
+      "index": 25,
+      "title": "SGDR: stochastic gradient descent with restarts",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICLR",
+      "authors": "Ilya Loshchilov and Frank Hutter"
+    },
+    {
+      "index": 26,
+      "title": "Differentiable Learning-to-Normalize via Switchable Normalization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Ping Luo, Jiamin Ren, Zhanglin Peng, Ruimao Zhang, and Jingyu Li",
+      "orig_title": "Differentiable learning-to-normalize via switchable normalization",
+      "paper_id": "1806.10779v5"
+    },
+    {
+      "index": 27,
+      "title": "ShuffleNet V2: Practical Guidelines for Efficient CNN Architecture Design",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Ningning Ma, Xiangyu Zhang, Hai-Tao Zheng, and Jian Sun",
+      "orig_title": "Shufflenet v2: Practical guidelines for efficient cnn architecture design",
+      "paper_id": "1807.11164v1"
+    },
+    {
+      "index": 28,
+      "title": "maskrcnn-benchmark: Fast, modular reference implementation of Instance Segmentation and Object Detection algorithms in PyTorch",
+      "abstract": "",
+      "year": "2018",
+      "venue": "https://github.com/facebookresearch/maskrcnn-benchmark",
+      "authors": "Francisco Massa and Ross Girshick"
+    },
+    {
+      "index": 29,
+      "title": "Deep Boltzmann Machines and the Centering Trick, volume 7700 of LNCS",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Springer",
+      "authors": "Grégoire Montavon and Klaus-Robert Müller"
+    },
+    {
+      "index": 30,
+      "title": "Evaluating Prediction-Time Batch Normalization for Robustness under Covariate Shift",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2006.10963",
+      "authors": "Zachary Nado, Shreyas Padhy, D Sculley, Alexander D’Amour, Balaji Lakshminarayanan, and Jasper Snoek",
+      "orig_title": "Evaluating prediction-time batch normalization for robustness under covariate shift",
+      "paper_id": "2006.10963v3"
+    },
+    {
+      "index": 31,
+      "title": "Batch-Instance Normalization for Adaptively Style-Invariant Neural Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "Hyeonseob Nam and Hyo-Eun Kim",
+      "orig_title": "Batch-instance normalization for adaptively style-invariant neural networks",
+      "paper_id": "1805.07925v3"
+    },
+    {
+      "index": 32,
+      "title": "Two at Once: Enhancing Learning and Generalization Capacities via IBN-Net",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Xingang Pan, Ping Luo, Jianping Shi, and Xiaoou Tang",
+      "orig_title": "Two at once: Enhancing learning and generalization capacities via ibn-net",
+      "paper_id": "1807.09441v3"
+    },
+    {
+      "index": 33,
+      "title": "Switchable whitening for deep representation learning",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Xingang Pan, Xiaohang Zhan, Jianping Shi, Xiaoou Tang, and Ping Luo"
+    },
+    {
+      "index": 34,
+      "title": "Automatic differentiation in PyTorch",
+      "abstract": "",
+      "year": "2017",
+      "venue": "NeurIPS Autodiff Workshop",
+      "authors": "Adam Paszke, Sam Gross, Soumith Chintala, Gregory Chanan, Edward Yang, Zachary DeVito, Zeming Lin, Alban Desmaison, Luca Antiga, and Adam Lerer"
+    },
+    {
+      "index": 35,
+      "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "NeurIPS",
+      "authors": "Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun",
+      "orig_title": "Faster R-CNN: Towards real-time object detection with region proposal networks",
+      "paper_id": "1506.01497v3"
+    },
+    {
+      "index": 36,
+      "title": "ImageNet Large Scale Visual Recognition Challenge",
+      "abstract": "",
+      "year": "2015",
+      "venue": "International Journal of Computer Vision (IJCV)",
+      "authors": "Olga Russakovsky, Jia Deng, Hao Su, Jonathan Krause, Sanjeev Satheesh, Sean Ma, Zhiheng Huang, Andrej Karpathy, Aditya Khosla, Michael Bernstein, Alexander C. Berg, and Li Fei-Fei",
+      "orig_title": "ImageNet Large Scale Visual Recognition Challenge",
+      "paper_id": "1409.0575v3"
+    },
+    {
+      "index": 37,
+      "title": "MobileNetV2: Inverted Residuals and Linear Bottlenecks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Mark Sandler, Andrew G. Howard, Menglong Zhu, Andrey Zhmoginov, and Liang-Chieh Chen",
+      "orig_title": "Mobilenetv2: Inverted residuals and linear bottlenecks",
+      "paper_id": "1801.04381v4"
+    },
+    {
+      "index": 38,
+      "title": "How Does Batch Normalization Help Optimization?",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "Shibani Santurkar, Dimitris Tsipras, Andrew Ilyas, and Aleksander Madry",
+      "orig_title": "How does batch normalization help optimization?",
+      "paper_id": "1805.11604v5"
+    },
+    {
+      "index": 39,
+      "title": "Improving robustness against common corruptions by covariate shift adaptation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "NeurIPS",
+      "authors": "Steffen Schneider, Evgenia Rusak, Luisa Eck, Oliver Bringmann, Wieland Brendel, and Matthias Bethge"
+    },
+    {
+      "index": 40,
+      "title": "Learning to Optimize Domain Specific Normalization for Domain Generalization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Seonguk Seo, Yumin Suh, Dongwan Kim, Jongwoo Han, and Bohyung Han",
+      "orig_title": "Learning to optimize domain specific normalization for domain generalization",
+      "paper_id": "1907.04275v3"
+    },
+    {
+      "index": 41,
+      "title": "SSN: Learning Sparse Switchable Normalization via SparsestMax",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CVPR",
+      "authors": "Wenqi Shao, Tianjian Meng, Jingyu Li, Ruimao Zhang, Yudian Li, Xiaogang Wang, and Ping Luo",
+      "orig_title": "Ssn: Learning sparse switchable normalization via sparsestmax",
+      "paper_id": "1903.03793v1"
+    },
+    {
+      "index": 42,
+      "title": "Powernorm: Rethinking batch normalization in transformers",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICML",
+      "authors": "Sheng Shen, Zhewei Yao, Amir Gholami, Michael W Mahoney, and Kurt Keutzer"
+    },
+    {
+      "index": 43,
+      "title": "EvalNorm: Estimating Batch Normalization Statistics for Evaluation",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICCV",
+      "authors": "Saurabh Singh and Abhinav Shrivastava",
+      "orig_title": "Evalnorm: Estimating batch normalization statistics for evaluation",
+      "paper_id": "1904.06031v2"
+    },
+    {
+      "index": 44,
+      "title": "Unsupervised out-of-distribution detection with batch normalization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.09115",
+      "authors": "Jiaming Song, Yang Song, and Stefano Ermon"
+    },
+    {
+      "index": 45,
+      "title": "Four Things Everyone Should Know to Improve Batch Normalization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Cecilia Summers and Michael J. Dinneen",
+      "orig_title": "Four things everyone should know to improve batch normalization",
+      "paper_id": "1906.03548v2"
+    },
+    {
+      "index": 46,
+      "title": "Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI",
+      "authors": "Christian Szegedy, Sergey Ioffe, and Vincent Vanhoucke",
+      "orig_title": "Inception-v4, inception-resnet and the impact of residual connections on learning",
+      "paper_id": "1602.07261v2"
+    },
+    {
+      "index": 47,
+      "title": "Rethinking the inception architecture for computer vision",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CVPR",
+      "authors": "Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jonathon Shlens, and Zbigniew Wojna"
+    },
+    {
+      "index": 48,
+      "title": "Instance Normalization: The Missing Ingredient for Fast Stylization",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1607.08022",
+      "authors": "Dmitry Ulyanov, Andrea Vedaldi, and Victor S. Lempitsky",
+      "orig_title": "Instance normalization: The missing ingredient for fast stylization",
+      "paper_id": "1607.08022v3"
+    },
+    {
+      "index": 49,
+      "title": "A convergence analysis of log-linear training",
+      "abstract": "",
+      "year": "2011",
+      "venue": "NeurIPS",
+      "authors": "Simon Wiesler and Hermann Ney"
+    },
+    {
+      "index": 50,
+      "title": "Group Normalization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV",
+      "authors": "Yuxin Wu and Kaiming He",
+      "orig_title": "Group normalization",
+      "paper_id": "1803.08494v3"
+    },
+    {
+      "index": 51,
+      "title": "Rethinking “Batch” in BatchNorm",
+      "abstract": "",
+      "year": "2021",
+      "venue": "arXiv preprint arXiv:2105.07576",
+      "authors": "Yuxin Wu and Justin Johnson",
+      "orig_title": "Rethinking ”batch” in batchnorm",
+      "paper_id": "2105.07576v1"
+    },
+    {
+      "index": 52,
+      "title": "Aggregated Residual Transformations for Deep Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CVPR",
+      "authors": "Saining Xie, Ross B. Girshick, Piotr Dollár, Zhuowen Tu, and Kaiming He",
+      "orig_title": "Aggregated residual transformations for deep neural networks",
+      "paper_id": "1611.05431v2"
+    },
+    {
+      "index": 53,
+      "title": "Towards Stabilizing Batch Statistics in Backward Propagation of Batch Normalization",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ICLR",
+      "authors": "Junjie Yan, Ruosi Wan, Xiangyu Zhang, Wei Zhang, Yichen Wei, and Jian Sun",
+      "orig_title": "Towards stabilizing batch statistics in backward propagation of batch normalization",
+      "paper_id": "2001.06838v2"
+    },
+    {
+      "index": 54,
+      "title": "Cross-Iteration Batch Normalization",
+      "abstract": "",
+      "year": "2021",
+      "venue": "CVPR",
+      "authors": "Zhuliang Yao, Yue Cao, Shuxin Zheng, Gao Huang, and Stephen Lin",
+      "orig_title": "Cross-iteration batch normalization",
+      "paper_id": "2002.05712v3"
+    },
+    {
+      "index": 55,
+      "title": "Gradient Centralization: A New Optimization Technique for Deep Neural Networks",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Hongwei Yong, Jianqiang Huang, Xiansheng Hua, and Lei Zhang",
+      "orig_title": "Gradient centralization: A new optimization technique for deep neural networks",
+      "paper_id": "2004.01461v2"
+    },
+    {
+      "index": 56,
+      "title": "Wide Residual Networks",
+      "abstract": "",
+      "year": "2016",
+      "venue": "BMVC",
+      "authors": "Sergey Zagoruyko and Nikos Komodakis",
+      "orig_title": "Wide residual networks",
+      "paper_id": "1605.07146v4"
+    },
+    {
+      "index": 57,
+      "title": "mixup: Beyond Empirical Risk Minimization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Hongyi Zhang, Moustapha Cisse, Yann N. Dauphin, and David Lopez-Paz",
+      "orig_title": "mixup: Beyond empirical risk minimization",
+      "paper_id": "1710.09412v2"
+    },
+    {
+      "index": 58,
+      "title": "Exemplar Normalization for Learning Deep Representation",
+      "abstract": "",
+      "year": "2020",
+      "venue": "CVPR",
+      "authors": "Ruimao Zhang, Zhanglin Peng, Lingyun Wu, Zhen Li, and Ping Luo",
+      "orig_title": "Exemplar normalization for learning deep representation",
+      "paper_id": "2003.08761v2"
+    }
+  ]
+}

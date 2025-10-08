@@ -1,0 +1,493 @@
+{
+  "paper_id": "2101.06547v3",
+  "title": "LookOut: Diverse Multi-Future Prediction and Planning for Self-Driving",
+  "sections": {
+    "b.3 baselines": "All of these baselines share the shared perception backbone, object detection, and actor feature extraction models as described above. These baselines are divided into actor-independent models that either output explicit marginal likelihoods (i.e. MultiPath ) or output sampled trajectories such as our CVAE, DPP [ref]46 and DLow [ref]47 models, and scene-consistent models that are autoregressive (ESP ) or implicit variable models (ILVM [ref]5). As detailed in [ref]5, for MultiPath, we use their mixture of trajectories parameterization instead of our encoder-decoder architecture, to predict a gaussian for each waypoint. For the CVAE model, we replace the Encoder, Prior and Decoder SIMs with MLPs of similar dimension, but use the same variational inference parameterization. For the DPP model, we use the frozen Decoder from the CVAE model. Similarly to [ref]46, instead of predicting a μ𝜇\\mu and σ𝜎\\sigma vectors, we predict S𝑆S scenes samples of latent vectors using an MLP, where each scene sample consists of a 64-dimensional latent vector for each actor. We do this by predicting a S∗64𝑆64S*64-dimensional vector for each actor, and reshaping that into S𝑆S vectors of length 646464 per actor. Then, we decode each scene sample of latent vectors to get S𝑆S separate scene motion forecasts Y𝑌Y. We then apply the determinantal point process loss as described in [ref]46. To get the xisubscript𝑥𝑖x_{i} vectors, as referred to their work (not to be confused with the LookOut definition), we concatenate the trajectories in one scene over all the actors, their (x,y)𝑥𝑦(x,y) coordinates over time for each scene to get a N∗T∗2𝑁𝑇2N*T*2-dimensional vector xisubscript𝑥𝑖x_{i} for each scene i𝑖i, where N𝑁N is the number of actors and T𝑇T is the number of future timesteps predicted. To get the zisubscript𝑧𝑖z_{i} vectors, as referred to their work (not to be confused with the LookOut definition), we concatenate the per-actor vectors in each scene to get N∗64𝑁64N*64-dimensional vectors zisubscript𝑧𝑖z_{i} for each scene i𝑖i. We use these vectors to compute the Diversity Loss as described in their paper. For the DLow model, we use the frozen Decoder from the CVAE model. Similarly to [ref]47, we predict S𝑆S scene samples of an A𝐴A and B𝐵B vector for each agent using an MLP. Unlike their paper, we output an A𝐴A vector representing the diagonal of the matrix, because the full matrix would not fit in memory given our high dimensionality. These A𝐴A and B𝐵B are essentially used in the same way as described in section 3.2 of our paper, except planning-based diversity and scenario probability scoring are not used. For our ESP model, we adapt it to our feature contexts and memory constraints as described in [ref]5. For our ILVM baseline, we use exactly the formulation described in [ref]5 (where SIMs are used for the Encoder, Prior and Decoder), except we use a fixed standard gaussian distribution as our target encoder distribution instead leaving it unconstrained. The same is true for our CVAE model, and LookOut. This is because it allows our DPP, DLow and LookOut models to more easily learn to fit and map to the distribution of the latent space, making training much more tractable."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Search-based optimal motion planning for automated driving",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "authors": "Zlatan Ajanovic, Bakir Lacevic, Barys Shyrokau, Michael Stolz, and Martin Horn"
+    },
+    {
+      "index": 1,
+      "title": "Social lstm: Human trajectory prediction in crowded spaces",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE CVPR",
+      "authors": "Alexandre Alahi, Kratarth Goel, Vignesh Ramanathan, Alexandre Robicquet, Li Fei-Fei, and Silvio Savarese"
+    },
+    {
+      "index": 2,
+      "title": "End to End Learning for Self-Driving Cars",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv preprint arXiv:1604.07316",
+      "authors": "Mariusz Bojarski, Davide Del Testa, Daniel Dworakowski, Bernhard Firner, Beat Flepp, Prasoon Goyal, Lawrence D Jackel, Mathew Monfort, Urs Muller, Jiakai Zhang, et al.",
+      "orig_title": "End to end learning for self-driving cars",
+      "paper_id": "1604.07316v1"
+    },
+    {
+      "index": 3,
+      "title": "SpAGNN: Spatially-Aware Graph Neural Networks for Relational Behavior Forecasting from Sensor Data",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE International Conference on Robotics and Automation (ICRA)",
+      "authors": "S. Casas, C. Gulino, R. Liao, and R. Urtasun",
+      "orig_title": "Spagnn: Spatially-aware graph neural networks for relational behavior forecasting from sensor data",
+      "paper_id": "1910.08233v1"
+    },
+    {
+      "index": 4,
+      "title": "Implicit Latent Variable Model for Scene-Consistent Motion Forecasting",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV 2020",
+      "authors": "Sergio Casas, Cole Gulino, Simon Suo, Katie Luo, Renjie Liao, and Raquel Urtasun",
+      "orig_title": "Implicit latent variable model for scene-consistent motion forecasting",
+      "paper_id": "2007.12036v1"
+    },
+    {
+      "index": 5,
+      "title": "IntentNet: Learning to Predict Intention from Raw Sensor Data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conference on Robot Learning",
+      "authors": "Sergio Casas, Wenjie Luo, and Raquel Urtasun",
+      "orig_title": "Intentnet: Learning to predict intention from raw sensor data",
+      "paper_id": "2101.07907v1"
+    },
+    {
+      "index": 6,
+      "title": "MultiPath: Multiple Probabilistic Anchor Trajectory Hypotheses for Behavior Prediction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.05449",
+      "authors": "Yuning Chai, Benjamin Sapp, Mayank Bansal, and Dragomir Anguelov",
+      "orig_title": "Multipath: Multiple probabilistic anchor trajectory hypotheses for behavior prediction",
+      "paper_id": "1910.05449v1"
+    },
+    {
+      "index": 7,
+      "title": "End-to-end Driving via Conditional Imitation Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE International Conference on Robotics and Automation (ICRA)",
+      "authors": "Felipe Codevilla, Matthias Müller, Antonio López, Vladlen Koltun, and Alexey Dosovitskiy",
+      "orig_title": "End-to-end driving via conditional imitation learning",
+      "paper_id": "1710.02410v2"
+    },
+    {
+      "index": 8,
+      "title": "Multimodal Trajectory Predictions for Autonomous Driving using Deep Convolutional Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1809.10732",
+      "authors": "Henggang Cui, Vladan Radosavljevic, Fang-Chieh Chou, Tsung-Han Lin, Thi Nguyen, Tzu-Kuo Huang, Jeff Schneider, and Nemanja Djuric",
+      "orig_title": "Multimodal trajectory predictions for autonomous driving using deep convolutional networks",
+      "paper_id": "1809.10732v2"
+    },
+    {
+      "index": 9,
+      "title": "Motion prediction of traffic actors for autonomous driving using deep convolutional networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1808.05819",
+      "authors": "Nemanja Djuric, Vladan Radosavljevic, Henggang Cui, Thi Nguyen, Fang-Chieh Chou, Tsung-Han Lin, and Jeff Schneider"
+    },
+    {
+      "index": 10,
+      "title": "Vote3Deep: Fast Object Detection in 3D Point Clouds Using Efficient Convolutional Neural Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICRA",
+      "authors": "Martin Engelcke, Dushyant Rao, Dominic Zeng Wang, Chi Hay Tong, and Ingmar Posner",
+      "orig_title": "Vote3deep: Fast object detection in 3d point clouds using efficient convolutional neural networks",
+      "paper_id": "1609.06666v2"
+    },
+    {
+      "index": 11,
+      "title": "An Auto-tuning Framework for Autonomous Vehicles",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1808.04913",
+      "authors": "Haoyang Fan, Zhongpu Xia, Changchun Liu, Yaqin Chen, and Qi Kong",
+      "orig_title": "An auto-tuning framework for autonomous vehicles",
+      "paper_id": "1808.04913v1"
+    },
+    {
+      "index": 12,
+      "title": "On-road motion planning for autonomous vehicles",
+      "abstract": "",
+      "year": "2012",
+      "venue": "International Conference on Intelligent Robotics and Applications",
+      "authors": "Tianyu Gu and John M Dolan"
+    },
+    {
+      "index": 13,
+      "title": "Contingency planning over probabilistic obstacle predictions for autonomous road vehicles",
+      "abstract": "",
+      "year": "2013",
+      "venue": "IEEE Transactions on Robotics",
+      "authors": "Jason Hardy and Mark Campbell"
+    },
+    {
+      "index": 14,
+      "title": "beta-vae: Learning basic visual concepts with a constrained variational framework",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "Irina Higgins, Loic Matthey, Arka Pal, Christopher Burgess, Xavier Glorot, Matthew Botvinick, Shakir Mohamed, and Alexander Lerchner"
+    },
+    {
+      "index": 15,
+      "title": "Rules of the Road: Predicting Driving Behavior with a Convolutional Model of Semantic Interactions",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Joey Hong, Benjamin Sapp, and James Philbin",
+      "orig_title": "Rules of the road: Predicting driving behavior with a convolutional model of semantic interactions",
+      "paper_id": "1906.08945v1"
+    },
+    {
+      "index": 16,
+      "title": "Improving Rotated Text Detection with Rotation Region Proposal Networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "",
+      "authors": "Jing Huang, Viswanath Sivakumar, Mher Mnatsakanyan, and Guan Pang",
+      "orig_title": "Improving rotated text detection with rotation region proposal networks",
+      "paper_id": "1811.07031v1"
+    },
+    {
+      "index": 17,
+      "title": "DiversityGAN: Diversity-Aware Vehicle Motion Prediction via Latent Semantic Sampling",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "Xin Huang, Stephen G. McGill, Jonathan A. DeCastro, Luke Fletcher, John J. Leonard, Brian C. Williams, and Guy Rosman",
+      "orig_title": "Diversitygan: Diversity-aware vehicle motion prediction via latent semantic sampling",
+      "paper_id": "1911.12736v2"
+    },
+    {
+      "index": 18,
+      "title": "Discrete Residual Flow for Probabilistic Pedestrian Behavior Prediction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1910.08041",
+      "authors": "Ajay Jain, Sergio Casas, Renjie Liao, Yuwen Xiong, Song Feng, Sean Segal, and Raquel Urtasun",
+      "orig_title": "Discrete residual flow for probabilistic pedestrian behavior prediction",
+      "paper_id": "1910.08041v1"
+    },
+    {
+      "index": 19,
+      "title": "Learning to drive in a day",
+      "abstract": "",
+      "year": "2019",
+      "venue": "International Conference on Robotics and Automation (ICRA)",
+      "authors": "Alex Kendall, Jeffrey Hawke, David Janz, Przemyslaw Mazur, Daniele Reda, John-Mark Allen, Vinh-Dieu Lam, Alex Bewley, and Amar Shah"
+    },
+    {
+      "index": 20,
+      "title": "Adam: A method for stochastic optimization",
+      "abstract": "",
+      "year": "2014",
+      "venue": "arXiv preprint arXiv:1412.6980",
+      "authors": "Diederik P Kingma and Jimmy Ba"
+    },
+    {
+      "index": 21,
+      "title": "Auto-encoding variational bayes",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ICLR",
+      "authors": "Diederik P Kingma and Max Welling"
+    },
+    {
+      "index": 22,
+      "title": "3d fully convolutional network for vehicle detection in point cloud",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE/RSJ IROS",
+      "authors": "Bo Li"
+    },
+    {
+      "index": 23,
+      "title": "Fast and furious: Real time end-to-end 3d detection, tracking and motion forecasting with a single convolutional net",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE CVPR",
+      "authors": "Wenjie Luo, Bin Yang, and Raquel Urtasun"
+    },
+    {
+      "index": 24,
+      "title": "Arbitrary-Oriented Scene Text Detection via Rotation Proposals",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Multimedia",
+      "authors": "Jianqi Ma, Weiyuan Shao, Hao Ye, Li Wang, Hong Wang, Yingbin Zheng, and Xiangyang Xue",
+      "orig_title": "Arbitrary-oriented scene text detection via rotation proposals",
+      "paper_id": "1703.01086v3"
+    },
+    {
+      "index": 25,
+      "title": "Lidarsim: Realistic lidar simulation by leveraging the real world",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+      "authors": "Sivabalan Manivasagam, Shenlong Wang, Kelvin Wong, Wenyuan Zeng, Mikita Sazanovich, Shuhan Tan, Bin Yang, Wei-Chiu Ma, and Raquel Urtasun"
+    },
+    {
+      "index": 26,
+      "title": "Driving Policy Transfer via Modularity and Abstraction",
+      "abstract": "",
+      "year": "2018",
+      "venue": "arXiv preprint arXiv:1804.09364",
+      "authors": "Matthias Müller, Alexey Dosovitskiy, Bernard Ghanem, and Vladlen Koltun",
+      "orig_title": "Driving policy transfer via modularity and abstraction",
+      "paper_id": "1804.09364v3"
+    },
+    {
+      "index": 27,
+      "title": "A survey of motion planning and control techniques for self-driving urban vehicles",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on intelligent vehicles",
+      "authors": "Brian Paden, Michal Čáp, Sze Zheng Yong, Dmitry Yershov, and Emilio Frazzoli"
+    },
+    {
+      "index": 28,
+      "title": "Diverse and Admissible Trajectory Forecasting through Multimodal Context Understanding",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.03212",
+      "authors": "Seong Hyeon Park, Gyubok Lee, Manoj Bhat, Jimin Seo, Minseok Kang, Jonathan Francis, Ashwin R Jadhav, Paul Pu Liang, and Louis-Philippe Morency",
+      "orig_title": "Diverse and admissible trajectory forecasting through multimodal context understanding",
+      "paper_id": "2003.03212v4"
+    },
+    {
+      "index": 29,
+      "title": "CoverNet: Multimodal Behavior Prediction using Trajectory Sets",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1911.10298",
+      "authors": "Tung Phan-Minh, Elena Corina Grigore, Freddy A Boulton, Oscar Beijbom, and Eric M Wolff",
+      "orig_title": "Covernet: Multimodal behavior prediction using trajectory sets",
+      "paper_id": "1911.10298v2"
+    },
+    {
+      "index": 30,
+      "title": "Alvinn: An autonomous land vehicle in a neural network",
+      "abstract": "",
+      "year": "1989",
+      "venue": "CARNEGIE-MELLON UNIV PITTSBURGH PA ARTIFICIAL INTELLIGENCE AND PSYCHOLOGY …",
+      "authors": "Dean A Pomerleau"
+    },
+    {
+      "index": 31,
+      "title": "R2p2: A reparameterized pushforward policy for diverse, precise generative path forecasting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Nicholas Rhinehart, Kris M Kitani, and Paul Vernaza"
+    },
+    {
+      "index": 32,
+      "title": "PRECOG: PREdiction Conditioned On Goals in Visual Multi-Agent Settings",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv e-prints",
+      "authors": "Nicholas Rhinehart, Rowan McAllister, Kris Kitani, and Sergey Levine"
+    },
+    {
+      "index": 33,
+      "title": "A reduction of imitation learning and structured prediction to no-regret online learning",
+      "abstract": "",
+      "year": "2011",
+      "venue": "fourteenth international conference on artificial intelligence and statistics",
+      "authors": "Stéphane Ross, Geoffrey Gordon, and Drew Bagnell"
+    },
+    {
+      "index": 34,
+      "title": "Perceive, Predict, and Plan: Safe Motion Planning Through Interpretable Semantic Representations",
+      "abstract": "",
+      "year": "2020",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "Abbas Sadat, Sergio Casas, Mengye Ren, Xinyu Wu, Pranaab Dhawan, and Raquel Urtasun",
+      "orig_title": "Perceive, predict, and plan: Safe motion planning through interpretable semantic representations",
+      "paper_id": "2008.05930v1"
+    },
+    {
+      "index": 35,
+      "title": "Jointly Learnable Behavior and Trajectory Planning for Self-Driving Vehicles",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IROS 2019",
+      "authors": "Abbas Sadat, Mengye Ren, Andrei Pokrovsky, Yen-Chen Lin, Ersin Yumer, and Raquel Urtasun",
+      "orig_title": "Jointly learnable behavior and trajectory planning for self-driving vehicles",
+      "paper_id": "1910.04586v1"
+    },
+    {
+      "index": 36,
+      "title": "Learning structured output representation using deep conditional generative models",
+      "abstract": "",
+      "year": "2015",
+      "venue": "Advances in neural information processing systems",
+      "authors": "Kihyuk Sohn, Honglak Lee, and Xinchen Yan"
+    },
+    {
+      "index": 37,
+      "title": "Multiple Futures Prediction",
+      "abstract": "",
+      "year": "2019",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "Charlie Tang and Russ R Salakhutdinov",
+      "orig_title": "Multiple futures prediction",
+      "paper_id": "1911.00997v2"
+    },
+    {
+      "index": 38,
+      "title": "Decision-Time Postponing Motion Planning for Combinatorial Uncertain Maneuvering",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Conference on Intelligent Transportation Systems (ITSC)",
+      "authors": "Ömer Sahin Tas, Felix Hauser, and Christoph Stiller",
+      "orig_title": "Decision-time postponing motion planning for combinatorial uncertain maneuvering",
+      "paper_id": "2012.07170v1"
+    },
+    {
+      "index": 39,
+      "title": "Congested traffic states in empirical observations and microscopic simulations",
+      "abstract": "",
+      "year": "2000",
+      "venue": "Physical Review E",
+      "authors": "Martin Treiber, Ansgar Hennecke, and Dirk Helbing"
+    },
+    {
+      "index": 40,
+      "title": "Optimal trajectory generation for dynamic street scenarios in a frenet frame",
+      "abstract": "",
+      "year": "2010",
+      "venue": "IEEE International Conference on Robotics and Automation",
+      "authors": "Moritz Werling, Julius Ziegler, Sören Kammel, and Sebastian Thrun"
+    },
+    {
+      "index": 41,
+      "title": "Group Normalization",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ECCV (ECCV)",
+      "authors": "Yuxin Wu and Kaiming He",
+      "orig_title": "Group normalization",
+      "paper_id": "1803.08494v3"
+    },
+    {
+      "index": 42,
+      "title": "HDNET: Exploiting HD Maps for 3D Object Detection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "Conference on Robot Learning",
+      "authors": "Bin Yang, Ming Liang, and Raquel Urtasun",
+      "orig_title": "Hdnet: Exploiting hd maps for 3d object detection",
+      "paper_id": "2012.11704v1"
+    },
+    {
+      "index": 43,
+      "title": "PIXOR: Real-time 3D Object Detection from Point Clouds",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE CVPR",
+      "authors": "Bin Yang, Wenjie Luo, and Raquel Urtasun",
+      "orig_title": "Pixor: Real-time 3d object detection from point clouds",
+      "paper_id": "1902.06326v3"
+    },
+    {
+      "index": 44,
+      "title": "Probabilistic planning via determinization in hindsight",
+      "abstract": "",
+      "year": "2008",
+      "venue": "AAAI",
+      "authors": "Sung Wook Yoon, Alan Fern, Robert Givan, and Subbarao Kambhampati"
+    },
+    {
+      "index": 45,
+      "title": "Diverse Trajectory Forecasting with Determinantal Point Processes",
+      "abstract": "",
+      "year": "2019",
+      "venue": "arXiv preprint arXiv:1907.04967",
+      "authors": "Ye Yuan and Kris Kitani",
+      "orig_title": "Diverse trajectory forecasting with determinantal point processes",
+      "paper_id": "1907.04967v2"
+    },
+    {
+      "index": 46,
+      "title": "DLow: Diversifying Latent Flows for Diverse Human Motion Prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2003.08386",
+      "authors": "Ye Yuan and Kris Kitani",
+      "orig_title": "Dlow: Diversifying latent flows for diverse human motion prediction",
+      "paper_id": "2003.08386v2"
+    },
+    {
+      "index": 47,
+      "title": "End-to-end Interpretable Neural Motion Planner",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE CVPR",
+      "authors": "Wenyuan Zeng, Wenjie Luo, Simon Suo, Abbas Sadat, Bin Yang, Sergio Casas, and Raquel Urtasun",
+      "orig_title": "End-to-end interpretable neural motion planner",
+      "paper_id": "2101.06679v1"
+    },
+    {
+      "index": 48,
+      "title": "DSDNet: Deep Structured self-Driving Network",
+      "abstract": "",
+      "year": "2020",
+      "venue": "ECCV",
+      "authors": "Wenyuan Zeng, Shenlong Wang, Renjie Liao, Yun Chen, Bin Yang, and Raquel Urtasun",
+      "orig_title": "Dsdnet: Deep structured self-driving network",
+      "paper_id": "2008.06041v1"
+    },
+    {
+      "index": 49,
+      "title": "A non-conservatively defensive strategy for urban autonomous driving",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE International Conference on Intelligent Transportation Systems (ITSC)",
+      "authors": "Wei Zhan, Changliu Liu, Ching-Yao Chan, and Masayoshi Tomizuka"
+    },
+    {
+      "index": 50,
+      "title": "TNT: Target-driveN Trajectory Prediction",
+      "abstract": "",
+      "year": "2020",
+      "venue": "arXiv preprint arXiv:2008.08294",
+      "authors": "Hang Zhao, Jiyang Gao, Tian Lan, Chen Sun, Benjamin Sapp, Balakrishnan Varadarajan, Yue Shen, Yi Shen, Yuning Chai, Cordelia Schmid, et al.",
+      "orig_title": "Tnt: Target-driven trajectory prediction",
+      "paper_id": "2008.08294v2"
+    },
+    {
+      "index": 51,
+      "title": "VoxelNet: End-to-End Learning for Point Cloud Based 3D Object Detection",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CVPR",
+      "authors": "Yin Zhou and Oncel Tuzel",
+      "orig_title": "Voxelnet: End-to-end learning for point cloud based 3D object detection",
+      "paper_id": "1711.06396v1"
+    },
+    {
+      "index": 52,
+      "title": "Trajectory planning for bertha—a local, continuous method",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE intelligent vehicles symposium",
+      "authors": "Julius Ziegler, Philipp Bender, Thao Dang, and Christoph Stiller"
+    }
+  ]
+}

@@ -1,0 +1,481 @@
+{
+  "paper_id": "2001.09556v1",
+  "title": "Crowd Scene Analysis by Output Encoding",
+  "sections": {
+    "i introduction": "The wide deployment of surveillance cameras in many cities stimulates the recent research interests in visual analysis of crowd scenes. It has a wide range of real-world applications, such as crowd surveillance, traffic monitoring and planning, even cell counting. Mainstream approaches can be summarized into two categories: counting by density prediction and counting by detection. State-of-the-art methods use regression-based models (e.g. object density estimator), which explicitly learn to count the objects of interest. These counting by density prediction approaches   [ref]3    have achieved superior performance on several existing counting datasets [ref]3  [ref]8. Density prediction methods measure deviation of the output density from a ground truth density during their training process. In order to train the density predictor, one has to create ground truth density map by smoothing on point (people head) annotations. This smoothing operation is extremely sensitive to high crowd density. If objects are densely present, peaks in the density map tend to merge. Neighboring peaks in the density map are very easy to mix together, thereby introducing errors in the very beginning stage. Additionally, sparse object locations create an imbalance in the cost function between positive and negative samples. Recent research  has indicated that only predicting object count or global density map for congested scenes is insufficient for real-world demand such as public safety or traffic flow monitoring. Grasping the accurate crowd position (rather than merely global density) is important for spatially identifying high-risk regions from whole monitor images. But there was a recent fashion to perform counting by density prediction. Although the crowd count could be a precise estimation in the whole image level, the predicted density map can largely deviate from the true density map in sub-image level. We illustrate this phenomenon in Fig. 1, where the global true count: 361 and estimated count: 365 are quite close to each other. But the estimated density does not offer reliable approximations to ground truth in specific image regions, whose true counts are 117, 63 and 16, but estimated counts are 138, 56 and 12. Despite the fashion of counting by density prediction, many researches  [ref]8  0 still propose to fulfill crowd counting and crowd localization simultaneously. Recent researches [ref]8  have argued that tackling localization task can bring noteworthy benefits for counting task, such as counting error correction, enabling localization-based applications e.g. human tracking. Counting by localization approaches formulate the counting task as a classic computer vision problem: object detection. For crowd scenes with few occlusion and low density, well-trained detector is able to localize objects, then object count is naturally obtained. These methods strive to directly predict the pixel level x,y-coordinate of objects. In this way, inevitable system prediction errors will also directly affect the pixel level coordinates of detected objects, such as position shift or size scaling of bounding boxes or dotted annotations. For general object detection, position shift or size scaling e.g. in tens pixels could be acceptable. However for accurate crowd localization, such shift or scaling can pose much bigger challenges for localization in crowded scenes where objects are densely distributed, and would result in complete false detections. It is often seen that the more crowded an area is, the more inaccurate detection could emerge. In this paper, we treat the task of crowd localization as an application of integrating Compressed Sensing based Output Encoding (CSOE) with supervised learning by CNN. As the output space is sparse for the crowd localization problem (only a few pixel locations are people head centroids), we can employ CSOE here. Furthermore, CS theory dictates that pairwise distances in the sparse space are approximately maintained in the compressed space 1. So, even after the output space encoding, CNN still targets the original output space in an equivalent distance norm. The principle behind our CSOE module is straightforward. CS converts the sparse output pixel space into dense and short vectors. As a regressor, we use a trained CNN to predict the compressed vectors. Then using a reconstruction algorithm, we recover sparse cell locations in the output pixel space. In other words, we seek a different route that casts the problem of detecting variable number of small objects into a task of signal regression in encoding signal space. Compared to pixel coordinates representation of crowd in images, a signal representation is more robust to inevitable system errors. On the basis of CSOE, we further render the structure of CNN+CS end-to-end trainable. CS-based encoding started with the work of Hsu et al. 1 that proved a generalization prediction error bound. The error bound depends on two factors. How well the machine learner has predicted; and how well the recovery process has worked. In this work, we realize the joint optimization of both the machine learner and the recovery process by implementing them as CNN-based observation layers and sparse coding based reconstruction layers of the end-to-end trainable network. In addition, we derive a backpropagation rule for the reconstruction layers. Thus, the end-to-end training process is not only occurring within the observation layers, but also back-propagates error signals to optimize the parameters of the reconstruction layers, finally removes the risk of gradient vanishing in the deep reconstruction layers. This is different from the conventional sequential pipeline, where each component is optimized independently and could cause error accumulation. Scale variation is a crucial challenge for object localization. An solution is to deploy in-network feature pyramids. E.g. FPN 2 adds a top-down connection to incorporate semantic high level features. Facing the issue of scale variation, we create Multiple Dilated Conv Branches (MDCB) sharing convolution weight but having different receptive field sizes for objects in different sizes. Furthermore, we deploy center pooling 3 to introduce the visual patterns within objects into the centroid point detection process. Due to the distance, capture angle between camera and crowd, targets present huge size variation. Recent crowd analysis works [ref]3 4 5 6 have suggested that the receptive field sizes of neural network should not be fixed, but modulated by the stimulus. Unfortunately, this property does not receive much attention in constructing deep learning models. In the paper, we present a nonlinear approach to aggregate information from multiple kernels to realize the adaptive changing of receptive field sizes. Specifically, we introduce an Adaptive Receptive Field Weighting (ARFW) module, which consists of a triplet of operations: spatially Aggregate, inter-channel Weight and Modulate. On the basis of backbone that generates multiple branches with various kernel sizes corresponding to different receptive field sizes, the Aggregate operator produces a channel descriptor by aggregating feature maps across their spatial dimensions. This descriptor enables a global receptive field within channel-wise feature maps. The Weight operator is based on two fully connected layers and produces a set of weights between channels. The Modulate operator modulates the feature maps of different receptive field sizes according to the channel weights. To this end, we propose a mechanism through which networks can learn to use global information to adaptively emphasize informative channels that have proper receptive field size and suppress less useful ones. The contributions of this paper are summarized as. (1) We propose the Compressed Sensing based Output Encoding (CSOE) scheme, which casts object localization as signal regression task, CSOE helps to boost localization performance in circumstances where targets are highly crowded without huge scale variation. (2) We create Multiple Dilated Convolution Branches (MDCB) that aims to improve localization accuracy when objects sizes change drastically in an image and offers a set of different receptive field sizes. Unlike traditional convolution+pooling operations, MDCB avoids excessive loss of detail resolution which poses huge challenges to high density crowd scenes analysis. (3) To further deals with scale variation issue, we propose an Adaptive Receptive Field Weighting (ARFW) mechanism through which networks can learn to use global information to adaptively emphasize informative channels that have proper receptive field size. (4) In the observation head, we enrich geometric center information by center pooling to capture more recognizable visual patterns that locate within objects, while may not always lie on the geometric center of objects. (5) We render the method end-to-end trainable by deriving an independent backpropagation rule for the reconstruction layers to prevent gradient vanishing and error accumulation brought by conventional cascaded networks."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Switching Convolutional Neural Network for Crowd Counting",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "D. B. Sam, S. Surya, and R. V. Babu",
+      "orig_title": "Switching convolutional neural network for crowd counting",
+      "paper_id": "1708.00199v2"
+    },
+    {
+      "index": 1,
+      "title": "Recurrent attentive zooming for joint crowd counting and precise localization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "C. Liu, X. Weng, and Y. Mu"
+    },
+    {
+      "index": 2,
+      "title": "Single-image crowd counting via multi-column convolutional neural network",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Y. Zhang, D. Zhou, S. Chen, S. Gao, and Y. Ma"
+    },
+    {
+      "index": 3,
+      "title": "Crowd Counting using Deep Recurrent Spatial-Aware Network",
+      "abstract": "",
+      "year": "2018",
+      "venue": "International Joint Conference on Artificial Intelligence (IJCAI)",
+      "authors": "L. Liu, H. Wang, G. Li, W. Ouyang, and L. Lin",
+      "orig_title": "Crowd counting using deep recurrent spatial-aware network",
+      "paper_id": "1807.00601v1"
+    },
+    {
+      "index": 4,
+      "title": "Scale aggregation network for accurate and efficient crowd counting",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "X. Cao, Z. Wang, Y. Zhao, and F. Su"
+    },
+    {
+      "index": 5,
+      "title": "Crowd counting via scale-adaptive convolutional neural network",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Winter Conference on Applications of Computer Vision",
+      "authors": "Z. Lu and M. Shi",
+      "orig_title": "Crowd counting via scale-adaptive convolutional neural network",
+      "paper_id": "1711.04433v4"
+    },
+    {
+      "index": 6,
+      "title": "Cross-scene crowd counting via deep convolutional neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Z. Cong, H. Li, X. Wang, and X. Yang"
+    },
+    {
+      "index": 7,
+      "title": "Composition Loss for Counting, Density Map Estimation and Localization in Dense Crowds",
+      "abstract": "",
+      "year": "2018",
+      "venue": "European Conference on Computer Vision (ECCV)",
+      "authors": "H. Idrees, M. Tayyab, K. Athrey, D. Zhang, S. Al-Maadeed, N. Rajpoot, and M. Shah",
+      "orig_title": "Composition loss for counting, density map estimation and localization in dense crowds",
+      "paper_id": "1808.01050v1"
+    },
+    {
+      "index": 8,
+      "title": "Where are the Blobs: Counting by Localization with Point Supervision",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "I. H. Laradji, N. Rostamzadeh, P. O. Pinheiro, D. Vázquez, and M. W. Schmidt",
+      "orig_title": "Where are the blobs: Counting by localization with point supervision",
+      "paper_id": "1807.09856v1"
+    },
+    {
+      "index": 9,
+      "title": "Point in, Box out: Beyond Counting Persons in Crowds",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Y. Liu, M. Shi, Q. Zhao, and X. Wang",
+      "orig_title": "Point in, box out: Beyond counting persons in crowds",
+      "paper_id": "1904.01333v2"
+    },
+    {
+      "index": 10,
+      "title": "Multi-label prediction via compressed sensing",
+      "abstract": "",
+      "year": "2009",
+      "venue": "CoRR",
+      "authors": "D. J. Hsu, S. M. Kakade, J. Langford, and T. Zhang"
+    },
+    {
+      "index": 11,
+      "title": "Feature Pyramid Networks for Object Detection",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "T. Lin, P. Dollár, R. B. Girshick, K. He, B. Hariharan, and S. J. Belongie",
+      "orig_title": "Feature pyramid networks for object detection",
+      "paper_id": "1612.03144v2"
+    },
+    {
+      "index": 12,
+      "title": "CenterNet: Keypoint Triplets for Object Detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "L. X. H. Q. Q. H. Q. T. Kaiwen Duan, Song Bai",
+      "orig_title": "Centernet: Keypoint triplets for object detection",
+      "paper_id": "1904.08189v3"
+    },
+    {
+      "index": 13,
+      "title": "CSRNet: Dilated Convolutional Neural Networks for Understanding the Highly Congested Scenes",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Y. Li, X. Zhang, and D. Chen",
+      "orig_title": "Csrnet: Dilated convolutional neural networks for understanding the highly congested scenes",
+      "paper_id": "1802.10062v4"
+    },
+    {
+      "index": 14,
+      "title": "Squeeze-and-Excitation Networks",
+      "abstract": "",
+      "year": "2017",
+      "venue": "CoRR",
+      "authors": "J. Hu, L. Shen, and G. Sun",
+      "orig_title": "Squeeze-and-excitation networks.",
+      "paper_id": "1709.01507v4"
+    },
+    {
+      "index": 15,
+      "title": "Scale-aware trident networks for object detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision (ICCV)",
+      "authors": "N. W. Z. Z. Yanghao Li, Yuntao Chen"
+    },
+    {
+      "index": 16,
+      "title": "Cross-scene crowd counting via deep convolutional neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "Z. Cong, H. Li, X. Wang, and X. Yang"
+    },
+    {
+      "index": 17,
+      "title": "Adaptive density map generation for crowd counting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE International Conference on Computer Vision (ICCV)",
+      "authors": "A. C. Jia Wan"
+    },
+    {
+      "index": 18,
+      "title": "Density-aware person detection and tracking in crowds",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "M. Rodriguez, I. Laptev, J. Sivic, and J. Audibert"
+    },
+    {
+      "index": 19,
+      "title": "Automatic adaptation of a generic pedestrian detector to a specific traffic scene",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "M. Wang and X. Wang"
+    },
+    {
+      "index": 20,
+      "title": "Detection of multiple, partially occluded humans in a single image by bayesian combination of edgelet part detectors",
+      "abstract": "",
+      "year": "2005",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "B. Wu and R. Nevatia"
+    },
+    {
+      "index": 21,
+      "title": "Estimating the number of people in crowded scenes by mid based foreground segmentation and head-shoulder detection",
+      "abstract": "",
+      "year": "2008",
+      "venue": "International Conference on Pattern Recognition",
+      "authors": "M. Li, Z. Zhang, K. Huang, and T. Tan"
+    },
+    {
+      "index": 22,
+      "title": "End-to-end people detection in crowded scenes",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "R. Stewart and M. Andriluka",
+      "orig_title": "End-to-end people detection in crowded scenes",
+      "paper_id": "1506.04878v3"
+    },
+    {
+      "index": 23,
+      "title": "DecideNet: Counting Varying Density Crowds Through Attention Guided Detection and Density Estimation",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "L. Jiang, C. Gao, D. Meng, and A. G. Hauptmann",
+      "orig_title": "Decidenet: Counting varying density crowds through attention guided detection and density estimation",
+      "paper_id": "1712.06679v2"
+    },
+    {
+      "index": 24,
+      "title": "Practical signal recovery from random projections",
+      "abstract": "",
+      "year": "2005",
+      "venue": "SPIE",
+      "authors": "E. J. Candes and J. K. Romberg"
+    },
+    {
+      "index": 25,
+      "title": "Robust uncertainty principles: Exact signal reconstruction from highly incomplete frequency information",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Transactions on Information Theory",
+      "authors": "T. T. Emmanuel Candes, Justin Rombergy"
+    },
+    {
+      "index": 26,
+      "title": "Compressed sensing",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Transactions on Information Theory",
+      "authors": "D. L. Donoho"
+    },
+    {
+      "index": 27,
+      "title": "Sparse and Redundant Representations: From Theory to Applications in Signal and Image Processing",
+      "abstract": "",
+      "year": "2010",
+      "venue": "Springer Publishing Company",
+      "authors": "M. Elad"
+    },
+    {
+      "index": 28,
+      "title": "A Practical Study of Longitudinal Reference Based Compressed Sensing for MRI",
+      "abstract": "",
+      "year": "2016",
+      "venue": "CoRR",
+      "authors": "S. Birns, B. Kim, S. Ku, K. Stangl, and D. Needell",
+      "orig_title": "A practical study of longitudinal reference based compressed sensing for MRI",
+      "paper_id": "1608.04728v1"
+    },
+    {
+      "index": 29,
+      "title": "Single-pixel imaging via compressive sampling",
+      "abstract": "",
+      "year": "2008",
+      "venue": "IEEE Signal Processing Magazine",
+      "authors": "M. F. Duarte, M. A. Davenport, D. Takhar, J. N. Laska, T. Sun, K. F. Kelly, and R. G. Baraniuk"
+    },
+    {
+      "index": 30,
+      "title": "Solving multiclass learning problems via error-correcting output codes",
+      "abstract": "",
+      "year": "1995",
+      "venue": "Journal of Artificial Intelligence Research",
+      "authors": "T. G. Dietterich and G. Bakiri"
+    },
+    {
+      "index": 31,
+      "title": "Random k-labelsets for multi-label classification",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "G. Tsoumakas, I. Katakis, and I. Vlahavas"
+    },
+    {
+      "index": 32,
+      "title": "Multilabel classification using Bayesian compressed sensing",
+      "abstract": "",
+      "year": "2012",
+      "venue": "Advances in Neural Information Processing Systems",
+      "authors": "A. Kapoor, R. Viswanathan, and P. Jain"
+    },
+    {
+      "index": 33,
+      "title": "Exploiting random projections and sparsity with random forests and gradient boosting methods",
+      "abstract": "",
+      "year": "2016",
+      "venue": "arXiv",
+      "authors": "A. Joly"
+    },
+    {
+      "index": 34,
+      "title": "Training convolutional neural networks and compressed sensing end-to-end for microscopy cell detection",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Transactions on Medical Imaging",
+      "authors": "Y. Xue, G. Bigras, J. Hugh, and N. Ray"
+    },
+    {
+      "index": 35,
+      "title": "Admm-csnet: A deep learning approach for image compressive sensing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+      "authors": "Y. Yang, J. Sun, H. LI, and Z. Xu"
+    },
+    {
+      "index": 36,
+      "title": "ConvCSNet: A Convolutional Compressive Sensing Framework Based on Deep Learning",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CoRR",
+      "authors": "X. Lu, W. Dong, P. Wang, G. Shi, and X. Xie",
+      "orig_title": "Convcsnet: A convolutional compressive sensing framework based on deep learning",
+      "paper_id": "1801.10342v1"
+    },
+    {
+      "index": 37,
+      "title": "Generating High-Quality Crowd Density Maps using Contextual Pyramid CNNs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "V. A. Sindagi and V. M. Patel",
+      "orig_title": "Generating high-quality crowd density maps using contextual pyramid cnns",
+      "paper_id": "1708.00953v1"
+    },
+    {
+      "index": 38,
+      "title": "Multi-scale convolutional neural networks for crowd counting",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Image Processing",
+      "authors": "L. Zeng, X. Xu, B. Cai, S. Qiu, and T. Zhang",
+      "orig_title": "Multi-scale convolutional neural networks for crowd counting",
+      "paper_id": "1702.02359v1"
+    },
+    {
+      "index": 39,
+      "title": "Crowd Counting by Adaptively Fusing Predictions from an Image Pyramid",
+      "abstract": "",
+      "year": "2018",
+      "venue": "British Machine Vision Conference (BMVC)",
+      "authors": "D. Kang and A. Chan",
+      "orig_title": "Crowd counting by adaptively fusing predictions from an image pyramid",
+      "paper_id": "1805.06115v2"
+    },
+    {
+      "index": 40,
+      "title": "Top-down feedback for crowd counting convolutional neural network",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "D. B. Sam and R. V. Babu"
+    },
+    {
+      "index": 41,
+      "title": "Selective Kernel Networks",
+      "abstract": "",
+      "year": "2019",
+      "venue": "CoRR",
+      "authors": "X. H. J. Y. Xiang Li, Wenhai Wang",
+      "orig_title": "Selective kernel networks",
+      "paper_id": "1903.06586v2"
+    },
+    {
+      "index": 42,
+      "title": "Weighted channel dropout for regularization of deep convolutional neural network",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "Z. W. Saihui Hou"
+    },
+    {
+      "index": 43,
+      "title": "Principles of computerized tomographic imaging",
+      "abstract": "",
+      "year": "2002",
+      "venue": "Medical Physics",
+      "authors": "A. C. Kak and M. Slaney"
+    },
+    {
+      "index": 44,
+      "title": "Output encoding by compressed sensing for cell detection with deep convnet",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI Workshop on Artificial Intelligence Applied to Assistive Technologies and Smart Environments",
+      "authors": "Y. Xue and N. Ray"
+    },
+    {
+      "index": 45,
+      "title": "Orthogonal matching pursuit for sparse signal recovery with noise.",
+      "abstract": "",
+      "year": "2011",
+      "venue": "IEEE Transactions on Information Theory",
+      "authors": "T. T. Cai and L. Wang"
+    },
+    {
+      "index": 46,
+      "title": "Super-linear convergence of dual augmented-Lagrangian algorithm for sparsity regularized estimation",
+      "abstract": "",
+      "year": "2011",
+      "venue": "Journal of Machine Learning Research",
+      "authors": "R. Tomioka, T. Suzuki, and M. Sugiyama"
+    },
+    {
+      "index": 47,
+      "title": "TensorFlow: Large-scale machine learning on heterogeneous systems",
+      "abstract": "",
+      "year": "2015",
+      "venue": "",
+      "authors": "M. Abadi et al."
+    },
+    {
+      "index": 48,
+      "title": "Learning fast approximations of sparse coding",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ICML",
+      "authors": "K. Gregor and Y. LeCun"
+    },
+    {
+      "index": 49,
+      "title": "CNN-based Cascaded Multi-task Learning of High-level Prior and Density Estimation for Crowd Counting",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Advanced Video and Signal Based Surveillance",
+      "authors": "V. A. Sindagi and V. M. Patel",
+      "orig_title": "Cnn-based cascaded multi-task learning of high-level prior and density estimation for crowd counting",
+      "paper_id": "1707.09605v2"
+    },
+    {
+      "index": 50,
+      "title": "Generating High-Quality Crowd Density Maps using Contextual Pyramid CNNs",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE International Conference on Computer Vision",
+      "authors": "V. A. Sindagi and V. M. Patel",
+      "orig_title": "Generating high-quality crowd density maps using contextual pyramid cnns",
+      "paper_id": "1708.00953v1"
+    },
+    {
+      "index": 51,
+      "title": "Crowd counting via adversarial cross-scale consistency pursuit",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "authors": "S. Zan, X. Yi, B. Ni, M. Wang, and X. Yang"
+    },
+    {
+      "index": 52,
+      "title": "Cross-scene crowd counting via deep convolutional neural networks",
+      "abstract": "",
+      "year": "2015",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "Z. Cong, H. Li, X. Wang, and X. Yang"
+    },
+    {
+      "index": 53,
+      "title": "Residual regression with semantic prior for crowd counting",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Conference on Computer Vision and Pattern Recognition",
+      "authors": "J. Wan, W. Luo, B. Wu, A. B. Chan, and W. Liu"
+    }
+  ]
+}

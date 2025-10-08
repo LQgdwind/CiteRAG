@@ -1,0 +1,319 @@
+{
+  "paper_id": "2004.13579v1",
+  "title": "TransEdge: Translating Relation-contextualized Embeddings for Knowledge Graphs",
+  "sections": {
+    "introduction": "A knowledge graph (KG) is a multi-relational graph, whose nodes correspond to entities and directed edges indicate the specific relations between entities. For example, Fig. 1(a) shows a snapshot of the graph-structured relational triples in DBpedia. In KGs, each labeled edge is usually represented by a relational triple in the form of (𝚑𝚎𝚊𝚍,𝚛𝚎𝚕𝚊𝚝𝚒𝚘𝚗,𝚝𝚊𝚒𝚕)𝚑𝚎𝚊𝚍𝚛𝚎𝚕𝚊𝚝𝚒𝚘𝚗𝚝𝚊𝚒𝚕(\\mathtt{head},\\mathtt{relation},\\mathtt{tail})111In the following, (𝚑𝚎𝚊𝚍,𝚛𝚎𝚕𝚊𝚝𝚒𝚘𝚗,𝚝𝚊𝚒𝚕)𝚑𝚎𝚊𝚍𝚛𝚎𝚕𝚊𝚝𝚒𝚘𝚗𝚝𝚊𝚒𝚕(\\mathtt{head},\\mathtt{relation},\\mathtt{tail}) is abbreviated as (h,r,t)ℎ𝑟𝑡(h,r,t)., meaning that the two entities 𝚑𝚎𝚊𝚍𝚑𝚎𝚊𝚍\\mathtt{head} and 𝚝𝚊𝚒𝚕𝚝𝚊𝚒𝚕\\mathtt{tail} hold a specific 𝚛𝚎𝚕𝚊𝚝𝚒𝚘𝚗𝚛𝚎𝚕𝚊𝚝𝚒𝚘𝚗\\mathtt{relation}. So, a typical KG can be defined as a triple 𝒦=(ℰ,ℛ,𝒯)𝒦ℰℛ𝒯\\mathcal{K}=(\\mathcal{E},\\mathcal{R},\\mathcal{T}), where ℰℰ\\mathcal{E} is the set of entities (i.e., nodes), ℛℛ\\mathcal{R} is the set of relations (i.e., edge labels), and 𝒯=ℰ×ℛ×ℰ𝒯ℰℛℰ\\mathcal{T}=\\mathcal{E}\\times\\mathcal{R}\\times\\mathcal{E} denotes the set of relational triples (i.e., labeled edges). Each entity or relation is usually denoted by a URI. For example, the URI of New Zealand in DBpedia is 𝚍𝚋𝚛:𝙽𝚎𝚠​_​𝚉𝚎𝚊𝚕𝚊𝚗𝚍:𝚍𝚋𝚛𝙽𝚎𝚠_𝚉𝚎𝚊𝚕𝚊𝚗𝚍\\mathtt{dbr:New\\_Zealand}222http://dbpedia.org/resource/New_Zealand. However, such discrete and symbolic representations of KGs fall short of supporting the efficient knowledge inference . Thus, learning continuous and low-dimensional embedding representations for KGs has drawn much attention in recent years and facilitated many KG-related tasks, such as link prediction [ref]2   [ref]17    4 , entity alignment      3 and entity classification tasks    KG embedding seeks to encode the entities and relations into vector spaces, and capture semantics by the geometric properties of embeddings. To model the relational structures of KGs, most embedding models in literature interpret relations as linear or bilinear mapping functions operating on entity embeddings, such as the relation translation in TransE [ref]2, the relation matrix factorization in DistMult 4, and the relation rotation in RotatE . We refer to this kind of models as relation-level embedding. However, such relation-level models represent each relation with one embedding representation for all related head-tail entity pairs, which cannot well reflect the complex relational structures of KGs. As shown in Fig. 1(a), different entity pairs may share the same relation while one entity pair may hold different relations. The relation-level embedding cannot distinguish the different contexts of relations, which would lead to indistinguishable embeddings and incorrect relation inference. Specifically, we take the translational KG embedding model TransE [ref]2 as an example to explicate the aforementioned issue. TransE interprets relations as translation vectors between entity embeddings. For example, given a relational triple (h,r,t)ℎ𝑟𝑡(h,r,t), TransE expects 𝐡+𝐫≈𝐭𝐡𝐫𝐭\\mathbf{h}+\\mathbf{r}\\approx\\mathbf{t} to hold, where the boldfaced letters denote the embeddings of entities and relations. The relation embedding 𝐫𝐫\\mathbf{r} serves as a translation vector from 𝐡𝐡\\mathbf{h} to 𝐭𝐭\\mathbf{t}. However, such relation translation encounters issues when facing more complex relations. For example, considering the relational triples in Fig. 1(a): (From Dusk Till Dawn, starring, Quentin Tarantino) and (From Dusk Till Dawn, starring, Cheech Marin), translational KG embeddings would have Quentin Tarantino≈Cheech MarinQuentin TarantinoCheech Marin\\textbf{Quentin Tarantino}\\approx\\textbf{Cheech Marin}, as shown in Fig. 1(b). In other words, the different entities getting involved in the same relation would be embedded very closely by the same relation translation. Such indistinguishable entity embeddings go against accurate embedding-based entity alignment. Quentin Tarantino and Cheech Marin would be mistaken for an aligned entity pair due to the high similarity of their embeddings. Besides, the similar relation embeddings, such as starring≈writerstarringwriter\\textbf{starring}\\approx\\textbf{writer}, would lead to the incorrect link prediction such as (From Dusk Till Dawn, writer, Cheech Marin). This problem has been noticed in the link prediction scenario  [ref]17 . Towards link prediction that predicts the missing entities for relational triples, they propose to distinguish entity embeddings with relation-specific projections. However, such projections divest KG embeddings of relational structures by injecting ambiguity into entity embeddings. In this paper, we introduce an edge-centric translational embedding model TransEdge, which differentiates the representations of a relation between different entity-specific contexts. This idea is motivated by the graph structures of KGs. Let us see Fig. 1(a). One head-tail entity pair can hold different relations, i.e, one edge can have different labels. Also, different edges can have the same label, indicating that there are multiple head-tail entity pairs having the same relation. Thus, it is intuitive that entities should have explicit embeddings while relations should have different contextualized representations when translating between different head-tail entity pairs. Thus, we propose to contextualize relations as different edge embeddings. The context of a relation is specified by its head and tail entities. We study two different methods, i.e., context compression and context projection, for computing edge embeddings given the edge direction (head and tail entity embeddings) and edge label (relation embeddings). To capture the KG structures, we follow the idea of translational KG embeddings and build translations between entity embeddings with edge embeddings. This modeling is simple but has appropriate geometric interpretations as shown in Fig. 1(c). Our main contributions are listed as follows: We propose a novel KG embedding model TransEdge. Different from existing models that learn one simple embedding per relation, TransEdge learns KG embeddings by contextualizing relation representations in terms of the specific head-tail entity pairs. We refer to such contextualized representations of a relation as edge embeddings and build edge translations between entity embeddings to capture the relational structures of KGs. TransEdge provides a novel perspective for KG embedding. (Section 3) We evaluate TransEdge on two tasks: entity alignment between two KGs and link prediction in a single KG. Experimental results on five datasets show that TransEdge obtains the state-of-the-art results on entity alignment. It also achieves very competitive performance (even the best Hits@1) on link prediction with low computational complexity. These experiments verify the good generalization of TransEdge. To the best of our knowledge, TransEdge is the first KG embedding model that achieves the best Hits@1 performance on both embedding-based entity alignment and link prediction. (Section 4)"
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Re-evaluating embedding-based knowledge graph completion methods",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CIKM",
+      "authors": "Akrami, F., Guo, L., Hu, W., Li, C."
+    },
+    {
+      "index": 1,
+      "title": "Translating embeddings for modeling multi-relational data",
+      "abstract": "",
+      "year": "2013",
+      "venue": "NIPS",
+      "authors": "Bordes, A., Usunier, N., García-Durán, A., Weston, J., Yakhnenko, O."
+    },
+    {
+      "index": 2,
+      "title": "Co-training Embeddings of Knowledge Graphs and Entity Descriptions for Cross-lingual Entity Alignment",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IJCAI",
+      "authors": "Chen, M., Tian, Y., Chang, K., Skiena, S., Zaniolo, C.",
+      "orig_title": "Co-training embeddings of knowledge graphs and entity descriptions for cross-lingual entity alignment",
+      "paper_id": "1806.06478v1"
+    },
+    {
+      "index": 3,
+      "title": "Multilingual knowledge graph embeddings for cross-lingual knowledge alignment",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCAI",
+      "authors": "Chen, M., Tian, Y., Yang, M., Zaniolo, C."
+    },
+    {
+      "index": 4,
+      "title": "Global RDF vector space embeddings",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISWC",
+      "authors": "Cochez, M., Ristoski, P., Ponzetto, S.P., Paulheim, H."
+    },
+    {
+      "index": 5,
+      "title": "Word translation without parallel data",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ICLR",
+      "authors": "Conneau, A., Lample, G., Ranzato, M., Denoyer, L., Jégou, H."
+    },
+    {
+      "index": 6,
+      "title": "HyTE: Hyperplane-based temporally aware knowledge graph embedding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "EMNLP",
+      "authors": "Dasgupta, S.S., Ray, S.N., Talukdar, P."
+    },
+    {
+      "index": 7,
+      "title": "Convolutional 2D Knowledge Graph Embeddings",
+      "abstract": "",
+      "year": "2018",
+      "venue": "AAAI",
+      "authors": "Dettmers, T., Minervini, P., Stenetorp, P., Riedel, S.",
+      "orig_title": "Convolutional 2D knowledge graph embeddings",
+      "paper_id": "1707.01476v6"
+    },
+    {
+      "index": 8,
+      "title": "Entity matching on web tables: a table embeddings approach for blocking",
+      "abstract": "",
+      "year": "2017",
+      "venue": "EDBT",
+      "authors": "Gentile, A.L., Ristoski, P., Eckel, S., Ritze, D., Paulheim, H."
+    },
+    {
+      "index": 9,
+      "title": "Understanding the difficulty of training deep feedforward neural networks",
+      "abstract": "",
+      "year": "2010",
+      "venue": "AISTATS",
+      "authors": "Glorot, X., Bengio, Y."
+    },
+    {
+      "index": 10,
+      "title": "OpenKE: An open toolkit for knowledge embedding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "EMNLP (Demonstration)",
+      "authors": "Han, X., Cao, S., Lv, X., Lin, Y., Liu, Z., Sun, M., Li, J."
+    },
+    {
+      "index": 11,
+      "title": "Knowledge graph embedding via dynamic mapping matrix",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACL",
+      "authors": "Ji, G., He, S., Xu, L., Liu, K., Zhao, J."
+    },
+    {
+      "index": 12,
+      "title": "Large-scale interactive ontology matching: Algorithms and implementation",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ECAI",
+      "authors": "Jiménez-Ruiz, E., Grau, B.C., Zhou, Y., Horrocks, I."
+    },
+    {
+      "index": 13,
+      "title": "SimplE Embedding for Link Prediction in Knowledge Graphs",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NeurIPS",
+      "authors": "Kazemi, S.M., Poole, D.",
+      "orig_title": "Simple embedding for link prediction in knowledge graphs",
+      "paper_id": "1802.04868v2"
+    },
+    {
+      "index": 14,
+      "title": "Type-Constrained Representation Learning in Knowledge Graphs",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISWC",
+      "authors": "Krompaß, D., Baier, S., Tresp, V.",
+      "orig_title": "Type-constrained representation learning in knowledge graphs",
+      "paper_id": "1508.02593v2"
+    },
+    {
+      "index": 15,
+      "title": "Modeling Relation Paths for Representation Learning of Knowledge Bases",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ACL",
+      "authors": "Lin, Y., Liu, Z., Luan, H.B., Sun, M., Rao, S., Liu, S.",
+      "orig_title": "Modeling relation paths for representation learning of knowledge bases",
+      "paper_id": "1506.00379v2"
+    },
+    {
+      "index": 16,
+      "title": "Learning entity and relation embeddings for knowledge graph completion",
+      "abstract": "",
+      "year": "2015",
+      "venue": "AAAI",
+      "authors": "Lin, Y., Liu, Z., Sun, M., Liu, Y., Zhu, X."
+    },
+    {
+      "index": 17,
+      "title": "Analogical Inference for Multi-relational Embeddings",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ICML",
+      "authors": "Liu, H., Wu, Y., Yang, Y.",
+      "orig_title": "Analogical inference for multi-relational embeddings",
+      "paper_id": "1705.02426v2"
+    },
+    {
+      "index": 18,
+      "title": "A novel embedding model for knowledge base completion based on convolutional neural network",
+      "abstract": "",
+      "year": "2018",
+      "venue": "NAACL-HLT",
+      "authors": "Nguyen, D.Q., Nguyen, T.D., Nguyen, D.Q., Phung, D.Q."
+    },
+    {
+      "index": 19,
+      "title": "Holographic Embeddings of Knowledge Graphs",
+      "abstract": "",
+      "year": "2016",
+      "venue": "AAAI",
+      "authors": "Nickel, M., Rosasco, L., Poggio, T.A.",
+      "orig_title": "Holographic embeddings of knowledge graphs",
+      "paper_id": "1510.04935v2"
+    },
+    {
+      "index": 20,
+      "title": "Knowledge graph completion by context-aware convolutional learning with multi-hop neighborhoods",
+      "abstract": "",
+      "year": "2018",
+      "venue": "CIKM",
+      "authors": "Oh, B., Seo, S., Lee, K."
+    },
+    {
+      "index": 21,
+      "title": "RDF2Vec: RDF graph embeddings for data mining",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ISWC",
+      "authors": "Ristoski, P., Paulheim, H."
+    },
+    {
+      "index": 22,
+      "title": "Modeling relational data with graph convolutional networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "ESWC",
+      "authors": "Schlichtkrull, M.S., Kipf, T.N., Bloem, P., van den Berg, R., Titov, I., Welling, M."
+    },
+    {
+      "index": 23,
+      "title": "ProjE: Embedding projection for knowledge graph completion",
+      "abstract": "",
+      "year": "2017",
+      "venue": "AAAI",
+      "authors": "Shi, B., Weninger, T."
+    },
+    {
+      "index": 24,
+      "title": "Cross-lingual Entity Alignment via Joint Attribute-Preserving Embedding",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ISWC",
+      "authors": "Sun, Z., Hu, W., Li, C.",
+      "orig_title": "Cross-lingual entity alignment via joint attribute-preserving embedding",
+      "paper_id": "1708.05045v2"
+    },
+    {
+      "index": 25,
+      "title": "Bootstrapping entity alignment with knowledge graph embedding",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IJCAI",
+      "authors": "Sun, Z., Hu, W., Zhang, Q., Qu, Y."
+    },
+    {
+      "index": 26,
+      "title": "RotatE: Knowledge Graph Embedding by Relational Rotation in Complex Space",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICLR",
+      "authors": "Sun, Z., Deng, Z.H., Nie, J.Y., Tang, J.",
+      "orig_title": "RotatE: Knowledge graph embedding by relational rotation in complex space",
+      "paper_id": "1902.10197v1"
+    },
+    {
+      "index": 27,
+      "title": "Representing text for joint embedding of text and knowledge bases",
+      "abstract": "",
+      "year": "2015",
+      "venue": "EMNLP",
+      "authors": "Toutanova, K., Chen, D., Pantel, P., Poon, H., Choudhury, P., Gamon, M."
+    },
+    {
+      "index": 28,
+      "title": "Complex Embeddings for Simple Link Prediction",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ICML",
+      "authors": "Trouillon, T., Welbl, J., Riedel, S., Gaussier, É., Bouchard, G.",
+      "orig_title": "Complex embeddings for simple link prediction",
+      "paper_id": "1606.06357v1"
+    },
+    {
+      "index": 29,
+      "title": "Entity alignment between knowledge graphs using attribute embeddings",
+      "abstract": "",
+      "year": "2019",
+      "venue": "AAAI",
+      "authors": "Trsedya, B.D., Qi, J., Zhang, R."
+    },
+    {
+      "index": 30,
+      "title": "Knowledge graph embedding: A survey of approaches and applications",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Transactions on Knowledge and Data Engineering",
+      "authors": "Wang, Q., Mao, Z., Wang, B., Guo, L."
+    },
+    {
+      "index": 31,
+      "title": "Knowledge graph embedding by translating on hyperplanes",
+      "abstract": "",
+      "year": "2014",
+      "venue": "AAAI",
+      "authors": "Wang, Z., Zhang, J., Feng, J., Chen, Z."
+    },
+    {
+      "index": 32,
+      "title": "Cross-lingual knowledge graph alignment via graph convolutional networks",
+      "abstract": "",
+      "year": "2018",
+      "venue": "EMNLP",
+      "authors": "Wang, Z., Lv, Q., Lan, X., Zhang, Y."
+    },
+    {
+      "index": 33,
+      "title": "Embedding entities and relations for learning and inference in knowledge bases",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICLR",
+      "authors": "Yang, B., Yih, W., He, X., Gao, J., Deng, L."
+    },
+    {
+      "index": 34,
+      "title": "Interaction Embeddings for Prediction and Explanation in Knowledge Graphs",
+      "abstract": "",
+      "year": "2019",
+      "venue": "WSDM",
+      "authors": "Zhang, W., Paudel, B., Zhang, W., Bernstein, A., Chen, H.",
+      "orig_title": "Interaction embeddings for prediction and explanation in knowledge graphs",
+      "paper_id": "1903.04750v1"
+    },
+    {
+      "index": 35,
+      "title": "Iterative entity alignment via joint knowledge embeddings",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IJCAI",
+      "authors": "Zhu, H., Xie, R., Liu, Z., Sun, M."
+    }
+  ]
+}

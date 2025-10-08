@@ -1,0 +1,355 @@
+{
+  "paper_id": "2402.07693v1",
+  "title": "LFOC+: A Fair OS-level Cache-Clustering Policy for Commodity Multicore Systems",
+  "sections": {
+    "introduction": "Chip multicore processors (CMPs) currently constitute the architecture of choice for most general-purpose computing systems, and they will likely continue to be dominant in the near future. Despite the advances in technology, which have made it possible to pack an increasing number of cores and bigger caches on the same chip, contention on shared resources on CMPs still poses a big challenge to the system software. Because cores in a CMP typically share a last-level cache (LLC) and other memory-related resources with the remaining cores –such as a DRAM controller and a memory bus or interconnection network  –, applications running simultaneously on the system may intensively compete with each other for these shared resources, leading to substantial performance degradation . Shared-resource contention may introduce a number of undesirable effects on the system, making it difficult to enforce system-wide fairness. For example, contention may cause an application’s completion time to differ significantly across runs, depending on its co-runners in the workload  . In addition, due to contention effects, equal-priority applications may not experience the same performance degradation when running together relative to the performance observed when each application runs alone on the CMP  . These issues make it difficult to provide performance guarantees  or prioritize critical applications without degrading throughput , may limit scalability of parallel applications , and may also cause wrong billings in commercial cloud-like computing services . Previous research has highlighted that shared-resource contention effects can be mitigated by effectively partitioning the shared LLC (i.e., dividing the available cache space among applications). After years of research on cache-partitioning strategies, the necessary hardware support to adopt many of these strategies is now available on commodity processors from Intel (via Cache Allocation Technology - CAT ), and AMD (as part of QoS Extensions ). On these platforms, which allow the creation of coarse-grained cache partitions only and of a somewhat limited number of partitions, cache-clustering (aka partition-sharing) algorithms have proven more effective than strict cache partitioning policies 0 1. Cache-clustering constitutes a generalization of strict cache partitioning, where, instead of assigning applications to separate cache partitions, each partition can be shared by a group (or cluster) of applications 2 1. Our work explores how to efficiently leverage OS-level cache-clustering to improve fairness on commodity multicores. Our research stands in contrast with recent work on cache-partitioning, which has proposed mostly user-level partitioning approaches that deliver fairness , or pursue other objectives, such as system throughput optimization 0 3 or improving client satisfaction on virtual environments 4. In this article we build on our prior work 5 to advance the state-of-the-art in fairness-aware cache-clustering. Specifically, we propose a new dynamic partitioning approach, referred to as LFOC+, that substantially improves the degree of fairness delivered by our previous proposal –LFOC (Lightweight Fairness-Oriented Cache-clustering); LFOC+ allows cache-sensitive applications (i.e., those that suffer significantly from using reduced cache space) to potentially share the same partition with others, while effectively isolating them from aggressor applications. Our paper makes the following main contributions: Via extensive simulation, we detect that the main limitations of LFOC come from always assigning cache-sensitive programs to separate LLC partitions. To provide a better support for a wider workload range, we design a lightweight cache-clustering algorithm that effectively maps (when beneficial) up to 2 cache-sensitive applications to the same partition. Based on our proposed cache-clustering algorithm, we design and implement LFOC+, an OS-level dynamic partitioning scheme. Our LFOC+’s implementation in the Linux kernel makes efficient use of hardware cache-partitioning extensions at the OS level, and guides cache-clustering by leveraging performance monitoring counters. In implementing LFOC+, we also adapted the OS-level resource-management framework 5 to be compatible with recent versions of the Linux kernel (v5.x series). We evaluate LFOC+ on a real system featuring an Intel Skylake processor. In our extensive evaluation we qualitatively and quantitatively compare LFOC+ with four state-of-the-art policies: Dunn , KPart 0, CPA 3 and LFOC 5. Our results reveal that LFOC+ improves fairness over these policies for the vast majority of the workload scenarios considered, and operates in a close range of the optimal fairness solution.\nIn our analysis we also identify critical design issues of the other approaches, which lead to fairness degradation in some cases. With respect to our previous work 5, we conduct new simulations and experiments, which cover a more ample and diverse set of workloads. We also experiment with data-parallel multithreaded applications, so as to evaluate LFOC+’s unique support to deal with this kind of programs. The remainder of the paper is organized as follows. Section 2 discusses related work. Section 3 presents our extensive simulation analysis, and describes our proposed cache-clustering algorithm. Section 4 outlines the design and implementation of LFOC+. Section 5 covers the experimental evaluation, and Section 6 concludes the paper."
+  },
+  "reference_labels": [
+    {
+      "index": 0,
+      "title": "Fairness via source throttling: a configurable and high-performance fairness substrate for multi-core memory systems",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ASPLOS '10",
+      "authors": "E. Ebrahimi et al."
+    },
+    {
+      "index": 1,
+      "title": "Contention-aware fair scheduling for asymmetric single-ISA multicore systems",
+      "abstract": "",
+      "year": "2018",
+      "venue": "IEEE Trans. Comp.",
+      "authors": "A. Garcia-Garcia, J. C. Saez, and M. Prieto-Matias"
+    },
+    {
+      "index": 2,
+      "title": "Application clustering policies to address system fairness with intel’s cache allocation technology",
+      "abstract": "",
+      "year": "2017",
+      "venue": "PACT '17",
+      "authors": "V. Selfa et al."
+    },
+    {
+      "index": 3,
+      "title": "Survey of scheduling techniques for addressing shared resources in multicore processors",
+      "abstract": "",
+      "year": "2012",
+      "venue": "ACM Comput. Surv.",
+      "authors": "S. Zhuravlev et al."
+    },
+    {
+      "index": 4,
+      "title": "Perf & fair: a progress-aware scheduler to enhance performance and fairness in SMT multicores",
+      "abstract": "",
+      "year": "2017",
+      "venue": "IEEE Trans. Comput.",
+      "authors": "J. Feliu et al."
+    },
+    {
+      "index": 5,
+      "title": "Contention-aware scheduling on multicore systems",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ACM Trans. Comput. Syst.",
+      "authors": "S. Blagodurov, S. Zhuravlev, and A. Fedorova"
+    },
+    {
+      "index": 6,
+      "title": "Memory bandwidth management for efficient performance isolation in multi-core platforms",
+      "abstract": "",
+      "year": "2016",
+      "venue": "IEEE Transactions on Computers",
+      "authors": "H. Yun et al."
+    },
+    {
+      "index": 7,
+      "title": "Introduction to Cache Allocation Technology in the Intel Xeon processor E5 v4 family",
+      "abstract": "",
+      "year": "2016",
+      "venue": "",
+      "authors": "K. Nguyen"
+    },
+    {
+      "index": 8,
+      "title": "AMD64 Technology Platform QoS Extensions",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": "AMD"
+    },
+    {
+      "index": 9,
+      "title": "KPart: A hybrid cache partitioning-sharing technique for commodity multicores",
+      "abstract": "",
+      "year": "2018",
+      "venue": "HPCA '18",
+      "authors": "N. El-Sayed et al."
+    },
+    {
+      "index": 10,
+      "title": "PBBCache: an open-source parallel simulator for rapid prototyping and evaluation of cache-partitioning and cache-clustering policies",
+      "abstract": "",
+      "year": "2020",
+      "venue": "J. Computat. Science",
+      "authors": "A. Garcia-Garcia et al."
+    },
+    {
+      "index": 11,
+      "title": "Optimal cache partition-sharing",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ICPP '15'",
+      "authors": "J. Brock et al."
+    },
+    {
+      "index": 12,
+      "title": "Phase-aware cache partitioning to target both turnaround time and system performance",
+      "abstract": "",
+      "year": "2020",
+      "venue": "IEEE Transactions on Parallel and Distributed Systems",
+      "authors": "L. Pons et al."
+    },
+    {
+      "index": 13,
+      "title": "Ginseng: Market-driven llc allocation",
+      "abstract": "",
+      "year": "2016",
+      "venue": "USENIX ATC '16",
+      "authors": "L. Funaro, O. A. Ben-Yehuda, and A. Schuster"
+    },
+    {
+      "index": 14,
+      "title": "LFOC: A Lightweight Fairness-Oriented Cache Clustering Policy for Commodity Multicores",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ICPP'19",
+      "authors": "A. Garcia-Garcia et al.",
+      "orig_title": "LFOC: A lightweight fairness-oriented cache clustering policy for commodity multicores",
+      "paper_id": "2402.07578v1"
+    },
+    {
+      "index": 15,
+      "title": "A survey of techniques for cache partitioning in multicore processors",
+      "abstract": "",
+      "year": "2017",
+      "venue": "ACM Comput. Surv.",
+      "authors": "S. Mittal"
+    },
+    {
+      "index": 16,
+      "title": "Heracles: improving resource efficiency at scale",
+      "abstract": "",
+      "year": "2015",
+      "venue": "ISCA '15",
+      "authors": "D. Lo et al."
+    },
+    {
+      "index": 17,
+      "title": "Dirigent: Enforcing qos for latency-critical tasks on shared multicore systems",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ASPLOS '16'",
+      "authors": "H. Zhu and M. Erez"
+    },
+    {
+      "index": 18,
+      "title": "Application performance prediction and optimization under cache allocation technology",
+      "abstract": "",
+      "year": "2019",
+      "venue": "DATE'19",
+      "authors": "Y. Kim et al."
+    },
+    {
+      "index": 19,
+      "title": "Utility-based cache partitioning: A low-overhead, high-performance, runtime mechanism to partition shared caches",
+      "abstract": "",
+      "year": "2006",
+      "venue": "MICRO' 06",
+      "authors": "M. Qureshi and Y. Patt"
+    },
+    {
+      "index": 20,
+      "title": "A hardware evaluation of cache partitioning to improve utilization and energy-efficiency while preserving responsiveness",
+      "abstract": "",
+      "year": "2013",
+      "venue": "ISCA '13",
+      "authors": "H. Cook et al."
+    },
+    {
+      "index": 21,
+      "title": "Whirlpool: Improving dynamic cache management with static data classification",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ASPLOS '16",
+      "authors": "A. Mukkara, N. Beckmann, and D. Sanchez"
+    },
+    {
+      "index": 22,
+      "title": "Dcaps: Dynamic cache allocation with partial sharing",
+      "abstract": "",
+      "year": "2018",
+      "venue": "EuroSys '18",
+      "authors": "Y. Xiang et al."
+    },
+    {
+      "index": 23,
+      "title": "Parties: Qos-aware resource partitioning for multiple interactive services",
+      "abstract": "",
+      "year": "2019",
+      "venue": "ASPLOS '19",
+      "authors": "S. Chen et al."
+    },
+    {
+      "index": 24,
+      "title": "Reducing cache misses using hardware and software page placement",
+      "abstract": "",
+      "year": "1999",
+      "venue": "13th International Conference on Supercomputing, ICS '99",
+      "authors": "T. Sherwood, B. Calder, and J. Emer"
+    },
+    {
+      "index": 25,
+      "title": "Gaining insights into multicore cache partitioning: Bridging the gap between simulation and real systems",
+      "abstract": "",
+      "year": "2008",
+      "venue": "HPCA '08",
+      "authors": "Jiang Lin et al."
+    },
+    {
+      "index": 26,
+      "title": "Coloris: A dynamic cache partitioning system using page coloring",
+      "abstract": "",
+      "year": "2014",
+      "venue": "PACT '14",
+      "authors": "Y. Ye et al."
+    },
+    {
+      "index": 27,
+      "title": "Towards practical page coloring-based multicore cache management",
+      "abstract": "",
+      "year": "2009",
+      "venue": "EuroSys '09",
+      "authors": "X. Zhang, S. Dwarkadas, and K. Shen"
+    },
+    {
+      "index": 28,
+      "title": "A software cache partitioning system for hash-based caches",
+      "abstract": "",
+      "year": "2016",
+      "venue": "ACM Trans. Archit. Code Optim.",
+      "authors": "A. Scolari, D. Bartolini, and M. Santambrogio"
+    },
+    {
+      "index": 29,
+      "title": "Improving cache performance using read-write partitioning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "HPCA '14",
+      "authors": "S. M. Khan et al."
+    },
+    {
+      "index": 30,
+      "title": "Futility scaling: High-associativity cache partitioning",
+      "abstract": "",
+      "year": "2014",
+      "venue": "MICRO '14",
+      "authors": "R. Wang and L. Chen"
+    },
+    {
+      "index": 31,
+      "title": "Cache friendliness-aware management of shared LLCs for high performance multi-core systems",
+      "abstract": "",
+      "year": "2014",
+      "venue": "IEEE Trans. Comp.",
+      "authors": "D. Kaseridis, M. F. Iqbal, and L. K. John"
+    },
+    {
+      "index": 32,
+      "title": "The application slowdown model: Quantifying and controlling the impact of inter-application interference at shared caches and main memory",
+      "abstract": "",
+      "year": "2015",
+      "venue": "MICRO '15",
+      "authors": "L. Subramanian et al."
+    },
+    {
+      "index": 33,
+      "title": "The benefit of SMT in the multi-core era: Flexibility towards degrees of thread-level parallelism",
+      "abstract": "",
+      "year": "2014",
+      "venue": "ASPLOS'14",
+      "authors": "S. Eyerman and L. Eeckhout"
+    },
+    {
+      "index": 34,
+      "title": "PMCTrack: Delivering performance monitoring counter support to the OS scheduler",
+      "abstract": "",
+      "year": "2017",
+      "venue": "The Computer Journal",
+      "authors": "J. C. Saez et al."
+    },
+    {
+      "index": 35,
+      "title": "Performance and fairness improvement on CMPs considering bandwidth and cache utilization",
+      "abstract": "",
+      "year": "2019",
+      "venue": "IEEE Computer Architect. Letters",
+      "authors": "T. Marinakis and I. Anagnostopoulos"
+    },
+    {
+      "index": 36,
+      "title": "Hass: A scheduler for heterogeneous multicore systems",
+      "abstract": "",
+      "year": "2009",
+      "venue": "SIGOPS Oper. Syst. Rev.",
+      "authors": "D. Shelepov et al."
+    },
+    {
+      "index": 37,
+      "title": "Contention-aware scheduling on multicore systems",
+      "abstract": "",
+      "year": "2010",
+      "venue": "ACM Trans. Comput. Syst.",
+      "authors": "S. Blagodurov, S. Zhuravlev, and A. Fedorova"
+    },
+    {
+      "index": 38,
+      "title": "IPC considered harmful for multiprocessor workloads",
+      "abstract": "",
+      "year": "2006",
+      "venue": "IEEE Micro",
+      "authors": "A. R. Alameldeen and D. A. Wood"
+    },
+    {
+      "index": 39,
+      "title": "Contentiousness vs. sensitivity: Improving contention aware runtime systems on multicore architectures",
+      "abstract": "",
+      "year": "2011",
+      "venue": "EXADAPT'11",
+      "authors": "L. Tang, J. Mars, and M. L. Soffa"
+    },
+    {
+      "index": 40,
+      "title": "Kpart’s source code",
+      "abstract": "",
+      "year": "2019",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 41,
+      "title": "Systemtap",
+      "abstract": "",
+      "year": "",
+      "venue": "",
+      "authors": ""
+    },
+    {
+      "index": 42,
+      "title": "High Performance Computing: Tuning guide for AMD EPYC 7002 series processors",
+      "abstract": "",
+      "year": "2020",
+      "venue": "",
+      "authors": "AMD"
+    }
+  ]
+}
