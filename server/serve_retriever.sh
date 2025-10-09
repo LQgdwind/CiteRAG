@@ -19,7 +19,7 @@ serve_model() {
         --distributed-executor-backend ray \
         --trust-remote-code \
         --dtype auto \
-        --api-key token-abc123 \
+        --api-key your-api-key \
 
     VLLM_SERVER_PID=$!
     echo "VLLM Server PID: ${VLLM_SERVER_PID}"
