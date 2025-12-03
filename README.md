@@ -22,7 +22,8 @@ CiteRAG/
 ├── server/                        # Server configurations
 │   ├── serve_retriever.sh         # Retrieval service script
 │   └── serve_generator.sh         # Generator service script
-└── README.md                      # Project documentation
+├── README.md                      # Project documentation
+└── requirements.txt               # requirements
 ```
 
 **Note**: The corpus is compressed using multi-volume compression due to its large size.
